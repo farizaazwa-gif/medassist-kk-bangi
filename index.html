@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V16.1 — Linked Shared Attendance Sheet</title>
+<title>MedAssist KK Bangi V16.4 — Streamlined NNJ Referral</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -1479,12 +1479,13 @@ textarea{min-height:90px;resize:vertical}
   <div class="card nnj-risk-screen">
     <div class="nnj-card-title">
       <span class="nnj-step">2</span>
-      <h2>NNJ Risk Category — Quick Click</h2>
+      <h2>Neurotoxicity Risk for PT / ET Table</h2>
     </div>
 
     <div class="nnj-section-help">
-      Category is calculated automatically and updates immediately whenever gestation,
-      baby condition or any major risk factor changes.
+      For infants ≥35 weeks, any listed neurotoxicity risk factor selects the lower
+      phototherapy and exchange transfusion threshold table. For infants ≤34 weeks,
+      use the separate gestation-specific preterm table.
     </div>
 
     <div class="nnj-risk-screen-top">
@@ -1505,25 +1506,25 @@ textarea{min-height:90px;resize:vertical}
       </div>
 
       <div class="nnj-quick-risk-banner low" id="nnjQuickRiskResult">
-        <span>Automatically calculated category</span>
-        <strong>LOW RISK</strong>
-        <small>≥38 weeks, well, no major risk factor.</small>
+        <span>Threshold risk group</span>
+        <strong>WITHOUT NEUROTOXICITY RISK FACTORS</strong>
+        <small>No guideline neurotoxicity risk factor selected.</small>
       </div>
     </div>
 
     <div class="nnj-auto-category-note">
-      ⚡ <strong>Auto mode:</strong> no calculate button is needed.
-      The category changes live as data is entered.
+      ⚡ <strong>Auto mode:</strong> the PT / ET table changes immediately when gestation
+      or a neurotoxicity risk factor is selected.
     </div>
 
-    <div class="section-subtitle">Major risk factors — select only if present</div>
+    <div class="section-subtitle">Neurotoxicity risk factors — select if present</div>
     <div class="nnj-risk-choice-grid" id="nnjMajorRisk">
       <label class="nnj-risk-choice">
-        <input type="checkbox" value="isoimmune haemolytic disease / haemolysis">
+        <input type="checkbox" value="isoimmune haemolytic disease or other haemolytic condition">
         <span>
           <span class="icon">🩸</span>
-          <strong>Haemolysis</strong>
-          <small>Isoimmune haemolytic disease or significant haemolysis</small>
+          <strong>Haemolytic condition</strong>
+          <small>Isoimmune haemolytic disease or other haemolytic condition</small>
         </span>
       </label>
 
@@ -1537,15 +1538,6 @@ textarea{min-height:90px;resize:vertical}
       </label>
 
       <label class="nnj-risk-choice">
-        <input type="checkbox" value="birth asphyxia">
-        <span>
-          <span class="icon">🫁</span>
-          <strong>Birth asphyxia</strong>
-          <small>History of significant perinatal asphyxia</small>
-        </span>
-      </label>
-
-      <label class="nnj-risk-choice">
         <input type="checkbox" value="sepsis">
         <span>
           <span class="icon">🌡️</span>
@@ -1553,92 +1545,37 @@ textarea{min-height:90px;resize:vertical}
           <small>Suspected or confirmed neonatal sepsis</small>
         </span>
       </label>
+
+      <label class="nnj-risk-choice">
+        <input type="checkbox" value="significant clinical instability in the previous 24 hours">
+        <span>
+          <span class="icon">⚠️</span>
+          <strong>Clinical instability</strong>
+          <small>Significant clinical instability in the previous 24 hours</small>
+        </span>
+      </label>
+
+      <label class="nnj-risk-choice">
+        <input type="checkbox" value="albumin below 30 g/L, if measured">
+        <span>
+          <span class="icon">🧪</span>
+          <strong>Albumin &lt;30 g/L</strong>
+          <small>Select only if serum albumin was measured and is below 30 g/L</small>
+        </span>
+      </label>
     </div>
 
-    <div class="nnj-risk-matrix">
-      <div>≥38 weeks + no major RF<strong class="nnj-category-low">LOW</strong></div>
-      <div>≥38 weeks + major RF<strong class="nnj-category-medium">MEDIUM</strong></div>
-      <div>35–37+6 weeks + no major RF<strong class="nnj-category-medium">MEDIUM</strong></div>
-      <div>35–37+6 weeks + major RF<strong class="nnj-category-high">HIGH</strong></div>
+    <div class="nnj-guideline-distinction">
+      <strong>5th Edition rule:</strong> one or more factors above = use the
+      <strong>WITH neurotoxicity risk factor</strong> PT / ET table for infants ≥35 weeks.
+      Birth asphyxia alone is not listed as a separate neurotoxicity factor in this table;
+      select clinical instability only when the infant meets that description in the previous 24 hours.
     </div>
 
-    <details class="nnj-more-risk" id="nnjMoreRiskDetails">
-      <summary>
-        More risk details — optional
-        <span class="nnj-risk-count" id="nnjOtherRiskCount">0</span>
-      </summary>
-
-      <div class="nnj-more-risk-content">
-        <div class="section-subtitle">Maternal / family history</div>
-        <div class="check-grid" id="nnjMaternalRisk">
-          <label class="check-item">
-            <input type="checkbox" value="mother blood group O">
-            Mother blood group O
-          </label>
-          <label class="check-item">
-            <input type="checkbox" value="mother Rhesus negative">
-            Mother Rh negative
-          </label>
-          <label class="check-item">
-            <input type="checkbox" value="infant of diabetic mother">
-            Maternal diabetes / infant of diabetic mother
-          </label>
-          <label class="check-item">
-            <input type="checkbox" value="family history of severe neonatal jaundice in siblings">
-            Family history of severe NNJ in siblings
-          </label>
-        </div>
-
-        <div class="section-subtitle">Other infant risks</div>
-        <div class="check-grid" id="nnjInfantRisk">
-          <label class="check-item">
-            <input type="checkbox" value="prematurity">
-            Prematurity &lt;37 weeks — auto-detected
-          </label>
-          <label class="check-item">
-            <input type="checkbox" value="Down syndrome">
-            Down syndrome
-          </label>
-          <label class="check-item red">
-            <input type="checkbox" value="jaundice within the first 24 hours of life">
-            Jaundice within first 24 hours — auto-detected
-          </label>
-          <label class="check-item red">
-            <input type="checkbox" value="rapid rise of total serum bilirubin">
-            Rapid TSB rise &gt;0.5 mg/dL/hour
-          </label>
-          <label class="check-item">
-            <input type="checkbox" value="lactation failure in exclusive breastfeeding">
-            Lactation failure in exclusive breastfeeding
-          </label>
-          <label class="check-item">
-            <input type="checkbox" value="high predischarge bilirubin level">
-            High predischarge bilirubin
-          </label>
-          <label class="check-item">
-            <input type="checkbox" value="cephalohaematoma or significant bruising">
-            Cephalohaematoma / significant bruising — auto-detected from examination
-          </label>
-        </div>
-
-        <div class="section-subtitle">Additional neurotoxicity risks</div>
-        <div class="check-grid" id="nnjNeuro">
-          <label class="check-item red">
-            <input type="checkbox" value="significant clinical instability in the previous 24 hours">
-            Clinical instability in previous 24 hours
-          </label>
-          <label class="check-item red">
-            <input type="checkbox" value="albumin below 30 g/L">
-            Albumin &lt;30 g/L, if measured
-          </label>
-        </div>
-
-        <div class="nnj-compact-risk-summary">
-          Major risk factors selected above are automatically copied into the infant
-          and neurotoxicity risk documentation where applicable.
-        </div>
-      </div>
-    </details>
+    <div class="nnj-compact-risk-summary">
+      Only guideline neurotoxicity risk factors that change the PT / ET threshold
+      table are included in this screening section.
+    </div>
   </div>
 
   <div class="card">
@@ -1851,12 +1788,20 @@ textarea{min-height:90px;resize:vertical}
         <label>Currently on phototherapy?</label>
         <select id="nnjOnPhoto"><option value="no">No</option><option value="yes">Yes</option></select>
       </div>
+      <div>
+        <label>Rapid TSB rise &gt;0.5 mg/dL/hour?</label>
+        <select id="nnjRapidRise">
+          <option value="no" selected>No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
     </div>
 
     <div id="nnjResult">
       <div class="nnj-placeholder">
-        Enter age of life and TSB to display LOW / MEDIUM / HIGH risk,
-        phototherapy level, escalation level, exchange transfusion level and referral decision.
+        Enter age of life and TSB to display the threshold risk group,
+        phototherapy level, intensive phototherapy level, exchange transfusion level
+        and referral decision.
       </div>
     </div>
   </div>
@@ -1932,7 +1877,7 @@ textarea{min-height:90px;resize:vertical}
 <button class="calc-option" data-calc="pack"><span>🚬</span><strong>Pack-year</strong><small>Smoking exposure</small></button>
 <button class="calc-option" data-calc="scores"><span>📊</span><strong>Clinical scores</strong><small>qSOFA, CURB-65, Centor</small></button>
 <button class="calc-option" data-calc="news2"><span>🚨</span><strong>NEWS2</strong><small>Auto-score and escalation</small></button>
-<button class="calc-option" data-calc="renal"><span>🫘</span><strong>Renal &amp; body size</strong><small>eGFR, CrCl and BSA</small></button>
+<button class="calc-option" data-calc="renal"><span>🫘</span><strong>eGFR — CKD-EPI</strong><small>2021 adult creatinine equation</small></button>
 <button class="calc-option" data-calc="mental"><span>🧠</span><strong>Mental health</strong><small>PHQ-9 and GAD-7</small></button>
 <button class="calc-option" data-calc="vte"><span>🫁</span><strong>VTE assessment</strong><small>Wells PE/DVT and PERC</small></button>
 <button class="calc-option" data-calc="cardiac"><span>❤️</span><strong>Cardiac scores</strong><small>HEART, CHA₂DS₂-VASc, QTc</small></button>
@@ -2075,11 +2020,95 @@ textarea{min-height:90px;resize:vertical}
 </div>
 <div class="calc-panel" id="calc-renal">
 <button class="btn secondary calc-back" type="button">← Back</button>
-<div class="card"><h2>Renal Function &amp; Body Size</h2><div class="grid four">
-<div><label>Age (years)</label><input id="rAge" type="number"/></div><div><label>Sex</label><select id="rSex"><option value="female">Female</option><option value="male">Male</option></select></div>
-<div><label>Weight (kg)</label><input id="rWeight" step="0.1" type="number"/></div><div><label>Height (cm)</label><input id="rHeight" step="0.1" type="number"/></div>
-<div><label>Serum creatinine (µmol/L)</label><input id="rCr" step="0.1" type="number"/></div><div><label> </label><button class="btn primary" id="rCalc" type="button">Calculate</button></div>
-</div><div class="result-box" id="rResult">Calculates CKD-EPI 2021 eGFR, Cockcroft-Gault CrCl and Mosteller BSA.</div></div>
+
+<div class="card">
+  <h2>eGFR — CKD-EPI 2021</h2>
+
+  <div class="notice">
+    Adult calculator for age <strong>≥18 years</strong>.
+    Uses the race-free 2021 CKD-EPI creatinine equation:
+    age, sex and standardized serum creatinine only.
+    Weight and height are <strong>not required</strong> for eGFR.
+  </div>
+
+  <div class="grid four">
+    <div>
+      <label>Age (years)</label>
+      <input id="rAge" type="number" min="18" max="120" step="1"
+             placeholder="e.g. 60">
+    </div>
+
+    <div>
+      <label>Sex</label>
+      <select id="rSex">
+        <option value="female">Female</option>
+        <option value="male">Male</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Serum creatinine</label>
+      <input id="rCr" type="number" min="0" step="0.1"
+             placeholder="e.g. 88.4">
+    </div>
+
+    <div>
+      <label>Creatinine unit</label>
+      <select id="rCrUnit">
+        <option value="umol">µmol/L</option>
+        <option value="mgdl">mg/dL</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn primary" id="rCalc" type="button">
+      Calculate CKD-EPI eGFR
+    </button>
+  </div>
+
+  <div class="result-box" id="rResult">
+    Enter age, sex and serum creatinine.
+  </div>
+
+  <div class="helper">
+    G category alone does not diagnose CKD. Interpret together with chronicity,
+    urine albumin and other markers of kidney damage. Use caution in acute kidney
+    injury or situations where serum creatinine may be unreliable.
+  </div>
+
+  <a class="ref"
+     href="https://www.niddk.nih.gov/research-funding/research-programs/kidney-clinical-research-epidemiology/laboratory/glomerular-filtration-rate-equations/adults"
+     target="_blank"
+     rel="noopener noreferrer">
+    Official CKD-EPI 2021 equation
+  </a>
+</div>
+
+<div class="card">
+  <details id="rOptionalDetails">
+    <summary><strong>Optional: Cockcroft-Gault CrCl &amp; body surface area</strong></summary>
+
+    <p class="helper">
+      These values are separate from CKD-EPI eGFR. Enter weight for Cockcroft-Gault;
+      enter both weight and height for Mosteller BSA.
+    </p>
+
+    <div class="grid two">
+      <div>
+        <label>Weight (kg) — optional</label>
+        <input id="rWeight" type="number" min="0" step="0.1"
+               placeholder="For Cockcroft-Gault">
+      </div>
+
+      <div>
+        <label>Height (cm) — optional</label>
+        <input id="rHeight" type="number" min="0" step="0.1"
+               placeholder="For Mosteller BSA">
+      </div>
+    </div>
+  </details>
+</div>
 </div>
 <div class="calc-panel" id="calc-mental">
 <button class="btn secondary calc-back" type="button">← Back</button>
@@ -4104,9 +4133,93 @@ if(value("nScale")==="1")total+=add("SpO₂",scoreBand(spo,[[x=>x<=91,3],[x=>x<=
 total+=add("Oxygen",+value("nO2"));total+=add("Temperature",scoreBand(t,[[x=>x<=35,3],[x=>x<=36,1],[x=>x<=38,0],[x=>x<=39,1],[x=>true,2]]));total+=add("SBP",scoreBand(sbp,[[x=>x<=90,3],[x=>x<=100,2],[x=>x<=110,1],[x=>x<=219,0],[x=>true,3]]));total+=add("HR",scoreBand(hr,[[x=>x<=40,3],[x=>x<=50,1],[x=>x<=90,0],[x=>x<=110,1],[x=>x<=130,2],[x=>true,3]]));total+=add("Consciousness",+value("nCon"));
 const any3=parts.some(x=>x.endsWith(": 3"));let risk=total>=7?"High risk — emergency assessment / continuous monitoring":total>=5?"Medium risk — urgent clinical review":any3?"Low total but one parameter scores 3 — urgent review":total>=1?"Low risk — ward/clinical response per protocol":"Score 0 — continue routine monitoring";$("nResult").innerHTML=`NEWS2: <strong>${total}</strong><br>${risk}<br><span class="helper">${parts.join("; ")}</span>`;});
 
-// Renal
-$("rCalc").addEventListener("click",()=>{const age=+value("rAge"),w=+value("rWeight"),h=+value("rHeight"),scrUmol=+value("rCr"),female=value("rSex")==="female";if(!age||!w||!h||!scrUmol){$("rResult").textContent="Complete age, weight, height and creatinine.";return}const scr=scrUmol/88.4,k=female ? .7 : .9,a=female ? -.241 : -.302;const egfr=142*Math.pow(Math.min(scr/k,1),a)*Math.pow(Math.max(scr/k,1),-1.2)*Math.pow(.9938,age)*(female?1.012:1);const crcl=((140-age)*w)/(72*scr)*(female ? .85 : 1);const bsa=Math.sqrt(h*w/3600);let stage=egfr>=90?"G1":egfr>=60?"G2":egfr>=45?"G3a":egfr>=30?"G3b":egfr>=15?"G4":"G5";$("rResult").innerHTML=`CKD-EPI 2021 eGFR: <strong>${egfr.toFixed(1)} mL/min/1.73m² (${stage})</strong><br>Cockcroft-Gault CrCl: <strong>${crcl.toFixed(1)} mL/min</strong><br>Mosteller BSA: <strong>${bsa.toFixed(2)} m²</strong><br><span class="helper">CrCl is weight-sensitive; use the clinically appropriate body weight for drug dosing.</span>`;});
+// Renal — 2021 CKD-EPI creatinine equation (race-free)
+function renalGCategory(egfr){
+  if(egfr>=90) return {code:"G1",range:"≥90"};
+  if(egfr>=60) return {code:"G2",range:"60–89"};
+  if(egfr>=45) return {code:"G3a",range:"45–59"};
+  if(egfr>=30) return {code:"G3b",range:"30–44"};
+  if(egfr>=15) return {code:"G4",range:"15–29"};
+  return {code:"G5",range:"<15"};
+}
 
+function calculateRenal(){
+  const age=Number(value("rAge"));
+  const creatinineInput=Number(value("rCr"));
+  const female=value("rSex")==="female";
+  const unit=value("rCrUnit");
+  const weight=Number(value("rWeight"));
+  const height=Number(value("rHeight"));
+
+  if(!age || !creatinineInput){
+    $("rResult").textContent="Enter age, sex and serum creatinine.";
+    return;
+  }
+
+  if(age<18){
+    $("rResult").innerHTML=
+      `<strong>CKD-EPI 2021 is an adult equation for age ≥18 years.</strong><br>`+
+      `<span class="helper">Use an age-appropriate paediatric equation instead.</span>`;
+    return;
+  }
+
+  if(age>120 || creatinineInput<=0){
+    $("rResult").textContent="Check the age and serum creatinine entered.";
+    return;
+  }
+
+  const scrMgDl=unit==="umol" ? creatinineInput/88.4 : creatinineInput;
+  const k=female ? 0.7 : 0.9;
+  const alpha=female ? -0.241 : -0.302;
+
+  const egfr=
+    142 *
+    Math.pow(Math.min(scrMgDl/k,1),alpha) *
+    Math.pow(Math.max(scrMgDl/k,1),-1.200) *
+    Math.pow(0.9938,age) *
+    (female ? 1.012 : 1);
+
+  const category=renalGCategory(egfr);
+
+  let output=
+    `<strong>CKD-EPI 2021 eGFR: ${egfr.toFixed(1)} mL/min/1.73m²</strong><br>`+
+    `G category: <strong>${category.code}</strong> (${category.range} mL/min/1.73m²)<br>`+
+    `<span class="helper">Creatinine used: ${scrMgDl.toFixed(3)} mg/dL. `+
+    `Race coefficient is not used.</span>`;
+
+  if(age>=18 && age<=25){
+    output+=
+      `<br><span class="helper">Age 18–25: consider comparison with an `+
+      `appropriate young-adult/CKiD U25 estimate when clinically relevant.</span>`;
+  }
+
+  if(weight>0){
+    const crcl=((140-age)*weight)/(72*scrMgDl)*(female ? 0.85 : 1);
+    output+=
+      `<br><br>Cockcroft-Gault CrCl: <strong>${crcl.toFixed(1)} mL/min</strong>`+
+      `<br><span class="helper">Uses entered body weight; select the clinically `+
+      `appropriate weight for drug-dosing decisions.</span>`;
+  }
+
+  if(weight>0 && height>0){
+    const bsa=Math.sqrt(height*weight/3600);
+    output+=
+      `<br>Mosteller BSA: <strong>${bsa.toFixed(2)} m²</strong>`;
+  }
+
+  output+=
+    `<br><br><span class="helper">Do not diagnose CKD from one eGFR result alone. `+
+    `Assess persistence for ≥3 months and markers of kidney damage, including albuminuria.</span>`;
+
+  $("rResult").innerHTML=output;
+}
+
+$("rCalc").addEventListener("click",calculateRenal);
+["rAge","rSex","rCr","rCrUnit"].forEach(id=>{
+  $(id).addEventListener("change",()=>{
+    if(value("rAge") && value("rCr")) calculateRenal();
+  });
+});
 // Mental health
 const mh={phq:["Little interest or pleasure in doing things","Feeling down, depressed or hopeless","Trouble falling/staying asleep or sleeping too much","Feeling tired or having little energy","Poor appetite or overeating","Feeling bad about yourself / failure","Trouble concentrating","Moving/speaking slowly or being fidgety/restless","Thoughts that you would be better off dead or of self-harm"],gad:["Feeling nervous, anxious or on edge","Not being able to stop/control worrying","Worrying too much about different things","Trouble relaxing","Being so restless it is hard to sit still","Becoming easily annoyed or irritable","Feeling afraid as if something awful might happen"]};
 function renderMH(){const qs=mh[value("mhTool")];$("mhQuestions").innerHTML=qs.map((q,i)=>`<div class="grid two"><label>${i+1}. ${q}</label><select class="mhItem"><option value="0">Not at all (0)</option><option value="1">Several days (1)</option><option value="2">More than half the days (2)</option><option value="3">Nearly every day (3)</option></select></div>`).join("");}$("mhTool").addEventListener("change",renderMH);renderMH();
@@ -4295,32 +4408,32 @@ $("peCalc").addEventListener("click",assessPeProphylaxis);
   });
 });
 
-// Neonatal jaundice clerking and live TSB calculator — Paediatric Protocols 5th Edition 2025
+// Neonatal jaundice clerking and live TSB calculator — Paediatric Protocols for Malaysian Hospitals 5th Edition, pages 136–139
 const nnjTermNoRisk={
-  38:{ages:[6,12,24,48,72,96,120],pt:[101,121,159,222,270,303,306],et:[321,337,366,410,443,462,462]},
-  37:{ages:[6,12,24,48,72,96,120],pt:[94,113,149,212,258,291,294],et:[304,320,347,395,431,455,456]},
-  36:{ages:[6,12,24,48,72,96,120],pt:[84,103,140,202,248,279,280],et:[285,299,327,374,412,436,439]},
-  35:{ages:[6,12,24,48,72,96,120],pt:[58,94,130,191,236,267,268],et:[266,280,306,354,391,419,422]}
+  38:{ages:[6,12,24,48,72,96,120],pt:[5.9,7.1,9.3,13.0,15.8,17.7,17.9],et:[18.8,19.7,21.4,24.0,25.9,27.0,27.0]},
+  37:{ages:[6,12,24,48,72,96,120],pt:[5.5,6.6,8.7,12.4,15.1,17.0,17.2],et:[17.8,18.7,20.3,23.1,25.4,26.6,26.7]},
+  36:{ages:[6,12,24,48,72,96,120],pt:[4.9,6.0,8.2,11.8,14.5,16.3,16.4],et:[16.7,17.5,19.1,21.9,24.1,25.5,25.7]},
+  35:{ages:[6,12,24,48,72,96,120],pt:[3.4,5.5,7.6,11.2,13.8,15.6,15.7],et:[15.6,16.4,17.9,20.7,22.9,24.5,24.7]}
 };
 const nnjTermRisk={
-  38:{ages:[6,12,24,48,72,96,120],pt:[74,94,128,188,232,260,260],et:[265,279,303,344,378,402,402]},
-  37:{ages:[6,12,24,48,72,96,120],pt:[67,85,120,180,224,255,256],et:[256,268,294,337,371,395,397]},
-  36:{ages:[6,12,24,48,72,96,120],pt:[56,75,109,167,212,239,241],et:[246,260,284,327,357,378,381]},
-  35:{ages:[6,12,24,48,72,96,120],pt:[48,67,101,157,198,224,227],et:[236,250,275,316,344,361,364]}
+  38:{ages:[6,12,24,48,72,96,120],pt:[4.3,5.5,7.5,11.0,13.6,15.2,15.2],et:[15.5,16.3,17.7,20.1,22.1,23.5,23.5]},
+  37:{ages:[6,12,24,48,72,96,120],pt:[3.9,5.0,7.0,10.5,13.1,14.9,15.0],et:[15.0,15.7,17.2,19.7,21.7,23.1,23.2]},
+  36:{ages:[6,12,24,48,72,96,120],pt:[3.3,4.4,6.4,9.8,12.4,14.0,14.1],et:[14.4,15.2,16.6,19.1,20.9,22.1,22.3]},
+  35:{ages:[6,12,24,48,72,96,120],pt:[2.8,3.9,5.9,9.2,11.6,13.1,13.3],et:[13.8,14.6,16.1,18.5,20.1,21.1,21.3]}
 };
 const nnjPreterm={
-  23:{ages:[6,12,24,48,72,96],pt:[45,55,70,100,130,130],et:[90,105,130,180,230,230]},
-  24:{ages:[6,12,24,48,72,96],pt:[45,60,70,110,140,140],et:[90,110,135,185,240,240]},
-  25:{ages:[6,12,24,48,72,96],pt:[50,60,80,110,150,150],et:[100,110,140,190,250,250]},
-  26:{ages:[6,12,24,48,72,96],pt:[50,60,80,120,160,160],et:[100,110,140,200,260,260]},
-  27:{ages:[6,12,24,48,72,96],pt:[50,60,80,130,170,170],et:[100,110,140,205,270,270]},
-  28:{ages:[6,12,24,48,72,96],pt:[50,60,90,130,180,180],et:[100,110,150,210,280,280]},
-  29:{ages:[6,12,24,48,72,96],pt:[50,65,90,140,190,190],et:[100,110,150,220,290,290]},
-  30:{ages:[6,12,24,48,72,96],pt:[50,65,95,145,200,200],et:[100,115,150,220,300,300]},
-  31:{ages:[6,12,24,48,72,96],pt:[50,70,100,155,210,210],et:[100,120,155,230,310,310]},
-  32:{ages:[6,12,24,48,72,96],pt:[50,70,100,160,220,220],et:[100,120,160,240,320,320]},
-  33:{ages:[6,12,24,48,72,96],pt:[50,70,100,170,230,230],et:[100,120,160,245,330,330]},
-  34:{ages:[6,12,24,48,72,96],pt:[50,70,110,170,240,240],et:[100,120,170,250,340,340]}
+  23:{ages:[6,12,24,48,72,96],pt:[2.5,3.0,4.1,5.9,7.6,7.6],et:[5.0,6.0,7.6,10.5,13.5,13.5]},
+  24:{ages:[6,12,24,48,72,96],pt:[2.5,3.5,4.1,6.5,8.2,8.2],et:[5.0,6.5,7.9,10.9,14.0,14.0]},
+  25:{ages:[6,12,24,48,72,96],pt:[3.0,3.5,4.7,6.5,8.8,8.8],et:[6.0,6.5,8.2,11.1,14.6,14.6]},
+  26:{ages:[6,12,24,48,72,96],pt:[3.0,3.5,4.7,7.0,9.4,9.4],et:[6.0,6.5,8.2,11.7,15.2,15.2]},
+  27:{ages:[6,12,24,48,72,96],pt:[3.0,3.5,4.7,7.6,10.0,10.0],et:[6.0,6.5,8.2,12.0,15.8,15.8]},
+  28:{ages:[6,12,24,48,72,96],pt:[3.0,3.5,5.3,7.6,10.5,10.5],et:[6.0,6.5,8.8,12.3,16.4,16.4]},
+  29:{ages:[6,12,24,48,72,96],pt:[3.0,3.8,5.3,8.2,11.1,11.1],et:[6.0,6.7,8.8,12.9,17.0,17.0]},
+  30:{ages:[6,12,24,48,72,96],pt:[3.0,3.8,5.6,8.5,11.7,11.7],et:[6.0,6.7,8.8,12.9,17.5,17.5]},
+  31:{ages:[6,12,24,48,72,96],pt:[3.0,4.0,5.9,9.1,12.3,12.3],et:[6.0,7.0,9.1,13.5,18.1,18.1]},
+  32:{ages:[6,12,24,48,72,96],pt:[3.0,4.0,5.9,9.4,12.9,12.9],et:[6.0,7.0,9.4,14.0,18.7,18.7]},
+  33:{ages:[6,12,24,48,72,96],pt:[3.0,4.0,5.9,10.0,13.5,13.5],et:[6.0,7.0,9.4,14.3,19.3,19.3]},
+  34:{ages:[6,12,24,48,72,96],pt:[3.0,4.0,6.5,10.0,14.6,14.6],et:[6.0,7.0,10.0,14.6,20.0,20.0]}
 };
 
 function nnjInterpolate(ages,values,hours){
@@ -4346,8 +4459,8 @@ function nnjThresholds(gestation,hours,hasNeuro){
     source="≤34-week preterm threshold table";
   }
   return {
-    pt:nnjInterpolate(row.ages,row.pt,hours)/17.1,
-    et:nnjInterpolate(row.ages,row.et,hours)/17.1,
+    pt:nnjInterpolate(row.ages,row.pt,hours),
+    et:nnjInterpolate(row.ages,row.et,hours),
     source
   };
 }
@@ -4410,73 +4523,71 @@ function nnjAgeDisplay(hours){return nnjFormatAge(hours,false);}
 function nnjAgeAtResult(hours){return nnjFormatAge(hours,true);}
 function nnjUnique(list){return [...new Set(list.filter(Boolean))];}
 
-function nnjTableRiskFactors(majorRisk){
-  return nnjUnique(majorRisk);
-}
-function nnjTableRiskCategory(gestation,tableRiskFactors,condition){
-  const hasRisk=tableRiskFactors.length>0;
-  const well=condition==="Well and active";
+function nnjThresholdRiskGroup(gestation,neuroFactors,condition){
+  const factors=nnjUnique(neuroFactors);
+  const hasNeuro=factors.length>0;
+
   if(gestation<35){
-    return {category:"PRETERM ≤34 WEEKS",className:"nnj-category-preterm",
-      rationale:"Use the separate preterm threshold table."};
+    return {
+      group:"PRETERM ≤34-WEEK TABLE",
+      className:"nnj-category-preterm",
+      rationale:`Use the separate ${gestation}-week gestation-specific preterm PT / ET table.`,
+      hasNeuroForThreshold:false
+    };
   }
-  if(gestation>=38){
-    if(well&&!hasRisk){
-      return {category:"LOW RISK",className:"nnj-category-low",
-        rationale:"≥38 weeks, well and no table-specific risk factor."};
-    }
-    if(hasRisk){
-      return {category:"MEDIUM RISK",className:"nnj-category-medium",
-        rationale:`≥38 weeks with risk factor(s): ${nnjSentence(tableRiskFactors)}.`};
-    }
-    return {category:"REVIEW CATEGORY",className:"nnj-category-review",
-      rationale:"≥38 weeks but infant is not documented as well; Low-risk criteria are not fulfilled."};
+
+  if(hasNeuro){
+    return {
+      group:"WITH NEUROTOXICITY RISK FACTOR(S)",
+      className:"nnj-category-high",
+      rationale:`Lower PT / ET table selected due to: ${nnjSentence(factors)}.`,
+      hasNeuroForThreshold:true
+    };
   }
-  if(hasRisk){
-    return {category:"HIGH RISK",className:"nnj-category-high",
-      rationale:`35–37+6 weeks with risk factor(s): ${nnjSentence(tableRiskFactors)}.`};
+
+  if(condition!=="Well and active"){
+    return {
+      group:"WITHOUT SELECTED NEUROTOXICITY RISK FACTORS",
+      className:"nnj-category-review",
+      rationale:"No listed factor selected. Baby is not documented as well; confirm whether significant clinical instability occurred in the previous 24 hours.",
+      hasNeuroForThreshold:false
+    };
   }
-  if(well){
-    return {category:"MEDIUM RISK",className:"nnj-category-medium",
-      rationale:"35–37+6 weeks and well, without table-specific risk factors."};
-  }
-  return {category:"REVIEW CATEGORY",className:"nnj-category-review",
-    rationale:"35–37+6 weeks and not documented as well; review for asphyxia, haemolysis, G6PD deficiency or sepsis."};
+
+  return {
+    group:"WITHOUT NEUROTOXICITY RISK FACTORS",
+    className:"nnj-category-low",
+    rationale:"No guideline neurotoxicity risk factor selected.",
+    hasNeuroForThreshold:false
+  };
 }
 
 function nnjQuickGestationText(gestation){
   if(gestation>=38) return "≥38 weeks";
   return `${gestation} weeks`;
 }
-function nnjQuickRiskClass(category){
-  if(category.startsWith("LOW")) return "low";
-  if(category.startsWith("MEDIUM")) return "medium";
-  if(category.startsWith("HIGH")) return "high";
-  if(category.startsWith("PRETERM")) return "preterm";
+function nnjQuickRiskClass(group){
+  if(group.startsWith("WITHOUT")) return group.includes("SELECTED")?"review":"low";
+  if(group.startsWith("WITH")) return "high";
+  if(group.startsWith("PRETERM")) return "preterm";
   return "review";
 }
 function renderNnjQuickRisk(){
   const gestation=Number(value("nnjGestation"));
   const condition=value("nnjCondition");
-  const majorRisk=nnjChecked("nnjMajorRisk");
-  const tableRisk=nnjTableRiskCategory(gestation,majorRisk,condition);
+  const neuroFactors=nnjChecked("nnjMajorRisk");
+  const thresholdRisk=nnjThresholdRiskGroup(gestation,neuroFactors,condition);
   const target=$("nnjQuickRiskResult");
 
   $("nnjQuickGestation").textContent=nnjQuickGestationText(gestation);
-  target.className=`nnj-quick-risk-banner ${nnjQuickRiskClass(tableRisk.category)}`;
+  target.className=`nnj-quick-risk-banner ${nnjQuickRiskClass(thresholdRisk.group)}`;
   target.innerHTML=
-    `<span>Automatically calculated category</span>`+
-    `<strong>${tableRisk.category}</strong>`+
-    `<small>${tableRisk.rationale}</small>`+
-    `<small>Based on gestation, baby condition and selected major risk factor(s).</small>`;
+    `<span>Threshold risk group</span>`+
+    `<strong>${thresholdRisk.group}</strong>`+
+    `<small>${thresholdRisk.rationale}</small>`;
 
-  const otherCount=
-    nnjChecked("nnjMaternalRisk").length+
-    nnjChecked("nnjInfantRisk").length+
-    nnjChecked("nnjNeuro").length;
-  $("nnjOtherRiskCount").textContent=String(otherCount);
 
-  return {majorRisk,tableRisk};
+  return {neuroFactors,thresholdRisk};
 }
 
 function nnjSentence(list){
@@ -4528,57 +4639,22 @@ function nnjClinicalAssessment(){
   const tsb=Number(value("nnjValue"));
   const direct=Number(value("nnjDirect"));
   const symptoms=nnjSymptoms();
-  const majorRisk=nnjChecked("nnjMajorRisk");
-  const maternalRisk=nnjChecked("nnjMaternalRisk");
-  const infantRisk=nnjChecked("nnjInfantRisk");
-  const neuro=nnjChecked("nnjNeuro");
+  const neuro=nnjUnique(nnjChecked("nnjMajorRisk"));
   const weightLoss=nnjWeightLoss();
 
   if(!gestation||!Number.isFinite(hours)||hours<0||!tsb||tsb<=0){
     return {ready:false};
   }
 
-  if(majorRisk.includes("isoimmune haemolytic disease / haemolysis")){
-    if(!infantRisk.includes("isoimmune haemolytic disease / haemolysis")){
-      infantRisk.push("isoimmune haemolytic disease / haemolysis");
-    }
-    if(!neuro.includes("isoimmune haemolytic disease, G6PD deficiency or other haemolytic condition")){
-      neuro.push("isoimmune haemolytic disease, G6PD deficiency or other haemolytic condition");
-    }
-  }
-  if(majorRisk.includes("G6PD deficiency")){
-    if(!infantRisk.includes("G6PD deficiency")) infantRisk.push("G6PD deficiency");
-    if(!neuro.includes("isoimmune haemolytic disease, G6PD deficiency or other haemolytic condition")){
-      neuro.push("isoimmune haemolytic disease, G6PD deficiency or other haemolytic condition");
-    }
-  }
-  if(majorRisk.includes("birth asphyxia")&&!infantRisk.includes("birth asphyxia")){
-    infantRisk.push("birth asphyxia");
-  }
-  if(majorRisk.includes("sepsis")){
-    if(!infantRisk.includes("sepsis")) infantRisk.push("sepsis");
-    if(!neuro.includes("sepsis")) neuro.push("sepsis");
-  }
-
-  if(gestation<37&&!infantRisk.includes("prematurity")){
-    infantRisk.unshift("prematurity");
-  }
-  if((hours<24||value("nnjSymEarly")==="yes")&&!infantRisk.includes("jaundice within the first 24 hours of life")){
-    infantRisk.push("jaundice within the first 24 hours of life");
-  }
-  if(value("nnjCephalo")==="yes"&&!infantRisk.includes("cephalohaematoma or significant bruising")){
-    infantRisk.push("cephalohaematoma or significant bruising");
-  }
-
-  const clinicalRisk=nnjUnique([...maternalRisk,...infantRisk]);
-  const tableRiskFactors=nnjTableRiskFactors(majorRisk);
-  const tableRisk=nnjTableRiskCategory(gestation,tableRiskFactors,value("nnjCondition"));
-  const thresholds=nnjThresholds(gestation,hours,neuro.length>0);
+  const thresholdRisk=nnjThresholdRiskGroup(gestation,neuro,value("nnjCondition"));
+  const thresholds=nnjThresholds(gestation,hours,thresholdRisk.hasNeuroForThreshold);
   const pt=thresholds.pt;
   const et=thresholds.et;
   const escalation=et-2;
   const intensive=pt+3;
   const distance=pt-tsb;
+  const rapidRise=value("nnjRapidRise")==="yes";
+  const intensiveIndicated=tsb>=intensive||rapidRise;
 
   const flags=[];
   const reasons=[];
@@ -4595,10 +4671,6 @@ function nnjClinicalAssessment(){
     flags.push("dark urine");
   }
   if(weightLoss>7) flags.push(`weight loss ${weightLoss.toFixed(1)}%`);
-  if(maternalRisk.includes("family history of severe neonatal jaundice in siblings")){
-    flags.push("family history of severe NNJ or kernicterus");
-  }
-
   const directAbnormal=direct>0&&(direct>25/17.1||direct/tsb>0.20);
   if(directAbnormal) flags.push("conjugated hyperbilirubinaemia");
 
@@ -4612,23 +4684,24 @@ function nnjClinicalAssessment(){
     referral=true;
     urgency="Emergency referral for neonatal escalation and possible exchange transfusion.";
     recommendation="Refer NICU / ED immediately.";
-    reasons.push(tsb>=et?"TSB is at or above the exchange transfusion threshold":"signs of acute bilirubin encephalopathy");
+    reasons.push(tsb>=et?"TSB is at or above the exchange transfusion threshold":"signs of moderate or advanced acute bilirubin encephalopathy");
   }else if(tsb>=escalation){
     category="HIGH — ESCALATION";
     referral=true;
     urgency="Medical emergency: TSB has reached the escalation-of-care range.";
     recommendation="Refer NICU / ED urgently; intensive phototherapy and preparation for possible exchange transfusion.";
     reasons.push("TSB is within 2 mg/dL of the exchange transfusion threshold");
-  }else if(tsb>=intensive){
+  }else if(intensiveIndicated){
     category="HIGH";
     referral=true;
     urgency="Urgent hospital referral for intensive phototherapy.";
-    recommendation="Refer NICU / ED urgently.";
-    reasons.push("TSB is at least 3 mg/dL above the conventional phototherapy threshold");
+    recommendation="Refer NICU / ED urgently for intensive phototherapy.";
+    if(tsb>=intensive) reasons.push("TSB is at least 3 mg/dL above the conventional phototherapy threshold");
+    if(rapidRise) reasons.push("TSB rise is greater than 0.5 mg/dL/hour");
   }else if(tsb>=pt){
     category="HIGH";
     referral=true;
-    urgency="TSB has reached the phototherapy threshold.";
+    urgency="TSB has reached the conventional phototherapy threshold.";
     recommendation="Refer NICU / ED for phototherapy.";
     reasons.push("TSB is at or above the conventional phototherapy threshold");
   }else if(flags.length){
@@ -4637,13 +4710,12 @@ function nnjClinicalAssessment(){
     urgency="Hospital referral is indicated by clinical or protocol referral criteria.";
     recommendation="Refer NICU / ED for neonatal assessment.";
     reasons.push(...flags);
-  }else if(distance<=3||clinicalRisk.length||neuro.length){
+  }else if(distance<=3||neuro.length){
     category="MEDIUM";
     referral=false;
     urgency="Close follow-up is required.";
     recommendation="Repeat TSB according to clinical assessment and review feeding, hydration and trend.";
     if(distance<=3) reasons.push("TSB is within 3 mg/dL of the phototherapy threshold");
-    if(clinicalRisk.length) reasons.push("significant NNJ risk factor(s) present");
     if(neuro.length) reasons.push("neurotoxicity risk factor(s) present");
   }
 
@@ -4654,19 +4726,17 @@ function nnjClinicalAssessment(){
 
   return {
     ready:true,gestation,hours,tsb,direct,symptoms,
-    majorRisk:nnjUnique(majorRisk),
-    maternalRisk:nnjUnique(maternalRisk),
-    infantRisk:nnjUnique(infantRisk),
-    clinicalRisk:nnjUnique(clinicalRisk),
-    neuro:nnjUnique(neuro),
-    tableRiskFactors,
-    tableRisk,
+    majorRisk:neuro,
+    neuro,
+    thresholdRisk,
     flags:nnjUnique(flags),reasons:nnjUnique(reasons),
     thresholds,pt,et,escalation,intensive,distance,
+    rapidRise,intensiveIndicated,
     category,referral,urgency,recommendation,suggested,
     weightLoss,directAbnormal,prolongedDue
   };
 }
+
 function nnjBannerClass(category){
   if(category.startsWith("HIGH")) return category.includes("EMERGENCY")||category.includes("ESCALATION")?"risk-emergency":"risk-high";
   if(category==="MEDIUM") return "risk-intermediate";
@@ -4679,7 +4749,7 @@ function renderNnjLive(){
 
   if(!assessment.ready){
     $("nnjResult").innerHTML=
-      '<div class="nnj-placeholder">Enter birth date/time, assessment date/time and TSB to display the table risk category, treatment thresholds and referral decision.</div>';
+      '<div class="nnj-placeholder">Enter birth date/time, assessment date/time and TSB to display the threshold risk group, PT / ET levels and referral decision.</div>';
     updateNnjPlanUi();
     return null;
   }
@@ -4693,7 +4763,7 @@ function renderNnjLive(){
     `<div class="nnj-summary-grid">`+
       `<div class="nnj-summary-box"><span>Current TSB</span><strong>${assessment.tsb.toFixed(1)} mg/dL</strong></div>`+
       `<div class="nnj-summary-box"><span>Phototherapy level</span><strong>${assessment.pt.toFixed(1)} mg/dL</strong></div>`+
-      `<div class="nnj-summary-box"><span>Escalation level</span><strong>${assessment.escalation.toFixed(1)} mg/dL</strong></div>`+
+      `<div class="nnj-summary-box"><span>Intensive PT level</span><strong>${assessment.intensive.toFixed(1)} mg/dL</strong></div>`+
       `<div class="nnj-summary-box"><span>Exchange transfusion level</span><strong>${assessment.et.toFixed(1)} mg/dL</strong></div>`+
     `</div>`+
     `<div class="nnj-decision">`+
@@ -4703,26 +4773,24 @@ function renderNnjLive(){
     `</div>`+
     `<div class="nnj-risk-category-grid">`+
       `<div class="nnj-risk-category-card primary-category">`+
-        `<span>Table category</span>`+
-        `<strong class="${assessment.tableRisk.className}">${assessment.tableRisk.category}</strong>`+
-        `<small>${assessment.tableRisk.rationale}</small>`+
+        `<span>Threshold risk group</span>`+
+        `<strong class="${assessment.thresholdRisk.className}">${assessment.thresholdRisk.group}</strong>`+
+        `<small>${assessment.thresholdRisk.rationale}</small>`+
       `</div>`+
       `<div class="nnj-risk-category-card">`+
-        `<span>Treatment threshold curve</span>`+
-        `<strong>${assessment.neuro.length?"WITH neurotoxicity risk":"WITHOUT neurotoxicity risk"}</strong>`+
-        `<small>${assessment.thresholds.source}</small>`+
+        `<span>Guideline table used</span>`+
+        `<strong>${assessment.thresholds.source}</strong>`+
+        `<small>Paediatric Protocols for Malaysian Hospitals, 5th Edition, pages 136–139.</small>`+
       `</div>`+
     `</div>`+
     `<div class="nnj-compact-risk-summary">`+
-      `<strong>Other risk documentation:</strong> `+
-      `${assessment.maternalRisk.length} maternal/family, `+
-      `${assessment.infantRisk.length} infant, `+
-      `${assessment.neuro.length} neurotoxicity factor(s).`+
+      `<strong>Neurotoxicity factor(s):</strong> `+
+      `${assessment.neuro.length?nnjSentence(assessment.neuro):"None selected"}.`+
     `</div>`+
     `<div class="nnj-guideline-distinction">`+
-      `<strong>Important:</strong> The Low / Medium / High category follows the table format provided. `+
-      `The phototherapy and exchange thresholds are selected from the 5th-edition gestation-specific `+
-      `curve with or without neurotoxicity risk factors.`+
+      `<strong>Guideline rule:</strong> For infants ≥35 weeks, any neurotoxicity factor uses the lower PT / ET table. `+
+      `For infants ≤34 weeks, the gestation-specific preterm table is used. `+
+      `Intensive phototherapy is indicated when TSB is ≥3 mg/dL above the conventional PT level or rises &gt;0.5 mg/dL/hour.`+
     `</div>`+
     `<div class="result-box">`+
       `<strong>Interpretation:</strong> ${assessment.urgency}<br>`+
@@ -4733,6 +4801,7 @@ function renderNnjLive(){
   updateNnjPlanUi(assessment.suggested);
   return assessment;
 }
+
 function updateNnjPlanUi(autoSuggestion){
   const selected=value("nnjPlan");
   const resolved=selected==="auto"?(autoSuggestion||"repeat"):selected;
@@ -4749,7 +4818,11 @@ function nnjPlanLines(assessment,resolvedPlan){
 
   if(resolvedPlan==="refer"){
     lines.push("Refer NICU / ED for paediatric/neonatal assessment and management.");
-    if(assessment.tsb>=assessment.pt) lines.push("For phototherapy according to the receiving neonatal team.");
+    if(assessment.intensiveIndicated){
+      lines.push("For intensive phototherapy according to the receiving neonatal team.");
+    }else if(assessment.tsb>=assessment.pt){
+      lines.push("For phototherapy according to the receiving neonatal team.");
+    }
     if(assessment.tsb>=assessment.escalation) lines.push("Urgent escalation of care and preparation for possible exchange transfusion.");
   }else if(resolvedPlan==="repeat"){
     const interval=value("nnjRepeatInterval");
@@ -4802,20 +4875,12 @@ function generateNnjNote(){
     ? `No ${nnjSentence(negatives).toLowerCase()}.`
     : "";
 
-  const maternalRiskSentence=assessment.maternalRisk.length
-    ? `Maternal / family NNJ risk factor(s): ${nnjSentence(assessment.maternalRisk)}.`
-    : "No maternal / family NNJ risk factor identified.";
-
-  const infantRiskSentence=assessment.infantRisk.length
-    ? `Infant NNJ risk factor(s): ${nnjSentence(assessment.infantRisk)}.`
-    : "No infant NNJ risk factor identified.";
-
   const neuroSentence=assessment.neuro.length
     ? `Neurotoxicity risk factor(s): ${nnjSentence(assessment.neuro)}.`
     : "No neurotoxicity risk factor identified.";
 
-  const categorySentence=
-    `category: ${assessment.tableRisk.category}. ${assessment.tableRisk.rationale}`;
+  const thresholdGroupSentence=
+    `Threshold risk group: ${assessment.thresholdRisk.group}.`;
 
   const examAbnormal=[];
   if(value("nnjPallor")==="yes") examAbnormal.push("pallor");
@@ -4836,13 +4901,9 @@ function generateNnjNote(){
   ].filter(Boolean).join("\n");
 
   const riskParagraph=[
-    maternalRiskSentence,
-    "",
-    infantRiskSentence,
-    "",
     neuroSentence,
     "",
-    categorySentence
+    thresholdGroupSentence
   ].join("\n");
 
   const examinationParagraph=[
@@ -4889,11 +4950,7 @@ function generateNnjNote(){
   $("nnjCopyReferral").classList.toggle("hidden",!makeReferral);
 
   if(makeReferral){
-    const referral=[
-      "Dear colleague,",
-      "",
-      "Thank you for seeing this baby for neonatal jaundice.",
-      "",
+    const patientDetailsParagraph=[
       `Name: ${babyName||"-"}`,
       `MRN / ID: ${mrn||"-"}`,
       `Sex: ${sex}`,
@@ -4901,32 +4958,64 @@ function generateNnjNote(){
       `Age of life: ${nnjAgeAtResult(assessment.hours)}`,
       `Birth weight: ${value("nnjBirthWeight")||"-"} kg`,
       `Current weight: ${value("nnjCurrentWeight")||"-"} kg`,
-      `Feeding: ${value("nnjFeeding")||"-"}`,
-      "",
+      `Feeding: ${value("nnjFeeding")||"-"}`
+    ].join("\n");
+
+    const referralHistoryParagraph=[
       "History:",
       positiveSentence,
-      negativeSentence,
-      maternalRiskSentence,
-      infantRiskSentence,
+      negativeSentence
+    ].filter(Boolean).join("\n");
+
+    const referralRiskParagraph=[
       neuroSentence,
-      categorySentence,
       "",
+      thresholdGroupSentence
+    ].join("\n");
+
+    const referralExaminationLines=[
       "Examination:",
       `${value("nnjCondition")}; ${value("nnjHydration").toLowerCase()}.`,
       `Jaundice up to ${value("nnjExtent").toLowerCase()}.`,
       `Stool colour: ${value("nnjStoolColour")}. Urine colour: ${value("nnjUrineColour")}.`,
-      `Tone / neurological state: ${value("nnjTone")}.`,
-      examAbnormal.length?`Other positive findings: ${nnjSentence(examAbnormal)}.`:"",
-      "",
+      `Tone / neurological state: ${value("nnjTone")}.`
+    ];
+
+    if(examAbnormal.length){
+      referralExaminationLines.push(
+        `Other positive findings: ${nnjSentence(examAbnormal)}.`
+      );
+    }
+
+    if(value("nnjOtherExam")){
+      referralExaminationLines.push(
+        `Other examination findings: ${value("nnjOtherExam")}.`
+      );
+    }
+
+    const referralExaminationParagraph=referralExaminationLines.join("\n");
+
+    const referralInvestigationParagraph=[
       "Investigation:",
       `TSB ${assessment.tsb.toFixed(1)} mg/dL at ${nnjAgeAtResult(assessment.hours)}.`,
-      `PL ${assessment.pt.toFixed(1)} mg/dL; ET level ${assessment.et.toFixed(1)} mg/dL.`,
-      "",
-      `Impression: neonatal jaundice, ${assessment.tableRisk.category.toLowerCase()}.`,
-      `Reason for referral: ${assessment.reasons.length?assessment.reasons.join("; "):assessment.urgency}.`,
-      "",
+      `PL ${assessment.pt.toFixed(1)} mg/dL; ET level ${assessment.et.toFixed(1)} mg/dL.`
+    ].join("\n");
+
+    const referralImpressionParagraph=[
+      `Impression: neonatal jaundice; ${assessment.thresholdRisk.group.toLowerCase()}.`,
+      `Reason for referral: ${assessment.reasons.length?assessment.reasons.join("; "):assessment.urgency}.`
+    ].join("\n");
+
+    const referral=[
+      "Dear colleague,\nThank you for seeing this baby for neonatal jaundice.",
+      patientDetailsParagraph,
+      referralHistoryParagraph,
+      referralRiskParagraph,
+      referralExaminationParagraph,
+      referralInvestigationParagraph,
+      referralImpressionParagraph,
       "Kindly assess and manage accordingly. Thank you."
-    ].filter(Boolean).join("\n");
+    ].join("\n\n");
 
     $("nnjReferralLetter").value=referral.replace(/\n{3,}/g,"\n\n").trim();
   }else{
@@ -4960,7 +5049,7 @@ $("nnjUseNow").addEventListener("click",nnjSetAssessmentNow);
 
 [
   "nnjGestation","nnjBirthWeight","nnjCurrentWeight","nnjValue","nnjDirect",
-  "nnjOnPhoto","nnjCondition","nnjHydration","nnjExtent","nnjStoolColour",
+  "nnjOnPhoto","nnjRapidRise","nnjCondition","nnjHydration","nnjExtent","nnjStoolColour",
   "nnjUrineColour","nnjTone","nnjPallor","nnjCephalo","nnjHsm","nnjRash","nnjAbe"
 ].forEach(id=>{
   const element=$(id);
@@ -4972,7 +5061,7 @@ $("nnjUseNow").addEventListener("click",nnjSetAssessmentNow);
   element.addEventListener("change",refresh);
 });
 
-["nnjMajorRisk","nnjMaternalRisk","nnjInfantRisk","nnjNeuro"].forEach(id=>{
+["nnjMajorRisk"].forEach(id=>{
   $(id).querySelectorAll('input[type="checkbox"]').forEach(box=>{
     box.addEventListener("change",()=>{
       renderNnjQuickRisk();
@@ -5011,7 +5100,7 @@ $("nnjClear").addEventListener("click",()=>{
     detail.classList.add("hidden");
   });
 
-  ["nnjMajorRisk","nnjMaternalRisk","nnjInfantRisk","nnjNeuro","nnjWorkupIx"].forEach(id=>{
+  ["nnjMajorRisk","nnjWorkupIx"].forEach(id=>{
     $(id).querySelectorAll('input[type="checkbox"]').forEach(box=>{
       box.checked=id==="nnjWorkupIx";
     });
@@ -5030,7 +5119,7 @@ $("nnjClear").addEventListener("click",()=>{
   $("nnjStoolColour").value="Mustard yellow / yellow";
   $("nnjUrineColour").value="Normal / light yellow";
   $("nnjTone").value="Normal";
-  ["nnjPallor","nnjCephalo","nnjHsm","nnjRash","nnjAbe","nnjOnPhoto"].forEach(id=>$(id).value="no");
+  ["nnjPallor","nnjCephalo","nnjHsm","nnjRash","nnjAbe","nnjOnPhoto","nnjRapidRise"].forEach(id=>$(id).value="no");
   $("nnjPlan").value="auto";
   $("nnjReferralLetterWrap").classList.add("hidden");
   $("nnjCopyReferral").classList.add("hidden");
