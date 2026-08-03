@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V16.4 — Streamlined NNJ Referral</title>
+<title>MedAssist KK Bangi V16.7 — Complete Dengue & NNJ Referrals</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -3221,103 +3221,7 @@ function renderDenguePlanPreview(){
   }
 }
 
-function generateDengueReferralLetter(planLines){
-  const allergy=value("clAllergySelect")==="custom"
-    ? (value("clAllergyCustom")||"-")
-    : "NKDA";
-
-  const associated=[
-    checked("clSymptoms").join(", "),
-    value("clOtherSymptoms")
-  ].filter(Boolean).join(", ")||"none reported";
-
-  const warningSymptoms=[];
-  if(value("clLethargy")==="yes") warningSymptoms.push("lethargy");
-  if(value("clVomiting")==="yes") warningSymptoms.push("vomiting");
-  if(value("clDiarrhoea")==="yes") warningSymptoms.push("diarrhoea");
-  if(value("clAbdPain")==="yes") warningSymptoms.push("abdominal pain");
-  if(value("clBleeding")==="yes") warningSymptoms.push("bleeding / bruising");
-
-  const redFlags=checked("clRedFlags");
-  const diagnosis=buildDiagnosis();
-
-  const patientParagraph=[
-    `Sex: ${value("clSex")||"-"}`,
-    `Address: ${value("clAddress")||"-"}`,
-    `Latest phone number: ${value("clPhone")||"-"}`,
-    `Drug allergy: ${allergy}`,
-    value("clSex")==="Female"
-      ? `LMP: ${formatDateDisplay(value("clLmp"))}`
-      : ""
-  ].filter(Boolean).join("\n");
-
-  const historyParagraph=[
-    `${value("clChief")||"Fever"}${value("clDuration")?" for "+value("clDuration"):""}.`,
-    `Associated symptoms: ${associated}.`,
-    `Oral intake: ${value("clDrink")||"-"}.`,
-    `Reduced urine volume: ${value("clUrine")||"no"}.`,
-    `Able to perform daily activities: ${value("clActivity")||"yes"}.`,
-    `Warning symptoms: ${warningSymptoms.length?warningSymptoms.join(", "):"none reported"}.`,
-    `Red flags: ${redFlags.length?redFlags.join(", "):"none identified"}.`
-  ].join("\n");
-
-  const examinationParagraph=[
-    "Alert, comfortable, pink, not tachypnoeic, CRT <2 seconds, warm peripheries with good pulse volume.",
-    `GCS: ${value("clGCS")||"full"}.`,
-    value("clThroat")?`Throat: ${value("clThroat")}.`:"",
-    value("clTonsil")?`Tonsil: ${value("clTonsil")}.`:"",
-    `Lungs: ${value("clLungs")||"clear"}.`,
-    `CVS: ${value("clCVS")||"DRNM"}.`,
-    `PA: ${value("clPA")||"SNT"}.`,
-    value("clOtherPhysical")
-      ? `Other physical findings: ${value("clOtherPhysical")}.`
-      : ""
-  ].filter(Boolean).join("\n");
-
-  const investigationParagraph=[
-    `Dengue combo test date: ${formatDateDisplay(value("clTestDate"))}`,
-    `NS1: ${value("clNS1")||"-"}`,
-    `IgM: ${value("clIgM")||"-"}`,
-    `IgG: ${value("clIgG")||"-"}`
-  ].join("\n");
-
-  const managementParagraph=planLines
-    .map((line,index)=>`${index+1}. ${line}`)
-    .join("\n");
-
-  const referral=[
-    "Dear colleague,",
-    "",
-    "Thank you for seeing this patient for further assessment and management of dengue.",
-    "",
-    patientParagraph,
-    "",
-    "History:",
-    historyParagraph,
-    "",
-    "Examination:",
-    examinationParagraph,
-    "",
-    "Investigation:",
-    investigationParagraph,
-    "",
-    `Impression: ${diagnosis}.`,
-    "",
-    "Management initiated:",
-    managementParagraph,
-    "",
-    "Kindly assess and manage accordingly. Thank you."
-  ].join("\n");
-
-  $("clReferralOutput").value=referral;
-  $("clReferralWrap").classList.remove("hidden");
-  $("clGenerateReferral").classList.remove("hidden");
-  $("clCopyReferral").classList.remove("hidden");
-
-  return referral;
-}
-
-function generateDengueOutputs(options={}){
+function buildDengueClinicalNote(planLines){
   const symptoms=[
     checked("clSymptoms").join(", "),
     value("clOtherSymptoms")
@@ -3328,7 +3232,6 @@ function generateDengueOutputs(options={}){
     : "NKDA";
 
   const red=checked("clRedFlags");
-  const planLines=getDenguePlanLines();
 
   const lines=[
     `allergy history to medications: ${allergy}`,
@@ -3396,9 +3299,34 @@ function generateDengueOutputs(options={}){
     ...planLines.map((line,index)=>`${index+1}. ${line}`)
   ];
 
-  $("clOutput").value=lines
+  return lines
     .filter((line,index,array)=>!(line===""&&array[index-1]===""))
     .join("\n");
+}
+
+function generateDengueReferralLetter(planLines){
+  const clinicalNote=buildDengueClinicalNote(planLines);
+
+  const referral=[
+    "Dear colleague, thank you for seeing this pt",
+    "",
+    clinicalNote,
+    "",
+    "Kindly see the patient and do the needful. Thank you"
+  ].join("\n");
+
+  $("clReferralOutput").value=referral;
+  $("clReferralWrap").classList.remove("hidden");
+  $("clGenerateReferral").classList.remove("hidden");
+  $("clCopyReferral").classList.remove("hidden");
+
+  return referral;
+}
+
+function generateDengueOutputs(options={}){
+  const planLines=getDenguePlanLines();
+
+  $("clOutput").value=buildDengueClinicalNote(planLines);
 
   if(value("clPlanOption")==="refer"){
     generateDengueReferralLetter(planLines);
@@ -4950,74 +4878,17 @@ function generateNnjNote(){
   $("nnjCopyReferral").classList.toggle("hidden",!makeReferral);
 
   if(makeReferral){
-    const patientDetailsParagraph=[
-      `Name: ${babyName||"-"}`,
-      `MRN / ID: ${mrn||"-"}`,
-      `Sex: ${sex}`,
-      `Gestational age at birth: ${gestationText}`,
-      `Age of life: ${nnjAgeAtResult(assessment.hours)}`,
-      `Birth weight: ${value("nnjBirthWeight")||"-"} kg`,
-      `Current weight: ${value("nnjCurrentWeight")||"-"} kg`,
-      `Feeding: ${value("nnjFeeding")||"-"}`
-    ].join("\n");
-
-    const referralHistoryParagraph=[
-      "History:",
-      positiveSentence,
-      negativeSentence
-    ].filter(Boolean).join("\n");
-
-    const referralRiskParagraph=[
-      neuroSentence,
-      "",
-      thresholdGroupSentence
-    ].join("\n");
-
-    const referralExaminationLines=[
-      "Examination:",
-      `${value("nnjCondition")}; ${value("nnjHydration").toLowerCase()}.`,
-      `Jaundice up to ${value("nnjExtent").toLowerCase()}.`,
-      `Stool colour: ${value("nnjStoolColour")}. Urine colour: ${value("nnjUrineColour")}.`,
-      `Tone / neurological state: ${value("nnjTone")}.`
-    ];
-
-    if(examAbnormal.length){
-      referralExaminationLines.push(
-        `Other positive findings: ${nnjSentence(examAbnormal)}.`
-      );
-    }
-
-    if(value("nnjOtherExam")){
-      referralExaminationLines.push(
-        `Other examination findings: ${value("nnjOtherExam")}.`
-      );
-    }
-
-    const referralExaminationParagraph=referralExaminationLines.join("\n");
-
-    const referralInvestigationParagraph=[
-      "Investigation:",
-      `TSB ${assessment.tsb.toFixed(1)} mg/dL at ${nnjAgeAtResult(assessment.hours)}.`,
-      `PL ${assessment.pt.toFixed(1)} mg/dL; ET level ${assessment.et.toFixed(1)} mg/dL.`
-    ].join("\n");
-
-    const referralImpressionParagraph=[
-      `Impression: neonatal jaundice; ${assessment.thresholdRisk.group.toLowerCase()}.`,
-      `Reason for referral: ${assessment.reasons.length?assessment.reasons.join("; "):assessment.urgency}.`
-    ].join("\n");
-
     const referral=[
-      "Dear colleague,\nThank you for seeing this baby for neonatal jaundice.",
-      patientDetailsParagraph,
-      referralHistoryParagraph,
-      referralRiskParagraph,
-      referralExaminationParagraph,
-      referralInvestigationParagraph,
-      referralImpressionParagraph,
-      "Kindly assess and manage accordingly. Thank you."
-    ].join("\n\n");
+      "Dear colleague, thank you for seeing this pt",
+      "",
+      $("nnjOutput").value,
+      "",
+      "Kindly see the patient and do the needful. Thank you"
+    ].join("\n");
 
-    $("nnjReferralLetter").value=referral.replace(/\n{3,}/g,"\n\n").trim();
+    $("nnjReferralLetter").value=referral
+      .replace(/\n{3,}/g,"\n\n")
+      .trim();
   }else{
     $("nnjReferralLetter").value="";
   }
@@ -5178,5 +5049,951 @@ $("openAdultDengueCpg").addEventListener("click",()=>{
 });
 })();
 </script>
+
+<!-- MedAssist V16.5: local pending-draft modules -->
+<script>
+(() => {
+  "use strict";
+
+  const STORAGE_KEY = "medassistDengueDraftsV1";
+  const MAX_DRAFTS = 30;
+
+  function initDengueDrafts() {
+    const page = document.getElementById("page-clerking");
+    if (!page || document.getElementById("clDraftCard")) return;
+
+    const style = document.createElement("style");
+    style.textContent = `
+      .dengue-draft-card{border:2px solid #9fd2c8;background:#f8fffd}
+      .dengue-draft-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+      .dengue-draft-head h2{margin:0 0 5px}
+      .dengue-draft-count{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 10px;border-radius:999px;background:var(--primary);color:#fff;font-weight:800}
+      .dengue-draft-current{min-height:42px;padding:11px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:13px;font-weight:700}
+      .dengue-draft-status{margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--soft);font-size:13px;font-weight:700}
+      .dengue-draft-status.ok{background:#e9f7ef;color:#146c43;border:1px solid #b9dfc9}
+      .dengue-draft-status.warn{background:#fff7df;color:#8a5a00;border:1px solid #ead28a}
+      .dengue-draft-list{display:grid;gap:9px;margin-top:12px}
+      .dengue-draft-row{display:grid;grid-template-columns:minmax(180px,1fr) auto;gap:12px;align-items:center;padding:11px 12px;border:1px solid var(--border);border-radius:12px;background:#fff}
+      .dengue-draft-row strong{display:block;font-size:14px;margin-bottom:3px}
+      .dengue-draft-row small{display:block;color:var(--muted);line-height:1.4}
+      .dengue-draft-row-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+      .dengue-draft-mini{border:0;border-radius:8px;padding:8px 10px;font-weight:800;cursor:pointer;background:var(--soft);color:var(--text)}
+      .dengue-draft-mini.resume{background:var(--primary);color:#fff}
+      .dengue-draft-mini.delete{background:var(--danger);color:#a1312b}
+      .dengue-draft-empty{padding:13px;border:1px dashed #b8dcd5;border-radius:10px;color:var(--muted);font-size:13px;text-align:center}
+      .dengue-draft-privacy{margin-top:8px;color:#8a5a00;font-size:12px;font-weight:700}
+      @media(max-width:700px){.dengue-draft-row{grid-template-columns:1fr}.dengue-draft-row-actions{justify-content:flex-start}}
+    `;
+    document.head.appendChild(style);
+
+    const card = document.createElement("div");
+    card.className = "card dengue-draft-card";
+    card.id = "clDraftCard";
+    card.innerHTML = `
+      <div class="dengue-draft-head">
+        <div>
+          <h2>💾 Pending dengue clerking</h2>
+          <div class="helper">Save this patient temporarily, open a new clerking, then resume later.</div>
+        </div>
+        <span class="dengue-draft-count" id="clDraftCount">0</span>
+      </div>
+
+      <div class="grid two">
+        <div>
+          <label for="clDraftLabel">Queue number / initials</label>
+          <input id="clDraftLabel" maxlength="40" autocomplete="off"
+                 placeholder="e.g. Q105 or AB — do not enter full name/IC">
+          <div class="dengue-draft-privacy">For privacy, do not enter the patient's full name or IC number.</div>
+        </div>
+        <div>
+          <label>Current draft</label>
+          <div class="dengue-draft-current" id="clDraftCurrent">Not saved yet</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="clSaveDraft" type="button">💾 Save draft</button>
+        <button class="btn secondary" id="clNewPatient" type="button">➕ New patient</button>
+        <button class="btn secondary" id="clClearAllDrafts" type="button">Clear all pending drafts</button>
+      </div>
+
+      <div class="dengue-draft-status" id="clDraftStatus">
+        Drafts are stored only in this browser on this PC and are not sent to Google Sheet.
+      </div>
+      <div class="dengue-draft-list" id="clDraftList"></div>
+    `;
+
+    const hero = page.querySelector(".hero");
+    const notice = hero && hero.nextElementSibling &&
+      hero.nextElementSibling.classList.contains("notice")
+      ? hero.nextElementSibling : hero;
+
+    if (notice) notice.insertAdjacentElement("afterend", card);
+    else page.prepend(card);
+
+    const labelInput = document.getElementById("clDraftLabel");
+    const saveButton = document.getElementById("clSaveDraft");
+    const newPatientButton = document.getElementById("clNewPatient");
+    const clearAllButton = document.getElementById("clClearAllDrafts");
+    const currentBox = document.getElementById("clDraftCurrent");
+    const statusBox = document.getElementById("clDraftStatus");
+    const listBox = document.getElementById("clDraftList");
+    const countBox = document.getElementById("clDraftCount");
+
+    let currentDraftId = null;
+    let dirty = false;
+
+    function loadDrafts() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        console.error("Unable to read dengue drafts", error);
+        return [];
+      }
+    }
+
+    function saveDrafts(drafts) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+        return true;
+      } catch (error) {
+        console.error("Unable to save dengue drafts", error);
+        setStatus("Draft could not be saved. Browser storage may be full or disabled.", "warn");
+        return false;
+      }
+    }
+
+    function formFields() {
+      return Array.from(page.querySelectorAll("input, select, textarea")).filter((field) => {
+        if (field.closest("#clDraftCard")) return false;
+        if (["button", "submit", "reset", "file"].includes(field.type)) return false;
+        return true;
+      });
+    }
+
+    function captureForm() {
+      return formFields().map((field, index) => ({
+        index,
+        id: field.id || "",
+        tag: field.tagName,
+        type: field.type || "",
+        value: field.value,
+        checked: Boolean(field.checked)
+      }));
+    }
+
+    function findField(savedField, fields) {
+      if (savedField.id) {
+        const byId = document.getElementById(savedField.id);
+        if (byId && page.contains(byId) && !byId.closest("#clDraftCard")) return byId;
+      }
+      return fields[savedField.index] || null;
+    }
+
+    function runDependentUpdates(fields) {
+      fields.forEach((field) => {
+        try {
+          field.dispatchEvent(new Event("input", { bubbles: true }));
+          field.dispatchEvent(new Event("change", { bubbles: true }));
+        } catch (_) {}
+      });
+
+      ["buildDiagnosis", "calcClerkingWeight", "renderDenguePlanPreview"].forEach((name) => {
+        if (typeof window[name] === "function") {
+          try { window[name](); } catch (_) {}
+        }
+      });
+    }
+
+    function restoreForm(savedFields) {
+      const fields = formFields();
+      savedFields.forEach((savedField) => {
+        const field = findField(savedField, fields);
+        if (!field) return;
+
+        if (field.type === "checkbox" || field.type === "radio") {
+          field.checked = Boolean(savedField.checked);
+        } else {
+          field.value = savedField.value == null ? "" : savedField.value;
+        }
+      });
+      runDependentUpdates(fields);
+    }
+
+    function resetForm() {
+      const fields = formFields();
+
+      fields.forEach((field) => {
+        if (field.type === "checkbox" || field.type === "radio") {
+          field.checked = field.defaultChecked;
+        } else if (field.tagName === "SELECT") {
+          const defaultIndex = Array.from(field.options)
+            .findIndex((option) => option.defaultSelected);
+          field.selectedIndex = defaultIndex >= 0 ? defaultIndex : 0;
+        } else {
+          field.value = field.defaultValue || "";
+        }
+      });
+
+      runDependentUpdates(fields);
+
+      ["clOutput", "clReferralOutput"].forEach((id) => {
+        const element = document.getElementById(id);
+        if (element) element.value = "";
+      });
+
+      const referralWrap = document.getElementById("clReferralWrap");
+      if (referralWrap) referralWrap.classList.add("hidden");
+
+      ["clGenerateReferral", "clCopyReferral"].forEach((id) => {
+        const element = document.getElementById(id);
+        if (element) element.classList.add("hidden");
+      });
+    }
+
+    function setStatus(message, type = "") {
+      statusBox.className = `dengue-draft-status${type ? ` ${type}` : ""}`;
+      statusBox.textContent = message;
+    }
+
+    function formatDate(timestamp) {
+      try {
+        return new Intl.DateTimeFormat("en-MY", {
+          day: "2-digit",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit"
+        }).format(new Date(timestamp));
+      } catch (_) {
+        return new Date(timestamp).toLocaleString();
+      }
+    }
+
+    function defaultLabel() {
+      const now = new Date();
+      return `Pending ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    }
+
+    function updateCurrentDisplay(draft) {
+      if (!draft) {
+        currentBox.textContent = "Not saved yet";
+        saveButton.textContent = "💾 Save draft";
+        return;
+      }
+
+      currentBox.textContent = `${draft.label} — last saved ${formatDate(draft.updatedAt)}`;
+      saveButton.textContent = "💾 Update draft";
+    }
+
+    function renderDrafts() {
+      const drafts = loadDrafts().sort((a, b) => b.updatedAt - a.updatedAt);
+      countBox.textContent = String(drafts.length);
+      listBox.textContent = "";
+
+      if (!drafts.length) {
+        const empty = document.createElement("div");
+        empty.className = "dengue-draft-empty";
+        empty.textContent = "No pending dengue drafts on this PC.";
+        listBox.appendChild(empty);
+        return;
+      }
+
+      drafts.forEach((draft) => {
+        const row = document.createElement("div");
+        row.className = "dengue-draft-row";
+
+        const details = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = draft.label || "Untitled draft";
+
+        const meta = document.createElement("small");
+        meta.textContent = `Updated ${formatDate(draft.updatedAt)} • saved on this browser only`;
+
+        details.append(title, meta);
+
+        const actions = document.createElement("div");
+        actions.className = "dengue-draft-row-actions";
+
+        const resumeButton = document.createElement("button");
+        resumeButton.type = "button";
+        resumeButton.className = "dengue-draft-mini resume";
+        resumeButton.textContent = "Resume";
+        resumeButton.addEventListener("click", () => resumeDraft(draft.id));
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "dengue-draft-mini delete";
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", () => deleteDraft(draft.id));
+
+        actions.append(resumeButton, deleteButton);
+        row.append(details, actions);
+        listBox.appendChild(row);
+      });
+    }
+
+    function saveCurrentDraft() {
+      const drafts = loadDrafts();
+
+      if (!currentDraftId && drafts.length >= MAX_DRAFTS) {
+        setStatus(`Maximum ${MAX_DRAFTS} pending drafts reached. Delete an old draft first.`, "warn");
+        return;
+      }
+
+      const now = Date.now();
+      const typedLabel = labelInput.value.trim();
+      const fields = captureForm();
+      let draft = currentDraftId
+        ? drafts.find((item) => item.id === currentDraftId)
+        : null;
+
+      if (draft) {
+        draft.label = typedLabel || draft.label || defaultLabel();
+        draft.fields = fields;
+        draft.updatedAt = now;
+      } else {
+        draft = {
+          id: `dengue_${now}_${Math.random().toString(16).slice(2)}`,
+          label: typedLabel || defaultLabel(),
+          createdAt: now,
+          updatedAt: now,
+          fields
+        };
+        drafts.push(draft);
+        currentDraftId = draft.id;
+      }
+
+      if (!saveDrafts(drafts)) return;
+
+      labelInput.value = draft.label;
+      dirty = false;
+      updateCurrentDisplay(draft);
+      setStatus(`Draft “${draft.label}” saved. You can now click New patient.`, "ok");
+      renderDrafts();
+    }
+
+    function resumeDraft(id) {
+      const draft = loadDrafts().find((item) => item.id === id);
+
+      if (!draft) {
+        setStatus("This draft is no longer available.", "warn");
+        renderDrafts();
+        return;
+      }
+
+      if (dirty && !window.confirm(
+        "The current clerking has unsaved changes. Discard them and resume this draft?"
+      )) return;
+
+      resetForm();
+      restoreForm(Array.isArray(draft.fields) ? draft.fields : []);
+      currentDraftId = draft.id;
+      labelInput.value = draft.label || "";
+      dirty = false;
+      updateCurrentDisplay(draft);
+      setStatus(
+        `Draft “${draft.label}” resumed. Continue clerking and click Update draft if needed.`,
+        "ok"
+      );
+      page.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function deleteDraft(id) {
+      const drafts = loadDrafts();
+      const draft = drafts.find((item) => item.id === id);
+      if (!draft) return;
+
+      if (!window.confirm(`Delete pending draft “${draft.label}”?`)) return;
+
+      const remaining = drafts.filter((item) => item.id !== id);
+      if (!saveDrafts(remaining)) return;
+
+      if (currentDraftId === id) {
+        currentDraftId = null;
+        updateCurrentDisplay(null);
+        setStatus("Draft deleted. The currently displayed form has not been cleared.", "warn");
+      } else {
+        setStatus(`Draft “${draft.label}” deleted.`, "ok");
+      }
+
+      renderDrafts();
+    }
+
+    function startNewPatient() {
+      if (dirty && !window.confirm(
+        "The current clerking has unsaved changes. Continue with a new patient and discard those changes?"
+      )) return;
+
+      resetForm();
+      currentDraftId = null;
+      labelInput.value = "";
+      dirty = false;
+      updateCurrentDisplay(null);
+      setStatus(
+        "New blank dengue clerking opened. Previous saved drafts remain in the pending list.",
+        "ok"
+      );
+
+      const firstField = document.getElementById("clSex") || formFields()[0];
+      if (firstField) firstField.focus();
+      page.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    saveButton.addEventListener("click", saveCurrentDraft);
+    newPatientButton.addEventListener("click", startNewPatient);
+
+    clearAllButton.addEventListener("click", () => {
+      const drafts = loadDrafts();
+
+      if (!drafts.length) {
+        setStatus("There are no pending drafts to clear.");
+        return;
+      }
+
+      if (!window.confirm(
+        `Delete all ${drafts.length} pending dengue drafts from this PC?`
+      )) return;
+
+      if (!saveDrafts([])) return;
+
+      currentDraftId = null;
+      updateCurrentDisplay(null);
+      setStatus("All pending dengue drafts have been deleted from this browser.", "ok");
+      renderDrafts();
+    });
+
+    page.addEventListener("input", (event) => {
+      if (event.target.closest && event.target.closest("#clDraftCard")) return;
+      dirty = true;
+    });
+
+    page.addEventListener("change", (event) => {
+      if (event.target.closest && event.target.closest("#clDraftCard")) return;
+      dirty = true;
+    });
+
+    ["clGenerate", "clGenerateReferral"].forEach((id) => {
+      const button = document.getElementById(id);
+      if (button) button.addEventListener("click", () => {
+        window.setTimeout(() => { dirty = true; }, 0);
+      });
+    });
+
+    window.addEventListener("beforeunload", (event) => {
+      if (!dirty) return;
+      event.preventDefault();
+      event.returnValue = "";
+    });
+
+    renderDrafts();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initDengueDrafts);
+  } else {
+    initDengueDrafts();
+  }
+})();
+
+</script>
+<script>
+(() => {
+  "use strict";
+
+  const STORAGE_KEY = "medassistNNJDraftsV1";
+  const MAX_DRAFTS = 30;
+  const PAGE_ID = "page-nnj";
+  const EXCLUDED_FIELD_IDS = new Set([
+    "nnjName",
+    "nnjId",
+    "nnjOutput",
+    "nnjReferralLetter",
+    "nnjWeightLoss",
+    "nnjWorkupTiming",
+    "nnjHours"
+  ]);
+
+  function initNNJDrafts() {
+    const page = document.getElementById(PAGE_ID);
+    if (!page || document.getElementById("nnjDraftCard")) return;
+
+    const style = document.createElement("style");
+    style.textContent = `
+      .clerking-draft-card{border:2px solid #9fd2c8;background:#f8fffd}
+      .clerking-draft-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+      .clerking-draft-head h2{margin:0 0 5px}
+      .clerking-draft-count{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 10px;border-radius:999px;background:var(--primary);color:#fff;font-weight:800}
+      .clerking-draft-current{min-height:42px;padding:11px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:13px;font-weight:700}
+      .clerking-draft-status{margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--soft);font-size:13px;font-weight:700}
+      .clerking-draft-status.ok{background:#e9f7ef;color:#146c43;border:1px solid #b9dfc9}
+      .clerking-draft-status.warn{background:#fff7df;color:#8a5a00;border:1px solid #ead28a}
+      .clerking-draft-list{display:grid;gap:9px;margin-top:12px}
+      .clerking-draft-row{display:grid;grid-template-columns:minmax(180px,1fr) auto;gap:12px;align-items:center;padding:11px 12px;border:1px solid var(--border);border-radius:12px;background:#fff}
+      .clerking-draft-row strong{display:block;font-size:14px;margin-bottom:3px}
+      .clerking-draft-row small{display:block;color:var(--muted);line-height:1.4}
+      .clerking-draft-row-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+      .clerking-draft-mini{border:0;border-radius:8px;padding:8px 10px;font-weight:800;cursor:pointer;background:var(--soft);color:var(--text)}
+      .clerking-draft-mini.resume{background:var(--primary);color:#fff}
+      .clerking-draft-mini.delete{background:var(--danger);color:#a1312b}
+      .clerking-draft-empty{padding:13px;border:1px dashed #b8dcd5;border-radius:10px;color:var(--muted);font-size:13px;text-align:center}
+      .clerking-draft-privacy{margin-top:8px;color:#8a5a00;font-size:12px;font-weight:700}
+      @media(max-width:700px){
+        .clerking-draft-row{grid-template-columns:1fr}
+        .clerking-draft-row-actions{justify-content:flex-start}
+      }
+    `;
+    document.head.appendChild(style);
+
+    const card = document.createElement("div");
+    card.className = "card clerking-draft-card";
+    card.id = "nnjDraftCard";
+    card.innerHTML = `
+      <div class="clerking-draft-head">
+        <div>
+          <h2>💾 Pending NNJ clerking</h2>
+          <div class="helper">
+            Save this baby temporarily, open a new clerking, then resume later.
+          </div>
+        </div>
+        <span class="clerking-draft-count" id="nnjDraftCount">0</span>
+      </div>
+
+      <div class="grid two">
+        <div>
+          <label for="nnjDraftLabel">Queue number / baby initials</label>
+          <input id="nnjDraftLabel" maxlength="40" autocomplete="off"
+                 placeholder="e.g. Q105 or BA — do not enter full name/MRN">
+          <div class="clerking-draft-privacy">
+            Baby name and MRN/ID are deliberately not stored in drafts. Re-enter them after resuming.
+          </div>
+        </div>
+        <div>
+          <label>Current draft</label>
+          <div class="clerking-draft-current" id="nnjDraftCurrent">Not saved yet</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="nnjSaveDraft" type="button">💾 Save draft</button>
+        <button class="btn secondary" id="nnjNewPatient" type="button">➕ New baby</button>
+        <button class="btn secondary" id="nnjClearAllDrafts" type="button">Clear all pending drafts</button>
+      </div>
+
+      <div class="clerking-draft-status" id="nnjDraftStatus">
+        Drafts stay only in this browser on this PC and are not sent to Google Sheet.
+      </div>
+      <div class="clerking-draft-list" id="nnjDraftList"></div>
+    `;
+
+    const wrap = page.querySelector(".nnj-page-wrap") || page;
+    const hero = wrap.querySelector(".hero");
+    const notice = hero && hero.nextElementSibling &&
+      hero.nextElementSibling.classList.contains("notice")
+      ? hero.nextElementSibling
+      : hero;
+
+    if (notice) notice.insertAdjacentElement("afterend", card);
+    else wrap.prepend(card);
+
+    const labelInput = document.getElementById("nnjDraftLabel");
+    const saveButton = document.getElementById("nnjSaveDraft");
+    const newPatientButton = document.getElementById("nnjNewPatient");
+    const clearAllButton = document.getElementById("nnjClearAllDrafts");
+    const currentBox = document.getElementById("nnjDraftCurrent");
+    const statusBox = document.getElementById("nnjDraftStatus");
+    const listBox = document.getElementById("nnjDraftList");
+    const countBox = document.getElementById("nnjDraftCount");
+
+    let currentDraftId = null;
+    let dirty = false;
+
+    function loadDrafts() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        console.error("Unable to read NNJ drafts", error);
+        return [];
+      }
+    }
+
+    function saveDrafts(drafts) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+        return true;
+      } catch (error) {
+        console.error("Unable to save NNJ drafts", error);
+        setStatus("Draft could not be saved. Browser storage may be full or disabled.", "warn");
+        return false;
+      }
+    }
+
+    function formFields() {
+      return Array.from(page.querySelectorAll("input, select, textarea")).filter((field) => {
+        if (field.closest("#nnjDraftCard")) return false;
+        if (EXCLUDED_FIELD_IDS.has(field.id)) return false;
+        if (["button", "submit", "reset", "file"].includes(field.type)) return false;
+        if (field.readOnly) return false;
+        return true;
+      });
+    }
+
+    function captureForm() {
+      return formFields().map((field, index) => ({
+        index,
+        id: field.id || "",
+        type: field.type || "",
+        value: field.value,
+        checked: Boolean(field.checked)
+      }));
+    }
+
+    function findField(savedField, fields) {
+      if (savedField.id) {
+        const byId = document.getElementById(savedField.id);
+        if (
+          byId &&
+          page.contains(byId) &&
+          !byId.closest("#nnjDraftCard") &&
+          !EXCLUDED_FIELD_IDS.has(byId.id)
+        ) {
+          return byId;
+        }
+      }
+      return fields[savedField.index] || null;
+    }
+
+    function dispatchUpdates(fields) {
+      fields.forEach((field) => {
+        try {
+          field.dispatchEvent(new Event("input", { bubbles: true }));
+          field.dispatchEvent(new Event("change", { bubbles: true }));
+        } catch (_) {}
+      });
+
+      [
+        "updateNNJAge",
+        "calculateNNJAge",
+        "calculateNNJ",
+        "renderNNJ",
+        "renderNNJResult",
+        "updateNNJRisk",
+        "updateNNJWeightLoss"
+      ].forEach((name) => {
+        if (typeof window[name] === "function") {
+          try { window[name](); } catch (_) {}
+        }
+      });
+    }
+
+    function restoreForm(savedFields) {
+      const fields = formFields();
+
+      savedFields.forEach((savedField) => {
+        const field = findField(savedField, fields);
+        if (!field) return;
+
+        if (field.type === "checkbox" || field.type === "radio") {
+          field.checked = Boolean(savedField.checked);
+        } else {
+          field.value = savedField.value == null ? "" : savedField.value;
+        }
+      });
+
+      dispatchUpdates(fields);
+
+      const name = document.getElementById("nnjName");
+      const id = document.getElementById("nnjId");
+      if (name) name.value = "";
+      if (id) id.value = "";
+    }
+
+    function resetForm() {
+      const fields = formFields();
+
+      fields.forEach((field) => {
+        if (field.type === "checkbox" || field.type === "radio") {
+          field.checked = field.defaultChecked;
+        } else if (field.tagName === "SELECT") {
+          const defaultIndex = Array.from(field.options)
+            .findIndex((option) => option.defaultSelected);
+          field.selectedIndex = defaultIndex >= 0 ? defaultIndex : 0;
+        } else {
+          field.value = field.defaultValue || "";
+        }
+      });
+
+      ["nnjName", "nnjId", "nnjOutput", "nnjReferralLetter"].forEach((id) => {
+        const field = document.getElementById(id);
+        if (field) field.value = "";
+      });
+
+      const referralWrap = document.getElementById("nnjReferralLetterWrap");
+      if (referralWrap) referralWrap.classList.add("hidden");
+
+      const copyReferral = document.getElementById("nnjCopyReferral");
+      if (copyReferral) copyReferral.classList.add("hidden");
+
+      dispatchUpdates(fields);
+    }
+
+    function setStatus(message, type = "") {
+      statusBox.className = `clerking-draft-status${type ? ` ${type}` : ""}`;
+      statusBox.textContent = message;
+    }
+
+    function formatDate(timestamp) {
+      try {
+        return new Intl.DateTimeFormat("en-MY", {
+          day: "2-digit",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit"
+        }).format(new Date(timestamp));
+      } catch (_) {
+        return new Date(timestamp).toLocaleString();
+      }
+    }
+
+    function defaultLabel() {
+      const now = new Date();
+      return `NNJ pending ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    }
+
+    function updateCurrentDisplay(draft) {
+      if (!draft) {
+        currentBox.textContent = "Not saved yet";
+        saveButton.textContent = "💾 Save draft";
+        return;
+      }
+
+      currentBox.textContent = `${draft.label} — last saved ${formatDate(draft.updatedAt)}`;
+      saveButton.textContent = "💾 Update draft";
+    }
+
+    function renderDrafts() {
+      const drafts = loadDrafts().sort((a, b) => b.updatedAt - a.updatedAt);
+      countBox.textContent = String(drafts.length);
+      listBox.textContent = "";
+
+      if (!drafts.length) {
+        const empty = document.createElement("div");
+        empty.className = "clerking-draft-empty";
+        empty.textContent = "No pending NNJ drafts on this PC.";
+        listBox.appendChild(empty);
+        return;
+      }
+
+      drafts.forEach((draft) => {
+        const row = document.createElement("div");
+        row.className = "clerking-draft-row";
+
+        const details = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = draft.label || "Untitled NNJ draft";
+
+        const meta = document.createElement("small");
+        meta.textContent = `Updated ${formatDate(draft.updatedAt)} • stored on this browser only`;
+
+        details.append(title, meta);
+
+        const actions = document.createElement("div");
+        actions.className = "clerking-draft-row-actions";
+
+        const resumeButton = document.createElement("button");
+        resumeButton.type = "button";
+        resumeButton.className = "clerking-draft-mini resume";
+        resumeButton.textContent = "Resume";
+        resumeButton.addEventListener("click", () => resumeDraft(draft.id));
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "clerking-draft-mini delete";
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", () => deleteDraft(draft.id));
+
+        actions.append(resumeButton, deleteButton);
+        row.append(details, actions);
+        listBox.appendChild(row);
+      });
+    }
+
+    function saveCurrentDraft() {
+      const drafts = loadDrafts();
+
+      if (!currentDraftId && drafts.length >= MAX_DRAFTS) {
+        setStatus(`Maximum ${MAX_DRAFTS} pending NNJ drafts reached. Delete an old draft first.`, "warn");
+        return;
+      }
+
+      const now = Date.now();
+      const typedLabel = labelInput.value.trim();
+      const fields = captureForm();
+      let draft = currentDraftId
+        ? drafts.find((item) => item.id === currentDraftId)
+        : null;
+
+      if (draft) {
+        draft.label = typedLabel || draft.label || defaultLabel();
+        draft.fields = fields;
+        draft.updatedAt = now;
+      } else {
+        draft = {
+          id: `nnj_${now}_${Math.random().toString(16).slice(2)}`,
+          label: typedLabel || defaultLabel(),
+          createdAt: now,
+          updatedAt: now,
+          fields
+        };
+        drafts.push(draft);
+        currentDraftId = draft.id;
+      }
+
+      if (!saveDrafts(drafts)) return;
+
+      labelInput.value = draft.label;
+      dirty = false;
+      updateCurrentDisplay(draft);
+      setStatus(
+        `Draft “${draft.label}” saved. Baby name and MRN were not stored. You can now click New baby.`,
+        "ok"
+      );
+      renderDrafts();
+    }
+
+    function resumeDraft(id) {
+      const draft = loadDrafts().find((item) => item.id === id);
+
+      if (!draft) {
+        setStatus("This NNJ draft is no longer available.", "warn");
+        renderDrafts();
+        return;
+      }
+
+      if (
+        dirty &&
+        !window.confirm("The current NNJ clerking has unsaved changes. Discard them and resume this draft?")
+      ) {
+        return;
+      }
+
+      resetForm();
+      restoreForm(Array.isArray(draft.fields) ? draft.fields : []);
+      currentDraftId = draft.id;
+      labelInput.value = draft.label || "";
+      dirty = false;
+      updateCurrentDisplay(draft);
+      setStatus(
+        `Draft “${draft.label}” resumed. Re-enter baby name/MRN, continue clerking and click Update draft if needed.`,
+        "ok"
+      );
+      page.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function deleteDraft(id) {
+      const drafts = loadDrafts();
+      const draft = drafts.find((item) => item.id === id);
+      if (!draft) return;
+
+      if (!window.confirm(`Delete pending NNJ draft “${draft.label}”?`)) return;
+
+      const remaining = drafts.filter((item) => item.id !== id);
+      if (!saveDrafts(remaining)) return;
+
+      if (currentDraftId === id) {
+        currentDraftId = null;
+        updateCurrentDisplay(null);
+        setStatus("Draft deleted. The currently displayed NNJ form has not been cleared.", "warn");
+      } else {
+        setStatus(`Draft “${draft.label}” deleted.`, "ok");
+      }
+
+      renderDrafts();
+    }
+
+    function startNewPatient() {
+      if (
+        dirty &&
+        !window.confirm("The current NNJ clerking has unsaved changes. Continue with a new baby and discard those changes?")
+      ) {
+        return;
+      }
+
+      resetForm();
+      currentDraftId = null;
+      labelInput.value = "";
+      dirty = false;
+      updateCurrentDisplay(null);
+      setStatus(
+        "New blank NNJ clerking opened. Previous saved drafts remain in the pending list.",
+        "ok"
+      );
+
+      const firstField = document.getElementById("nnjGestation") || formFields()[0];
+      if (firstField) firstField.focus();
+      page.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    saveButton.addEventListener("click", saveCurrentDraft);
+    newPatientButton.addEventListener("click", startNewPatient);
+
+    clearAllButton.addEventListener("click", () => {
+      const drafts = loadDrafts();
+
+      if (!drafts.length) {
+        setStatus("There are no pending NNJ drafts to clear.");
+        return;
+      }
+
+      if (!window.confirm(`Delete all ${drafts.length} pending NNJ drafts from this PC?`)) {
+        return;
+      }
+
+      if (!saveDrafts([])) return;
+
+      currentDraftId = null;
+      updateCurrentDisplay(null);
+      setStatus("All pending NNJ drafts have been deleted from this browser.", "ok");
+      renderDrafts();
+    });
+
+    page.addEventListener("input", (event) => {
+      if (event.target.closest && event.target.closest("#nnjDraftCard")) return;
+      dirty = true;
+    });
+
+    page.addEventListener("change", (event) => {
+      if (event.target.closest && event.target.closest("#nnjDraftCard")) return;
+      dirty = true;
+    });
+
+    ["nnjCalc"].forEach((id) => {
+      const button = document.getElementById(id);
+      if (button) {
+        button.addEventListener("click", () => {
+          window.setTimeout(() => { dirty = true; }, 0);
+        });
+      }
+    });
+
+    window.addEventListener("beforeunload", (event) => {
+      if (!dirty) return;
+      event.preventDefault();
+      event.returnValue = "";
+    });
+
+    renderDrafts();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initNNJDrafts);
+  } else {
+    initNNJDrafts();
+  }
+})();
+
+</script>
+
 </body>
 </html>
