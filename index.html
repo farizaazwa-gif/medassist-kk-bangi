@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.10 — Combined Bleeding Tendencies</title>
+<title>MedAssist KK Bangi V18.14 — Vital Signs & Investigations Both Templates</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -93,6 +93,20 @@ textarea{min-height:90px;resize:vertical}
 #clSymptoms .symptom-row.active{border-color:#78b8aa;background:#f3fbf8}
 #clSymptoms .symptom-row .check-item{border:0;padding:8px;background:transparent;align-items:center}
 #clSymptoms .symptom-onset{display:grid;grid-template-columns:minmax(65px,.8fr) minmax(90px,1.2fr);gap:6px;align-items:center}
+.cough-character{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:9px;border-radius:10px;background:#eef7f5;border:1px solid #cfe4df}
+.previous-lab-list{display:grid;gap:12px;margin-top:12px}
+.previous-lab-day{padding:14px;border:1px solid var(--border);border-radius:12px;background:#fbfdfc}
+.previous-lab-day-head{display:grid;grid-template-columns:minmax(150px,.8fr) minmax(150px,.8fr) auto;gap:10px;align-items:end}
+.previous-lab-add-tests{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0}
+.previous-lab-test{margin-top:12px;padding:12px;border:1px solid #cfe4df;border-radius:10px;background:#eef7f5}
+.previous-lab-test-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.previous-lab-test-head strong{font-size:13px}
+.previous-lab-remove{border:0;border-radius:8px;padding:6px 9px;background:#fdecea;color:#a1312b;font-weight:800;cursor:pointer}
+@media(max-width:760px){.previous-lab-day-head{grid-template-columns:1fr}}
+
+.cough-character.hidden{display:none}
+@media(max-width:700px){.cough-character{grid-template-columns:1fr}}
+
 #clSymptoms .symptom-onset input,#clSymptoms .symptom-onset select{min-height:40px;padding:8px;font-size:12px}
 #clSymptoms .symptom-onset input:disabled,#clSymptoms .symptom-onset select:disabled{opacity:.48;background:#eef2f1;cursor:not-allowed}
 .tb-screening-card{margin-top:16px;padding:16px;border:2px solid #e0b86a;border-radius:14px;background:#fffaf0}
@@ -743,7 +757,7 @@ textarea{min-height:90px;resize:vertical}
 </select>
 </div>
 </div>
-<div class="symptom-row">
+<div class="symptom-row" id="clCoughRow">
 <label class="check-item"><input class="cl-symptom-check" id="clSymCough" type="checkbox" value="cough"/><span>Cough</span></label>
 <div class="symptom-onset" title="Optional symptom onset">
 <input class="cl-symptom-onset-number" id="clSymCoughOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
@@ -753,6 +767,26 @@ textarea{min-height:90px;resize:vertical}
 <option value="month">Month(s)</option>
 <option value="year">Year(s)</option>
 </select>
+</div>
+
+<div class="cough-character hidden" id="clCoughCharacterWrap">
+  <div>
+    <label>Character of cough</label>
+    <select id="clCoughCharacter" disabled>
+      <option value="dry">Dry cough</option>
+      <option value="sputum">Cough with sputum</option>
+    </select>
+  </div>
+
+  <div class="hidden" id="clCoughSputumWrap">
+    <label>Sputum colour</label>
+    <select id="clCoughSputum" disabled>
+      <option value="clear">Clear</option>
+      <option value="whitish">Whitish</option>
+      <option value="yellowish">Yellowish</option>
+      <option value="greenish">Greenish</option>
+    </select>
+  </div>
 </div>
 </div>
 <div class="symptom-row">
@@ -948,6 +982,19 @@ textarea{min-height:90px;resize:vertical}
 <div><label>GCS</label><select id="clGCS"><option>full</option><option>E4V5M6</option></select></div>
 </div>
 <label>Other physical findings</label><textarea id="clOtherPhysical"></textarea>
+</div>
+
+<div class="card">
+<h2>Vital signs</h2>
+<div class="grid two">
+  <div>
+    <label>Date and time</label>
+    <input id="clVitalDateTime" type="datetime-local"/>
+  </div>
+</div>
+<label>Vital signs — paste directly from TPC-OHCIS</label>
+<textarea id="clVitalText" rows="5"
+  placeholder="Paste vital signs here, e.g. BP, PR, RR, temperature, SpO2 and pain score"></textarea>
 </div>
 
 <div class="card" id="clInterventionCard">
@@ -1155,13 +1202,21 @@ textarea{min-height:90px;resize:vertical}
     </a>
 </div>
 <div class="card">
-<h2>Dengue combo, assessment and plan</h2>
-<div class="grid four">
-<div><label>Test date</label><input id="clTestDate" type="date"/></div>
-<div><label>NS1</label><select id="clNS1"><option>-</option><option>positive</option><option>negative</option><option>not done</option></select></div>
-<div><label>IgM</label><select id="clIgM"><option>-</option><option>positive</option><option>negative</option><option>not done</option></select></div>
-<div><label>IgG</label><select id="clIgG"><option>-</option><option>positive</option><option>negative</option><option>not done</option></select></div>
+<h2>Investigations, assessment and plan</h2>
+
+<div class="section-subtitle">Previous lab investigations</div>
+<div class="helper">
+  Add one date at a time. Choose the investigation source, then add only the tests that were done.
 </div>
+
+<div class="previous-lab-list" id="clPreviousLabList"></div>
+
+<div class="actions">
+  <button class="btn secondary" id="clAddPreviousLabDate" type="button">
+    + Add investigation date
+  </button>
+</div>
+
 <div class="grid two">
 <div><label>Notification date</label><input id="clNotify" value="-"/></div>
 <div><label>Dengue alert card given</label><select id="clCard"><option>-</option><option>yes</option><option>no</option></select></div>
@@ -1388,6 +1443,34 @@ textarea{min-height:90px;resize:vertical}
 </div>
 <label>Other physical findings</label>
 <textarea id="dfuOtherPhysical"></textarea>
+</div>
+
+<div class="card">
+<h2>Vital signs</h2>
+<div class="grid two">
+  <div>
+    <label>Date and time</label>
+    <input id="dfuVitalDateTime" type="datetime-local"/>
+  </div>
+</div>
+<label>Vital signs — paste directly from TPC-OHCIS</label>
+<textarea id="dfuVitalText" rows="5"
+  placeholder="Paste vital signs here, e.g. BP, PR, RR, temperature, SpO2 and pain score"></textarea>
+</div>
+
+<div class="card">
+<h2>Previous lab investigations</h2>
+<div class="helper">
+  Add one date at a time. Choose KK, Hospital or GP, then add only the tests that were done.
+</div>
+
+<div class="previous-lab-list" id="dfuPreviousLabList"></div>
+
+<div class="actions">
+  <button class="btn secondary" id="dfuAddPreviousLabDate" type="button">
+    + Add investigation date
+  </button>
+</div>
 </div>
 
 <div class="card" id="dfuInterventionCard">
@@ -3094,6 +3177,297 @@ function formatDateDisplay(raw){
   return `${parts[2]}/${parts[1]}/${parts[0]}`;
 }
 
+function formatDateTimeDisplay(raw){
+  if(!raw) return "-";
+
+  const [datePart,timePart=""] = raw.split("T");
+  const dateText=formatDateDisplay(datePart);
+  const timeText=timePart ? timePart.slice(0,5) : "";
+
+  return timeText ? `${dateText} ${timeText}` : dateText;
+}
+
+let previousLabDateCounter=0;
+
+function createPreviousLabTest(dateIndex,testType){
+  const labels={
+    fbc:"FBC",
+    lft:"LFT",
+    rp:"RP",
+    combo:"Dengue combo test"
+  };
+
+  const day=document.querySelector(`[data-previous-lab-day="${dateIndex}"]`);
+  if(!day) return;
+
+  const container=day.querySelector("[data-previous-lab-tests]");
+  if(!container || container.querySelector(`[data-lab-type="${testType}"]`)) return;
+
+  const test=document.createElement("div");
+  test.className="previous-lab-test";
+  test.dataset.labType=testType;
+
+  test.innerHTML=`
+    <div class="previous-lab-test-head">
+      <strong>${labels[testType]}</strong>
+      <button class="previous-lab-remove" type="button" data-remove-lab-test>
+        Remove
+      </button>
+    </div>
+    <textarea rows="6" data-lab-result
+      placeholder="Paste ${labels[testType]} result directly from TPC-OHCIS"></textarea>
+  `;
+
+  test.querySelector("[data-remove-lab-test]").addEventListener("click",()=>{
+    test.remove();
+  });
+
+  container.appendChild(test);
+}
+
+function addPreviousLabDate(){
+  previousLabDateCounter+=1;
+  const index=previousLabDateCounter;
+
+  const day=document.createElement("div");
+  day.className="previous-lab-day";
+  day.dataset.previousLabDay=String(index);
+
+  day.innerHTML=`
+    <div class="previous-lab-day-head">
+      <div>
+        <label>Investigation date</label>
+        <input type="date" data-lab-date/>
+      </div>
+
+      <div>
+        <label>Source</label>
+        <select data-lab-source>
+          <option value="KK">KK</option>
+          <option value="Hospital">Hospital</option>
+          <option value="GP">GP</option>
+        </select>
+      </div>
+
+      <div>
+        <button class="btn danger" type="button" data-remove-lab-date>
+          Remove date
+        </button>
+      </div>
+    </div>
+
+    <div class="previous-lab-add-tests">
+      <button class="btn secondary" type="button" data-add-lab-test="fbc">+ Add FBC</button>
+      <button class="btn secondary" type="button" data-add-lab-test="lft">+ Add LFT</button>
+      <button class="btn secondary" type="button" data-add-lab-test="rp">+ Add RP</button>
+      <button class="btn secondary" type="button" data-add-lab-test="combo">+ Add combo test</button>
+    </div>
+
+    <div data-previous-lab-tests></div>
+  `;
+
+  day.querySelector("[data-remove-lab-date]").addEventListener("click",()=>{
+    day.remove();
+  });
+
+  day.querySelectorAll("[data-add-lab-test]").forEach(button=>{
+    button.addEventListener("click",()=>{
+      createPreviousLabTest(index,button.dataset.addLabTest);
+    });
+  });
+
+  $("clPreviousLabList").appendChild(day);
+  return day;
+}
+
+function getPreviousLabInvestigationLines(){
+  const lines=[];
+  const labels={
+    fbc:"FBC",
+    lft:"LFT",
+    rp:"RP",
+    combo:"Dengue combo test"
+  };
+
+  document.querySelectorAll("[data-previous-lab-day]").forEach(day=>{
+    const date=day.querySelector("[data-lab-date]")?.value||"";
+    const source=day.querySelector("[data-lab-source]")?.value||"";
+    const tests=[...day.querySelectorAll("[data-lab-type]")];
+
+    const enteredTests=tests
+      .map(test=>({
+        type:test.dataset.labType,
+        result:(test.querySelector("[data-lab-result]")?.value||"").trim()
+      }))
+      .filter(item=>item.result);
+
+    if(!enteredTests.length) return;
+
+    lines.push(
+      `${date?formatDateDisplay(date):"Date not entered"} — ${source||"Source not entered"}`
+    );
+
+    enteredTests.forEach(item=>{
+      lines.push(`${labels[item.type]}:`);
+      lines.push(item.result);
+    });
+
+    lines.push("");
+  });
+
+  return lines;
+}
+
+function initialisePreviousLabInvestigations(){
+  $("clAddPreviousLabDate")?.addEventListener("click",addPreviousLabDate);
+
+  if(!$("clPreviousLabList")?.children.length){
+    addPreviousLabDate();
+  }
+}
+
+let followUpPreviousLabDateCounter=0;
+
+function createFollowUpPreviousLabTest(dateIndex,testType){
+  const labels={
+    fbc:"FBC",
+    lft:"LFT",
+    rp:"RP",
+    combo:"Dengue combo test"
+  };
+
+  const day=document.querySelector(`[data-dfu-previous-lab-day="${dateIndex}"]`);
+  if(!day) return;
+
+  const container=day.querySelector("[data-dfu-previous-lab-tests]");
+  if(!container || container.querySelector(`[data-dfu-lab-type="${testType}"]`)) return;
+
+  const test=document.createElement("div");
+  test.className="previous-lab-test";
+  test.dataset.dfuLabType=testType;
+
+  test.innerHTML=`
+    <div class="previous-lab-test-head">
+      <strong>${labels[testType]}</strong>
+      <button class="previous-lab-remove" type="button" data-dfu-remove-lab-test>
+        Remove
+      </button>
+    </div>
+    <textarea rows="6" data-dfu-lab-result
+      placeholder="Paste ${labels[testType]} result directly from TPC-OHCIS"></textarea>
+  `;
+
+  test.querySelector("[data-dfu-remove-lab-test]").addEventListener("click",()=>{
+    test.remove();
+  });
+
+  container.appendChild(test);
+}
+
+function addFollowUpPreviousLabDate(){
+  followUpPreviousLabDateCounter+=1;
+  const index=followUpPreviousLabDateCounter;
+
+  const day=document.createElement("div");
+  day.className="previous-lab-day";
+  day.dataset.dfuPreviousLabDay=String(index);
+
+  day.innerHTML=`
+    <div class="previous-lab-day-head">
+      <div>
+        <label>Investigation date</label>
+        <input type="date" data-dfu-lab-date/>
+      </div>
+
+      <div>
+        <label>Source</label>
+        <select data-dfu-lab-source>
+          <option value="KK">KK</option>
+          <option value="Hospital">Hospital</option>
+          <option value="GP">GP</option>
+        </select>
+      </div>
+
+      <div>
+        <button class="btn danger" type="button" data-dfu-remove-lab-date>
+          Remove date
+        </button>
+      </div>
+    </div>
+
+    <div class="previous-lab-add-tests">
+      <button class="btn secondary" type="button" data-dfu-add-lab-test="fbc">+ Add FBC</button>
+      <button class="btn secondary" type="button" data-dfu-add-lab-test="lft">+ Add LFT</button>
+      <button class="btn secondary" type="button" data-dfu-add-lab-test="rp">+ Add RP</button>
+      <button class="btn secondary" type="button" data-dfu-add-lab-test="combo">+ Add combo test</button>
+    </div>
+
+    <div data-dfu-previous-lab-tests></div>
+  `;
+
+  day.querySelector("[data-dfu-remove-lab-date]").addEventListener("click",()=>{
+    day.remove();
+  });
+
+  day.querySelectorAll("[data-dfu-add-lab-test]").forEach(button=>{
+    button.addEventListener("click",()=>{
+      createFollowUpPreviousLabTest(index,button.dataset.dfuAddLabTest);
+    });
+  });
+
+  document.getElementById("dfuPreviousLabList").appendChild(day);
+  return day;
+}
+
+function getFollowUpPreviousLabInvestigationLines(){
+  const lines=[];
+  const labels={
+    fbc:"FBC",
+    lft:"LFT",
+    rp:"RP",
+    combo:"Dengue combo test"
+  };
+
+  document.querySelectorAll("[data-dfu-previous-lab-day]").forEach(day=>{
+    const date=day.querySelector("[data-dfu-lab-date]")?.value||"";
+    const source=day.querySelector("[data-dfu-lab-source]")?.value||"";
+    const tests=[...day.querySelectorAll("[data-dfu-lab-type]")];
+
+    const enteredTests=tests
+      .map(test=>({
+        type:test.dataset.dfuLabType,
+        result:(test.querySelector("[data-dfu-lab-result]")?.value||"").trim()
+      }))
+      .filter(item=>item.result);
+
+    if(!enteredTests.length) return;
+
+    lines.push(
+      `${date?formatDateDisplay(date):"Date not entered"} — ${source||"Source not entered"}`
+    );
+
+    enteredTests.forEach(item=>{
+      lines.push(`${labels[item.type]}:`);
+      lines.push(item.result);
+    });
+
+    lines.push("");
+  });
+
+  return lines;
+}
+
+function initialiseFollowUpPreviousLabInvestigations(){
+  document.getElementById("dfuAddPreviousLabDate")?.addEventListener("click",addFollowUpPreviousLabDate);
+
+  if(!document.getElementById("dfuPreviousLabList")?.children.length){
+    addFollowUpPreviousLabDate();
+  }
+}
+window.initialiseFollowUpPreviousLabInvestigations=initialiseFollowUpPreviousLabInvestigations;
+window.getFollowUpPreviousLabInvestigationLines=getFollowUpPreviousLabInvestigationLines;
+
+
 function showPage(name){
   document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+name));
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===name));
@@ -3609,6 +3983,17 @@ function buildDengueClinicalNote(planLines){
         onsetText=` x ${onsetAmount} ${unitText}`;
       }
 
+      if(item.id==="clSymCough"){
+        const character=value("clCoughCharacter");
+
+        if(character==="sputum"){
+          const sputum=value("clCoughSputum")||"";
+          return `+ cough${sputum?` with ${sputum} sputum`:" with sputum"}${onsetText}`;
+        }
+
+        return `+ dry cough${onsetText}`;
+      }
+
       return `+ ${item.value}${onsetText}`;
     });
 
@@ -3686,15 +4071,20 @@ function buildDengueClinicalNote(planLines){
     value("clOtherPhysical")
       ? `other physical findings: ${value("clOtherPhysical")}`
       : "",
+    "",
+    "VITAL SIGNS",
+    value("clVitalDateTime")
+      ? `Date/Time: ${formatDateTimeDisplay(value("clVitalDateTime"))}`
+      : "",
+    value("clVitalText")||"not documented",
     ...(interventionLines.length
       ? ["", "INTERVENTION DONE IN CLINIC", "", ...interventionLines.map((line,index)=>`${index+1}. ${line}`)]
       : []),
     "",
-    "Dengue combo test:",
-    `Date: ${formatDateDisplay(value("clTestDate"))}`,
-    `NS1: ${value("clNS1")||"-"}`,
-    `IgM: ${value("clIgM")||"-"}`,
-    `IgG: ${value("clIgG")||"-"}`,
+    "INVESTIGATIONS",
+    ...(getPreviousLabInvestigationLines().length
+      ? ["", "Previous lab investigations:", ...getPreviousLabInvestigationLines()]
+      : ["", "Previous lab investigations: not documented"]),
     "",
     `DIAGNOSIS: ${buildDiagnosis()}`,
     "",
@@ -3753,6 +4143,26 @@ function generateDengueOutputs(options={}){
   }
 }
 
+function syncDengueCoughCharacter(){
+  const checked=Boolean($("clSymCough")?.checked);
+  const productive=value("clCoughCharacter")==="sputum";
+
+  $("clCoughCharacterWrap")?.classList.toggle("hidden",!checked);
+
+  if($("clCoughCharacter")){
+    $("clCoughCharacter").disabled=!checked;
+  }
+
+  $("clCoughSputumWrap")?.classList.toggle(
+    "hidden",
+    !checked || !productive
+  );
+
+  if($("clCoughSputum")){
+    $("clCoughSputum").disabled=!checked || !productive;
+  }
+}
+
 function initialiseDengueSymptomOnsets(){
   document.querySelectorAll("#clSymptoms .symptom-row").forEach(row=>{
     const checkbox=row.querySelector(".cl-symptom-check");
@@ -3764,6 +4174,11 @@ function initialiseDengueSymptomOnsets(){
     const syncState=()=>{
       onsetControls.forEach(control=>control.disabled=!checkbox.checked);
       row.classList.toggle("active",checkbox.checked);
+
+      if(checkbox.id==="clSymCough"){
+        syncDengueCoughCharacter();
+      }
+
       syncDengueTbScreening();
     };
 
@@ -3775,6 +4190,12 @@ function initialiseDengueSymptomOnsets(){
     syncState();
   });
 
+  $("clCoughCharacter")?.addEventListener(
+    "change",
+    syncDengueCoughCharacter
+  );
+
+  syncDengueCoughCharacter();
   syncDengueTbScreening();
 }
 
@@ -3850,6 +4271,7 @@ $("clIvdStartTime").addEventListener("input",renderDenguePlanPreviewDebounced);
 renderDenguePlanPreview();
 
 $("clReset").addEventListener("click",()=>location.reload());
+initialisePreviousLabInvestigations();
 
 // Dengue fluid integrated into clerking
 function calcBodyWeight(){
@@ -7373,6 +7795,17 @@ function buildDengueFollowUpClinicalNote(){
     `CVS: ${fv("dfuCVS")||"DRNM"}`,
     `PA: ${fv("dfuPA")||"SNT"}`,
     fv("dfuOtherPhysical")?`other physical findings: ${fv("dfuOtherPhysical")}`:"",
+    "",
+    "VITAL SIGNS",
+    fv("dfuVitalDateTime")
+      ? `Date/Time: ${formatDateTimeDisplay(fv("dfuVitalDateTime"))}`
+      : "",
+    fv("dfuVitalText")||"not documented",
+    "",
+    "INVESTIGATIONS",
+    ...(window.getFollowUpPreviousLabInvestigationLines().length
+      ? ["", "Previous lab investigations:", ...window.getFollowUpPreviousLabInvestigationLines()]
+      : ["", "Previous lab investigations: not documented"]),
     ...(getDengueFollowUpInterventionLines().length?[
       "",
       "INTERVENTION DONE IN CLINIC",
@@ -7565,6 +7998,7 @@ f$("dfuGenerateReferral").addEventListener("click",generateDengueFollowUpReferra
 f$("dfuCopy").addEventListener("click",event=>copyFollowUpField("dfuOutput",event.currentTarget));
 f$("dfuCopyReferral").addEventListener("click",event=>copyFollowUpField("dfuReferralOutput",event.currentTarget));
 f$("dfuReset").addEventListener("click",resetDengueFollowUp);
+window.initialiseFollowUpPreviousLabInvestigations();
 calculateDengueFollowUpBodyWeight();
 syncDengueFollowUpInterventions();
 buildDengueFollowUpDiagnosis();
