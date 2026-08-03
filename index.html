@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V16.7 — Complete Dengue & NNJ Referrals</title>
+<title>MedAssist KK Bangi V16.13 — Spaced Dengue Diagnosis Section</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -65,6 +65,22 @@ textarea{min-height:90px;resize:vertical}
 .check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .check-item{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fbfdfc;font-size:13px;cursor:pointer}
 .check-item input{width:auto;margin-top:2px}.check-item.red{background:var(--danger);border-color:var(--danger-border)}
+#clSymptoms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#clSymptoms .symptom-row{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:8px;align-items:stretch;padding:8px;border:1px solid var(--border);border-radius:12px;background:#fbfdfc}
+#clSymptoms .symptom-row.active{border-color:#78b8aa;background:#f3fbf8}
+#clSymptoms .symptom-row .check-item{border:0;padding:8px;background:transparent;align-items:center}
+#clSymptoms .symptom-onset{display:grid;grid-template-columns:minmax(65px,.8fr) minmax(90px,1.2fr);gap:6px;align-items:center}
+#clSymptoms .symptom-onset input,#clSymptoms .symptom-onset select{min-height:40px;padding:8px;font-size:12px}
+#clSymptoms .symptom-onset input:disabled,#clSymptoms .symptom-onset select:disabled{opacity:.48;background:#eef2f1;cursor:not-allowed}
+.tb-screening-card{margin-top:16px;padding:16px;border:2px solid #e0b86a;border-radius:14px;background:#fffaf0}
+.tb-screening-card h3{margin:0 0 6px}
+.tb-screening-trigger{margin-bottom:12px;font-size:13px;font-weight:800;color:#7b5200}
+.tb-screening-card .check-grid{margin-top:10px}
+.tb-screening-card .check-item{background:#fff}
+.tb-contact-details{margin-top:12px;padding:14px;border:1px solid #e3c98e;border-radius:12px;background:#fff}
+.tb-contact-details h4{margin:0 0 10px}
+.tb-contact-details .grid{margin-top:0}
+.tb-contact-details .other-tb-wrap{margin-top:10px}
 .symptom-list{display:grid;gap:10px}
 .symptom-row{display:grid;grid-template-columns:minmax(190px,1.2fr) 100px minmax(180px,1fr);gap:10px;align-items:center;border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:#fbfdfc}
 .symptom-row.red{background:var(--danger);border-color:var(--danger-border)}
@@ -85,6 +101,8 @@ textarea{min-height:90px;resize:vertical}
 @media(max-width:900px){
   .app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}
   .dashboard-grid,.calc-menu,.grid.two,.grid.three,.grid.four,.check-grid{grid-template-columns:1fr}
+  #clSymptoms{grid-template-columns:1fr}
+  #clSymptoms .symptom-row{grid-template-columns:1fr}
   .main{padding:16px}
 }
 
@@ -1130,17 +1148,227 @@ textarea{min-height:90px;resize:vertical}
 </div>
 <div class="card">
 <h2>Associated symptoms</h2>
-<div class="check-grid" id="clSymptoms">
-<label class="check-item"><input type="checkbox" value="aches and pains"/>Aches and pains</label>
-<label class="check-item"><input type="checkbox" value="rash"/>Rash</label>
-<label class="check-item"><input type="checkbox" value="retro-orbital pain"/>Retro-orbital pain</label>
-<label class="check-item"><input type="checkbox" value="headache"/>Headache</label>
-<label class="check-item"><input type="checkbox" value="myalgia"/>Myalgia</label>
-<label class="check-item"><input type="checkbox" value="arthralgia"/>Arthralgia</label>
-<label class="check-item"><input type="checkbox" value="nausea"/>Nausea</label>
-<label class="check-item"><input type="checkbox" value="poor oral intake"/>Poor oral intake</label>
+<div id="clSymptoms">
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymAches" type="checkbox" value="aches and pains"/><span>Aches and pains</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymAchesOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymAchesUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymRash" type="checkbox" value="rash"/><span>Rash</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymRashOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymRashUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymRetroOrbital" type="checkbox" value="retro-orbital pain"/><span>Retro-orbital pain</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymRetroOrbitalOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymRetroOrbitalUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymHeadache" type="checkbox" value="headache"/><span>Headache</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymHeadacheOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymHeadacheUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymMyalgia" type="checkbox" value="myalgia"/><span>Myalgia</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymMyalgiaOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymMyalgiaUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymArthralgia" type="checkbox" value="arthralgia"/><span>Arthralgia</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymArthralgiaOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymArthralgiaUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymNausea" type="checkbox" value="nausea"/><span>Nausea</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymNauseaOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymNauseaUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymPoorIntake" type="checkbox" value="poor oral intake"/><span>Poor oral intake</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymPoorIntakeOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymPoorIntakeUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymCough" type="checkbox" value="cough"/><span>Cough</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymCoughOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymCoughUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymRN" type="checkbox" value="RN"/><span>Runny nose (RN)</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymRNOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymRNUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymOdynophagia" type="checkbox" value="odynophagia"/><span>Odynophagia</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymOdynophagiaOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymOdynophagiaUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymSoreThroat" type="checkbox" value="sore throat"/><span>Sore throat</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymSoreThroatOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymSoreThroatUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymSOB" type="checkbox" value="SOB"/><span>Shortness of breath (SOB)</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymSOBOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymSOBUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
+<div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymChestPain" type="checkbox" value="chest pain"/><span>Chest pain</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" id="clSymChestPainOnset" min="1" step="1" type="number" inputmode="numeric" placeholder="Onset" disabled/>
+<select class="cl-symptom-onset-unit" id="clSymChestPainUnit" disabled>
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div>
 </div>
 <label>Other associated symptoms</label><textarea id="clOtherSymptoms"></textarea>
+
+<div class="tb-screening-card hidden" id="clTbScreening">
+  <h3>TB screening</h3>
+  <div class="tb-screening-trigger">Cough ≥ 2 weeks detected. Please complete the questions below.</div>
+  <div class="helper">Tick positive symptoms only. Unticked items will be generated as negative.</div>
+  <div class="check-grid" id="clTbSymptoms">
+    <label class="check-item"><input id="clTbHemoptysis" type="checkbox" value="hemoptysis"/>Hemoptysis</label>
+    <label class="check-item"><input id="clTbLOA" type="checkbox" value="LOA"/>LOA</label>
+    <label class="check-item"><input id="clTbLOW" type="checkbox" value="LOW"/>LOW</label>
+    <label class="check-item"><input id="clTbNightSweats" type="checkbox" value="night sweats"/>Night sweats</label>
+    <label class="check-item"><input id="clTbContact" type="checkbox" value="TB contact"/>TB contact</label>
+    <label class="check-item"><input id="clTbPleuriticPain" type="checkbox" value="pleuritic chest pain"/>Pleuritic chest pain</label>
+  </div>
+
+  <div class="tb-contact-details hidden" id="clTbContactDetails">
+    <h4>TB contact details</h4>
+    <div class="grid three">
+      <div>
+        <label>Contact with whom?</label>
+        <input id="clTbContactWho" placeholder="e.g. Mother / colleague / housemate" type="text"/>
+      </div>
+      <div>
+        <label>For how long?</label>
+        <div class="grid two">
+          <input id="clTbContactDuration" min="1" step="1" inputmode="numeric" placeholder="Duration" type="number"/>
+          <select id="clTbContactDurationUnit">
+            <option value="day">Day(s)</option>
+            <option value="week">Week(s)</option>
+            <option value="month">Month(s)</option>
+            <option value="year">Year(s)</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>Type of TB in contact</label>
+        <select id="clTbContactType">
+          <option value="">Select</option>
+          <option value="PTB">PTB</option>
+          <option value="other">Other TB</option>
+          <option value="unknown">Unknown</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="other-tb-wrap hidden" id="clTbOtherTypeWrap">
+      <label>Specify other TB</label>
+      <input id="clTbOtherType" placeholder="e.g. TB lymphadenitis" type="text"/>
+    </div>
+  </div>
+</div>
 </div>
 <div class="card">
 <h2>Co-morbidity, exposure and body weight</h2>
@@ -3221,11 +3449,150 @@ function renderDenguePlanPreview(){
   }
 }
 
+function isCoughTbScreeningTriggered(){
+  const coughChecked=$("clSymCough")?.checked;
+  const amount=parseFloat(value("clSymCoughOnset"));
+  const unit=value("clSymCoughUnit")||"day";
+
+  if(!coughChecked || !Number.isFinite(amount) || amount<=0) return false;
+
+  const dayMultiplier={
+    day:1,
+    week:7,
+    month:30,
+    year:365
+  };
+
+  return amount*(dayMultiplier[unit]||1)>=14;
+}
+
+function getTbContactPositiveLine(){
+  const details=[];
+
+  const who=value("clTbContactWho").trim();
+  const duration=value("clTbContactDuration").trim();
+  const durationUnit=value("clTbContactDurationUnit")||"day";
+  const contactType=value("clTbContactType");
+  const otherType=value("clTbOtherType").trim();
+
+  if(who) details.push(`with ${who}`);
+
+  if(duration){
+    const unitText=duration==="1" ? durationUnit : `${durationUnit}s`;
+    details.push(`for ${duration} ${unitText}`);
+  }
+
+  if(contactType==="PTB"){
+    details.push("contact diagnosed with PTB");
+  }else if(contactType==="other"){
+    details.push(otherType ? `contact diagnosed with ${otherType}` : "contact diagnosed with other TB");
+  }else if(contactType==="unknown"){
+    details.push("type of TB unknown");
+  }
+
+  return details.length
+    ? `+ TB contact: ${details.join(", ")}`
+    : "+ TB contact";
+}
+
+function getTbScreeningLines(){
+  if(!isCoughTbScreeningTriggered()) return [];
+
+  const items=[...document.querySelectorAll("#clTbSymptoms input[type=checkbox]")];
+
+  const positives=items
+    .filter(item=>item.checked)
+    .map(item=>item.id==="clTbContact"
+      ? getTbContactPositiveLine()
+      : `+ ${item.value}`
+    );
+
+  const negatives=items
+    .filter(item=>!item.checked)
+    .map(item=>`no ${item.value}`);
+
+  return [
+    "TB screening (cough ≥ 2 weeks):",
+    ...positives,
+    ...negatives
+  ];
+}
+
+function syncTbContactDetails(){
+  const details=$("clTbContactDetails");
+  const contactCheckbox=$("clTbContact");
+  const tbPanelShown=isCoughTbScreeningTriggered();
+  if(!details || !contactCheckbox) return;
+
+  const showDetails=tbPanelShown && contactCheckbox.checked;
+  details.classList.toggle("hidden",!showDetails);
+
+  details.querySelectorAll("input, select, textarea").forEach(field=>{
+    field.disabled=!showDetails;
+  });
+
+  const showOther=showDetails && value("clTbContactType")==="other";
+  $("clTbOtherTypeWrap")?.classList.toggle("hidden",!showOther);
+
+  if($("clTbOtherType")){
+    $("clTbOtherType").disabled=!showOther;
+  }
+}
+
+function syncDengueTbScreening(){
+  const panel=$("clTbScreening");
+  if(!panel) return;
+
+  const show=isCoughTbScreeningTriggered();
+  panel.classList.toggle("hidden",!show);
+
+  panel.querySelectorAll("#clTbSymptoms input").forEach(field=>{
+    field.disabled=!show;
+  });
+
+  syncTbContactDetails();
+}
+
+$("clTbContact")?.addEventListener("change",syncTbContactDetails);
+$("clTbContactType")?.addEventListener("change",syncTbContactDetails);
+
+window.syncDengueTbScreening=syncDengueTbScreening;
+window.syncTbContactDetails=syncTbContactDetails;
+
 function buildDengueClinicalNote(planLines){
-  const symptoms=[
-    checked("clSymptoms").join(", "),
-    value("clOtherSymptoms")
-  ].filter(Boolean).join(", ")||"no";
+  const symptomRows=[...document.querySelectorAll("#clSymptoms .symptom-row")];
+
+  const positiveSymptoms=symptomRows
+    .filter(row=>row.querySelector(".cl-symptom-check")?.checked)
+    .map(row=>{
+      const item=row.querySelector(".cl-symptom-check");
+      const onsetAmount=(row.querySelector(".cl-symptom-onset-number")?.value||"").trim();
+      const onsetUnit=row.querySelector(".cl-symptom-onset-unit")?.value||"day";
+
+      let onsetText="";
+      if(onsetAmount){
+        const unitText=String(onsetAmount)==="1" ? onsetUnit : `${onsetUnit}s`;
+        onsetText=` x ${onsetAmount} ${unitText}`;
+      }
+
+      return `+ ${item.value}${onsetText}`;
+    });
+
+  const negativeSymptoms=symptomRows
+    .filter(row=>!row.querySelector(".cl-symptom-check")?.checked)
+    .map(row=>`no ${row.querySelector(".cl-symptom-check").value}`);
+
+  const otherSymptoms=value("clOtherSymptoms")
+    .split(/[\n,;]+/)
+    .map(item=>item.trim())
+    .filter(Boolean)
+    .map(item=>`+ ${item}`);
+
+  const symptomLines=[
+    ...positiveSymptoms,
+    ...otherSymptoms,
+    ...negativeSymptoms
+  ];
 
   const allergy=value("clAllergySelect")==="custom"
     ? (value("clAllergyCustom")||"-")
@@ -3242,7 +3609,9 @@ function buildDengueClinicalNote(planLines){
       : "",
     "",
     `Chief complaint: ${value("clChief")||"-"}${value("clDuration")?" for "+value("clDuration"):""}`,
-    `Associated symptoms: ${symptoms}`,
+    "Associated symptoms:",
+    ...(symptomLines.length?symptomLines:["no associated symptoms"]),
+    ...(isCoughTbScreeningTriggered()?["",...getTbScreeningLines()]:[]),
     "",
     "Co-morbidity",
     `1. Previous dengue illness: ${value("clPrevious")||"no"}`,
@@ -3291,8 +3660,11 @@ function buildDengueClinicalNote(planLines){
     `IgG: ${value("clIgG")||"-"}`,
     "",
     `DIAGNOSIS: ${buildDiagnosis()}`,
+    "",
     `Notification (Date): ${value("clNotify")||"-"}`,
+    "",
     `Dengue Alert card given: ${value("clCard")||"-"}`,
+    "",
     `Other differential diagnoses ruled out: ${value("clDiff")||"-"}`,
     "",
     "plan:",
@@ -3342,6 +3714,33 @@ function generateDengueOutputs(options={}){
     $("clCopyReferral").classList.add("hidden");
   }
 }
+
+function initialiseDengueSymptomOnsets(){
+  document.querySelectorAll("#clSymptoms .symptom-row").forEach(row=>{
+    const checkbox=row.querySelector(".cl-symptom-check");
+    const onsetControls=[
+      row.querySelector(".cl-symptom-onset-number"),
+      row.querySelector(".cl-symptom-onset-unit")
+    ].filter(Boolean);
+
+    const syncState=()=>{
+      onsetControls.forEach(control=>control.disabled=!checkbox.checked);
+      row.classList.toggle("active",checkbox.checked);
+      syncDengueTbScreening();
+    };
+
+    checkbox.addEventListener("change",syncState);
+    onsetControls.forEach(control=>{
+      control.addEventListener("input",syncDengueTbScreening);
+      control.addEventListener("change",syncDengueTbScreening);
+    });
+    syncState();
+  });
+
+  syncDengueTbScreening();
+}
+
+initialiseDengueSymptomOnsets();
 
 $("clGenerate").addEventListener("click",()=>{
   generateDengueOutputs({scrollToReferral:value("clPlanOption")==="refer"});
@@ -5199,7 +5598,7 @@ $("openAdultDengueCpg").addEventListener("click",()=>{
         } catch (_) {}
       });
 
-      ["buildDiagnosis", "calcClerkingWeight", "renderDenguePlanPreview"].forEach((name) => {
+      ["buildDiagnosis", "calcClerkingWeight", "renderDenguePlanPreview", "syncDengueTbScreening", "syncTbContactDetails"].forEach((name) => {
         if (typeof window[name] === "function") {
           try { window[name](); } catch (_) {}
         }
