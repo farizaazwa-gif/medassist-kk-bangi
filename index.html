@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.35 — Simplified Dengue Workflow</title>
+<title>MedAssist KK Bangi V18.48 — Simplified Serial TSB Note</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -1030,6 +1030,496 @@ textarea{min-height:90px;resize:vertical}
 .nnj-treatment-list{margin:10px 0 0;padding-left:20px;color:#425b55;font-size:13px}
 .nnj-treatment-note{margin-top:10px;color:#6d7e79;font-size:11px}
 @media(max-width:760px){.nnj-blood-grid{grid-template-columns:1fr}}
+
+
+/* V18.37 simple associated symptom list */
+.associated-symptom-helper{margin-bottom:10px}
+#clSymptoms{
+  display:grid;
+  gap:8px
+}
+#clSymptoms .symptom-row{
+  width:100%;
+  margin:0;
+  background:#fff
+}
+#clSymptoms .symptom-row .check-item{
+  min-width:0
+}
+#clSymptoms .symptom-onset{
+  min-width:0
+}
+@media(max-width:680px){
+  #clSymptoms .symptom-row{
+    grid-template-columns:1fr
+  }
+  #clSymptoms .symptom-onset{
+    grid-template-columns:1fr 1fr
+  }
+}
+
+/* V18.38 optional Dengue sections */
+.dengue-optional-card{
+  border:1px solid #c9ddd8
+}
+.dengue-optional-card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:8px
+}
+.dengue-optional-card-head h2{
+  margin:0
+}
+.dengue-optional-close{
+  flex:0 0 auto;
+  padding:7px 12px
+}
+.dengue-optional-sidebar{
+  padding:12px 14px;
+  border-bottom:1px solid #d8e7e4;
+  background:#fbfdfc
+}
+.dengue-optional-sidebar.hidden{
+  display:none
+}
+.dengue-optional-sidebar h3{
+  margin:0 0 5px;
+  color:#173f38;
+  font-size:14px
+}
+.dengue-optional-sidebar .helper{
+  margin-bottom:9px
+}
+.dengue-optional-sidebar-buttons{
+  display:grid;
+  gap:8px
+}
+.dengue-side-tool{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:10px 11px;
+  border:1px solid #c5ddd7;
+  border-radius:10px;
+  background:#fff;
+  color:#174c43;
+  font:inherit;
+  font-size:12px;
+  font-weight:800;
+  text-align:left;
+  cursor:pointer
+}
+.dengue-side-tool:hover{
+  background:#edf7f4
+}
+.dengue-side-tool.active{
+  border-color:#0e7d6c;
+  background:#e2f3ee
+}
+.dengue-side-tool small{
+  color:#70817d;
+  font-size:10px;
+  font-weight:700
+}
+
+/* V18.39 fixed draft-sidebar layout */
+html,body{max-width:100%;overflow-x:hidden}
+.app{
+  grid-template-columns:240px minmax(0,1fr)
+}
+.main{
+  min-width:0;
+  width:100%;
+}
+.page,
+.nnj-page-wrap{
+  min-width:0;
+  max-width:100%;
+}
+.nnj-page-wrap{
+  width:100%;
+}
+@media(min-width:1000px){
+  .main{
+    padding-right:318px;
+    overflow-x:hidden
+  }
+  .unified-draft-sidebar{
+    width:276px;
+    right:12px
+  }
+}
+@media(max-width:999px){
+  .main{
+    min-width:0;
+    overflow-x:hidden
+  }
+}
+
+/* V18.40 recent exposure history */
+.exposure-history-block{
+  grid-column:1/-1;
+  padding:14px;
+  border:1px solid #d3e4e0;
+  border-radius:13px;
+  background:#f8fcfb
+}
+.exposure-history-block .section-subtitle{
+  margin-top:0
+}
+.exposure-item{
+  display:grid;
+  grid-template-columns:minmax(180px,.7fr) minmax(0,2fr);
+  gap:12px;
+  align-items:end;
+  padding:11px 0;
+  border-bottom:1px solid #e4efec
+}
+.exposure-item:last-child{
+  border-bottom:0;
+  padding-bottom:0
+}
+.exposure-details{
+  display:grid;
+  grid-template-columns:minmax(150px,.8fr) minmax(190px,1.2fr);
+  gap:10px
+}
+#clDiffDetailsWrap{
+  margin-top:9px
+}
+@media(max-width:760px){
+  .exposure-item,
+  .exposure-details{
+    grid-template-columns:1fr
+  }
+}
+
+/* V18.41 tidy follow-up warning-sign interface */
+.dfu-warning-card{
+  overflow:hidden
+}
+#dfuWarningSigns{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  align-items:start
+}
+#dfuWarningSigns > .dfu-bleeding-block{
+  grid-column:1/-1;
+  padding:14px;
+  border:1px solid #efcbc7;
+  border-radius:13px;
+  background:#fffafa
+}
+#dfuBleedingTendencies{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(120px,1fr));
+  gap:9px;
+  margin-top:9px
+}
+#dfuBleedingTendencies .check-item{
+  min-height:48px;
+  margin:0;
+  padding:10px 11px;
+  align-items:center;
+  border:1px solid #efb9b4;
+  border-radius:10px;
+  background:#fff4f2;
+  line-height:1.2
+}
+#dfuBleedingTendencies .check-item input{
+  flex:0 0 auto;
+  margin-top:0
+}
+#dfuBleedingTendencies .check-item:hover{
+  background:#ffebe8
+}
+#dfuWarningSigns > .dfu-warning-field{
+  min-width:0
+}
+#dfuWarningSigns > .dfu-warning-field label{
+  min-height:38px;
+  display:flex;
+  align-items:flex-end
+}
+#dfuWarningSigns > .dfu-warning-field select{
+  width:100%
+}
+#dfuWarningClassification{
+  margin-top:16px;
+  white-space:normal
+}
+
+/* Keep Save as draft inside the right-side workspace on desktop */
+@media(min-width:1000px){
+  .unified-draft-sidebar{
+    padding-bottom:84px
+  }
+  .unified-draft-save{
+    right:26px;
+    bottom:26px;
+    width:248px;
+    justify-content:center
+  }
+}
+@media(max-width:1250px) and (min-width:760px){
+  #dfuBleedingTendencies{
+    grid-template-columns:repeat(3,minmax(135px,1fr))
+  }
+}
+@media(max-width:900px){
+  #dfuWarningSigns{
+    grid-template-columns:repeat(2,minmax(0,1fr))
+  }
+  #dfuBleedingTendencies{
+    grid-template-columns:repeat(2,minmax(0,1fr))
+  }
+}
+@media(max-width:620px){
+  #dfuWarningSigns{
+    grid-template-columns:1fr
+  }
+  #dfuBleedingTendencies{
+    grid-template-columns:1fr
+  }
+  #dfuWarningSigns > .dfu-warning-field label{
+    min-height:0
+  }
+}
+
+/* V18.42 smart adult dengue referral alert */
+.dengue-referral-alert{
+  margin:12px 0 16px;
+  padding:12px 14px;
+  border:1px solid #c9ddd8;
+  border-radius:13px;
+  background:#f7fbfa;
+  transition:.18s ease
+}
+.dengue-referral-alert-main{
+  display:flex;
+  align-items:center;
+  gap:11px
+}
+.dengue-referral-alert-icon{
+  flex:0 0 34px;
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#e0f1ec;
+  color:#17685d;
+  font-weight:1000
+}
+.dengue-referral-alert-copy{
+  min-width:0;
+  flex:1
+}
+.dengue-referral-alert-copy strong{
+  display:block;
+  color:#173f38;
+  font-size:14px
+}
+.dengue-referral-alert-copy span{
+  display:block;
+  margin-top:2px;
+  color:#667973;
+  font-size:12px
+}
+.dengue-referral-alert.amber{
+  border-color:#e7c66f;
+  background:#fff9e8
+}
+.dengue-referral-alert.amber .dengue-referral-alert-icon{
+  background:#ffedb9;
+  color:#805c00
+}
+.dengue-referral-alert.red{
+  border-color:#e8a6a1;
+  background:#fff1ef
+}
+.dengue-referral-alert.red .dengue-referral-alert-icon{
+  background:#ffd8d3;
+  color:#a32921
+}
+.dengue-referral-alert.disabled{
+  border-style:dashed;
+  background:#fafcfc
+}
+.dengue-referral-reasons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid rgba(84,116,108,.18)
+}
+.dengue-referral-reason{
+  display:inline-flex;
+  padding:6px 9px;
+  border-radius:999px;
+  background:#fff;
+  border:1px solid rgba(84,116,108,.2);
+  color:#425a54;
+  font-size:11px;
+  font-weight:800
+}
+.dengue-referral-foot{
+  margin-top:8px;
+  color:#7b8c87;
+  font-size:10px
+}
+.dengue-referral-action{
+  flex:0 0 auto;
+  padding:8px 11px
+}
+.referral-extra-detail{
+  margin-top:8px
+}
+.dengue-referral-toast{
+  position:fixed;
+  z-index:1300;
+  left:50%;
+  top:18px;
+  transform:translateX(-50%);
+  width:min(520px,calc(100vw - 28px));
+  padding:12px 15px;
+  border:1px solid #e7c66f;
+  border-radius:12px;
+  background:#fff9e8;
+  box-shadow:0 14px 40px rgba(39,62,56,.24)
+}
+.dengue-referral-toast.red{
+  border-color:#e8a6a1;
+  background:#fff1ef
+}
+.dengue-referral-toast strong{
+  display:block;
+  color:#2c443e;
+  font-size:13px
+}
+.dengue-referral-toast span{
+  display:block;
+  margin-top:3px;
+  color:#657771;
+  font-size:11px
+}
+.dengue-referral-alert.flash{
+  animation:dengueReferralPulse .75s ease
+}
+@keyframes dengueReferralPulse{
+  0%{transform:scale(.99)}
+  50%{transform:scale(1.01)}
+  100%{transform:scale(1)}
+}
+@media(max-width:720px){
+  .dengue-referral-alert-main{
+    align-items:flex-start;
+    flex-wrap:wrap
+  }
+  .dengue-referral-action{
+    width:100%;
+    margin-left:45px
+  }
+}
+
+/* V18.43 optional combo test */
+.combo-test-card{
+  margin-top:14px;
+  padding:13px;
+  border:1px solid #cde0dc;
+  border-radius:13px;
+  background:#f9fcfb
+}
+.combo-test-toggle{
+  margin:0;
+  align-items:center
+}
+.combo-test-toggle span{
+  display:block
+}
+.combo-test-toggle strong{
+  display:block;
+  color:#184e45
+}
+.combo-test-toggle small{
+  display:block;
+  margin-top:2px;
+  color:#6d7d79;
+  font-size:10px;
+  font-weight:600
+}
+#clComboDetailsWrap{
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid #dbe8e5
+}
+.combo-result-grid{
+  margin-top:8px
+}
+.combo-admin-title{
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid #e1ebe8
+}
+.combo-admin-grid{
+  margin-top:9px
+}
+#clDiffDetailsWrap{
+  margin-top:8px
+}
+
+/* V18.43 live haemodynamic classification */
+.vital-shock-result{
+  margin-top:10px;
+  padding:10px 12px;
+  border:1px solid #cddfdb;
+  border-radius:11px;
+  background:#f8fbfa
+}
+.vital-shock-result strong{
+  display:block;
+  color:#214b43;
+  font-size:12px
+}
+.vital-shock-result span{
+  display:block;
+  margin-top:3px;
+  color:#526b65;
+  font-size:12px
+}
+.vital-shock-result small{
+  display:block;
+  margin-top:5px;
+  color:#788984;
+  font-size:10px
+}
+.vital-shock-result.normal{
+  border-color:#b9dacd;
+  background:#edf8f4
+}
+.vital-shock-result.compensated{
+  border-color:#e6c86e;
+  background:#fff9e8
+}
+.vital-shock-result.decompensated{
+  border-color:#e7a29d;
+  background:#fff0ee
+}
+.vital-shock-result.disabled{
+  border-style:dashed;
+  background:#fafcfc
+}
+@media(max-width:720px){
+  .combo-result-grid{
+    grid-template-columns:1fr
+  }
+}
 </style>
 </head>
 <body>
@@ -1081,7 +1571,22 @@ textarea{min-height:90px;resize:vertical}
 </div>
 </div>
 <div class="hidden" id="dengueNewCaseTemplate">
-<div class="notice">Generated note excludes patient name, age, vital signs and laboratory values.</div>
+<div class="notice">Generated note excludes patient name, age, vital signs and laboratory values.</div><div class="dengue-referral-alert neutral" id="clReferralAlert">
+<div class="dengue-referral-alert-main">
+<div class="dengue-referral-alert-icon">✓</div>
+<div class="dengue-referral-alert-copy">
+<strong>Referral check active</strong>
+<span>No hospital referral criterion detected from the documented data.</span>
+</div>
+<button class="btn danger hidden dengue-referral-action" type="button">
+          Set plan to Refer ED
+        </button>
+</div>
+<div class="dengue-referral-reasons hidden"></div>
+<div class="dengue-referral-foot">
+        Adult Dengue CPG 2015 decision support. Use total clinical assessment.
+      </div>
+</div>
 <div class="card">
 <h2>Patient and presentation</h2>
 <div class="grid three">
@@ -1092,7 +1597,7 @@ textarea{min-height:90px;resize:vertical}
 <option value="paeds">Paediatric</option>
 </select>
 </div>
-<div><label>Sex</label><select id="clSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div>
+<div><label>Sex</label><select id="clSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div><label>Age (years)</label><input id="clAge" min="0" placeholder="years" step="1" type="number"/></div>
 <div class="hidden" id="clLmpWrap"><label>LMP</label><input id="clLmp" type="date"/></div>
 <div><label>Address</label><input id="clAddress"/></div>
 <div><label>Latest phone number</label><input id="clPhone"/></div>
@@ -1107,44 +1612,7 @@ textarea{min-height:90px;resize:vertical}
 </div>
 <div class="card">
 <h2>Associated symptoms</h2>
-<div id="clSymptoms">
-<div class="symptom-row">
-<label class="check-item"><input class="cl-symptom-check" id="clSymAches" type="checkbox" value="aches and pains"/><span>Aches and pains</span></label>
-<div class="symptom-onset" title="Optional symptom onset">
-<input class="cl-symptom-onset-number" disabled="" id="clSymAchesOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
-<select class="cl-symptom-onset-unit" disabled="" id="clSymAchesUnit">
-<option value="day">Day(s)</option>
-<option value="week">Week(s)</option>
-<option value="month">Month(s)</option>
-<option value="year">Year(s)</option>
-</select>
-</div>
-</div>
-<div class="symptom-row">
-<label class="check-item"><input class="cl-symptom-check" id="clSymRash" type="checkbox" value="rash"/><span>Rash</span></label>
-<div class="symptom-onset" title="Optional symptom onset">
-<input class="cl-symptom-onset-number" disabled="" id="clSymRashOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
-<select class="cl-symptom-onset-unit" disabled="" id="clSymRashUnit">
-<option value="day">Day(s)</option>
-<option value="week">Week(s)</option>
-<option value="month">Month(s)</option>
-<option value="year">Year(s)</option>
-</select>
-</div>
-</div>
-<div class="symptom-row">
-<label class="check-item"><input class="cl-symptom-check" id="clSymRetroOrbital" type="checkbox" value="retro-orbital pain"/><span>Retro-orbital pain</span></label>
-<div class="symptom-onset" title="Optional symptom onset">
-<input class="cl-symptom-onset-number" disabled="" id="clSymRetroOrbitalOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
-<select class="cl-symptom-onset-unit" disabled="" id="clSymRetroOrbitalUnit">
-<option value="day">Day(s)</option>
-<option value="week">Week(s)</option>
-<option value="month">Month(s)</option>
-<option value="year">Year(s)</option>
-</select>
-</div>
-</div>
-<div class="symptom-row">
+<div class="helper associated-symptom-helper">Listed from head to toe, followed by general symptoms. Tick positive symptoms only; unticked symptoms will be generated as negatives.</div><div id="clSymptoms"><div class="symptom-row">
 <label class="check-item"><input class="cl-symptom-check" id="clSymHeadache" type="checkbox" value="headache"/><span>Headache</span></label>
 <div class="symptom-onset" title="Optional symptom onset">
 <input class="cl-symptom-onset-number" disabled="" id="clSymHeadacheOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
@@ -1155,56 +1623,51 @@ textarea{min-height:90px;resize:vertical}
 <option value="year">Year(s)</option>
 </select>
 </div>
-</div>
-<div class="symptom-row">
-<label class="check-item"><input class="cl-symptom-check" id="clSymMyalgia" type="checkbox" value="myalgia"/><span>Myalgia</span></label>
+</div><div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymRetroOrbital" type="checkbox" value="retro-orbital pain"/><span>Retro-orbital pain</span></label>
 <div class="symptom-onset" title="Optional symptom onset">
-<input class="cl-symptom-onset-number" disabled="" id="clSymMyalgiaOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
-<select class="cl-symptom-onset-unit" disabled="" id="clSymMyalgiaUnit">
+<input class="cl-symptom-onset-number" disabled="" id="clSymRetroOrbitalOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
+<select class="cl-symptom-onset-unit" disabled="" id="clSymRetroOrbitalUnit">
 <option value="day">Day(s)</option>
 <option value="week">Week(s)</option>
 <option value="month">Month(s)</option>
 <option value="year">Year(s)</option>
 </select>
 </div>
-</div>
-<div class="symptom-row">
-<label class="check-item"><input class="cl-symptom-check" id="clSymArthralgia" type="checkbox" value="arthralgia"/><span>Arthralgia</span></label>
+</div><div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymRN" type="checkbox" value="RN"/><span>Runny nose (RN)</span></label>
 <div class="symptom-onset" title="Optional symptom onset">
-<input class="cl-symptom-onset-number" disabled="" id="clSymArthralgiaOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
-<select class="cl-symptom-onset-unit" disabled="" id="clSymArthralgiaUnit">
+<input class="cl-symptom-onset-number" disabled="" id="clSymRNOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
+<select class="cl-symptom-onset-unit" disabled="" id="clSymRNUnit">
 <option value="day">Day(s)</option>
 <option value="week">Week(s)</option>
 <option value="month">Month(s)</option>
 <option value="year">Year(s)</option>
 </select>
 </div>
-</div>
-<div class="symptom-row">
-<label class="check-item"><input class="cl-symptom-check" id="clSymNausea" type="checkbox" value="nausea"/><span>Nausea</span></label>
+</div><div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymSoreThroat" type="checkbox" value="sore throat"/><span>Sore throat</span></label>
 <div class="symptom-onset" title="Optional symptom onset">
-<input class="cl-symptom-onset-number" disabled="" id="clSymNauseaOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
-<select class="cl-symptom-onset-unit" disabled="" id="clSymNauseaUnit">
+<input class="cl-symptom-onset-number" disabled="" id="clSymSoreThroatOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
+<select class="cl-symptom-onset-unit" disabled="" id="clSymSoreThroatUnit">
 <option value="day">Day(s)</option>
 <option value="week">Week(s)</option>
 <option value="month">Month(s)</option>
 <option value="year">Year(s)</option>
 </select>
 </div>
-</div>
-<div class="symptom-row">
-<label class="check-item"><input class="cl-symptom-check" id="clSymPoorIntake" type="checkbox" value="poor oral intake"/><span>Poor oral intake</span></label>
+</div><div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymOdynophagia" type="checkbox" value="odynophagia"/><span>Odynophagia</span></label>
 <div class="symptom-onset" title="Optional symptom onset">
-<input class="cl-symptom-onset-number" disabled="" id="clSymPoorIntakeOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
-<select class="cl-symptom-onset-unit" disabled="" id="clSymPoorIntakeUnit">
+<input class="cl-symptom-onset-number" disabled="" id="clSymOdynophagiaOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
+<select class="cl-symptom-onset-unit" disabled="" id="clSymOdynophagiaUnit">
 <option value="day">Day(s)</option>
 <option value="week">Week(s)</option>
 <option value="month">Month(s)</option>
 <option value="year">Year(s)</option>
 </select>
 </div>
-</div>
-<div class="symptom-row" id="clCoughRow">
+</div><div class="symptom-row" id="clCoughRow">
 <label class="check-item"><input class="cl-symptom-check" id="clSymCough" type="checkbox" value="cough"/><span>Cough</span></label>
 <div class="symptom-onset" title="Optional symptom onset">
 <input class="cl-symptom-onset-number" disabled="" id="clSymCoughOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
@@ -1233,44 +1696,7 @@ textarea{min-height:90px;resize:vertical}
 </select>
 </div>
 </div>
-</div>
-<div class="symptom-row">
-<label class="check-item"><input class="cl-symptom-check" id="clSymRN" type="checkbox" value="RN"/><span>Runny nose (RN)</span></label>
-<div class="symptom-onset" title="Optional symptom onset">
-<input class="cl-symptom-onset-number" disabled="" id="clSymRNOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
-<select class="cl-symptom-onset-unit" disabled="" id="clSymRNUnit">
-<option value="day">Day(s)</option>
-<option value="week">Week(s)</option>
-<option value="month">Month(s)</option>
-<option value="year">Year(s)</option>
-</select>
-</div>
-</div>
-<div class="symptom-row">
-<label class="check-item"><input class="cl-symptom-check" id="clSymOdynophagia" type="checkbox" value="odynophagia"/><span>Odynophagia</span></label>
-<div class="symptom-onset" title="Optional symptom onset">
-<input class="cl-symptom-onset-number" disabled="" id="clSymOdynophagiaOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
-<select class="cl-symptom-onset-unit" disabled="" id="clSymOdynophagiaUnit">
-<option value="day">Day(s)</option>
-<option value="week">Week(s)</option>
-<option value="month">Month(s)</option>
-<option value="year">Year(s)</option>
-</select>
-</div>
-</div>
-<div class="symptom-row">
-<label class="check-item"><input class="cl-symptom-check" id="clSymSoreThroat" type="checkbox" value="sore throat"/><span>Sore throat</span></label>
-<div class="symptom-onset" title="Optional symptom onset">
-<input class="cl-symptom-onset-number" disabled="" id="clSymSoreThroatOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
-<select class="cl-symptom-onset-unit" disabled="" id="clSymSoreThroatUnit">
-<option value="day">Day(s)</option>
-<option value="week">Week(s)</option>
-<option value="month">Month(s)</option>
-<option value="year">Year(s)</option>
-</select>
-</div>
-</div>
-<div class="symptom-row">
+</div><div class="symptom-row">
 <label class="check-item"><input class="cl-symptom-check" id="clSymSOB" type="checkbox" value="SOB"/><span>Shortness of breath (SOB)</span></label>
 <div class="symptom-onset" title="Optional symptom onset">
 <input class="cl-symptom-onset-number" disabled="" id="clSymSOBOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
@@ -1281,8 +1707,7 @@ textarea{min-height:90px;resize:vertical}
 <option value="year">Year(s)</option>
 </select>
 </div>
-</div>
-<div class="symptom-row">
+</div><div class="symptom-row">
 <label class="check-item"><input class="cl-symptom-check" id="clSymChestPain" type="checkbox" value="chest pain"/><span>Chest pain</span></label>
 <div class="symptom-onset" title="Optional symptom onset">
 <input class="cl-symptom-onset-number" disabled="" id="clSymChestPainOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
@@ -1293,8 +1718,51 @@ textarea{min-height:90px;resize:vertical}
 <option value="year">Year(s)</option>
 </select>
 </div>
+</div><div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymNausea" type="checkbox" value="nausea"/><span>Nausea</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" disabled="" id="clSymNauseaOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
+<select class="cl-symptom-onset-unit" disabled="" id="clSymNauseaUnit">
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
 </div>
+</div><div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymPoorIntake" type="checkbox" value="poor oral intake"/><span>Poor oral intake</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" disabled="" id="clSymPoorIntakeOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
+<select class="cl-symptom-onset-unit" disabled="" id="clSymPoorIntakeUnit">
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
 </div>
+</div><div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymRash" type="checkbox" value="rash"/><span>Rash</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" disabled="" id="clSymRashOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
+<select class="cl-symptom-onset-unit" disabled="" id="clSymRashUnit">
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div><div class="symptom-row">
+<label class="check-item"><input class="cl-symptom-check" id="clSymAches" type="checkbox" value="aches and pains"/><span>Aches and pains</span></label>
+<div class="symptom-onset" title="Optional symptom onset">
+<input class="cl-symptom-onset-number" disabled="" id="clSymAchesOnset" inputmode="numeric" min="1" placeholder="Onset" step="1" type="number"/>
+<select class="cl-symptom-onset-unit" disabled="" id="clSymAchesUnit">
+<option value="day">Day(s)</option>
+<option value="week">Week(s)</option>
+<option value="month">Month(s)</option>
+<option value="year">Year(s)</option>
+</select>
+</div>
+</div></div>
 <label>Other associated symptoms</label><textarea id="clOtherSymptoms"></textarea>
 <div class="tb-screening-card hidden" id="clTbScreening">
 <h3>TB screening</h3>
@@ -1343,48 +1811,10 @@ textarea{min-height:90px;resize:vertical}
 </div>
 </div>
 </div>
-</div>
-<div class="card">
-<h2>Co-morbidity, exposure and body weight</h2>
+</div><div class="card">
+<h2>Warning signs</h2>
 <div class="grid three">
-<div><label>Previous dengue illness</label><select id="clPrevious"><option>no</option><option>yes</option></select></div>
-<div><label>Smoking</label><select id="clSmoking"><option>no</option><option>yes</option><option>ex-smoker</option></select></div>
-<div><label>Pregnancy</label><select id="clPregnancy"><option>-</option><option>no</option><option>yes</option></select></div>
-<div><label>Other comorbid</label><input id="clComorbid" value="no"/></div>
-<div><label>Risk group exposure</label><input id="clRisk" value="no"/></div>
-<div><label>Recent fever at home/workplace</label><select id="clContact"><option>no</option><option>yes</option></select></div>
-<div><label>Dengue-prone area / fogging</label><select id="clArea"><option>no</option><option>yes</option></select></div>
-<div>
-<label>Weight (kg)</label>
-<input id="clWeight" min="0" placeholder="e.g. 70" step="0.1" type="number"/>
-</div>
-<div>
-<label>Height (cm)</label>
-<input id="clHeight" min="0" placeholder="e.g. 165" step="0.1" type="number"/>
-</div>
-<div>
-<label>BMI — auto-calculated</label>
-<input id="clBMI" placeholder="Auto" readonly=""/>
-</div>
-<div>
-<label>Adjusted body weight (kg) — auto</label>
-<input id="clAdjBW" placeholder="Calculated when applicable" readonly=""/>
-</div>
-<input id="clIBW" type="hidden"/>
-</div>
-<div class="actions">
-<button class="btn secondary" id="clRecalculateBodyWeight" type="button">
-    Recalculate BMI / ABW
-  </button>
-</div>
-<div class="result-box" id="clBodyCalcResult">
-  Enter weight and height. Sex will be taken automatically from Patient and presentation.
-</div>
-</div>
-<div class="card">
-<h2>History and warning symptoms</h2>
-<div class="grid three">
-<div><label>How much can patient drink?</label><input id="clDrink"/></div>
+<div><label>Oral fluid tolerance</label><select id="clDrink"><option selected="" value="able">Able to tolerate oral fluids</option><option value="reduced">Reduced oral intake</option><option value="unable">Unable to tolerate oral fluids</option></select></div>
 <div><label>Reduced urine volume</label><select id="clUrine"><option>no</option><option>yes</option></select></div>
 <div><label>Can perform daily activities</label><select id="clActivity"><option>yes</option><option>no</option></select></div>
 <div><label>Lethargy</label><select id="clLethargy"><option>no</option><option>yes</option></select></div>
@@ -1410,9 +1840,129 @@ textarea{min-height:90px;resize:vertical}
 </div>
 <div><label>Abdominal pain</label><select id="clAbdPain"><option>no</option><option>yes</option></select></div>
 <div><label>Bleeding / bruising</label><select id="clBleeding"><option>no</option><option>yes</option></select></div>
-</div>
+<div><label>Seizure</label><select id="clSeizure"><option selected="" value="no">No</option><option value="yes">Yes</option></select></div></div>
 <div class="result-box" id="clWarningFrequencyClassification">
   Vomiting and loose stool classification will appear here.
+</div>
+</div>
+<div class="card">
+<h2>Co-morbidity, recent exposure and body weight</h2>
+<div class="grid three">
+<div><label>Previous dengue illness</label><select id="clPrevious"><option>no</option><option>yes</option></select></div>
+<div><label>Smoking</label><select id="clSmoking"><option>no</option><option>yes</option><option>ex-smoker</option></select></div>
+<div><label>Pregnancy</label><select id="clPregnancy"><option>-</option><option>no</option><option>yes</option></select></div>
+<div><label>Other comorbid</label><input id="clComorbid" value="no"/></div>
+<div class="exposure-history-block">
+<div class="section-subtitle">History of recent exposure</div>
+<div class="helper">Select Yes to document when and where the exposure occurred.</div>
+<div class="exposure-item">
+<div>
+<label>1. Travelling</label>
+<select id="clTravel">
+<option value="no">No</option>
+<option value="yes">Yes</option>
+</select>
+</div>
+<div class="exposure-details hidden" id="clTravelDetailsWrap">
+<div>
+<label>When</label>
+<input id="clTravelDate" type="date"/>
+</div>
+<div>
+<label>Where</label>
+<input id="clTravelPlace" placeholder="e.g. Penang / overseas"/>
+</div>
+</div>
+</div>
+<div class="exposure-item">
+<div>
+<label>2. Swimming</label>
+<select id="clSwimming">
+<option value="no">No</option>
+<option value="yes">Yes</option>
+</select>
+</div>
+<div class="exposure-details hidden" id="clSwimmingDetailsWrap">
+<div>
+<label>When</label>
+<input id="clSwimmingDate" type="date"/>
+</div>
+<div>
+<label>Where</label>
+<input id="clSwimmingPlace" placeholder="e.g. pool / river / beach"/>
+</div>
+</div>
+</div>
+<div class="exposure-item">
+<div>
+<label>3. Jungle trekking</label>
+<select id="clTrekking">
+<option value="no">No</option>
+<option value="yes">Yes</option>
+</select>
+</div>
+<div class="exposure-details hidden" id="clTrekkingDetailsWrap">
+<div>
+<label>When</label>
+<input id="clTrekkingDate" type="date"/>
+</div>
+<div>
+<label>Where</label>
+<input id="clTrekkingPlace" placeholder="e.g. trail / forest location"/>
+</div>
+</div>
+</div>
+<div class="exposure-item">
+<div>
+<label>Recent fever at home/workplace</label>
+<select id="clContact">
+<option value="no">No</option>
+<option value="yes">Yes</option>
+</select>
+</div>
+<div class="exposure-details hidden" id="clContactDetailsWrap">
+<div>
+<label>Location</label>
+<select id="clContactLocation">
+<option value="">Select</option>
+<option value="home">Home</option>
+<option value="workplace">Workplace</option>
+<option value="home and workplace">Home and workplace</option>
+</select>
+</div>
+<div>
+<label>With whom?</label>
+<input id="clContactPerson" placeholder="e.g. spouse / child / colleague"/>
+</div>
+</div>
+</div>
+</div>
+<div><label>Dengue-prone area / fogging</label><select id="clArea"><option>no</option><option>yes</option></select></div>
+<div>
+<label>Weight (kg)</label>
+<input id="clWeight" min="0" placeholder="e.g. 70" step="0.1" type="number"/>
+</div>
+<div>
+<label>Height (cm)</label>
+<input id="clHeight" min="0" placeholder="e.g. 165" step="0.1" type="number"/>
+</div>
+<div>
+<label>BMI — auto-calculated</label>
+<input id="clBMI" placeholder="Auto" readonly=""/>
+</div>
+<div>
+<label>Adjusted body weight (kg) — auto</label>
+<input id="clAdjBW" placeholder="Calculated when applicable" readonly=""/>
+</div>
+<input id="clIBW" type="hidden"/>
+<div><label>Antiplatelet / anticoagulant</label><select id="clBloodThinner"><option selected="" value="no">No</option><option value="yes">Yes</option></select></div><div><label>Social factor limiting follow-up</label><select id="clSocialLimit"><option selected="" value="no">No</option><option value="yes">Yes</option></select><div class="hidden referral-extra-detail" id="clSocialLimitDetailsWrap"><label>Details</label><input id="clSocialLimitDetails" placeholder="e.g. lives alone, no transport, far from health facility"/></div></div></div>
+<div class="actions">
+<button class="btn secondary" id="clRecalculateBodyWeight" type="button">
+    Recalculate BMI / ABW
+  </button>
+</div>
+<div class="result-box" id="clBodyCalcResult">
+  Enter weight and height. Sex will be taken automatically from Patient and presentation.
 </div>
 </div>
 <div class="card">
@@ -1425,7 +1975,7 @@ textarea{min-height:90px;resize:vertical}
 <div><label>CVS</label><select id="clCVS"><option>DRNM</option><option>tachycardic, DRNM</option><option>murmur heard</option></select></div>
 <div><label>PA</label><select id="clPA"><option>SNT</option><option>soft, tender over epigastrium</option><option>soft, tender over RIF</option><option>hepatomegaly</option><option>ascites</option></select></div>
 <div><label>GCS</label><select id="clGCS"><option>full</option><option>E4V5M6</option></select></div>
-</div>
+<div><label>Hydration status</label><select id="clHydration"><option selected="" value="well">Well hydrated</option><option value="dehydrated">Dehydrated</option></select></div><div><label>Any organ failure / severe organ involvement</label><select id="clOrganFailure"><option selected="" value="no">No</option><option value="yes">Yes</option></select><div class="hidden referral-extra-detail" id="clOrganFailureDetailsWrap"><label>Details</label><input id="clOrganFailureDetails" placeholder="e.g. hepatitis, encephalitis, myocarditis, renal failure"/></div></div></div>
 <label>Other physical findings</label><textarea id="clOtherPhysical"></textarea>
 </div>
 <div class="card">
@@ -1437,8 +1987,12 @@ textarea{min-height:90px;resize:vertical}
 </div>
 </div>
 <label>Vital signs — paste directly from TPC-OHCIS</label>
-<textarea id="clVitalText" placeholder="Paste vital signs here, e.g. BP, PR, RR, temperature, SpO2 and pain score" rows="5"></textarea>
-<div class="objective-divider"><div class="section-subtitle">Investigations today</div><div class="helper">Paste today’s FBC below. Auto-detected values, serial FBC and previous investigations are kept together in this section.</div></div><div class="section-subtitle">Previous lab investigations</div><div class="quick-fbc-card">
+<textarea id="clVitalText" placeholder="Paste vital signs here, e.g. BP, PR, RR, temperature, SpO2 and pain score" rows="5"></textarea><div class="vital-shock-result neutral" id="clVitalShockResult">
+<strong>Auto haemodynamic check</strong>
+<span>Paste BP and pulse rate to assess the adult haemodynamic pattern.</span>
+<small>Vital-sign pattern only — confirm CCTVR and the total clinical assessment.</small>
+</div>
+<div class="objective-divider"><div class="section-subtitle">Investigations today</div><div class="helper">Paste today’s FBC below. Auto-detected values, serial FBC and previous investigations are kept together in this section.</div></div><div class="quick-fbc-card">
 <div class="section-subtitle">Investigation today — current FBC</div>
 <div class="helper">Paste full FBC from TPC-OHCIS. Hb, Hct, WC and Plt are detected automatically.</div>
 <div class="quick-fbc-grid">
@@ -1457,7 +2011,54 @@ textarea{min-height:90px;resize:vertical}
 </div>
 <div class="fbc-detected-status" data-fbc-status="">Paste an FBC result to begin detection.</div>
 </div><label class="check-item raw-fbc-option"><input id="clIncludeRawFbc" type="checkbox"/> Include full pasted FBC result in final note / referral</label>
-</div><div class="previous-lab-list" id="clPreviousLabList"></div><div class="serial-fbc-card hidden" id="clSerialFbcCard">
+</div><div class="combo-test-card">
+<label class="check-item combo-test-toggle">
+<input id="clComboDone" type="checkbox"/>
+<span>
+<strong>Dengue combo test performed</strong>
+<small>Optional — tick to enter NS1, IgM and IgG results.</small>
+</span>
+</label>
+<div class="hidden" id="clComboDetailsWrap">
+<div class="section-subtitle">Dengue combo test result</div>
+<div class="grid three combo-result-grid">
+<div>
+<label>NS1</label>
+<select id="clComboNs1">
+<option value="">Select result</option>
+<option value="positive">Positive</option>
+<option value="negative">Negative</option>
+</select>
+</div>
+<div>
+<label>IgM</label>
+<select id="clComboIgm">
+<option value="">Select result</option>
+<option value="positive">Positive</option>
+<option value="negative">Negative</option>
+</select>
+</div>
+<div>
+<label>IgG</label>
+<select id="clComboIgg">
+<option value="">Select result</option>
+<option value="positive">Positive</option>
+<option value="negative">Negative</option>
+</select>
+</div>
+</div>
+<div class="combo-admin-title">
+<div class="section-subtitle">Dengue notification &amp; documentation</div>
+<div class="helper">
+        This section appears only when a combo test is documented.
+      </div>
+</div>
+<div class="grid two combo-admin-grid" id="clComboAdminWrap">
+<div><label>Notification date</label><input id="clNotify" type="date"/></div>
+<div><label>Dengue alert card given</label><select id="clCard"><option>-</option><option>yes</option><option>no</option></select></div>
+<div><label>Differential diagnosis ruled out</label><select id="clDiffStatus"><option value="no">No</option><option value="yes">Yes</option></select><div class="hidden" id="clDiffDetailsWrap"><label>Which differential diagnosis?</label><input id="clDiff" placeholder="Optional details, e.g. leptospirosis / URTI"/></div></div>
+</div></div>
+</div></div><div class="card hidden dengue-optional-card" data-optional-section="previous-lab" id="clPreviousLabOptionalCard"><div class="dengue-optional-card-head"><h2>Previous lab investigations</h2><button class="btn secondary dengue-optional-close" data-close-optional="previous-lab" type="button">Hide</button></div><div class="helper">Optional — open only when previous investigation results need to be added.</div><div class="previous-lab-list" id="clPreviousLabList"></div><div class="serial-fbc-card hidden" id="clSerialFbcCard">
 <div class="section-subtitle">Serial FBC — auto extracted</div>
 <div class="serial-fbc-status" id="clSerialFbcStatus"></div>
 <div class="serial-fbc-table-wrap">
@@ -1479,13 +2080,8 @@ textarea{min-height:90px;resize:vertical}
 <button class="btn secondary previous-lab-add-date" id="clAddPreviousLabDate" type="button">
     + Add investigation date
   </button>
-</div><div class="grid two">
-<div><label>Notification date</label><input id="clNotify" value="-"/></div>
-<div><label>Dengue alert card given</label><select id="clCard"><option>-</option><option>yes</option><option>no</option></select></div>
-<div><label>Differential diagnoses ruled out</label><input id="clDiff"/></div>
 </div></div>
-<div class="card" id="clInterventionCard">
-<h2>Intervention done in clinic</h2>
+<div class="card hidden dengue-optional-card" data-optional-section="intervention" id="clInterventionCard"><div class="dengue-optional-card-head"><h2>Intervention done in clinic</h2><button class="btn secondary dengue-optional-close" data-close-optional="intervention" type="button">Hide</button></div>
 <div class="helper">
   Select an intervention, then click Add. Only selected interventions will be displayed.
   Paediatric IV hydrocortisone is calculated automatically using 4 mg/kg.
@@ -1669,35 +2265,7 @@ textarea{min-height:90px;resize:vertical}
 <div class="hidden" id="clDxComorbidWrap"><label>Comorbidities</label><input id="clDxComorbid" placeholder="e.g. DM and HPT"/></div>
 </div>
 <label>Generated diagnosis</label><textarea id="clGeneratedDx" readonly=""></textarea>
-</div><div class="card"><h2>Plan</h2><div class="grid two">
-<div>
-<label>Select plan</label>
-<select id="clPlanOption">
-<option selected="" value="outpatient">
-        Option 2 — Outpatient follow-up / serial FBC
-      </option>
-<option value="refer">
-        Option 1 — Refer ED + notify + start IVD NS
-      </option>
-</select>
-</div>
-<div>
-<label>Additional plan (optional)</label>
-<input id="clPlanExtra" placeholder="Other instructions / medication / follow-up"/>
-</div>
-<div class="cl-ivd-time-wrap hidden" id="clIvdStartWrap">
-<label>Time IVD started in KK before ED referral</label>
-<input id="clIvdStartTime" type="time"/>
-<div class="helper">This time will be included in the generated plan and referral letter.</div>
-</div>
-</div><div class="result-box" id="clPlanPreview"></div><div class="helper" id="clReferralStatus"></div><div class="actions">
-<button class="btn primary" id="clGenerate" type="button">Generate clinical note</button>
-<button class="btn secondary hidden" id="clGenerateReferral" type="button">Generate ED referral letter</button>
-<button class="btn secondary" id="clCopy" type="button">Copy clinical note</button>
-<button class="btn secondary hidden" id="clCopyReferral" type="button">Copy referral letter</button>
-<button class="btn danger" id="clReset" type="button">Reset</button>
-</div></div>
-<div class="card">
+</div><div class="card">
 <h2>Dengue Fluid Management</h2>
 <div class="notice">
       Uses the patient group, weight, height and sex already entered above. Actual body weight is the default.
@@ -1745,7 +2313,34 @@ textarea{min-height:90px;resize:vertical}
 <a class="ref" href="https://www.moh.gov.my/images/04-penerbitan/penerbitan-klinikal/panduan-amalan-klinikal/P-CPG-Dengue_in_Children_Second_Edition.pdf" rel="noopener" target="_blank">
       Paediatric CPG Second Edition 2020
     </a>
+</div><div class="card"><h2>Plan</h2><div class="grid two">
+<div>
+<label>Select plan</label>
+<select id="clPlanOption">
+<option selected="" value="outpatient">
+        Option 2 — Outpatient follow-up / serial FBC
+      </option>
+<option value="refer">
+        Option 1 — Refer ED + notify + start IVD NS
+      </option>
+</select>
 </div>
+<div>
+<label>Additional plan (optional)</label>
+<input id="clPlanExtra" placeholder="Other instructions / medication / follow-up"/>
+</div>
+<div class="cl-ivd-time-wrap hidden" id="clIvdStartWrap">
+<label>Time IVD started in KK before ED referral</label>
+<input id="clIvdStartTime" type="time"/>
+<div class="helper">This time will be included in the generated plan and referral letter.</div>
+</div>
+</div><div class="result-box" id="clPlanPreview"></div><div class="helper" id="clReferralStatus"></div><div class="actions">
+<button class="btn primary" id="clGenerate" type="button">Generate clinical note</button>
+<button class="btn secondary hidden" id="clGenerateReferral" type="button">Generate ED referral letter</button>
+<button class="btn secondary" id="clCopy" type="button">Copy clinical note</button>
+<button class="btn secondary hidden" id="clCopyReferral" type="button">Copy referral letter</button>
+<button class="btn danger" id="clReset" type="button">Reset</button>
+</div></div>
 <div class="card">
 <h2>Generated clinical note</h2>
 <textarea class="output" id="clOutput" readonly=""></textarea>
@@ -1759,19 +2354,34 @@ textarea{min-height:90px;resize:vertical}
 </div>
 <div class="actions clerking-back-top-wrap"><button class="btn secondary clerking-back-top" type="button">↑ Back to top</button></div></div>
 <div class="hidden" id="dengueFollowUpTemplate">
-<div class="notice">Follow-up dengue clerking for clinical review and serial FBC monitoring. Positive warning signs are generated above negative warning signs.</div>
+<div class="notice">Follow-up dengue clerking for clinical review and serial FBC monitoring. Positive warning signs are generated above negative warning signs.</div><div class="dengue-referral-alert neutral" id="dfuReferralAlert">
+<div class="dengue-referral-alert-main">
+<div class="dengue-referral-alert-icon">✓</div>
+<div class="dengue-referral-alert-copy">
+<strong>Referral check active</strong>
+<span>No hospital referral criterion detected from the documented data.</span>
+</div>
+<button class="btn danger hidden dengue-referral-action" type="button">
+          Set plan to Refer ED
+        </button>
+</div>
+<div class="dengue-referral-reasons hidden"></div>
+<div class="dengue-referral-foot">
+        Adult Dengue CPG 2015 decision support. Use total clinical assessment.
+      </div>
+</div>
 <div class="card">
 <h2>Patient and follow-up details</h2>
 <div class="grid three">
 <div><label>Patient group</label><select id="dfuGroup"><option value="adult">Adult</option><option value="paeds">Paediatric</option></select></div>
-<div><label>Sex</label><select id="dfuSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div>
+<div><label>Sex</label><select id="dfuSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div><label>Age (years)</label><input id="dfuAge" min="0" placeholder="years" step="1" type="number"/></div>
 <div><label>Day of illness</label><input id="dfuDayIllness" min="1" placeholder="e.g. 5" step="1" type="number"/></div>
 <div><label>Drug allergy</label><input id="dfuAllergy" value="NKDA"/></div>
 <div><label>Address</label><input id="dfuAddress"/></div>
 <div><label>Latest phone number</label><input id="dfuPhone"/></div>
 <div><label>Last PCM taken</label><input id="dfuLastPcm" type="datetime-local"/></div>
 <div><label>Afebrile without antipyretic since</label><input id="dfuAfebrileSince" type="datetime-local"/></div>
-</div>
+<div><label>Pregnancy</label><select id="dfuPregnancy"><option selected="" value="-">-</option><option value="no">No</option><option value="yes">Yes</option></select></div><div><label>Antiplatelet / anticoagulant</label><select id="dfuBloodThinner"><option selected="" value="no">No</option><option value="yes">Yes</option></select></div><div><label>Social factor limiting follow-up</label><select id="dfuSocialLimit"><option selected="" value="no">No</option><option value="yes">Yes</option></select><div class="hidden referral-extra-detail" id="dfuSocialLimitDetailsWrap"><label>Details</label><input id="dfuSocialLimitDetails" placeholder="e.g. lives alone, no transport, far from health facility"/></div></div></div>
 </div>
 <div class="card">
 <h2>Body weight</h2>
@@ -1806,14 +2416,11 @@ textarea{min-height:90px;resize:vertical}
   Enter weight and height. Sex will be taken from Patient and follow-up details.
 </div>
 </div>
-<div class="card">
+<div class="card dfu-warning-card">
 <h2>Dengue warning signs</h2>
-<div class="helper">
-  Select the actual finding. Vomiting and loose stool are automatically classified
-  according to frequency.
-</div>
+<div class="helper">Select the actual finding. Vomiting and loose stool are classified automatically by frequency.</div>
 <div class="grid three" id="dfuWarningSigns">
-<div>
+<div class="dfu-bleeding-block">
 <label>1. Bleeding tendencies</label>
 <div class="check-grid" id="dfuBleedingTendencies">
 <label class="check-item red">
@@ -1837,11 +2444,9 @@ textarea{min-height:90px;resize:vertical}
         Blood in stool
       </label>
 </div>
-<div class="helper">
-      Tick all applicable bleeding tendencies. Any selected option is classified as a DF warning sign.
-    </div>
+<div class="helper">Tick all applicable. Any selected bleeding tendency is treated as a dengue warning sign.</div>
 </div>
-<div>
+<div class="dfu-warning-field">
 <label>2. Vomiting frequency</label>
 <select id="dfuVomitFrequency">
 <option selected="" value="none">None</option>
@@ -1850,7 +2455,7 @@ textarea{min-height:90px;resize:vertical}
 <option value="ge3">3 times/day or more</option>
 </select>
 </div>
-<div>
+<div class="dfu-warning-field">
 <label>3. Loose stool frequency</label>
 <select id="dfuLooseStoolFrequency">
 <option selected="" value="none">None</option>
@@ -1859,28 +2464,28 @@ textarea{min-height:90px;resize:vertical}
 <option value="ge3">3 times/day or more</option>
 </select>
 </div>
-<div>
+<div class="dfu-warning-field">
 <label>4. Abdominal pain</label>
 <select id="dfuAbdominalPain">
 <option selected="" value="no">No</option>
 <option value="yes">Yes — DF warning sign</option>
 </select>
 </div>
-<div>
+<div class="dfu-warning-field">
 <label>5. Shortness of breath</label>
 <select id="dfuSob">
 <option selected="" value="no">No</option>
 <option value="yes">Yes — DF warning sign</option>
 </select>
 </div>
-<div>
+<div class="dfu-warning-field">
 <label>6. Lethargy</label>
 <select id="dfuLethargy">
 <option selected="" value="no">No</option>
 <option value="yes">Yes — DF warning sign</option>
 </select>
 </div>
-</div>
+<div class="dfu-warning-field"><label>7. Seizure</label><select id="dfuSeizure"><option selected="" value="no">No</option><option value="yes">Yes</option></select></div></div>
 <div class="result-box" id="dfuWarningClassification">
   Warning-sign classification will appear here.
 </div>
@@ -1888,7 +2493,7 @@ textarea{min-height:90px;resize:vertical}
 <div class="card">
 <h2>Three salient questions</h2>
 <div class="grid three">
-<div><label>Oral intake</label><select id="dfuOralIntake"><option value="good">good</option><option value="reduced">reduced</option><option value="poor">poor</option></select></div>
+<div><label>Oral intake</label><select id="dfuOralIntake"><option value="good">good</option><option value="reduced">reduced</option><option value="poor">unable to tolerate oral fluids</option></select></div>
 <div><label>Active as usual</label><select id="dfuActivity"><option value="yes">yes</option><option value="no">no</option></select></div>
 <div><label>Urine output</label><select id="dfuUrine"><option value="normal">normal</option><option value="reduced">reduced</option><option value="no urine output">no urine output</option></select></div>
 </div>
@@ -1905,7 +2510,7 @@ textarea{min-height:90px;resize:vertical}
 <div><label>CVS</label><select id="dfuCVS"><option>DRNM</option><option>tachycardic, DRNM</option><option>murmur heard</option></select></div>
 <div><label>PA</label><select id="dfuPA"><option>SNT</option><option>soft, tender over epigastrium</option><option>soft, tender over RIF</option><option>hepatomegaly</option><option>ascites</option></select></div>
 <div><label>GCS</label><select id="dfuGCS"><option>full</option><option>E4V5M6</option></select></div>
-</div>
+<div><label>Hydration status</label><select id="dfuHydration"><option selected="" value="well">Well hydrated</option><option value="dehydrated">Dehydrated</option></select></div><div><label>Any organ failure / severe organ involvement</label><select id="dfuOrganFailure"><option selected="" value="no">No</option><option value="yes">Yes</option></select><div class="hidden referral-extra-detail" id="dfuOrganFailureDetailsWrap"><label>Details</label><input id="dfuOrganFailureDetails" placeholder="e.g. hepatitis, encephalitis, myocarditis, renal failure"/></div></div></div>
 <label>Other physical findings</label>
 <textarea id="dfuOtherPhysical"></textarea>
 </div>
@@ -1918,7 +2523,11 @@ textarea{min-height:90px;resize:vertical}
 </div>
 </div>
 <label>Vital signs — paste directly from TPC-OHCIS</label>
-<textarea id="dfuVitalText" placeholder="Paste vital signs here, e.g. BP, PR, RR, temperature, SpO2 and pain score" rows="5"></textarea>
+<textarea id="dfuVitalText" placeholder="Paste vital signs here, e.g. BP, PR, RR, temperature, SpO2 and pain score" rows="5"></textarea><div class="vital-shock-result neutral" id="dfuVitalShockResult">
+<strong>Auto haemodynamic check</strong>
+<span>Paste BP and pulse rate to assess the adult haemodynamic pattern.</span>
+<small>Vital-sign pattern only — confirm CCTVR and the total clinical assessment.</small>
+</div>
 <div class="objective-divider"><div class="section-subtitle">Investigations today</div><div class="helper">Paste today’s FBC below. Auto-detected values, serial FBC and previous investigations are kept together in this section.</div></div><div class="quick-fbc-card">
 <div class="section-subtitle">Investigation today — current FBC</div>
 <div class="helper">Paste full FBC from TPC-OHCIS. Hb, Hct, WC and Plt are detected automatically.</div>
@@ -1938,7 +2547,7 @@ textarea{min-height:90px;resize:vertical}
 </div>
 <div class="fbc-detected-status" data-fbc-status="">Paste an FBC result to begin detection.</div>
 </div><label class="check-item raw-fbc-option"><input id="dfuIncludeRawFbc" type="checkbox"/> Include full pasted FBC result in final note / referral</label>
-</div><div class="previous-lab-list" id="dfuPreviousLabList"></div><div class="serial-fbc-card hidden" id="dfuSerialFbcCard">
+</div></div><div class="card hidden dengue-optional-card" data-optional-section="previous-lab" id="dfuPreviousLabOptionalCard"><div class="dengue-optional-card-head"><h2>Previous lab investigations</h2><button class="btn secondary dengue-optional-close" data-close-optional="previous-lab" type="button">Hide</button></div><div class="helper">Optional — open only when previous investigation results need to be added.</div><div class="previous-lab-list" id="dfuPreviousLabList"></div><div class="serial-fbc-card hidden" id="dfuSerialFbcCard">
 <div class="section-subtitle">Serial FBC — auto extracted</div>
 <div class="serial-fbc-status" id="dfuSerialFbcStatus"></div>
 <div class="serial-fbc-table-wrap">
@@ -1961,8 +2570,7 @@ textarea{min-height:90px;resize:vertical}
     + Add investigation date
   </button>
 </div></div>
-<div class="card" id="dfuInterventionCard">
-<h2>Intervention done in clinic</h2>
+<div class="card hidden dengue-optional-card" data-optional-section="intervention" id="dfuInterventionCard"><div class="dengue-optional-card-head"><h2>Intervention done in clinic</h2><button class="btn secondary dengue-optional-close" data-close-optional="intervention" type="button">Hide</button></div>
 <div class="helper">
   Tick the intervention given and enter the actual administration time.
   Paediatric IV hydrocortisone is calculated automatically at 4 mg/kg using the follow-up weight.
@@ -2123,29 +2731,6 @@ textarea{min-height:90px;resize:vertical}
 <label>Generated diagnosis</label>
 <textarea id="dfuGeneratedDx" readonly=""></textarea>
 </div><div class="card">
-<h2>Plan</h2>
-<div class="grid two">
-<div><label>Select plan</label>
-<select id="dfuPlanOption">
-<option selected="" value="monitoring">Option 2 — Continue FBC monitoring</option>
-<option value="refer">Option 1 — Refer ED</option>
-<option value="discharge">Option 3 — Discharge from FBC monitoring</option>
-</select>
-</div>
-<div id="dfuNextTcaWrap"><label>Next TCA date</label><input id="dfuNextTca" type="date"/></div>
-<div><label>Additional plan</label><input id="dfuPlanExtra" placeholder="Optional"/></div>
-</div>
-<div class="result-box" id="dfuPlanPreview"></div>
-<div class="helper" id="dfuReferralStatus"></div>
-<div class="actions">
-<button class="btn primary" id="dfuGenerate" type="button">Generate clinical note</button>
-<button class="btn secondary" id="dfuCopy" type="button">Copy clinical note</button>
-<button class="btn secondary hidden" id="dfuGenerateReferral" type="button">Generate ED referral letter</button>
-<button class="btn secondary hidden" id="dfuCopyReferral" type="button">Copy referral letter</button>
-<button class="btn danger" id="dfuReset" type="button">Reset follow-up clerking</button>
-</div>
-</div>
-<div class="card">
 <h2>Dengue Fluid Management</h2>
 <div class="notice">
   Uses the patient group, weight, height and sex entered in this follow-up template.
@@ -2188,8 +2773,29 @@ textarea{min-height:90px;resize:vertical}
 <div class="result-box" id="dfuFluidResult">
   Complete the weight section above, then select the clinical category.
 </div>
+</div><div class="card">
+<h2>Plan</h2>
+<div class="grid two">
+<div><label>Select plan</label>
+<select id="dfuPlanOption">
+<option selected="" value="monitoring">Option 2 — Continue FBC monitoring</option>
+<option value="refer">Option 1 — Refer ED</option>
+<option value="discharge">Option 3 — Discharge from FBC monitoring</option>
+</select>
 </div>
-
+<div id="dfuNextTcaWrap"><label>Next TCA date</label><input id="dfuNextTca" type="date"/></div>
+<div><label>Additional plan</label><input id="dfuPlanExtra" placeholder="Optional"/></div>
+</div>
+<div class="result-box" id="dfuPlanPreview"></div>
+<div class="helper" id="dfuReferralStatus"></div>
+<div class="actions">
+<button class="btn primary" id="dfuGenerate" type="button">Generate clinical note</button>
+<button class="btn secondary" id="dfuCopy" type="button">Copy clinical note</button>
+<button class="btn secondary hidden" id="dfuGenerateReferral" type="button">Generate ED referral letter</button>
+<button class="btn secondary hidden" id="dfuCopyReferral" type="button">Copy referral letter</button>
+<button class="btn danger" id="dfuReset" type="button">Reset follow-up clerking</button>
+</div>
+</div>
 <div class="card">
 <h2>Generated clinical note</h2>
 <textarea class="output" id="dfuOutput" spellcheck="false"></textarea>
@@ -3625,6 +4231,9 @@ function renderQuickFbcDetection(mode){
   else if(count===4) status.textContent=`Detected: Hb ${parsed.hb} | Hct ${parsed.hct} | WC ${parsed.wc} | Plt ${parsed.plt}`;
   else status.textContent=`Detected ${count}/4. Missing: ${Object.keys(labels).filter(k=>!parsed[k]).map(k=>labels[k]).join(", ")}.`;
   renderSerialFbc(mode);
+  if(typeof window.requestDengueReferralRender==="function"){
+    window.requestDengueReferralRender({silent:true});
+  }
 }
 function initialiseQuickFbcDetection(){
   [["cl","new"],["dfu","followup"]].forEach(([prefix,mode])=>{
@@ -4775,6 +5384,561 @@ function compactCurrentFbcLine(mode){
 }
 window.compactCurrentFbcLine=compactCurrentFbcLine;
 
+function dengueExposureLine(label,statusId,dateId,placeId){
+  const status=value(statusId)||"no";
+  if(status!=="yes") return `${label}: no`;
+
+  const details=[];
+  const date=value(dateId);
+  const place=value(placeId);
+  if(date) details.push(formatDateDisplay(date));
+  if(place) details.push(place);
+
+  return `${label}: yes${details.length?` — ${details.join(", ")}`:""}`;
+}
+
+function dengueRecentExposureLines(){
+  return [
+    dengueExposureLine("Travelling","clTravel","clTravelDate","clTravelPlace"),
+    dengueExposureLine("Swimming","clSwimming","clSwimmingDate","clSwimmingPlace"),
+    dengueExposureLine("Jungle trekking","clTrekking","clTrekkingDate","clTrekkingPlace")
+  ];
+}
+
+function dengueRecentFeverContactLine(){
+  if(value("clContact")!=="yes") return "Recent fever contact at home/workplace: no";
+
+  const details=[];
+  if(value("clContactLocation")) details.push(value("clContactLocation"));
+  if(value("clContactPerson")) details.push(`with ${value("clContactPerson")}`);
+
+  return `Recent fever contact at home/workplace: yes${details.length?` — ${details.join(", ")}`:""}`;
+}
+
+function dengueDifferentialLine(){
+  const status=value("clDiffStatus")||"no";
+  if(status!=="yes") return "Differential diagnosis ruled out: no";
+
+  return value("clDiff")
+    ? `Differential diagnosis ruled out: yes — ${value("clDiff")}`
+    : "Differential diagnosis ruled out: yes";
+}
+
+
+function dengueComboTestSelected(){
+  return Boolean(document.getElementById("clComboDone")?.checked);
+}
+
+function dengueComboTestLine(){
+  if(!dengueComboTestSelected()) return "";
+
+  const parts=[
+    value("clComboNs1")?`NS1 ${value("clComboNs1")}`:"",
+    value("clComboIgm")?`IgM ${value("clComboIgm")}`:"",
+    value("clComboIgg")?`IgG ${value("clComboIgg")}`:""
+  ].filter(Boolean);
+
+  return parts.length
+    ? `Dengue combo test: ${parts.join(" | ")}`
+    : "Dengue combo test: performed — results not entered";
+}
+
+function syncDengueComboTest(){
+  const checked=dengueComboTestSelected();
+  const wrap=document.getElementById("clComboDetailsWrap");
+  if(wrap) wrap.classList.toggle("hidden",!checked);
+}
+
+window.dengueComboTestSelected=dengueComboTestSelected;
+window.dengueComboTestLine=dengueComboTestLine;
+window.syncDengueComboTest=syncDengueComboTest;
+
+const dengueReferralLastLevel={new:"neutral",followup:"neutral"};
+const dengueReferralLastVitalSignature={new:"",followup:""};
+let dengueReferralToastTimer=null;
+
+function dengueUnique(items){
+  return [...new Set(items.filter(Boolean))];
+}
+
+function dengueMeaningfulText(raw){
+  const text=String(raw||"").trim().toLowerCase();
+  return text && !["no","none","nil","-","n/a","na"].includes(text);
+}
+
+function dengueParseVitalSigns(mode){
+  const prefix=mode==="followup"?"dfu":"cl";
+  const text=value(`${prefix}VitalText`);
+  const normalised=String(text||"").replace(/\u00a0/g," ");
+
+  const unrecordableBp=/(?:\bBP\b|blood pressure)[^\n]{0,30}(?:unrecordable|not recordable|unable to record)/i.test(normalised);
+
+  const bpMatch=normalised.match(
+    /(?:\bBP\b|blood pressure)[^0-9\n]{0,25}([0-9]{2,3})\s*\/\s*([0-9]{2,3})/i
+  );
+  const pulseMatch=normalised.match(
+    /(?:heart\s*rate|pulse\s*rate|\bHR\b|\bPR\b|\bpulse\b)[^0-9\n]{0,25}([0-9]{2,3})/i
+  );
+  const rrMatch=normalised.match(
+    /(?:respiratory\s*rate|\bRR\b)[^0-9\n]{0,25}([0-9]{1,3})/i
+  );
+
+  const sbp=bpMatch?Number(bpMatch[1]):null;
+  const dbp=bpMatch?Number(bpMatch[2]):null;
+  const pulse=pulseMatch?Number(pulseMatch[1]):null;
+  const rr=rrMatch?Number(rrMatch[1]):null;
+  const pp=Number.isFinite(sbp)&&Number.isFinite(dbp)&&sbp>dbp
+    ? sbp-dbp
+    : null;
+
+  return {
+    text:normalised,
+    unrecordableBp,
+    sbp:Number.isFinite(sbp)?sbp:null,
+    dbp:Number.isFinite(dbp)?dbp:null,
+    pp:Number.isFinite(pp)?pp:null,
+    pulse:Number.isFinite(pulse)?pulse:null,
+    rr:Number.isFinite(rr)?rr:null
+  };
+}
+
+function denguePulsePressureFromText(mode){
+  const vital=dengueParseVitalSigns(mode);
+  if(vital.sbp===null || vital.dbp===null || vital.pp===null) return null;
+  return {sbp:vital.sbp,dbp:vital.dbp,pp:vital.pp};
+}
+
+function dengueVitalShockAssessment(mode){
+  const followUp=mode==="followup";
+  const group=value(followUp?"dfuGroup":"dfGroup");
+  const vital=dengueParseVitalSigns(mode);
+
+  if(group!=="adult"){
+    return {
+      category:"disabled",
+      label:"Adult vital-sign shock detector not applied",
+      detail:"Use paediatric age-specific haemodynamic criteria.",
+      referral:false,
+      urgent:false,
+      vital
+    };
+  }
+
+  if(vital.unrecordableBp){
+    return {
+      category:"decompensated",
+      label:"Decompensated shock pattern",
+      detail:"Blood pressure documented as unrecordable.",
+      referral:true,
+      urgent:true,
+      vital
+    };
+  }
+
+  if(vital.sbp===null || vital.dbp===null){
+    return {
+      category:"insufficient",
+      label:"Haemodynamic category not yet available",
+      detail:"Paste a recognisable BP value, for example BP 110/80 mmHg.",
+      referral:false,
+      urgent:false,
+      vital
+    };
+  }
+
+  const summaryParts=[`BP ${vital.sbp}/${vital.dbp}`,`PP ${vital.pp} mmHg`];
+  if(vital.pulse!==null) summaryParts.push(`PR ${vital.pulse}/min`);
+  if(vital.rr!==null) summaryParts.push(`RR ${vital.rr}/min`);
+
+  const hypotensiveBp=vital.sbp<90 && vital.dbp<60;
+  const narrowPulsePressure=vital.pp<20;
+
+  if(hypotensiveBp || narrowPulsePressure){
+    const triggers=[];
+    if(hypotensiveBp) triggers.push("BP <90/60 mmHg");
+    if(narrowPulsePressure) triggers.push("pulse pressure <20 mmHg");
+
+    const bradycardia=vital.pulse!==null && vital.pulse<60;
+    if(bradycardia) triggers.push("bradycardia present");
+
+    return {
+      category:"decompensated",
+      label:"Decompensated shock pattern",
+      detail:`${summaryParts.join(", ")} — ${triggers.join(" and ")}.`,
+      referral:true,
+      urgent:true,
+      vital
+    };
+  }
+
+  const normalBloodPressure=vital.sbp>=90 && vital.dbp>=60;
+  const tachycardia=vital.pulse!==null && vital.pulse>=100;
+
+  if(normalBloodPressure && tachycardia){
+    return {
+      category:"compensated",
+      label:"Compensated shock pattern",
+      detail:`${summaryParts.join(", ")} — normal BP with HR/PR ≥100/min.`,
+      referral:true,
+      urgent:true,
+      vital
+    };
+  }
+
+  return {
+    category:"normal",
+    label:"No shock pattern detected from entered vital signs",
+    detail:summaryParts.join(", ")+".",
+    referral:false,
+    urgent:false,
+    vital
+  };
+}
+
+function renderDengueVitalShockResult(mode){
+  const prefix=mode==="followup"?"dfu":"cl";
+  const box=document.getElementById(`${prefix}VitalShockResult`);
+  if(!box) return null;
+
+  const assessment=dengueVitalShockAssessment(mode);
+  box.classList.remove("neutral","normal","compensated","decompensated","disabled");
+
+  const className=assessment.category==="insufficient"
+    ? "neutral"
+    : assessment.category;
+  box.classList.add(className);
+
+  box.querySelector("strong").textContent=assessment.label;
+  box.querySelector("span").textContent=assessment.detail;
+
+  return assessment;
+}
+
+window.dengueParseVitalSigns=dengueParseVitalSigns;
+window.dengueVitalShockAssessment=dengueVitalShockAssessment;
+window.renderDengueVitalShockResult=renderDengueVitalShockResult;
+
+function dengueRisingHctFallingPlatelet(mode){
+  if(typeof collectSerialFbcRows!=="function") return null;
+  const rows=collectSerialFbcRows(mode)
+    .filter(row=>row.hct && row.plt)
+    .map(row=>({...row,hctNumber:Number(row.hct),pltNumber:Number(row.plt)}))
+    .filter(row=>Number.isFinite(row.hctNumber)&&Number.isFinite(row.pltNumber));
+
+  if(rows.length<2) return null;
+  const previous=rows[rows.length-2];
+  const current=rows[rows.length-1];
+
+  if(current.hctNumber>previous.hctNumber && current.pltNumber<previous.pltNumber){
+    return {
+      previous,
+      current,
+      text:`rising HCT (${previous.hct} → ${current.hct}) with falling platelet (${previous.plt} → ${current.plt})`
+    };
+  }
+  return null;
+}
+
+function dengueReferralAssessment(mode){
+  const followUp=mode==="followup";
+  const prefix=followUp?"dfu":"cl";
+  const group=value(followUp?"dfuGroup":"dfGroup");
+
+  if(group!=="adult"){
+    return {
+      enabled:false,
+      level:"disabled",
+      reasons:[],
+      urgentReasons:[],
+      title:"Adult referral detector not applied",
+      summary:"Use the paediatric dengue guideline and clinical assessment for this case.",
+      haemodynamic:dengueVitalShockAssessment(mode)
+    };
+  }
+
+  const reasons=[];
+  const urgentReasons=[];
+
+  if(followUp){
+    const bleedingItems=[
+      ...document.querySelectorAll('#dfuBleedingTendencies input[type="checkbox"]:checked')
+    ].map(item=>item.value);
+
+    if(bleedingItems.length){
+      reasons.push(`bleeding tendency: ${bleedingItems.join(", ")}`);
+    }
+    if(value("dfuVomitFrequency")==="ge3"){
+      reasons.push("persistent vomiting ≥3 times/24 hours");
+    }
+    if(value("dfuLooseStoolFrequency")==="ge3"){
+      reasons.push("persistent diarrhoea ≥3 times/24 hours");
+    }
+    if(value("dfuAbdominalPain")==="yes") reasons.push("abdominal pain");
+    if(value("dfuSob")==="yes") reasons.push("shortness of breath");
+    if(value("dfuLethargy")==="yes") reasons.push("lethargy");
+
+    if(value("dfuOralIntake")==="poor") reasons.push("unable to tolerate oral fluids");
+    if(["reduced","no urine output"].includes(value("dfuUrine"))){
+      reasons.push(value("dfuUrine")==="no urine output"?"no urine output":"reduced urine output");
+    }
+    if(value("dfuSeizure")==="yes") urgentReasons.push("seizure");
+    if(value("dfuHydration")==="dehydrated") reasons.push("dehydration");
+    if(value("dfuOrganFailure")==="yes"){
+      urgentReasons.push(
+        value("dfuOrganFailureDetails")
+          ? `organ failure / severe organ involvement: ${value("dfuOrganFailureDetails")}`
+          : "organ failure / severe organ involvement"
+      );
+    }
+
+    if(value("dfuHaemo")!=="haemodynamically stable" ||
+       ["compensated","decompensated"].includes(value("dfuFluidState"))){
+      urgentReasons.push(
+        value("dfuHaemo")==="decompensated shock" || value("dfuFluidState")==="decompensated"
+          ? "decompensated / hypotensive shock"
+          : "compensated shock"
+      );
+    }
+
+    if(dengueMeaningfulText(value("dfuDxComorbid")) ||
+       value("dfuDxComorbidStatus")==="present"){
+      reasons.push(
+        dengueMeaningfulText(value("dfuDxComorbid"))
+          ? `co-morbidity: ${value("dfuDxComorbid")}`
+          : "co-morbidity"
+      );
+    }
+
+    const age=Number(value("dfuAge"));
+    if(Number.isFinite(age)&&age>65) reasons.push("age >65 years");
+    if(value("dfuBloodThinner")==="yes") reasons.push("on antiplatelet / anticoagulant");
+    if(value("dfuPregnancy")==="yes") reasons.push("pregnancy");
+    if(value("dfuSocialLimit")==="yes"){
+      reasons.push(
+        value("dfuSocialLimitDetails")
+          ? `social factor limiting follow-up: ${value("dfuSocialLimitDetails")}`
+          : "social factor limiting follow-up"
+      );
+    }
+  }else{
+    if(value("clAbdPain")==="yes") reasons.push("abdominal pain");
+    if(value("clVomiting")==="ge3") reasons.push("persistent vomiting ≥3 times/24 hours");
+    if(value("clDiarrhoea")==="ge3") reasons.push("persistent diarrhoea ≥3 times/24 hours");
+    if(value("clLethargy")==="yes") reasons.push("lethargy");
+    if(value("clBleeding")==="yes") reasons.push("bleeding manifestation");
+
+    document.querySelectorAll("#clWarningSigns input:checked").forEach(item=>{
+      reasons.push(item.value);
+    });
+    if(value("clWarningStatus")==="present" && !reasons.length){
+      reasons.push("dengue warning sign documented");
+    }
+
+    if(value("clDrink")==="unable") reasons.push("unable to tolerate oral fluids");
+    if(value("clUrine")==="yes") reasons.push("reduced urine output");
+    if(value("clSeizure")==="yes") urgentReasons.push("seizure");
+    if(value("clHydration")==="dehydrated") reasons.push("dehydration");
+    if(value("clOrganFailure")==="yes"){
+      urgentReasons.push(
+        value("clOrganFailureDetails")
+          ? `organ failure / severe organ involvement: ${value("clOrganFailureDetails")}`
+          : "organ failure / severe organ involvement"
+      );
+    }
+
+    if(value("clHaemo")!=="haemodynamically stable" ||
+       ["compensated","decompensated"].includes(value("dfState"))){
+      urgentReasons.push(
+        value("clHaemo")==="decompensated shock" || value("dfState")==="decompensated"
+          ? "decompensated / hypotensive shock"
+          : "compensated shock"
+      );
+    }
+
+    if(dengueMeaningfulText(value("clComorbid")) ||
+       value("clDxComorbidStatus")==="present"){
+      const detail=dengueMeaningfulText(value("clDxComorbid"))
+        ? value("clDxComorbid")
+        : dengueMeaningfulText(value("clComorbid"))
+        ? value("clComorbid")
+        : "";
+      reasons.push(detail?`co-morbidity: ${detail}`:"co-morbidity");
+    }
+
+    const age=Number(value("clAge"));
+    if(Number.isFinite(age)&&age>65) reasons.push("age >65 years");
+    if(value("clBloodThinner")==="yes") reasons.push("on antiplatelet / anticoagulant");
+    if(value("clPregnancy")==="yes") reasons.push("pregnancy");
+    if(value("clSocialLimit")==="yes"){
+      reasons.push(
+        value("clSocialLimitDetails")
+          ? `social factor limiting follow-up: ${value("clSocialLimitDetails")}`
+          : "social factor limiting follow-up"
+      );
+    }
+  }
+
+  const vitalShock=dengueVitalShockAssessment(mode);
+  if(vitalShock.referral){
+    urgentReasons.push(
+      `${vitalShock.label.toLowerCase()} — ${vitalShock.detail.replace(/\.$/,"")}`
+    );
+  }
+
+  const labTrend=dengueRisingHctFallingPlatelet(mode);
+  if(labTrend) reasons.push(labTrend.text);
+
+  const cleanUrgent=dengueUnique(urgentReasons);
+  const cleanReasons=dengueUnique(reasons.filter(item=>!cleanUrgent.includes(item)));
+  const all=dengueUnique([...cleanUrgent,...cleanReasons]);
+
+  if(cleanUrgent.length){
+    return {
+      enabled:true,
+      level:"red",
+      reasons:all,
+      urgentReasons:cleanUrgent,
+      title:"Urgent hospital referral concern",
+      summary:`${all.length} referral criterion${all.length===1?"":"a"} detected.`,
+      haemodynamic:vitalShock
+    };
+  }
+
+  if(cleanReasons.length){
+    return {
+      enabled:true,
+      level:"amber",
+      reasons:cleanReasons,
+      urgentReasons:[],
+      title:"Hospital referral indicated",
+      summary:`${cleanReasons.length} referral criterion${cleanReasons.length===1?"":"a"} detected.`,
+      haemodynamic:vitalShock
+    };
+  }
+
+  return {
+    enabled:true,
+    level:"neutral",
+    reasons:[],
+    urgentReasons:[],
+    title:"Referral check active",
+    summary:"No hospital referral criterion detected from the documented data.",
+    haemodynamic:vitalShock
+  };
+}
+
+function dengueReferralNoteLines(mode){
+  const assessment=dengueReferralAssessment(mode);
+  if(!assessment.enabled || !assessment.reasons.length) return [];
+  return [
+    "HOSPITAL REFERRAL SCREENING — ADULT DENGUE CPG 2015",
+    assessment.level==="red"
+      ? "Urgent hospital referral concern."
+      : "Hospital referral indicated.",
+    ...assessment.reasons.map((reason,index)=>`${index+1}. ${reason}`)
+  ];
+}
+
+function showDengueReferralToast(assessment){
+  const toast=document.getElementById("dengueReferralToast");
+  if(!toast || !assessment.reasons.length) return;
+
+  toast.classList.remove("hidden","red");
+  toast.classList.toggle("red",assessment.level==="red");
+  toast.querySelector("strong").textContent=assessment.title;
+  toast.querySelector("span").textContent=assessment.reasons.slice(0,3).join(" • ");
+
+  clearTimeout(dengueReferralToastTimer);
+  dengueReferralToastTimer=setTimeout(()=>{
+    toast.classList.add("hidden");
+  },5000);
+}
+
+function renderDengueReferralAlert(mode,options={}){
+  const followUp=mode==="followup";
+  const alert=document.getElementById(followUp?"dfuReferralAlert":"clReferralAlert");
+  if(!alert) return null;
+
+  const assessment=dengueReferralAssessment(mode);
+  alert.classList.remove("neutral","amber","red","disabled","flash");
+  alert.classList.add(assessment.level);
+
+  const icon=alert.querySelector(".dengue-referral-alert-icon");
+  const title=alert.querySelector(".dengue-referral-alert-copy strong");
+  const summary=alert.querySelector(".dengue-referral-alert-copy span");
+  const reasons=alert.querySelector(".dengue-referral-reasons");
+  const action=alert.querySelector(".dengue-referral-action");
+
+  icon.textContent=assessment.level==="red"?"!":assessment.level==="amber"?"!":assessment.level==="disabled"?"i":"✓";
+  title.textContent=assessment.title;
+  summary.textContent=assessment.summary;
+
+  reasons.innerHTML="";
+  assessment.reasons.forEach(reason=>{
+    const chip=document.createElement("span");
+    chip.className="dengue-referral-reason";
+    chip.textContent=reason;
+    reasons.appendChild(chip);
+  });
+  reasons.classList.toggle("hidden",!assessment.reasons.length);
+  action.classList.toggle("hidden",!assessment.enabled || !assessment.reasons.length);
+
+  const previous=dengueReferralLastLevel[mode];
+  const rank={disabled:0,neutral:0,amber:1,red:2};
+  const vitalSignature=assessment.haemodynamic &&
+    ["compensated","decompensated"].includes(assessment.haemodynamic.category)
+      ? `${assessment.haemodynamic.category}|${assessment.haemodynamic.detail}`
+      : "";
+  const newVitalShock=Boolean(
+    vitalSignature && vitalSignature!==dengueReferralLastVitalSignature[mode]
+  );
+
+  if(!options.silent && (
+    rank[assessment.level]>rank[previous] ||
+    newVitalShock
+  )){
+    alert.classList.add("flash");
+    showDengueReferralToast(assessment);
+  }
+
+  dengueReferralLastLevel[mode]=assessment.level;
+  dengueReferralLastVitalSignature[mode]=vitalSignature;
+
+  return assessment;
+}
+
+function setDengueReferralPlan(mode){
+  if(mode==="followup"){
+    const select=document.getElementById("dfuPlanOption");
+    select.value="refer";
+    select.dispatchEvent(new Event("change",{bubbles:true}));
+  }else{
+    const select=document.getElementById("clPlanOption");
+    select.value="refer";
+    select.dispatchEvent(new Event("change",{bubbles:true}));
+    renderDenguePlanPreview();
+  }
+}
+
+function syncReferralDetailFields(){
+  [
+    ["clOrganFailure","clOrganFailureDetailsWrap"],
+    ["clSocialLimit","clSocialLimitDetailsWrap"],
+    ["dfuOrganFailure","dfuOrganFailureDetailsWrap"],
+    ["dfuSocialLimit","dfuSocialLimitDetailsWrap"]
+  ].forEach(([selectId,wrapId])=>{
+    const select=document.getElementById(selectId);
+    const wrap=document.getElementById(wrapId);
+    if(select&&wrap) wrap.classList.toggle("hidden",select.value!=="yes");
+  });
+}
+
+window.dengueReferralAssessment=dengueReferralAssessment;
+window.renderDengueReferralAlert=renderDengueReferralAlert;
+window.dengueReferralNoteLines=dengueReferralNoteLines;
+window.syncReferralDetailFields=syncReferralDetailFields;
+window.setDengueReferralPlan=setDengueReferralPlan;
+
 function buildDengueClinicalNote(planLines){
   const symptomRows=[...document.querySelectorAll("#clSymptoms .symptom-row")];
 
@@ -4812,7 +5976,12 @@ function buildDengueClinicalNote(planLines){
     .filter(Boolean)
     .map(item=>`+ ${item}`);
 
-  const positiveSymptomLines=[...positiveSymptoms,...otherSymptoms];
+  const symptomLines=[
+    ...positiveSymptoms,
+    ...otherSymptoms,
+    ...negativeSymptoms
+  ];
+
   const allergy=value("clAllergySelect")==="custom"
     ? value("clAllergyCustom")
     : "NKDA";
@@ -4832,27 +6001,35 @@ function buildDengueClinicalNote(planLines){
 
   const investigationLines=[
     currentFbc,
+    dengueComboTestLine(),
     ...(includeRaw?["Full pasted FBC result:",value("clQuickFbcText")]:[]),
     ...(previousLabs.length?["Previous lab investigations:",...previousLabs]:[]),
     ...(serialLines.length?serialLines:[])
   ].filter(Boolean);
 
-  const lines=[
+  const headerLines=[
     allergy?`allergy history to medications: ${allergy}`:"",
     value("clAddress")?`address: ${value("clAddress")}`:"",
     value("clPhone")?`latest phone number: ${value("clPhone")}`:"",
+    value("clAge")?`age: ${value("clAge")} years`:"",
     value("clSex")==="Female" && value("clLmp")
       ? `LMP: ${formatDateDisplay(value("clLmp"))}`
-      : "",
-    "",
+      : ""
+  ].filter(Boolean);
+
+  const chiefLines=[
     value("clChief")
       ? `Chief complaint: ${value("clChief")}${value("clDuration")?" for "+value("clDuration"):""}`
-      : "",
+      : ""
+  ].filter(Boolean);
+
+  const associatedLines=[
     "Associated symptoms:",
-    ...(positiveSymptomLines.length?positiveSymptomLines:[]),
-    ...(isCoughTbScreeningTriggered()?["",...getTbScreeningLines()]:[]),
-    ...(negativeSymptoms.length?["","Negative associated symptoms:",...negativeSymptoms]:[]),
-    "",
+    ...symptomLines,
+    ...(isCoughTbScreeningTriggered()?getTbScreeningLines():[])
+  ].filter(Boolean);
+
+  const comorbidityLines=[
     "Co-morbidity",
     value("clPrevious")?`1. Previous dengue illness: ${value("clPrevious")}`:"",
     value("clBMI")?`2. BMI: ${value("clBMI")}`:"",
@@ -4860,66 +6037,103 @@ function buildDengueClinicalNote(planLines){
     value("clSmoking")?`4. Smoking: ${value("clSmoking")}`:"",
     value("clPregnancy")?`5. Pregnancy: ${value("clPregnancy")}`:"",
     value("clComorbid")?`6. Other comorbid: ${value("clComorbid")}`:"",
-    "",
-    value("clRisk")?`Risk group: ${value("clRisk")}`:"",
-    value("clContact")?`Recent fever in house/workplace: ${value("clContact")}`:"",
-    value("clArea")?`Dengue-prone area/recent fogging: ${value("clArea")}`:"",
-    "",
-    "HISTORY",
-    value("clDrink")?`1. How much can patient drink?: ${value("clDrink")}`:"",
-    value("clUrine")?`2. Reduced urine volume?: ${value("clUrine")}`:"",
-    value("clActivity")?`3. Can perform daily activities?: ${value("clActivity")}`:"",
-    "",
-    "WARNING SYMPTOMS",
-    `1. Lethargy?: ${value("clLethargy")||"no"}`,
-    newCaseFrequencyDescription("vomiting",value("clVomiting")||"none"),
-    newCaseFrequencyDescription("stool",value("clDiarrhoea")||"none"),
-    `4. Abdominal pain?: ${value("clAbdPain")||"no"}`,
-    `5. Bleeding / bruising?: ${value("clBleeding")||"no"}`,
-    "",
+    value("clBloodThinner")?`7. Antiplatelet / anticoagulant: ${value("clBloodThinner")}`:"",
+    value("clSocialLimit")
+      ? `8. Social factor limiting follow-up: ${value("clSocialLimit")}${value("clSocialLimitDetails")?` — ${value("clSocialLimitDetails")}`:""}`
+      : ""
+  ].filter(Boolean);
+
+  const exposureLines=[
+    "RECENT EXPOSURE HISTORY",
+    ...dengueRecentExposureLines().map((line,index)=>`${index+1}. ${line}`),
+    `4. ${dengueRecentFeverContactLine()}`,
+    value("clArea")?`5. Dengue-prone area/recent fogging: ${value("clArea")}`:""
+  ].filter(Boolean);
+
+  const warningLines=[
+    "WARNING SIGNS",
+    value("clDrink")?`1. Oral intake / amount able to drink: ${value("clDrink")}`:"",
+    value("clUrine")?`2. Reduced urine volume: ${value("clUrine")}`:"",
+    value("clActivity")?`3. Able to perform daily activities: ${value("clActivity")}`:"",
+    `4. Lethargy: ${value("clLethargy")||"no"}`,
+    `5. ${newCaseFrequencyDescription("vomiting",value("clVomiting")||"none").replace(/^\+\s*/,"")}`,
+    `6. ${newCaseFrequencyDescription("stool",value("clDiarrhoea")||"none").replace(/^\+\s*/,"")}`,
+    `7. Abdominal pain: ${value("clAbdPain")||"no"}`,
+    `8. Bleeding / bruising: ${value("clBleeding")||"no"}`,
+    `9. Seizure: ${value("clSeizure")||"no"}`
+  ].filter(Boolean);
+
+  const examinationLines=[
     "o/e:",
     "alert, comfortable, pink, not tachypneic, crt < 2 sec, warm peripheries, good PV",
-    "",
     value("clGCS")?`GCS: ${value("clGCS")}`:"",
+    value("clHydration")?`hydration: ${value("clHydration")}`:"",
+    value("clOrganFailure")==="yes"
+      ? `organ failure / severe organ involvement: ${value("clOrganFailureDetails")||"present"}`
+      : "",
     value("clThroat")?`throat: ${value("clThroat")}`:"",
     value("clTonsil")?`tonsil: ${value("clTonsil")}`:"",
     value("clLungs")?`lungs: ${value("clLungs")}`:"",
     value("clCVS")?`CVS: ${value("clCVS")}`:"",
     value("clPA")?`PA: ${value("clPA")}`:"",
-    value("clOtherPhysical")?`other physical findings: ${value("clOtherPhysical")}`:"",
-    ...(vitalLines.length?["","VITAL SIGNS",...vitalLines]:[]),
-    ...(interventionLines.length
-      ? ["","INTERVENTION DONE IN CLINIC",...interventionLines.map((line,index)=>`${index+1}. ${line}`)]
-      : []),
-    ...(investigationLines.length?["","INVESTIGATIONS",...investigationLines]:[]),
-    "",
-    diagnosis?`DIAGNOSIS: ${diagnosis}`:"",
-    ...(isDengue && value("clNotify") && value("clNotify")!=="-"
-      ? ["",`Notification (Date): ${value("clNotify")}`]
-      : []),
-    ...(isDengue && value("clCard") && value("clCard")!=="-"
-      ? ["",`Dengue Alert card given: ${value("clCard")}`]
-      : []),
-    ...(isDengue && value("clDiff")
-      ? ["",`Other differential diagnoses ruled out: ${value("clDiff")}`]
-      : []),
-    "",
+    value("clOtherPhysical")?`other physical findings: ${value("clOtherPhysical")}`:""
+  ].filter(Boolean);
+
+  const paragraphs=[];
+
+  const addParagraph=lines=>{
+    const cleaned=lines.filter(Boolean);
+    if(cleaned.length) paragraphs.push(cleaned.join("\n"));
+  };
+
+  addParagraph(headerLines);
+  addParagraph(chiefLines);
+  addParagraph(associatedLines);
+  addParagraph(comorbidityLines);
+  addParagraph(exposureLines);
+  addParagraph(warningLines);
+  addParagraph(examinationLines);
+
+  if(vitalLines.length){
+    addParagraph(["VITAL SIGNS",...vitalLines]);
+  }
+
+  if(interventionLines.length){
+    addParagraph([
+      "INTERVENTION DONE IN CLINIC",
+      ...interventionLines.map((line,index)=>`${index+1}. ${line}`)
+    ]);
+  }
+
+  if(investigationLines.length){
+    addParagraph(["INVESTIGATIONS",...investigationLines]);
+  }
+
+  if(diagnosis){
+    addParagraph([`DIAGNOSIS: ${diagnosis}`]);
+  }
+
+  // Referral screening stays as an on-screen alert only.
+  // It is intentionally excluded from the generated clinical note.
+
+  if(isDengue && dengueComboTestSelected() && value("clNotify")){
+    addParagraph([`Notification date: ${formatDateDisplay(value("clNotify"))}`]);
+  }
+
+  if(isDengue && dengueComboTestSelected() && value("clCard") && value("clCard")!=="-"){
+    addParagraph([`Dengue Alert card given: ${value("clCard")}`]);
+  }
+
+  if(isDengue && dengueComboTestSelected()){
+    addParagraph([dengueDifferentialLine()]);
+  }
+
+  addParagraph([
     "plan:",
     ...planLines.map((line,index)=>`${index+1}. ${line}`)
-  ];
+  ]);
 
-  return lines
-    .filter((line,index,array)=>{
-      if(!line) return false;
-      if(["Co-morbidity","HISTORY","WARNING SYMPTOMS"].includes(line)){
-        const next=array.slice(index+1).find(item=>item!=="");
-        return Boolean(next);
-      }
-      return true;
-    })
-    .join("\n")
-    .replace(/\n{3,}/g,"\n\n")
-    .trim();
+  return paragraphs.join("\n\n").trim();
 }
 
 function generateDengueReferralLetter(planLines){
@@ -4927,11 +6141,9 @@ function generateDengueReferralLetter(planLines){
 
   const referral=[
     "Dear colleague, thank you for seeing this pt",
-    "",
     clinicalNote,
-    "",
     "Kindly see the patient and do the needful. Thank you"
-  ].join("\n");
+  ].join("\n\n");
 
   $("clReferralOutput").value=referral;
   $("clReferralWrap").classList.remove("hidden");
@@ -6594,13 +7806,9 @@ function nnjSerialTextLines(){
 
   return [
     "SERIAL TSB",
-    ...rows.map(row=>{
-      const position=row.position>=0
-        ? `${row.position.toFixed(1)} mg/dL below PL`
-        : `${Math.abs(row.position).toFixed(1)} mg/dL above PL`;
-
-      return `${nnjFormatDateTimeLocal(row.dateTime)} — age ${nnjAgeAtResult(row.hours)}: TSB ${row.tsb.toFixed(1)} | PL ${row.pl.toFixed(1)} | ET ${row.et.toFixed(1)} | ${position}`;
-    })
+    ...rows.map(row=>
+      `${nnjFormatDateTimeLocal(row.dateTime)} — age ${nnjAgeAtResult(row.hours)}: TSB ${row.tsb.toFixed(1)} mg/dL`
+    )
   ];
 }
 
@@ -7155,11 +8363,9 @@ function generateNnjNote(){
   if(makeReferral){
     const referral=[
       "Dear colleague, thank you for seeing this pt",
-      "",
       $("nnjOutput").value,
-      "",
       "Kindly see the patient and do the needful. Thank you"
-    ].join("\n");
+    ].join("\n\n");
 
     $("nnjReferralLetter").value=referral
       .replace(/\n{3,}/g,"\n\n")
@@ -8201,6 +9407,9 @@ function renderDengueFollowUpFluid(){
     : `<strong>Fluid calculation incomplete / not indicated</strong><br>${fluid.display}`;
 
   renderDengueFollowUpPlan();
+  if(typeof renderDengueReferralAlert==="function"){
+    renderDengueReferralAlert("followup",{silent:true});
+  }
 }
 
 function followUpPlanLines(){
@@ -8259,6 +9468,7 @@ function renderDengueFollowUpPlan(){
 function buildDengueFollowUpClinicalNote(){
   const warning=warningSignData();
   const day=fv("dfuDayIllness");
+
   const vitalLines=[
     fv("dfuVitalDateTime")?`Date/Time: ${formatDateTimeDisplay(fv("dfuVitalDateTime"))}`:"",
     fv("dfuVitalText")
@@ -8278,81 +9488,126 @@ function buildDengueFollowUpClinicalNote(){
 
   const interventionLines=getDengueFollowUpInterventionLines();
 
-  const lines=[
+  const headerLines=[
     fv("dfuAllergy")?`allergy history to medications: ${fv("dfuAllergy")}`:"",
     fv("dfuAddress")?`address: ${fv("dfuAddress")}`:"",
     fv("dfuPhone")?`latest phone number: ${fv("dfuPhone")}`:"",
-    "",
+    fv("dfuAge")?`age: ${fv("dfuAge")} years`:"",
+    fv("dfuPregnancy")&&fv("dfuPregnancy")!=="-"?`pregnancy: ${fv("dfuPregnancy")}`:"",
+    fv("dfuBloodThinner")?`antiplatelet / anticoagulant: ${fv("dfuBloodThinner")}`:"",
+    fv("dfuSocialLimit")
+      ? `social factor limiting follow-up: ${fv("dfuSocialLimit")}${fv("dfuSocialLimitDetails")?` — ${fv("dfuSocialLimitDetails")}`:""}`
+      : ""
+  ].filter(Boolean);
+
+  const presentationLines=[
     "Came today for follow-up FBC monitoring for dengue fever.",
     day?`Day of illness: ${day}`:"",
     fv("dfuLastPcm")?`Last PCM taken: ${formatFollowUpDateTime(fv("dfuLastPcm"))}`:"",
-    fv("dfuAfebrileSince")?`Afebrile without antipyretic since: ${formatFollowUpDateTime(fv("dfuAfebrileSince"))}`:"",
-    "",
-    ...(fv("dfuWeight")||fv("dfuHeight")||fv("dfuBMI")||fv("dfuAdjBW")
-      ? [
-          "BODY WEIGHT",
-          fv("dfuWeight")?`Weight: ${fv("dfuWeight")} kg`:"",
-          fv("dfuHeight")?`Height: ${fv("dfuHeight")} cm`:"",
-          fv("dfuBMI")?`BMI: ${fv("dfuBMI")}`:"",
-          fv("dfuAdjBW")?`Adjusted body weight: ${fv("dfuAdjBW")} kg`:""
-        ]
-      : []),
-    "",
+    fv("dfuAfebrileSince")?`Afebrile without antipyretic since: ${formatFollowUpDateTime(fv("dfuAfebrileSince"))}`:""
+  ].filter(Boolean);
+
+  const bodyWeightLines=[
+    "BODY WEIGHT",
+    fv("dfuWeight")?`Weight: ${fv("dfuWeight")} kg`:"",
+    fv("dfuHeight")?`Height: ${fv("dfuHeight")} cm`:"",
+    fv("dfuBMI")?`BMI: ${fv("dfuBMI")}`:"",
+    fv("dfuAdjBW")?`Adjusted body weight: ${fv("dfuAdjBW")} kg`:""
+  ].filter(Boolean);
+
+  const warningLines=[
     "DENGUE WARNING SIGNS",
     ...warning.positive.map(item=>`+ ${item}`),
     ...warning.negative.map(item=>`no ${item}`),
+    `seizure: ${fv("dfuSeizure")||"no"}`,
     ...(warning.belowThreshold.length
       ? ["Symptoms present but not DF warning signs:",...warning.belowThreshold.map(item=>`+ ${item}`)]
-      : []),
-    "",
+      : [])
+  ].filter(Boolean);
+
+  const salientLines=[
     "THREE SALIENT QUESTIONS",
     fv("dfuOralIntake")?`Oral intake: ${fv("dfuOralIntake")}`:"",
     fv("dfuActivity")?`Active as usual: ${fv("dfuActivity")}`:"",
     fv("dfuUrine")?`Urine output: ${fv("dfuUrine")}`:"",
-    fv("dfuOtherSymptoms")?`Other symptoms: ${fv("dfuOtherSymptoms")}`:"",
-    "",
+    fv("dfuOtherSymptoms")?`Other symptoms: ${fv("dfuOtherSymptoms")}`:""
+  ].filter(Boolean);
+
+  const examinationLines=[
     "o/e:",
     "alert, comfortable, pink, not tachypneic, crt < 2 sec, warm peripheries, good PV",
     fv("dfuGCS")?`GCS: ${fv("dfuGCS")}`:"",
+    fv("dfuHydration")?`hydration: ${fv("dfuHydration")}`:"",
+    fv("dfuOrganFailure")==="yes"
+      ? `organ failure / severe organ involvement: ${fv("dfuOrganFailureDetails")||"present"}`
+      : "",
     fv("dfuThroat")?`throat: ${fv("dfuThroat")}`:"",
     fv("dfuTonsil")?`tonsil: ${fv("dfuTonsil")}`:"",
     fv("dfuLungs")?`lungs: ${fv("dfuLungs")}`:"",
     fv("dfuCVS")?`CVS: ${fv("dfuCVS")}`:"",
     fv("dfuPA")?`PA: ${fv("dfuPA")}`:"",
-    fv("dfuOtherPhysical")?`other physical findings: ${fv("dfuOtherPhysical")}`:"",
-    ...(vitalLines.length?["","VITAL SIGNS",...vitalLines]:[]),
-    ...(investigationLines.length?["","INVESTIGATIONS",...investigationLines]:[]),
-    ...(interventionLines.length
-      ? ["","INTERVENTION DONE IN CLINIC",...interventionLines.map((line,index)=>`${index+1}. ${line}`)]
-      : []),
-    "",
-    `DIAGNOSIS: ${buildDengueFollowUpDiagnosis()}`,
-    "",
+    fv("dfuOtherPhysical")?`other physical findings: ${fv("dfuOtherPhysical")}`:""
+  ].filter(Boolean);
+
+  const paragraphs=[];
+  const addParagraph=lines=>{
+    const cleaned=lines.filter(Boolean);
+    if(cleaned.length) paragraphs.push(cleaned.join("\n"));
+  };
+
+  addParagraph(headerLines);
+  addParagraph(presentationLines);
+
+  if(bodyWeightLines.length>1){
+    addParagraph(bodyWeightLines);
+  }
+
+  addParagraph(warningLines);
+  addParagraph(salientLines);
+  addParagraph(examinationLines);
+
+  if(vitalLines.length){
+    addParagraph(["VITAL SIGNS",...vitalLines]);
+  }
+
+  if(investigationLines.length){
+    addParagraph(["INVESTIGATIONS",...investigationLines]);
+  }
+
+  if(interventionLines.length){
+    addParagraph([
+      "INTERVENTION DONE IN CLINIC",
+      ...interventionLines.map((line,index)=>`${index+1}. ${line}`)
+    ]);
+  }
+
+  addParagraph([`DIAGNOSIS: ${buildDengueFollowUpDiagnosis()}`]);
+
+  // Smart referral screening remains on-screen only.
+  // It is intentionally excluded from the generated note and referral body.
+
+  addParagraph([
     "DENGUE FLUID MANAGEMENT",
     getDengueFollowUpFluidInstruction().valid
       ? getDengueFollowUpFluidInstruction().plan
-      : getDengueFollowUpFluidInstruction().display,
-    "",
+      : getDengueFollowUpFluidInstruction().display
+  ]);
+
+  addParagraph([
     "plan:",
     ...followUpPlanLines().map((line,index)=>`${index+1}. ${line}`)
-  ];
+  ]);
 
-  return lines
-    .filter(Boolean)
-    .join("\n")
-    .replace(/\n{3,}/g,"\n\n")
-    .trim();
+  return paragraphs.join("\n\n").trim();
 }
 
 function generateDengueFollowUpReferral(){
   const note=buildDengueFollowUpClinicalNote();
   const referral=[
     "Dear colleague, thank you for seeing this pt",
-    "",
     note,
-    "",
     "Kindly see the patient and do the needful. Thank you"
-  ].join("\n");
+  ].join("\n\n");
 
   f$("dfuReferralOutput").value=referral;
   f$("dfuReferralWrap").classList.remove("hidden");
@@ -9434,6 +10689,274 @@ document.addEventListener("keydown",event=>{
   } else {
     init();
   }
+})();
+</script>
+<script>
+(function(){
+  function activeDenguePrefix(){
+    const page=document.getElementById("page-clerking");
+    if(!page || !page.classList.contains("active")) return "";
+    const newCase=document.getElementById("dengueNewCaseTemplate");
+    const followUp=document.getElementById("dengueFollowUpTemplate");
+    if(newCase && !newCase.classList.contains("hidden")) return "cl";
+    if(followUp && !followUp.classList.contains("hidden")) return "dfu";
+    return "";
+  }
+
+  function targetCard(type){
+    const prefix=activeDenguePrefix();
+    if(!prefix) return null;
+    return document.getElementById(
+      type==="previous-lab"
+        ? `${prefix}PreviousLabOptionalCard`
+        : `${prefix}InterventionCard`
+    );
+  }
+
+  function updateDengueOptionalSidebar(){
+    const panel=document.getElementById("dengueOptionalSidebar");
+    if(!panel) return;
+
+    const prefix=activeDenguePrefix();
+    panel.classList.toggle("hidden",!prefix);
+
+    panel.querySelectorAll("[data-open-optional]").forEach(button=>{
+      const type=button.dataset.openOptional;
+      const card=targetCard(type);
+      const isOpen=Boolean(card && !card.classList.contains("hidden"));
+      button.classList.toggle("active",isOpen);
+
+      const label=button.querySelector("[data-tool-label]");
+      const state=button.querySelector("small");
+      if(label){
+        label.textContent=type==="previous-lab"
+          ? "Previous investigations"
+          : "Intervention in clinic";
+      }
+      if(state) state.textContent=isOpen?"Shown":"Optional";
+    });
+  }
+
+  function setOptionalCard(type,show){
+    const card=targetCard(type);
+    if(!card) return;
+
+    card.classList.toggle("hidden",!show);
+    updateDengueOptionalSidebar();
+
+    if(show){
+      setTimeout(()=>{
+        card.scrollIntoView({behavior:"smooth",block:"start"});
+      },30);
+    }
+  }
+
+  function toggleOptionalCard(type){
+    const card=targetCard(type);
+    if(!card) return;
+    setOptionalCard(type,card.classList.contains("hidden"));
+  }
+
+  function hideAllOptionalCards(){
+    [
+      "clPreviousLabOptionalCard",
+      "clInterventionCard",
+      "dfuPreviousLabOptionalCard",
+      "dfuInterventionCard"
+    ].forEach(id=>document.getElementById(id)?.classList.add("hidden"));
+    updateDengueOptionalSidebar();
+  }
+
+  function ensureOptionalSidebar(){
+    const sidebar=document.getElementById("unifiedDraftSidebar");
+    if(!sidebar) return false;
+    if(document.getElementById("dengueOptionalSidebar")) return true;
+
+    const panel=document.createElement("div");
+    panel.id="dengueOptionalSidebar";
+    panel.className="dengue-optional-sidebar hidden";
+    panel.innerHTML=`
+      <h3>Optional clerking sections</h3>
+      <div class="helper">Open only when required.</div>
+      <div class="dengue-optional-sidebar-buttons">
+        <button class="dengue-side-tool" data-open-optional="previous-lab" type="button">
+          <span data-tool-label>Previous investigations</span>
+          <small>Optional</small>
+        </button>
+        <button class="dengue-side-tool" data-open-optional="intervention" type="button">
+          <span data-tool-label>Intervention in clinic</span>
+          <small>Optional</small>
+        </button>
+      </div>
+    `;
+
+    const head=sidebar.querySelector(".unified-draft-sidebar-head");
+    if(head) head.insertAdjacentElement("afterend",panel);
+    else sidebar.prepend(panel);
+
+    panel.querySelectorAll("[data-open-optional]").forEach(button=>{
+      button.addEventListener("click",()=>{
+        toggleOptionalCard(button.dataset.openOptional);
+      });
+    });
+
+    document.querySelectorAll("[data-close-optional]").forEach(button=>{
+      button.addEventListener("click",()=>{
+        setOptionalCard(button.dataset.closeOptional,false);
+      });
+    });
+
+    ["openDengueNewCase","openDengueFollowUp"].forEach(id=>{
+      document.getElementById(id)?.addEventListener("click",()=>{
+        hideAllOptionalCards();
+        setTimeout(updateDengueOptionalSidebar,80);
+      });
+    });
+
+    document.addEventListener("click",event=>{
+      if(event.target.closest("[data-page]") || event.target.closest(".nav-item")){
+        setTimeout(updateDengueOptionalSidebar,80);
+      }
+    });
+
+    const observer=new MutationObserver(()=>{
+      updateDengueOptionalSidebar();
+    });
+    ["page-clerking","dengueNewCaseTemplate","dengueFollowUpTemplate"].forEach(id=>{
+      const element=document.getElementById(id);
+      if(element){
+        observer.observe(element,{attributes:true,attributeFilter:["class"]});
+      }
+    });
+
+    updateDengueOptionalSidebar();
+    return true;
+  }
+
+  let attempts=0;
+  const timer=setInterval(()=>{
+    attempts+=1;
+    if(ensureOptionalSidebar() || attempts>40){
+      clearInterval(timer);
+    }
+  },100);
+
+  window.updateDengueOptionalSidebar=updateDengueOptionalSidebar;
+  window.hideAllDengueOptionalCards=hideAllOptionalCards;
+})();
+</script>
+<script>
+(function(){
+  const exposureConfigs=[
+    ["clTravel","clTravelDetailsWrap"],
+    ["clSwimming","clSwimmingDetailsWrap"],
+    ["clTrekking","clTrekkingDetailsWrap"],
+    ["clContact","clContactDetailsWrap"],
+    ["clDiffStatus","clDiffDetailsWrap"]
+  ];
+
+  function syncDengueExposureFields(){
+    exposureConfigs.forEach(([selectId,wrapId])=>{
+      const select=document.getElementById(selectId);
+      const wrap=document.getElementById(wrapId);
+      if(!select || !wrap) return;
+      wrap.classList.toggle("hidden",select.value!=="yes");
+    });
+  }
+
+  exposureConfigs.forEach(([selectId])=>{
+    document.getElementById(selectId)?.addEventListener("change",syncDengueExposureFields);
+  });
+
+  document.addEventListener("change",event=>{
+    if(exposureConfigs.some(([selectId])=>selectId===event.target.id)){
+      syncDengueExposureFields();
+    }
+  });
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",syncDengueExposureFields);
+  }else{
+    syncDengueExposureFields();
+  }
+
+  window.syncDengueExposureFields=syncDengueExposureFields;
+})();
+</script>
+<div class="dengue-referral-toast hidden" id="dengueReferralToast">
+<strong></strong>
+<span></span>
+</div>
+<script>
+(function(){
+  let referralRenderTimer=null;
+
+  function activeDengueMode(){
+    const newCase=document.getElementById("dengueNewCaseTemplate");
+    const followUp=document.getElementById("dengueFollowUpTemplate");
+    if(newCase && !newCase.classList.contains("hidden")) return "new";
+    if(followUp && !followUp.classList.contains("hidden")) return "followup";
+    return "";
+  }
+
+  function requestReferralRender(options={}){
+    clearTimeout(referralRenderTimer);
+    referralRenderTimer=setTimeout(()=>{
+      window.syncReferralDetailFields();
+      window.syncDengueComboTest();
+      const mode=activeDengueMode();
+      if(mode){
+        window.renderDengueVitalShockResult(mode);
+        renderDengueReferralAlert(mode,options);
+      }
+    },80);
+  }
+
+  ["dengueNewCaseTemplate","dengueFollowUpTemplate"].forEach(id=>{
+    const template=document.getElementById(id);
+    if(!template) return;
+    template.addEventListener("input",()=>requestReferralRender());
+    template.addEventListener("change",()=>requestReferralRender());
+  });
+
+  document.querySelectorAll(".dengue-referral-action").forEach(button=>{
+    button.addEventListener("click",()=>{
+      const mode=button.closest("#dengueFollowUpTemplate")?"followup":"new";
+      window.setDengueReferralPlan(mode);
+      button.textContent="ED referral selected";
+      setTimeout(()=>button.textContent="Set plan to Refer ED",1200);
+    });
+  });
+
+  const observer=new MutationObserver(()=>requestReferralRender({silent:true}));
+  ["clPreviousLabList","dfuPreviousLabList"].forEach(id=>{
+    const element=document.getElementById(id);
+    if(element) observer.observe(element,{childList:true,subtree:true});
+  });
+
+  ["openDengueNewCase","openDengueFollowUp"].forEach(id=>{
+    document.getElementById(id)?.addEventListener("click",()=>{
+      setTimeout(()=>requestReferralRender({silent:true}),120);
+    });
+  });
+
+  const page=document.getElementById("page-clerking");
+  if(page){
+    new MutationObserver(()=>{
+      if(page.classList.contains("active")){
+        requestReferralRender({silent:true});
+      }
+    }).observe(page,{attributes:true,attributeFilter:["class"]});
+  }
+
+  window.syncReferralDetailFields();
+  window.syncDengueComboTest();
+  window.renderDengueVitalShockResult("new");
+  window.renderDengueVitalShockResult("followup");
+  renderDengueReferralAlert("new",{silent:true});
+  renderDengueReferralAlert("followup",{silent:true});
+
+  window.requestDengueReferralRender=requestReferralRender;
 })();
 </script>
 </body>
