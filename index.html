@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.49 — Mobile Responsive Fix</title>
+<title>MedAssist KK Bangi V18.56 — Persistent Smooth Quick Component Bar</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -1749,6 +1749,337 @@ html,body{max-width:100%;overflow-x:hidden}
   }
 }
 
+
+
+/* V18.50 workflow, fixed navigation and exact-frequency controls */
+@media (min-width:901px){
+  .app{
+    display:block!important;
+    min-height:100vh;
+  }
+  .sidebar{
+    position:fixed!important;
+    inset:0 auto 0 0!important;
+    width:240px!important;
+    height:100vh!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    z-index:1500!important;
+  }
+  .main{
+    margin-left:240px!important;
+    width:calc(100% - 240px)!important;
+    min-height:100vh;
+  }
+}
+.frequency-exact-wrap{
+  margin-top:10px;
+  padding:10px 11px;
+  border:1px dashed #c9d9d5;
+  border-radius:10px;
+  background:#f4f7f6;
+  opacity:.72;
+  transition:.15s ease;
+}
+.frequency-exact-wrap.enabled{
+  border-style:solid;
+  border-color:#7eb9ad;
+  background:#eef9f6;
+  opacity:1;
+}
+.frequency-exact-wrap label{
+  margin:0 0 6px;
+}
+.frequency-exact-wrap label span{
+  margin-left:4px;
+  color:var(--muted);
+  font-weight:600;
+}
+.frequency-exact-wrap input:disabled{
+  background:#e9eeec;
+  cursor:not-allowed;
+}
+.nnj-history-position{
+  margin-top:10px;
+  padding:12px;
+  border:1px solid #cfe3de;
+  border-radius:11px;
+  background:#f7fcfb;
+}
+.nnj-history-position label{
+  margin-top:0;
+}
+
+
+
+/* V18.52 — stable frozen quick component navigator */
+.section-quickbar{
+  position:fixed;
+  left:250px;
+  top:12px;
+  bottom:12px;
+  width:54px;
+  z-index:1440;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  contain:layout paint style;
+  border:1px solid #bfd8d2;
+  border-radius:15px;
+  background:#f8fcfb;
+  box-shadow:0 12px 32px rgba(24,78,69,.18);
+  transition:width .16s cubic-bezier(.2,.8,.2,1),box-shadow .16s ease;
+}
+.section-quickbar.hidden{display:none!important}
+.section-quickbar.expanded{
+  width:236px;
+  box-shadow:0 16px 40px rgba(24,78,69,.24);
+}
+.section-quickbar-head{
+  flex:0 0 auto;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  align-items:center;
+  gap:7px;
+  min-height:50px;
+  padding:8px 9px;
+  border-bottom:1px solid #d7e7e3;
+  background:#eaf6f3;
+}
+.section-quickbar-toggle{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  padding:0;
+  border:0;
+  border-radius:10px;
+  background:#176f65;
+  color:#fff;
+  cursor:pointer;
+  font-size:17px;
+  font-weight:900;
+  touch-action:manipulation;
+}
+.section-quickbar-toggle:hover{background:#125f57}
+.section-quickbar-toggle:focus-visible{outline:3px solid rgba(23,111,101,.24);outline-offset:2px}
+.section-quickbar-heading{
+  min-width:0;
+  opacity:0;
+  visibility:hidden;
+  transform:translateX(-4px);
+  transition:opacity .12s ease,transform .12s ease,visibility 0s linear .12s;
+  white-space:nowrap;
+}
+.section-quickbar-heading strong{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  color:#184e45;
+  font-size:13px;
+}
+.section-quickbar-heading small{
+  display:block;
+  margin-top:2px;
+  color:#6d7c78;
+  font-size:10px;
+}
+.section-quickbar.expanded .section-quickbar-heading{
+  opacity:1;
+  visibility:visible;
+  transform:none;
+  transition-delay:.04s, .04s, 0s;
+}
+.section-quickbar-list{
+  flex:1 1 auto;
+  display:grid;
+  align-content:start;
+  gap:5px;
+  min-height:0;
+  padding:8px 7px 12px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+}
+.section-jump-btn{
+  position:relative;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  align-items:center;
+  gap:7px;
+  width:100%;
+  min-height:40px;
+  padding:4px 5px;
+  border:1px solid transparent;
+  border-radius:10px;
+  background:transparent;
+  color:#264d46;
+  cursor:pointer;
+  text-align:left;
+  transition:background .1s ease,border-color .1s ease,color .1s ease,box-shadow .1s ease;
+  touch-action:manipulation;
+}
+.section-jump-btn:hover{
+  border-color:#b7d7d0;
+  background:#edf8f5;
+}
+.section-jump-btn.active{
+  border-color:#65a99c;
+  background:#dff2ed;
+  color:#125f57;
+  box-shadow:inset 3px 0 0 #19796f;
+}
+.section-jump-number{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:32px;
+  height:30px;
+  border-radius:9px;
+  background:#fff;
+  border:1px solid #cfe3de;
+  color:#17685d;
+  font-size:10px;
+  font-weight:900;
+  line-height:1;
+}
+.section-jump-btn.active .section-jump-number{
+  border-color:#65a99c;
+  background:#176f65;
+  color:#fff;
+}
+.section-jump-label{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  opacity:0;
+  visibility:hidden;
+  transform:translateX(-4px);
+  color:inherit;
+  font-size:11px;
+  font-weight:800;
+  transition:opacity .12s ease,transform .12s ease,visibility 0s linear .12s;
+}
+.section-quickbar.expanded .section-jump-label{
+  opacity:1;
+  visibility:visible;
+  transform:none;
+  transition-delay:.04s, .04s, 0s;
+}
+.section-quickbar:not(.expanded) .section-jump-btn::after{
+  content:attr(data-tooltip);
+  position:fixed;
+  left:310px;
+  z-index:1700;
+  max-width:260px;
+  padding:8px 10px;
+  border-radius:8px;
+  background:#173f38;
+  color:#fff;
+  box-shadow:0 8px 20px rgba(0,0,0,.2);
+  font-size:11px;
+  font-weight:700;
+  line-height:1.3;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-50%);
+  transition:opacity .08s ease;
+}
+.section-quickbar:not(.expanded) .section-jump-btn:hover::after{
+  top:var(--tooltip-y,50%);
+  opacity:1;
+}
+.section-quickbar-target{
+  scroll-margin-top:22px;
+  transition:box-shadow .18s ease,border-color .18s ease;
+}
+.section-quickbar-target.section-jump-flash{
+  border-color:#4f9f91!important;
+  box-shadow:0 0 0 4px rgba(79,159,145,.14),0 10px 28px rgba(24,78,69,.10)!important;
+}
+@media (min-width:901px){
+  .main{padding-left:88px!important}
+}
+@media (max-width:900px){
+  .section-quickbar{
+    left:10px;
+    right:10px;
+    top:auto;
+    bottom:70px;
+    width:auto;
+    height:62px;
+    border-radius:14px;
+    flex-direction:row;
+    transition:none;
+  }
+  .section-quickbar.expanded{width:auto}
+  .section-quickbar-head{
+    grid-template-columns:38px;
+    min-width:52px;
+    min-height:60px;
+    padding:10px 7px;
+    border-right:1px solid #d7e7e3;
+    border-bottom:0;
+  }
+  .section-quickbar-heading{display:none}
+  .section-quickbar-toggle{width:38px;height:38px}
+  .section-quickbar-list{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:7px 9px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scroll-behavior:smooth;
+  }
+  .section-jump-btn{
+    flex:0 0 auto;
+    display:flex;
+    width:auto;
+    min-width:42px;
+    max-width:185px;
+    min-height:44px;
+    padding:5px 8px;
+  }
+  .section-jump-number{flex:0 0 30px}
+  .section-jump-label,
+  .section-quickbar.expanded .section-jump-label{
+    display:block;
+    max-width:130px;
+    opacity:1;
+    visibility:visible;
+    transform:none;
+    font-size:10px;
+  }
+  .section-quickbar:not(.expanded) .section-jump-btn::after{display:none}
+  .main{padding-bottom:92px!important}
+}
+@media (prefers-reduced-motion:reduce){
+  .section-quickbar,
+  .section-quickbar-heading,
+  .section-jump-label,
+  .section-quickbar-target{transition:none!important}
+}
+
+/* Paediatric clerking age selector */
+.age-input-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(118px,145px);
+  gap:8px;
+  align-items:center;
+}
+.age-input-row select:disabled{
+  opacity:.72;
+  cursor:not-allowed;
+  background:#f4f7fb;
+}
+.age-unit-help{margin-top:6px}
+@media(max-width:560px){
+  .age-input-row{grid-template-columns:minmax(0,1fr) 124px}
+}
 </style>
 </head>
 <body>
@@ -1773,6 +2104,17 @@ html,body{max-width:100%;overflow-x:hidden}
 <button class="nav-btn" data-page="nnj">🟡 NNJ Clerking</button>
 <button class="nav-btn" data-page="calculator">🧮 Calculators</button>
 </aside>
+
+<nav aria-label="Quick component navigation" class="section-quickbar hidden" id="sectionQuickBar">
+  <div class="section-quickbar-head">
+    <button aria-expanded="false" aria-label="Expand component navigation" class="section-quickbar-toggle" id="sectionQuickBarToggle" title="Components" type="button">☰</button>
+    <div class="section-quickbar-heading">
+      <strong>Quick components</strong>
+      <small>Click to jump to a section</small>
+    </div>
+  </div>
+  <div class="section-quickbar-list" id="sectionQuickBarList"></div>
+</nav>
 <main class="main">
 <section class="page active" id="page-dashboard">
 <div class="hero"><h1>MedAssist KK Bangi</h1><p>Clinical clerking and protocol-guided calculators.</p></div>
@@ -1826,7 +2168,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="paeds">Paediatric</option>
 </select>
 </div>
-<div><label>Sex</label><select id="clSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div><label>Age (years)</label><input id="clAge" min="0" placeholder="years" step="1" type="number"/></div>
+<div><label>Sex</label><select id="clSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div id="clAgeWrap"><label>Age</label><div class="age-input-row"><input id="clAge" min="0" placeholder="e.g. 4" step="1" type="number"/><select id="clAgeUnit" aria-label="Age unit"><option value="years">Years old</option><option value="months">Months old</option></select></div><div class="helper age-unit-help" id="clAgeHelp">Adult age is recorded in years.</div></div>
 <div class="hidden" id="clLmpWrap"><label>LMP</label><input id="clLmp" type="date"/></div>
 <div><label>Address</label><input id="clAddress"/></div>
 <div><label>Latest phone number</label><input id="clPhone"/></div>
@@ -2055,6 +2397,11 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="2x">2 times/day</option>
 <option value="ge3">3 times/day or more</option>
 </select>
+<div class="frequency-exact-wrap" id="clVomitingCountWrap">
+<label for="clVomitingCount">How many times/day? <span>(optional)</span></label>
+<input disabled="" id="clVomitingCount" inputmode="numeric" min="3" placeholder="e.g. 4" step="1" type="number"/>
+<div class="helper">Enabled when “3 times/day or more” is selected.</div>
+</div>
 <div class="helper">3 times/day or more is classified as a DF warning sign.</div>
 </div>
 <div>
@@ -2065,6 +2412,11 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="2x">2 times/day</option>
 <option value="ge3">3 times/day or more</option>
 </select>
+<div class="frequency-exact-wrap" id="clDiarrhoeaCountWrap">
+<label for="clDiarrhoeaCount">How many times/day? <span>(optional)</span></label>
+<input disabled="" id="clDiarrhoeaCount" inputmode="numeric" min="3" placeholder="e.g. 4" step="1" type="number"/>
+<div class="helper">Enabled when “3 times/day or more” is selected.</div>
+</div>
 <div class="helper">3 times/day or more is classified as a DF warning sign.</div>
 </div>
 <div><label>Abdominal pain</label><select id="clAbdPain"><option>no</option><option>yes</option></select></div>
@@ -2180,8 +2532,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <input id="clBMI" placeholder="Auto" readonly=""/>
 </div>
 <div>
-<label>Adjusted body weight (kg) — auto</label>
-<input id="clAdjBW" placeholder="Calculated when applicable" readonly=""/>
+<label>Adjusted body weight (kg) — auto if BMI ≥27.5</label>
+<input id="clAdjBW" placeholder="Auto when BMI ≥27.5" readonly=""/>
 </div>
 <input id="clIBW" type="hidden"/>
 <div><label>Antiplatelet / anticoagulant</label><select id="clBloodThinner"><option selected="" value="no">No</option><option value="yes">Yes</option></select></div><div><label>Social factor limiting follow-up</label><select id="clSocialLimit"><option selected="" value="no">No</option><option value="yes">Yes</option></select><div class="hidden referral-extra-detail" id="clSocialLimitDetailsWrap"><label>Details</label><input id="clSocialLimitDetails" placeholder="e.g. lives alone, no transport, far from health facility"/></div></div></div>
@@ -2603,7 +2955,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <h2>Patient and follow-up details</h2>
 <div class="grid three">
 <div><label>Patient group</label><select id="dfuGroup"><option value="adult">Adult</option><option value="paeds">Paediatric</option></select></div>
-<div><label>Sex</label><select id="dfuSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div><label>Age (years)</label><input id="dfuAge" min="0" placeholder="years" step="1" type="number"/></div>
+<div><label>Sex</label><select id="dfuSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div id="dfuAgeWrap"><label>Age</label><div class="age-input-row"><input id="dfuAge" min="0" placeholder="e.g. 4" step="1" type="number"/><select id="dfuAgeUnit" aria-label="Age unit"><option value="years">Years old</option><option value="months">Months old</option></select></div><div class="helper age-unit-help" id="dfuAgeHelp">Adult age is recorded in years.</div></div>
 <div><label>Day of illness</label><input id="dfuDayIllness" min="1" placeholder="e.g. 5" step="1" type="number"/></div>
 <div><label>Drug allergy</label><input id="dfuAllergy" value="NKDA"/></div>
 <div><label>Address</label><input id="dfuAddress"/></div>
@@ -2631,8 +2983,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <input id="dfuBMI" placeholder="Auto" readonly=""/>
 </div>
 <div>
-<label>Adjusted body weight (kg) — auto</label>
-<input id="dfuAdjBW" placeholder="Calculated when applicable" readonly=""/>
+<label>Adjusted body weight (kg) — auto if BMI ≥27.5</label>
+<input id="dfuAdjBW" placeholder="Auto when BMI ≥27.5" readonly=""/>
 </div>
 </div>
 <input id="dfuIBW" type="hidden"/>
@@ -2683,6 +3035,11 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="2x">2 times/day</option>
 <option value="ge3">3 times/day or more</option>
 </select>
+<div class="frequency-exact-wrap" id="dfuVomitCountWrap">
+<label for="dfuVomitCount">How many times/day? <span>(optional)</span></label>
+<input disabled="" id="dfuVomitCount" inputmode="numeric" min="3" placeholder="e.g. 4" step="1" type="number"/>
+<div class="helper">Enabled when “3 times/day or more” is selected.</div>
+</div>
 </div>
 <div class="dfu-warning-field">
 <label>3. Loose stool frequency</label>
@@ -2692,6 +3049,11 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="2x">2 times/day</option>
 <option value="ge3">3 times/day or more</option>
 </select>
+<div class="frequency-exact-wrap" id="dfuLooseStoolCountWrap">
+<label for="dfuLooseStoolCount">How many times/day? <span>(optional)</span></label>
+<input disabled="" id="dfuLooseStoolCount" inputmode="numeric" min="3" placeholder="e.g. 4" step="1" type="number"/>
+<div class="helper">Enabled when “3 times/day or more” is selected.</div>
+</div>
 </div>
 <div class="dfu-warning-field">
 <label>4. Abdominal pain</label>
@@ -3727,6 +4089,14 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <label>Other relevant history</label>
 <textarea id="nnjOtherHistory" placeholder="Other maternal, birth, feeding or illness history"></textarea>
+<div class="nnj-history-position">
+<label for="nnjOtherHistoryPosition">Position in generated History</label>
+<select id="nnjOtherHistoryPosition">
+<option value="top">Insert as the first history sentence</option>
+<option selected="" value="bottom">Insert as the last history sentence</option>
+</select>
+<div class="helper">Choose whether this free text appears before or after the generated red-flag history.</div>
+</div>
 </div>
 <div class="card">
 <div class="nnj-card-title"><span class="nnj-step">4</span><h2>Physical Examination</h2></div>
@@ -5043,6 +5413,49 @@ window.debounce=debounce;
 document.querySelectorAll(".calc-option").forEach(b=>b.addEventListener("click",()=>openCalc(b.dataset.calc)));
 document.querySelectorAll(".calc-back").forEach(b=>b.addEventListener("click",showCalcMenu));
 
+// Dengue age entry helpers
+function syncDengueAgeUnit(prefix,groupId){
+  const unit=$(prefix+"AgeUnit");
+  const input=$(prefix+"Age");
+  const help=$(prefix+"AgeHelp");
+  if(!unit||!input) return;
+
+  const paediatric=value(groupId)==="paeds";
+  if(!paediatric){
+    unit.value="years";
+    unit.disabled=true;
+    input.placeholder="e.g. 35";
+    if(help) help.textContent="Adult age is recorded in years.";
+  }else{
+    unit.disabled=false;
+    input.placeholder=unit.value==="months"?"e.g. 8":"e.g. 4";
+    if(help) help.textContent="Choose months old or years old.";
+  }
+}
+
+function dengueAgeDisplay(prefix){
+  const raw=value(prefix+"Age");
+  if(raw==="") return "";
+  const number=Number(raw);
+  if(!Number.isFinite(number)||number<0) return "";
+  const unit=value(prefix+"AgeUnit")==="months"?"months":"years";
+  const label=unit==="months"
+    ? (number===1?"month old":"months old")
+    : (number===1?"year old":"years old");
+  return `${raw} ${label}`;
+}
+
+function dengueAgeInYears(prefix){
+  const raw=value(prefix+"Age");
+  const number=Number(raw);
+  if(!Number.isFinite(number)||number<0) return NaN;
+  return value(prefix+"AgeUnit")==="months"?number/12:number;
+}
+
+window.syncDengueAgeUnit=syncDengueAgeUnit;
+window.dengueAgeDisplay=dengueAgeDisplay;
+window.dengueAgeInYears=dengueAgeInYears;
+
 // Dengue clerking
 function syncDengueSex(){
   const selected=value("clSex");
@@ -5068,9 +5481,11 @@ const calcClerkingWeightDebounced=debounce(calcClerkingWeight,180);
 $("clRecalculateBodyWeight").addEventListener("click",calcClerkingWeight);
 
 function calcClerkingWeight(){
+  const adjustedBmiThreshold=27.5;
   const w=Number(value("clWeight"));
   const h=Number(value("clHeight"));
   const sex=value("clSex");
+  const group=value("dfGroup");
 
   const validWeight=Number.isFinite(w)&&w>0;
   const validHeight=Number.isFinite(h)&&h>0;
@@ -5098,7 +5513,12 @@ function calcClerkingWeight(){
     $("clIBW").value="";
   }
 
-  if(validWeight&&ibw>0&&w>ibw){
+  if(
+    group==="adult" &&
+    validWeight &&
+    ibw>0 &&
+    bmi>=adjustedBmiThreshold
+  ){
     adj=ibw+0.4*(w-ibw);
     $("clAdjBW").value=adj.toFixed(1);
   }else{
@@ -5109,14 +5529,18 @@ function calcClerkingWeight(){
     $("clBodyCalcResult").innerHTML=
       "<strong>Calculation incomplete.</strong><br>"+
       "Enter both weight and height. Sex is taken automatically from Patient and presentation.";
+  }else if(group!=="adult"){
+    $("clBodyCalcResult").innerHTML=
+      `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
+      "<strong>Adjusted body weight:</strong> Not applicable for paediatric patients — use actual body weight.";
   }else if(!sex){
     $("clBodyCalcResult").innerHTML=
       `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
-      "Select sex under Patient and presentation to calculate adjusted body weight.";
+      "Select sex under Patient and presentation to calculate adjusted body weight when BMI is ≥27.5 kg/m².";
   }else{
     const abwText=adj>0
       ? `${adj.toFixed(1)} kg`
-      : "Not applicable — actual weight is not above calculated ideal weight";
+      : `Not applicable — BMI is below ${adjustedBmiThreshold} kg/m²`;
 
     $("clBodyCalcResult").innerHTML=
       `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
@@ -5554,19 +5978,37 @@ $("clTbContactType")?.addEventListener("change",syncTbContactDetails);
 window.syncDengueTbScreening=syncDengueTbScreening;
 window.syncTbContactDetails=syncTbContactDetails;
 
-function newCaseFrequencyDescription(type,valueCode){
+function dengueExactFrequency(inputId,getter=value){
+  const count=parseInt(getter(inputId),10);
+  return Number.isFinite(count) && count>=3 ? count : null;
+}
+
+function syncFrequencyExactField(selectId,inputId,getter=value){
+  const select=document.getElementById(selectId);
+  const input=document.getElementById(inputId);
+  if(!select || !input) return;
+
+  const enabled=getter(selectId)==="ge3";
+  input.disabled=!enabled;
+  input.closest(".frequency-exact-wrap")?.classList.toggle("enabled",enabled);
+  if(!enabled) input.value="";
+}
+
+function newCaseFrequencyDescription(type,valueCode,countInputId){
+  const exact=countInputId?dengueExactFrequency(countInputId):null;
+  const frequentText=exact?`${exact} times/day`:"3 times/day or more";
   const labels={
     vomiting:{
       none:"no vomiting",
       "1x":"+ vomiting 1 time/day (not a DF warning sign)",
       "2x":"+ vomiting 2 times/day (not a DF warning sign)",
-      ge3:"+ vomiting 3 times/day or more (DF warning sign)"
+      ge3:`+ vomiting ${frequentText} (DF warning sign)`
     },
     stool:{
       none:"no loose stool",
       "1x":"+ loose stool 1 time/day (not a DF warning sign)",
       "2x":"+ loose stool 2 times/day (not a DF warning sign)",
-      ge3:"+ loose stool 3 times/day or more (DF warning sign)"
+      ge3:`+ loose stool ${frequentText} (DF warning sign)`
     }
   };
 
@@ -5577,12 +6019,15 @@ function renderNewCaseFrequencyClassification(){
   const box=document.getElementById("clWarningFrequencyClassification");
   if(!box) return;
 
+  syncFrequencyExactField("clVomiting","clVomitingCount");
+  syncFrequencyExactField("clDiarrhoea","clDiarrhoeaCount");
+
   const vomiting=value("clVomiting")||"none";
   const stool=value("clDiarrhoea")||"none";
 
   box.textContent=[
-    newCaseFrequencyDescription("vomiting",vomiting),
-    newCaseFrequencyDescription("stool",stool)
+    newCaseFrequencyDescription("vomiting",vomiting,"clVomitingCount"),
+    newCaseFrequencyDescription("stool",stool,"clDiarrhoeaCount")
   ].filter(Boolean).join("\n");
 }
 
@@ -5938,7 +6383,7 @@ function dengueReferralAssessment(mode){
       );
     }
 
-    const age=Number(value("dfuAge"));
+    const age=dengueAgeInYears("dfu");
     if(Number.isFinite(age)&&age>65) reasons.push("age >65 years");
     if(value("dfuBloodThinner")==="yes") reasons.push("on antiplatelet / anticoagulant");
     if(value("dfuPregnancy")==="yes") reasons.push("pregnancy");
@@ -5994,7 +6439,7 @@ function dengueReferralAssessment(mode){
       reasons.push(detail?`co-morbidity: ${detail}`:"co-morbidity");
     }
 
-    const age=Number(value("clAge"));
+    const age=dengueAgeInYears("cl");
     if(Number.isFinite(age)&&age>65) reasons.push("age >65 years");
     if(value("clBloodThinner")==="yes") reasons.push("on antiplatelet / anticoagulant");
     if(value("clPregnancy")==="yes") reasons.push("pregnancy");
@@ -6240,7 +6685,7 @@ function buildDengueClinicalNote(planLines){
     allergy?`allergy history to medications: ${allergy}`:"",
     value("clAddress")?`address: ${value("clAddress")}`:"",
     value("clPhone")?`latest phone number: ${value("clPhone")}`:"",
-    value("clAge")?`age: ${value("clAge")} years`:"",
+    dengueAgeDisplay("cl")?`age: ${dengueAgeDisplay("cl")}`:"",
     value("clSex")==="Female" && value("clLmp")
       ? `LMP: ${formatDateDisplay(value("clLmp"))}`
       : ""
@@ -6285,8 +6730,8 @@ function buildDengueClinicalNote(planLines){
     value("clUrine")?`2. Reduced urine volume: ${value("clUrine")}`:"",
     value("clActivity")?`3. Able to perform daily activities: ${value("clActivity")}`:"",
     `4. Lethargy: ${value("clLethargy")||"no"}`,
-    `5. ${newCaseFrequencyDescription("vomiting",value("clVomiting")||"none").replace(/^\+\s*/,"")}`,
-    `6. ${newCaseFrequencyDescription("stool",value("clDiarrhoea")||"none").replace(/^\+\s*/,"")}`,
+    `5. ${newCaseFrequencyDescription("vomiting",value("clVomiting")||"none","clVomitingCount").replace(/^\+\s*/,"")}`,
+    `6. ${newCaseFrequencyDescription("stool",value("clDiarrhoea")||"none","clDiarrhoeaCount").replace(/^\+\s*/,"")}`,
     `7. Abdominal pain: ${value("clAbdPain")||"no"}`,
     `8. Bleeding / bruising: ${value("clBleeding")||"no"}`,
     `9. Seizure: ${value("clSeizure")||"no"}`
@@ -6318,9 +6763,9 @@ function buildDengueClinicalNote(planLines){
   addParagraph(headerLines);
   addParagraph(chiefLines);
   addParagraph(associatedLines);
-  addParagraph(comorbidityLines);
-  addParagraph(exposureLines);
   addParagraph(warningLines);
+  addParagraph(exposureLines);
+  addParagraph(comorbidityLines);
   addParagraph(examinationLines);
 
   if(vitalLines.length){
@@ -6482,7 +6927,15 @@ $("clAddIntervention")?.addEventListener("click",()=>{
   $("clInterventionPicker").value="";
 });
 $("clIntNebType").addEventListener("change",syncDengueInterventions);
-$("dfGroup").addEventListener("change",syncDengueInterventions);
+$("dfGroup").addEventListener("change",()=>{
+  syncDengueAgeUnit("cl","dfGroup");
+  syncDengueInterventions();
+  calcClerkingWeight();
+});
+$("clAgeUnit").addEventListener("change",()=>{
+  syncDengueAgeUnit("cl","dfGroup");
+});
+syncDengueAgeUnit("cl","dfGroup");
 $("clWeight").addEventListener("input",syncDengueInterventionsDebounced);
 syncDengueInterventions();
 
@@ -8532,10 +8985,13 @@ function generateNnjNote(){
     `Feeding: ${value("nnjFeeding")||"not stated"}${value("nnjFeedFrequency")?`, ${value("nnjFeedFrequency")}`:""}.`
   ].filter(Boolean).join("\n");
 
-  const historyParagraph=[
-    positiveSentence,
-    negativeSentence
-  ].filter(Boolean).join("\n");
+  const otherHistory=value("nnjOtherHistory").trim();
+  const otherHistoryPosition=value("nnjOtherHistoryPosition")||"bottom";
+  const generatedHistory=[positiveSentence,negativeSentence].filter(Boolean);
+  const historyParagraph=(otherHistoryPosition==="top"
+    ? [otherHistory,...generatedHistory]
+    : [...generatedHistory,otherHistory]
+  ).filter(Boolean).join("\n");
 
   const riskParagraph=[
     neuroSentence,
@@ -8666,7 +9122,8 @@ $("nnjValue").addEventListener("input",renderNnjSerialTable);
 [
   "nnjGestation","nnjBirthWeight","nnjCurrentWeight","nnjMbg","nnjBbg","nnjG6pdStatus","nnjValue","nnjDirect",
   "nnjOnPhoto","nnjRapidRise","nnjCondition","nnjHydration","nnjExtent","nnjStoolColour",
-  "nnjUrineColour","nnjTone","nnjPallor","nnjCephalo","nnjHsm","nnjRash","nnjAbe"
+  "nnjUrineColour","nnjTone","nnjPallor","nnjCephalo","nnjHsm","nnjRash","nnjAbe",
+  "nnjOtherHistory","nnjOtherHistoryPosition","nnjOtherExam"
 ].forEach(id=>{
   const element=$(id);
 
@@ -8748,6 +9205,7 @@ $("nnjClear").addEventListener("click",()=>{
   $("nnjBbg").value="";
   $("nnjG6pdStatus").value="";
   $("nnjFeeding").value="Breastfeeding";
+  $("nnjOtherHistoryPosition").value="bottom";
   $("nnjCondition").value="Well and active";
   $("nnjHydration").value="Well hydrated";
   $("nnjExtent").value="Head and neck";
@@ -8815,6 +9273,9 @@ $("obCalculate").addEventListener("click",()=>{const lmp=new Date(value("obLmp")
 
 ["clVomiting","clDiarrhoea"].forEach(id=>{
   document.getElementById(id)?.addEventListener("change",renderNewCaseFrequencyClassification);
+});
+["clVomitingCount","clDiarrhoeaCount"].forEach(id=>{
+  document.getElementById(id)?.addEventListener("input",renderNewCaseFrequencyClassification);
 });
 renderNewCaseFrequencyClassification();
 document.querySelectorAll(".clerking-back-top").forEach(button=>{
@@ -9167,7 +9628,29 @@ function setDengueTemplate(type){
 }
 window.setDengueTemplate=setDengueTemplate;
 
+function followUpExactFrequency(inputId){
+  const count=parseInt(fv(inputId),10);
+  return Number.isFinite(count) && count>=3 ? count : null;
+}
+
+function syncFollowUpFrequencyField(selectId,inputId){
+  const select=f$(selectId);
+  const input=f$(inputId);
+  if(!select || !input) return;
+
+  const enabled=fv(selectId)==="ge3";
+  input.disabled=!enabled;
+  input.closest(".frequency-exact-wrap")?.classList.toggle("enabled",enabled);
+  if(!enabled) input.value="";
+}
+
+function syncFollowUpFrequencyFields(){
+  syncFollowUpFrequencyField("dfuVomitFrequency","dfuVomitCount");
+  syncFollowUpFrequencyField("dfuLooseStoolFrequency","dfuLooseStoolCount");
+}
+
 function warningSignData(){
+  syncFollowUpFrequencyFields();
   const positive=[];
   const negative=[];
   const belowThreshold=[];
@@ -9184,7 +9667,8 @@ function warningSignData(){
 
   const vomiting=fv("dfuVomitFrequency");
   if(vomiting==="ge3"){
-    positive.push("vomiting 3 times/day or more");
+    const exact=followUpExactFrequency("dfuVomitCount");
+    positive.push(`vomiting ${exact?`${exact} times/day`:"3 times/day or more"}`);
   }else if(vomiting==="1x"){
     belowThreshold.push("vomiting 1 time/day");
   }else if(vomiting==="2x"){
@@ -9195,7 +9679,8 @@ function warningSignData(){
 
   const looseStool=fv("dfuLooseStoolFrequency");
   if(looseStool==="ge3"){
-    positive.push("loose stool 3 times/day or more");
+    const exact=followUpExactFrequency("dfuLooseStoolCount");
+    positive.push(`loose stool ${exact?`${exact} times/day`:"3 times/day or more"}`);
   }else if(looseStool==="1x"){
     belowThreshold.push("loose stool 1 time/day");
   }else if(looseStool==="2x"){
@@ -9247,9 +9732,11 @@ function renderDengueFollowUpWarningClassification(){
 }
 
 function calculateDengueFollowUpBodyWeight(){
+  const adjustedBmiThreshold=27.5;
   const weight=Number(fv("dfuWeight"));
   const height=Number(fv("dfuHeight"));
   const sex=fv("dfuSex");
+  const group=fv("dfuGroup");
 
   const validWeight=Number.isFinite(weight)&&weight>0;
   const validHeight=Number.isFinite(height)&&height>0;
@@ -9278,7 +9765,12 @@ function calculateDengueFollowUpBodyWeight(){
     f$("dfuIBW").value="";
   }
 
-  if(validWeight&&ibw>0&&weight>ibw){
+  if(
+    group==="adult" &&
+    validWeight &&
+    ibw>0 &&
+    bmi>=adjustedBmiThreshold
+  ){
     adjusted=ibw+0.4*(weight-ibw);
     f$("dfuAdjBW").value=adjusted.toFixed(1);
   }else{
@@ -9289,14 +9781,18 @@ function calculateDengueFollowUpBodyWeight(){
     f$("dfuBodyCalcResult").innerHTML=
       "<strong>Calculation incomplete.</strong><br>"+
       "Enter both weight and height. Sex is taken from Patient and follow-up details.";
+  }else if(group!=="adult"){
+    f$("dfuBodyCalcResult").innerHTML=
+      `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
+      "<strong>Adjusted body weight:</strong> Not applicable for paediatric patients — use actual body weight.";
   }else if(!sex){
     f$("dfuBodyCalcResult").innerHTML=
       `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
-      "Select sex above to calculate adjusted body weight.";
+      "Select sex above to calculate adjusted body weight when BMI is ≥27.5 kg/m².";
   }else{
     const adjustedText=adjusted>0
       ? `${adjusted.toFixed(1)} kg`
-      : "Not applicable — actual weight is not above calculated ideal weight";
+      : `Not applicable — BMI is below ${adjustedBmiThreshold} kg/m²`;
 
     f$("dfuBodyCalcResult").innerHTML=
       `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
@@ -9721,7 +10217,7 @@ function buildDengueFollowUpClinicalNote(){
     fv("dfuAllergy")?`allergy history to medications: ${fv("dfuAllergy")}`:"",
     fv("dfuAddress")?`address: ${fv("dfuAddress")}`:"",
     fv("dfuPhone")?`latest phone number: ${fv("dfuPhone")}`:"",
-    fv("dfuAge")?`age: ${fv("dfuAge")} years`:"",
+    window.dengueAgeDisplay("dfu")?`age: ${window.dengueAgeDisplay("dfu")}`:"",
     fv("dfuPregnancy")&&fv("dfuPregnancy")!=="-"?`pregnancy: ${fv("dfuPregnancy")}`:"",
     fv("dfuBloodThinner")?`antiplatelet / anticoagulant: ${fv("dfuBloodThinner")}`:"",
     fv("dfuSocialLimit")
@@ -9911,6 +10407,13 @@ f$("openDengueFollowUp").addEventListener("click",()=>setDengueTemplate("followu
   });
 });
 
+["dfuVomitCount","dfuLooseStoolCount"].forEach(id=>{
+  f$(id).addEventListener("input",()=>{
+    renderDengueFollowUpWarningClassification();
+    buildDengueFollowUpDiagnosis();
+  });
+});
+
 f$("dfuBleedingTendencies")
   .querySelectorAll('input[type="checkbox"]')
   .forEach(checkbox=>{
@@ -9931,10 +10434,14 @@ const calculateDengueFollowUpBodyWeightDebounced=
 f$("dfuSex").addEventListener("change",calculateDengueFollowUpBodyWeight);
 
 f$("dfuGroup").addEventListener("change",()=>{
-  syncDengueFollowUpInterventions();
-  syncDengueFollowUpFluidWeight();
+  window.syncDengueAgeUnit("dfu","dfuGroup");
+  calculateDengueFollowUpBodyWeight();
   updateDengueFollowUpFluidRateOptions();
 });
+f$("dfuAgeUnit").addEventListener("change",()=>{
+  window.syncDengueAgeUnit("dfu","dfuGroup");
+});
+window.syncDengueAgeUnit("dfu","dfuGroup");
 
 f$("dfuRecalculateBodyWeight").addEventListener(
   "click",
@@ -11186,6 +11693,252 @@ document.addEventListener("keydown",event=>{
   renderDengueReferralAlert("followup",{silent:true});
 
   window.requestDengueReferralRender=requestReferralRender;
+})();
+
+
+
+// V18.56 — persistent quick component bar; no auto-collapse after section selection.
+(function initialiseSectionQuickBar(){
+  const bar=document.getElementById("sectionQuickBar");
+  const list=document.getElementById("sectionQuickBarList");
+  const toggle=document.getElementById("sectionQuickBarToggle");
+  const main=document.querySelector(".main");
+  if(!bar || !list || !toggle || !main) return;
+
+  let targets=[];
+  let renderedSignature="";
+  let activeTargetId="";
+  let rebuildTimer=null;
+  let flashTimer=null;
+  let scrollFrame=0;
+  let programmaticScrollUntil=0;
+
+  function normaliseLabel(text){
+    return String(text||"")
+      .replace(/\s+/g," ")
+      .replace(/^\d+[.)]\s*/,"")
+      .trim();
+  }
+
+  function slugify(text){
+    return normaliseLabel(text)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g,"-")
+      .replace(/^-+|-+$/g,"")
+      .slice(0,48) || "section";
+  }
+
+  function isVisible(element){
+    if(!element || element.closest(".hidden")) return false;
+    const style=window.getComputedStyle(element);
+    return style.display!=="none" && style.visibility!=="hidden" && element.getClientRects().length>0;
+  }
+
+  function cardHeading(card){
+    const direct=card.querySelector(":scope > h2");
+    if(direct) return direct;
+    const titled=card.querySelector(":scope > .nnj-card-title h2, :scope > .dengue-optional-card-head h2, :scope > .unified-draft-sidebar-head h2");
+    if(titled) return titled;
+    return card.querySelector("h2");
+  }
+
+  function visibleCards(page){
+    const cards=[...page.querySelectorAll(".card")].filter(isVisible);
+    return cards.filter(card=>{
+      const parentCard=card.parentElement?.closest(".card");
+      return !parentCard || !isVisible(parentCard);
+    });
+  }
+
+  function assignTargetId(element,label,index,pageName){
+    if(element.dataset.quickbarId) return element.dataset.quickbarId;
+    let id=`quick-${pageName}-${slugify(label)}-${index+1}`;
+    let suffix=2;
+    while(document.getElementById(id) && document.getElementById(id)!==element){
+      id=`quick-${pageName}-${slugify(label)}-${index+1}-${suffix++}`;
+    }
+    element.dataset.quickbarId=id;
+    if(!element.id) element.id=id;
+    return element.id || id;
+  }
+
+  function setExpanded(expanded){
+    bar.classList.toggle("expanded",expanded);
+    toggle.setAttribute("aria-expanded",String(expanded));
+    toggle.setAttribute("aria-label",expanded?"Collapse component navigation":"Expand component navigation");
+    toggle.textContent=expanded?"×":"☰";
+  }
+
+  function setActiveButton(targetId,scrollIntoView=false){
+    if(!targetId || activeTargetId===targetId) return;
+    activeTargetId=targetId;
+    list.querySelectorAll(".section-jump-btn").forEach(button=>{
+      const active=button.dataset.targetId===targetId;
+      button.classList.toggle("active",active);
+      if(active && scrollIntoView && window.innerWidth<=900){
+        button.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
+      }
+    });
+  }
+
+  function jumpTo(target){
+    if(!target) return;
+    programmaticScrollUntil=performance.now()+1200;
+    setActiveButton(target.id,true);
+    target.scrollIntoView({behavior:"smooth",block:"start",inline:"nearest"});
+
+    target.classList.remove("section-jump-flash");
+    requestAnimationFrame(()=>target.classList.add("section-jump-flash"));
+    clearTimeout(flashTimer);
+    flashTimer=setTimeout(()=>target.classList.remove("section-jump-flash"),850);
+
+    // Keep the component list in its current state.
+    // It only collapses when the user presses the × button or clicks outside the bar.
+  }
+
+  function findCurrentTarget(){
+    if(!targets.length) return null;
+    const marker=window.innerWidth<=900?92:34;
+    let current=targets[0];
+    for(const target of targets){
+      const top=target.element.getBoundingClientRect().top;
+      if(top<=marker+12) current=target;
+      else break;
+    }
+    return current;
+  }
+
+  function updateActiveButton(){
+    scrollFrame=0;
+    if(performance.now()<programmaticScrollUntil) return;
+    const current=findCurrentTarget();
+    if(current) setActiveButton(current.id,false);
+  }
+
+  function requestActiveUpdate(){
+    if(scrollFrame) return;
+    scrollFrame=requestAnimationFrame(updateActiveButton);
+  }
+
+  function buildTargetData(){
+    const page=document.querySelector(".page.active");
+    if(!page || page.id==="page-dashboard") return {page:null,items:[],signature:""};
+
+    const pageName=page.id.replace(/^page-/,"") || "page";
+    const cards=visibleCards(page);
+    const seenLabels=new Map();
+    const items=[];
+
+    cards.forEach((card,index)=>{
+      const heading=cardHeading(card);
+      let label=normaliseLabel(heading?.textContent);
+      if(!label) label=`Section ${index+1}`;
+      const count=(seenLabels.get(label)||0)+1;
+      seenLabels.set(label,count);
+      const displayLabel=count>1?`${label} (${count})`:label;
+      const id=assignTargetId(card,displayLabel,index,pageName);
+      card.classList.add("section-quickbar-target");
+      items.push({element:card,id,label:displayLabel});
+    });
+
+    return {
+      page,
+      items,
+      signature:`${page.id}|${items.map(item=>`${item.id}:${item.label}`).join("|")}`
+    };
+  }
+
+  function renderButtons(items){
+    const fragment=document.createDocumentFragment();
+    items.forEach((target,index)=>{
+      const button=document.createElement("button");
+      button.type="button";
+      button.className="section-jump-btn";
+      button.dataset.targetId=target.id;
+      button.dataset.tooltip=target.label;
+      button.title=target.label;
+      button.innerHTML=`<span class="section-jump-number">${String(index+1).padStart(2,"0")}</span><span class="section-jump-label"></span>`;
+      button.querySelector(".section-jump-label").textContent=target.label;
+      button.addEventListener("mouseenter",()=>{
+        const rect=button.getBoundingClientRect();
+        button.style.setProperty("--tooltip-y",`${Math.max(26,Math.min(window.innerHeight-26,rect.top+rect.height/2))}px`);
+      });
+      button.addEventListener("click",()=>jumpTo(target.element));
+      fragment.appendChild(button);
+    });
+    list.replaceChildren(fragment);
+  }
+
+  function rebuild(){
+    rebuildTimer=null;
+    const data=buildTargetData();
+    targets=data.items;
+
+    if(!data.page || !targets.length){
+      renderedSignature="";
+      activeTargetId="";
+      bar.classList.add("hidden");
+      list.replaceChildren();
+      return;
+    }
+
+    bar.classList.remove("hidden");
+    if(data.signature!==renderedSignature){
+      renderedSignature=data.signature;
+      activeTargetId="";
+      renderButtons(targets);
+    }
+
+    const current=findCurrentTarget() || targets[0];
+    if(current) setActiveButton(current.id,false);
+  }
+
+  function scheduleRebuild(delay=120){
+    clearTimeout(rebuildTimer);
+    rebuildTimer=setTimeout(rebuild,delay);
+  }
+
+  toggle.addEventListener("click",event=>{
+    event.stopPropagation();
+    setExpanded(!bar.classList.contains("expanded"));
+  });
+
+  document.addEventListener("click",event=>{
+    if(!bar.contains(event.target) && bar.classList.contains("expanded")) setExpanded(false);
+    if(event.target.closest(".nav-btn, [data-open], .dengue-type-card, .calc-option, .calc-back")){
+      scheduleRebuild(150);
+    }
+  });
+
+  document.addEventListener("change",event=>{
+    if(event.target.closest(".page.active")) scheduleRebuild(180);
+  });
+
+  window.addEventListener("scroll",requestActiveUpdate,{passive:true});
+  window.addEventListener("resize",()=>scheduleRebuild(180),{passive:true});
+
+  // Observe only meaningful visibility/page changes. Ignore ordinary styling and active-button changes.
+  const observer=new MutationObserver(mutations=>{
+    let meaningful=false;
+    for(const mutation of mutations){
+      if(mutation.type!=="attributes" || mutation.attributeName!=="class") continue;
+      const element=mutation.target;
+      const previous=new Set(String(mutation.oldValue||"").split(/\s+/).filter(Boolean));
+      const hiddenChanged=previous.has("hidden")!==element.classList.contains("hidden");
+      const pageActiveChanged=element.classList.contains("page") && previous.has("active")!==element.classList.contains("active");
+      const panelActiveChanged=(element.classList.contains("calc-panel") || element.classList.contains("dengue-type-card")) && previous.has("active")!==element.classList.contains("active");
+      if(hiddenChanged || pageActiveChanged || panelActiveChanged){
+        meaningful=true;
+        break;
+      }
+    }
+    if(meaningful) scheduleRebuild(140);
+  });
+  observer.observe(main,{subtree:true,attributes:true,attributeOldValue:true,attributeFilter:["class"]});
+
+  setExpanded(false);
+  window.rebuildSectionQuickBar=rebuild;
+  requestAnimationFrame(()=>scheduleRebuild(50));
 })();
 </script>
 </body>
