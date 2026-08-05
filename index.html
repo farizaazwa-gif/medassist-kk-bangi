@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.56 — Persistent Smooth Quick Component Bar</title>
+<title>MedAssist KK Bangi V18.69 — Last PU 30-minute intervals</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -55,6 +55,14 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:
 .decision-box span{display:block;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
 .decision-box strong{display:block;font-size:15px}
 .referral-yes{color:#a1312b}.referral-no{color:#146c43}.plan-warning{margin-top:10px;padding:10px 12px;border-radius:10px;background:#fff3cd;border:1px solid #e9cf79;color:#714f00;font-weight:700}
+.plan-option-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:14px}
+.plan-option-grid .check-item{min-height:48px;align-items:center}
+.plan-antibiotic-panel{margin-top:14px;padding:15px;border:1px solid #b9d9d1;border-radius:13px;background:#f7fcfb}
+.plan-antibiotic-panel .section-subtitle{margin-top:0}
+.plan-antibiotic-result{margin-top:12px}
+.plan-others-field{margin-top:14px}
+.plan-others-field textarea{min-height:82px}
+@media(max-width:760px){.plan-option-grid{grid-template-columns:1fr}}
 @media(max-width:900px){.decision-grid{grid-template-columns:1fr}}
 .section-subtitle{font-weight:800;margin:16px 0 8px}
 @media(max-width:900px){.threshold-grid{grid-template-columns:1fr}}
@@ -2067,7 +2075,7 @@ html,body{max-width:100%;overflow-x:hidden}
 /* Paediatric clerking age selector */
 .age-input-row{
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(118px,145px);
+  grid-template-columns:minmax(82px,110px) minmax(128px,1fr);
   gap:8px;
   align-items:center;
 }
@@ -2076,10 +2084,155 @@ html,body{max-width:100%;overflow-x:hidden}
   cursor:not-allowed;
   background:#f4f7fb;
 }
-.age-unit-help{margin-top:6px}
-@media(max-width:560px){
-  .age-input-row{grid-template-columns:minmax(0,1fr) 124px}
+.age-input-row > input{
+  min-width:0!important;
+  width:100%!important;
+  position:relative;
+  z-index:3;
+  pointer-events:auto!important;
+  touch-action:manipulation;
 }
+.age-input-row > select{
+  min-width:0!important;
+  position:relative;
+  z-index:2;
+}
+.age-unit-help{margin-top:6px}
+.plan-fixed-items{
+  display:grid;
+  gap:8px;
+  margin:12px 0 14px;
+  padding:12px 14px;
+  border:1px solid #cfe4df;
+  border-radius:11px;
+  background:#fff;
+}
+.plan-fixed-item{
+  display:flex;
+  gap:9px;
+  align-items:flex-start;
+  font-size:13px;
+  line-height:1.45;
+}
+.plan-fixed-item::before{
+  content:"✓";
+  color:#176f65;
+  font-weight:900;
+}
+.plan-custom-antibiotic{margin-top:12px}
+.plan-custom-antibiotic textarea{min-height:76px}
+@media(max-width:560px){
+  .age-input-row{grid-template-columns:minmax(76px,96px) minmax(124px,1fr)}
+}
+#clAgeWrap,#dfuAgeWrap{min-width:0}
+#clAge,#dfuAge{font-variant-numeric:tabular-nums}
+
+/* V18.60 associated-symptom layout stability fix
+   The desktop workspace is narrowed by the fixed navigation, quick-component rail
+   and saved-draft panel. Use one clean symptom row per line so labels and onset
+   controls never compete for the same narrow column. */
+#clSymptoms{
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:12px!important;
+}
+#clSymptoms .symptom-row{
+  grid-template-columns:minmax(210px,1fr) minmax(240px,320px)!important;
+  align-items:center!important;
+  min-height:78px;
+  padding:12px 14px!important;
+  column-gap:16px!important;
+}
+#clSymptoms .symptom-row .check-item{
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:center!important;
+  gap:10px!important;
+  margin:0!important;
+  padding:8px 4px!important;
+  line-height:1.25;
+}
+#clSymptoms .symptom-row .check-item span{
+  min-width:0;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+#clSymptoms .symptom-onset{
+  grid-template-columns:minmax(105px,.85fr) minmax(130px,1.15fr)!important;
+  width:100%;
+}
+#clSymptoms .symptom-onset input,
+#clSymptoms .symptom-onset select{
+  min-width:0;
+}
+#clCoughRow .cough-character{
+  grid-column:1/-1;
+}
+@media(max-width:1150px){
+  #clSymptoms .symptom-row{
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+  }
+  #clSymptoms .symptom-onset{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  }
+}
+@media(max-width:520px){
+  #clSymptoms .symptom-onset{
+    grid-template-columns:1fr!important;
+  }
+}
+
+/* V18.69: reduced urine details remain inline; Last PU uses a 24-hour clock with 00/30 minute intervals */
+.warning-sign-grid{align-items:start}
+.urine-inline-card{
+  grid-column:span 2;
+  align-self:start;
+  padding:13px 14px;
+  border:1px solid var(--border);
+  border-radius:13px;
+  background:#fbfdfc;
+  transition:border-color .16s ease,background .16s ease,box-shadow .16s ease;
+}
+.urine-inline-card.is-active{
+  border-color:#78b8aa;
+  background:#f2faf7;
+  box-shadow:0 5px 16px rgba(20,91,79,.08);
+}
+.urine-inline-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(120px,160px);
+  gap:12px;
+  align-items:end;
+}
+.urine-inline-head label{margin-top:0}
+.urine-inline-head .helper{margin-top:2px}
+.urine-inline-details{
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px dashed #b9d8d1;
+}
+.urine-detail-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+  gap:10px;
+}
+.urine-detail-grid label{margin-top:0;font-size:12px;color:#34554f}
+.urine-detail-grid input,.urine-detail-grid select{min-height:43px;background:#fff}
+.last-pu-24h-field{min-width:0}
+.last-pu-24h-grid{display:grid;grid-template-columns:minmax(150px,1.35fr) minmax(145px,1fr);gap:8px;align-items:center}
+.last-pu-time-row{display:grid;grid-template-columns:minmax(58px,1fr) 12px minmax(58px,1fr);gap:4px;align-items:center}
+.last-pu-time-row select{text-align:center;font-variant-numeric:tabular-nums}
+.last-pu-colon{text-align:center;font-size:18px;font-weight:900;color:#34554f}
+.last-pu-24h-field .helper{margin-top:5px;font-size:11px}
+@media(max-width:1150px){
+  .urine-inline-card{grid-column:1/-1}
+}
+@media(max-width:720px){
+  .urine-inline-head,.urine-detail-grid{grid-template-columns:1fr}
+  .last-pu-24h-grid{grid-template-columns:1fr}
+  .urine-inline-card{padding:12px}
+}
+
 </style>
 </head>
 <body>
@@ -2104,16 +2257,15 @@ html,body{max-width:100%;overflow-x:hidden}
 <button class="nav-btn" data-page="nnj">🟡 NNJ Clerking</button>
 <button class="nav-btn" data-page="calculator">🧮 Calculators</button>
 </aside>
-
 <nav aria-label="Quick component navigation" class="section-quickbar hidden" id="sectionQuickBar">
-  <div class="section-quickbar-head">
-    <button aria-expanded="false" aria-label="Expand component navigation" class="section-quickbar-toggle" id="sectionQuickBarToggle" title="Components" type="button">☰</button>
-    <div class="section-quickbar-heading">
-      <strong>Quick components</strong>
-      <small>Click to jump to a section</small>
-    </div>
-  </div>
-  <div class="section-quickbar-list" id="sectionQuickBarList"></div>
+<div class="section-quickbar-head">
+<button aria-expanded="false" aria-label="Expand component navigation" class="section-quickbar-toggle" id="sectionQuickBarToggle" title="Components" type="button">☰</button>
+<div class="section-quickbar-heading">
+<strong>Quick components</strong>
+<small>Click to jump to a section</small>
+</div>
+</div>
+<div class="section-quickbar-list" id="sectionQuickBarList"></div>
 </nav>
 <main class="main">
 <section class="page active" id="page-dashboard">
@@ -2168,7 +2320,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="paeds">Paediatric</option>
 </select>
 </div>
-<div><label>Sex</label><select id="clSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div id="clAgeWrap"><label>Age</label><div class="age-input-row"><input id="clAge" min="0" placeholder="e.g. 4" step="1" type="number"/><select id="clAgeUnit" aria-label="Age unit"><option value="years">Years old</option><option value="months">Months old</option></select></div><div class="helper age-unit-help" id="clAgeHelp">Adult age is recorded in years.</div></div>
+<div><label>Sex</label><select id="clSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div id="clAgeWrap"><label>Age</label><div class="age-input-row"><input autocomplete="off" id="clAge" inputmode="numeric" maxlength="3" pattern="[0-9]*" placeholder="e.g. 4" type="text"/><select aria-label="Age unit" id="clAgeUnit"><option value="years">Years old</option><option value="months">Months old</option></select></div><div class="helper age-unit-help" id="clAgeHelp">Adult age is recorded in years.</div></div>
 <div class="hidden" id="clLmpWrap"><label>LMP</label><input id="clLmp" type="date"/></div>
 <div><label>Address</label><input id="clAddress"/></div>
 <div><label>Latest phone number</label><input id="clPhone"/></div>
@@ -2337,7 +2489,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <label>Other associated symptoms</label><textarea id="clOtherSymptoms"></textarea>
 <div class="tb-screening-card hidden" id="clTbScreening">
 <h3>TB screening</h3>
-<div class="tb-screening-trigger">Cough ≥ 2 weeks detected. Complete this section; it will appear immediately below the positive symptoms in the generated note.</div>
+<div class="tb-screening-trigger">Cough ≥ 2 weeks detected. Complete this section; it will be generated directly under the cough history.</div>
 <div class="helper">Tick positive symptoms only. Unticked items will be generated as negative.</div>
 <div class="check-grid" id="clTbSymptoms">
 <label class="check-item"><input id="clTbHemoptysis" type="checkbox" value="hemoptysis"/>Hemoptysis</label>
@@ -2384,9 +2536,42 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div><div class="card">
 <h2>Warning signs</h2>
-<div class="grid three">
+<div class="grid three warning-sign-grid">
 <div><label>Oral fluid tolerance</label><select id="clDrink"><option selected="" value="able">Able to tolerate oral fluids</option><option value="reduced">Reduced oral intake</option><option value="unable">Unable to tolerate oral fluids</option></select></div>
-<div><label>Reduced urine volume</label><select id="clUrine"><option>no</option><option>yes</option></select></div>
+<div class="urine-inline-card" id="clUrineInlineCard">
+<div class="urine-inline-head">
+<div>
+<label for="clUrine">Reduced urine volume</label>
+<div class="helper">Select Yes to open the relevant urine details.</div>
+</div>
+<select id="clUrine"><option value="no">No — PU normal</option><option value="yes">Yes — PU reduced</option></select>
+</div>
+<div class="urine-inline-details hidden" id="clUrinePaedsDetails">
+<div class="urine-detail-grid">
+<div><label>Wet pampers / day</label><input id="clUrinePaedsDiapers" inputmode="numeric" min="0" placeholder="e.g. 3" step="1" type="number"/></div>
+<div><label>Urine colour</label><select id="clUrinePaedsConcentrated"><option value="">Select</option><option value="no">Normal / not concentrated</option><option value="yes">Concentrated / dark</option></select></div>
+<div><label>Pampers weight</label><select id="clUrinePaedsWeight"><option value="">Select</option><option value="lighter">Lighter than usual</option><option value="same">Same as usual</option><option value="heavier">Heavier than usual</option></select></div>
+</div>
+</div>
+<div class="urine-inline-details hidden" id="clUrineAdultDetails">
+<div class="urine-detail-grid">
+<div><label>Urine colour</label><select id="clUrineAdultConcentrated"><option value="">Select</option><option value="no">Normal / not concentrated</option><option value="yes">Concentrated / dark</option></select></div>
+<div><label>Amount passed</label><select id="clUrineAdultVolume"><option value="">Select</option><option value="slightly reduced">Slightly reduced</option><option value="scanty">Scanty</option><option value="minimal / drops only">Minimal / drops only</option><option value="no urine passed">No urine passed</option></select></div>
+<div class="last-pu-24h-field">
+<label>Last PU</label>
+<div class="last-pu-24h-grid">
+<input aria-label="Last PU date" id="clUrineAdultLastPuDate" type="date"/>
+<div class="last-pu-time-row" aria-label="Last PU time in 24-hour format">
+<select aria-label="Hour (00 to 23)" id="clUrineAdultLastPuHour"><option value="">HH</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+<span class="last-pu-colon">:</span>
+<select aria-label="Minute" id="clUrineAdultLastPuMinute"><option value="">MM</option><option value="00">00</option><option value="30">30</option></select>
+</div>
+</div>
+<div class="helper">24-hour format (HH:MM), no AM/PM.</div>
+</div>
+</div>
+</div>
+</div>
 <div><label>Can perform daily activities</label><select id="clActivity"><option>yes</option><option>no</option></select></div>
 <div><label>Lethargy</label><select id="clLethargy"><option>no</option><option>yes</option></select></div>
 <div>
@@ -2898,24 +3083,44 @@ html,body{max-width:100%;overflow-x:hidden}
 <div>
 <label>Select plan</label>
 <select id="clPlanOption">
-<option selected="" value="outpatient">
-        Option 2 — Outpatient follow-up / serial FBC
-      </option>
-<option value="refer">
-        Option 1 — Refer ED + notify + start IVD NS
-      </option>
+<option value="refer">Option 1 — Refer ED + notify + start IVD NS</option>
+<option selected="" value="outpatient">Option 2 — Outpatient follow-up / serial FBC</option>
+<option value="antibiotic">Option 3 — Treat concurrent infection / start antibiotic</option>
+<option value="others">Option 4 — Others / custom plan</option>
 </select>
-</div>
-<div>
-<label>Additional plan (optional)</label>
-<input id="clPlanExtra" placeholder="Other instructions / medication / follow-up"/>
 </div>
 <div class="cl-ivd-time-wrap hidden" id="clIvdStartWrap">
 <label>Time IVD started in KK before ED referral</label>
 <input id="clIvdStartTime" type="time"/>
 <div class="helper">This time will be included in the generated plan and referral letter.</div>
 </div>
-</div><div class="result-box" id="clPlanPreview"></div><div class="helper" id="clReferralStatus"></div><div class="actions">
+</div>
+<div class="plan-antibiotic-panel hidden" id="clPlanAntibioticPanel">
+<div class="section-subtitle">Option 3 — Treat concurrent infection / start antibiotic</div>
+<div class="plan-fixed-items">
+<div class="plan-fixed-item">Advise on medication compliance and completion of the prescribed course.</div>
+<div class="plan-fixed-item">TCA STAT if any allergic reaction or medication side effect develops.</div>
+<div class="plan-fixed-item">TCA back if symptoms are not resolved for reassessment.</div>
+</div>
+<div class="grid two">
+<div><label>Concurrent infection / diagnosis</label><select id="clPlanAbxCategory"></select></div>
+<div><label>Complete NAG antibiotic option</label><select id="clPlanAbxRegimen"></select></div>
+</div>
+<div class="notice">Select the diagnosis, then choose one complete antibiotic option. Dose, frequency and duration are generated together. For paediatric patients, the dose is recalculated automatically from the weight and age entered above.</div>
+<div class="plan-custom-antibiotic">
+<label>Other / custom antibiotic prescription — optional</label>
+<textarea id="clPlanAbxCustom" placeholder="Free text, e.g. Start Doxycycline 100 mg PO BD for 5 days. This overrides the NAG selection above."></textarea>
+<div class="helper">Use this only when another antibiotic or regimen is clinically selected.</div>
+</div>
+<div class="result-box plan-antibiotic-result" id="clPlanAbxAutoResult">Select a diagnosis and antimicrobial regimen.</div>
+</div>
+<div class="plan-others-field hidden" id="clPlanOthersPanel">
+<div class="section-subtitle">Option 4 — Others / custom plan</div>
+<label>Plan — free text</label>
+<textarea id="clPlanExtra" placeholder="Enter your own plan. Use a new line for each plan item."></textarea>
+<div class="helper">Each line will be generated as a separate plan item.</div>
+</div>
+<div class="result-box" id="clPlanPreview"></div><div class="helper" id="clReferralStatus"></div><div class="actions">
 <button class="btn primary" id="clGenerate" type="button">Generate clinical note</button>
 <button class="btn secondary hidden" id="clGenerateReferral" type="button">Generate ED referral letter</button>
 <button class="btn secondary" id="clCopy" type="button">Copy clinical note</button>
@@ -2955,7 +3160,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <h2>Patient and follow-up details</h2>
 <div class="grid three">
 <div><label>Patient group</label><select id="dfuGroup"><option value="adult">Adult</option><option value="paeds">Paediatric</option></select></div>
-<div><label>Sex</label><select id="dfuSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div id="dfuAgeWrap"><label>Age</label><div class="age-input-row"><input id="dfuAge" min="0" placeholder="e.g. 4" step="1" type="number"/><select id="dfuAgeUnit" aria-label="Age unit"><option value="years">Years old</option><option value="months">Months old</option></select></div><div class="helper age-unit-help" id="dfuAgeHelp">Adult age is recorded in years.</div></div>
+<div><label>Sex</label><select id="dfuSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div id="dfuAgeWrap"><label>Age</label><div class="age-input-row"><input autocomplete="off" id="dfuAge" inputmode="numeric" maxlength="3" pattern="[0-9]*" placeholder="e.g. 4" type="text"/><select aria-label="Age unit" id="dfuAgeUnit"><option value="years">Years old</option><option value="months">Months old</option></select></div><div class="helper age-unit-help" id="dfuAgeHelp">Adult age is recorded in years.</div></div>
 <div><label>Day of illness</label><input id="dfuDayIllness" min="1" placeholder="e.g. 5" step="1" type="number"/></div>
 <div><label>Drug allergy</label><input id="dfuAllergy" value="NKDA"/></div>
 <div><label>Address</label><input id="dfuAddress"/></div>
@@ -3369,13 +3574,39 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="grid two">
 <div><label>Select plan</label>
 <select id="dfuPlanOption">
-<option selected="" value="monitoring">Option 2 — Continue FBC monitoring</option>
 <option value="refer">Option 1 — Refer ED</option>
-<option value="discharge">Option 3 — Discharge from FBC monitoring</option>
+<option selected="" value="monitoring">Option 2 — Continue FBC monitoring</option>
+<option value="antibiotic">Option 3 — Treat concurrent infection / start antibiotic</option>
+<option value="others">Option 4 — Others / custom plan</option>
+<option value="discharge">Option 5 — Discharge from FBC monitoring</option>
 </select>
 </div>
 <div id="dfuNextTcaWrap"><label>Next TCA date</label><input id="dfuNextTca" type="date"/></div>
-<div><label>Additional plan</label><input id="dfuPlanExtra" placeholder="Optional"/></div>
+</div>
+<div class="plan-antibiotic-panel hidden" id="dfuPlanAntibioticPanel">
+<div class="section-subtitle">Option 3 — Treat concurrent infection / start antibiotic</div>
+<div class="plan-fixed-items">
+<div class="plan-fixed-item">Advise on medication compliance and completion of the prescribed course.</div>
+<div class="plan-fixed-item">TCA STAT if any allergic reaction or medication side effect develops.</div>
+<div class="plan-fixed-item">TCA back if symptoms are not resolved for reassessment.</div>
+</div>
+<div class="grid two">
+<div><label>Concurrent infection / diagnosis</label><select id="dfuPlanAbxCategory"></select></div>
+<div><label>Complete NAG antibiotic option</label><select id="dfuPlanAbxRegimen"></select></div>
+</div>
+<div class="notice">Select the diagnosis, then choose one complete antibiotic option. Dose, frequency and duration are generated together. For paediatric patients, the dose is recalculated automatically from the weight and age entered above.</div>
+<div class="plan-custom-antibiotic">
+<label>Other / custom antibiotic prescription — optional</label>
+<textarea id="dfuPlanAbxCustom" placeholder="Free text, e.g. Start Doxycycline 100 mg PO BD for 5 days. This overrides the NAG selection above."></textarea>
+<div class="helper">Use this only when another antibiotic or regimen is clinically selected.</div>
+</div>
+<div class="result-box plan-antibiotic-result" id="dfuPlanAbxAutoResult">Select a diagnosis and antimicrobial regimen.</div>
+</div>
+<div class="plan-others-field hidden" id="dfuPlanOthersPanel">
+<div class="section-subtitle">Option 4 — Others / custom plan</div>
+<label>Plan — free text</label>
+<textarea id="dfuPlanExtra" placeholder="Enter your own plan. Use a new line for each plan item."></textarea>
+<div class="helper">Each line will be generated as a separate plan item.</div>
 </div>
 <div class="result-box" id="dfuPlanPreview"></div>
 <div class="helper" id="dfuReferralStatus"></div>
@@ -4233,6 +4464,10 @@ html,body{max-width:100%;overflow-x:hidden}
 <label>Prolonged jaundice blood taking</label>
 <input id="nnjWorkupTiming" readonly=""/>
 </div>
+<div style="grid-column:1/-1">
+<label>Others — free text</label>
+<textarea id="nnjPlanOthers" placeholder="Enter any additional plan. Use a new line for each plan item."></textarea>
+</div>
 </div>
 <div class="hidden" id="nnjProlongedWrap">
 <div class="section-subtitle">Prolonged jaundice investigations</div>
@@ -4272,17 +4507,17 @@ html,body{max-width:100%;overflow-x:hidden}
 <button class="calc-option" data-calc="antibiotic"><span>💊</span><strong>AMS / NAG Paediatric</strong><small>Outpatient antimicrobial options</small></button>
 <button class="calc-option" data-calc="vitals"><span>🩺</span><strong>Paeds vital signs</strong><small>Age-based interpretation</small></button>
 <button class="calc-option" data-calc="pack"><span>🚬</span><strong>Pack-year</strong><small>Smoking exposure</small></button>
-<button class="calc-option" data-calc="scores"><span>📊</span><strong>Clinical scores</strong><small>qSOFA, CURB-65, Centor</small></button>
-<button class="calc-option" data-calc="news2"><span>🚨</span><strong>NEWS2</strong><small>Auto-score and escalation</small></button>
+<button class="calc-option" data-calc="scores"><span>🧫</span><strong>Centor score</strong><small>Modified Centor for GAS pharyngitis</small></button>
+
 <button class="calc-option" data-calc="renal"><span>🫘</span><strong>eGFR — CKD-EPI</strong><small>2021 adult creatinine equation</small></button>
 <button class="calc-option" data-calc="mental"><span>🧠</span><strong>Mental health</strong><small>PHQ-9 and GAD-7</small></button>
-<button class="calc-option" data-calc="vte"><span>🫁</span><strong>VTE assessment</strong><small>Wells PE/DVT and PERC</small></button>
-<button class="calc-option" data-calc="cardiac"><span>❤️</span><strong>Cardiac scores</strong><small>HEART, CHA₂DS₂-VASc, QTc</small></button>
+
+
 <button class="calc-option" data-calc="framingham"><span>🫀</span><strong>Framingham CVD risk</strong><small>10-year General CVD risk</small></button>
 <button class="calc-option" data-calc="endocrine"><span>🌡️</span><strong>Thyroid storm</strong><small>Burch-Wartofsky score</small></button>
-<button class="calc-option" data-calc="preeclampsia"><span>🤰</span><strong>PE prophylaxis</strong><small>MOH Handbook 2024</small></button>
-<button class="calc-option" data-calc="paedsemergency"><span>👶</span><strong>Paeds emergency</strong><small>Manual weight required</small></button>
-<button class="calc-option" data-calc="procedural"><span>🩹</span><strong>Procedural</strong><small>Local anaesthetic and oxygen</small></button>
+<button class="calc-option" data-calc="preeclampsia"><span>🤰</span><strong>PE prophylaxis</strong><small>MOH Handbook 2024</small></button><button class="calc-option" data-calc="gdm"><span>🧪</span><strong>GDM risk &amp; MGTT</strong><small>Risk factors and screening timing</small></button>
+
+
 <button class="calc-option" data-calc="stopbang"><span>😴</span><strong>STOP-BANG</strong><small>OSA risk screening</small></button>
 <button class="calc-option" data-calc="pregnancy"><span>📅</span><strong>Pregnancy dates</strong><small>EDD and gestational age</small></button>
 </div>
@@ -4306,7 +4541,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="notice">
         Based on the MOH National Antimicrobial Guideline, 4th Edition online guideline.
         The NAG website is updated periodically. Confirm the diagnosis, allergy type,
-        renal/hepatic function, route, local product concentration and need for referral.
+        renal/hepatic function, route and need for referral.
       </div>
 <div class="grid three">
 <div>
@@ -4332,6 +4567,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="sinusitis">Bacterial rhinosinusitis</option>
 <option value="aom">Acute otitis media</option>
 <option value="aoe">Acute otitis externa</option>
+<option value="uti">Lower urinary tract infection</option>
 </select>
 </div>
 <div>
@@ -4346,14 +4582,6 @@ html,body{max-width:100%;overflow-x:hidden}
 <label>Frequency</label>
 <select id="abxFrequency"></select>
 </div>
-<div id="abxConcentrationWrap">
-<label>Product concentration</label>
-<select id="abxConcentration"></select>
-</div>
-<div class="hidden" id="abxCustomConcWrap">
-<label>Custom concentration (mg/mL)</label>
-<input id="abxCustomConc" min="0" step="0.01" type="number"/>
-</div>
 <div>
 <label> </label>
 <button class="btn primary" id="abxCalculate" type="button">
@@ -4363,13 +4591,16 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="helper" id="abxRegimenSummary"></div>
 <div class="result-box" id="abxResult">
-        Select the infection, regimen and enter the child’s weight.
+        Select the infection and regimen, then enter the child’s weight.
       </div>
 <a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b10-respiratory-infections" rel="noopener" target="_blank">
         NAG Paediatric Respiratory
       </a>
 <a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b9-otorhinolaryngology-infections" rel="noopener" target="_blank">
         NAG Paediatric ENT
+      </a>
+<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b13-urinary-tract-infections" rel="noopener" target="_blank">
+        NAG Paediatric UTI
       </a>
 <a class="ref" href="https://sites.google.com/moh.gov.my/nag/information/whats-new" rel="noopener" target="_blank">
         NAG Latest Updates
@@ -4401,20 +4632,33 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="calc-panel" id="calc-scores">
 <button class="btn secondary calc-back" type="button">← Back</button>
-<div class="card"><h2>Clinical Scores</h2><div class="grid three"><div><label>Score</label><select id="scoreType"><option value="qsofa">qSOFA</option><option value="curb65">CURB-65</option><option value="centor">Modified Centor</option></select></div><div id="scoreInputs" style="grid-column:span 2"></div></div><div class="actions"><button class="btn primary" id="scoreCalculate" type="button">Calculate score</button></div><div class="result-box" id="scoreResult">Select a score.</div></div>
+<div class="card">
+<h2>Modified Centor Score</h2>
+<div class="notice">
+    Estimates the likelihood of group A streptococcal pharyngitis. This score supports testing decisions only and does not confirm the diagnosis or mandate antibiotics.
+  </div>
+<div class="check-grid" id="centorInputs">
+<label class="check-item"><input id="centorExudate" type="checkbox"/> Tonsillar exudate or swelling (+1)</label>
+<label class="check-item"><input id="centorNodes" type="checkbox"/> Tender anterior cervical lymphadenopathy (+1)</label>
+<label class="check-item"><input id="centorFever" type="checkbox"/> Temperature &gt;38°C (+1)</label>
+<label class="check-item"><input id="centorNoCough" type="checkbox"/> Absence of cough (+1)</label>
 </div>
-<div class="calc-panel" id="calc-news2">
-<button class="btn secondary calc-back" type="button">← Back</button>
-<div class="card"><h2>NEWS2</h2><div class="notice">Screening and escalation aid only. Clinical concern overrides the score.</div>
-<div class="grid four">
-<div><label>Respiratory rate</label><input id="nRR" type="number"/></div><div><label>SpO₂ (%)</label><input id="nSpO2" type="number"/></div>
-<div><label>SpO₂ scale</label><select id="nScale"><option value="1">Scale 1</option><option value="2">Scale 2 — confirmed hypercapnic respiratory failure</option></select></div>
-<div><label>Supplemental oxygen</label><select id="nO2"><option value="0">No</option><option value="2">Yes</option></select></div>
-<div><label>Temperature (°C)</label><input id="nTemp" step="0.1" type="number"/></div><div><label>Systolic BP</label><input id="nSBP" type="number"/></div>
-<div><label>Heart rate</label><input id="nHR" type="number"/></div><div><label>Consciousness</label><select id="nCon"><option value="0">Alert</option><option value="3">New confusion / V / P / U</option></select></div>
-</div><div class="actions"><button class="btn primary" id="nCalc" type="button">Calculate NEWS2</button></div><div class="result-box" id="nResult">Enter observations.</div>
+<div class="grid two">
+<div>
+<label>Age adjustment</label>
+<select id="centorAge">
+<option value="1">3–14 years (+1)</option>
+<option selected="" value="0">15–44 years (0)</option>
+<option value="-1">≥45 years (−1)</option>
+</select>
 </div>
 </div>
+<div class="actions"><button class="btn primary" id="centorCalculate" type="button">Calculate Centor score</button></div>
+<div class="result-box" id="centorResult">Select applicable findings.</div>
+<div class="helper">Use the local sore-throat pathway, clinical assessment and testing availability. Avoid prescribing antibiotics solely from the score.</div>
+</div>
+</div>
+
 <div class="calc-panel" id="calc-renal">
 <button class="btn secondary calc-back" type="button">← Back</button>
 <div class="card">
@@ -4493,16 +4737,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="actions"><button class="btn primary" id="mhCalc" type="button">Calculate score</button></div><div class="result-box" id="mhResult">Select responses.</div>
 </div>
 </div>
-<div class="calc-panel" id="calc-vte">
-<button class="btn secondary calc-back" type="button">← Back</button>
-<div class="card"><h2>VTE Assessment</h2><div><label>Rule</label><select id="vteType"><option value="pe">Wells PE</option><option value="dvt">Wells DVT</option><option value="perc">PERC</option></select></div><div class="check-grid" id="vteInputs"></div>
-<div class="actions"><button class="btn primary" id="vteCalc" type="button">Calculate</button></div><div class="result-box" id="vteResult">Choose a rule.</div></div>
-</div>
-<div class="calc-panel" id="calc-cardiac">
-<button class="btn secondary calc-back" type="button">← Back</button>
-<div class="card"><h2>Cardiac Calculators</h2><div><label>Calculator</label><select id="cType"><option value="heart">HEART score</option><option value="chads">CHA₂DS₂-VASc</option><option value="qtc">QTc</option></select></div><div id="cInputs"></div>
-<div class="actions"><button class="btn primary" id="cCalc" type="button">Calculate</button></div><div class="result-box" id="cResult">Select a calculator.</div></div>
-</div>
+
+
 <div class="calc-panel" id="calc-framingham">
 <button class="btn secondary calc-back" type="button">← Back</button>
 <div class="card">
@@ -4722,18 +4958,56 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 </div>
-<div class="calc-panel" id="calc-paedsemergency">
+
+
+<div class="calc-panel" id="calc-gdm">
 <button class="btn secondary calc-back" type="button">← Back</button>
-<div class="card"><h2>Paediatric Emergency Quick Calculator</h2><div class="notice">Verify against local resuscitation protocol, product concentration and senior advice.</div><div class="grid three">
-<div><label>Age (years)</label><input id="pedAge" step="0.1" type="number"/></div><div><label>Weight (kg) — manual entry</label><input id="pedWt" min="0" step="0.1" type="number"/></div><div><label> </label><button class="btn primary" id="pedCalc" type="button">Calculate</button></div>
-</div><div class="result-box" id="pedResult">Enter the child’s actual weight manually.</div></div>
+<div class="card">
+<h2>GDM Risk &amp; When to Perform MGTT</h2>
+<div class="notice">
+      Based on the <strong>MOH Handbook of Obstetrics Guideline 2024</strong> and the Malaysian CPG Management of Diabetes in Pregnancy 2017. At-risk women should have a <strong>75-g mOGTT/MGTT at booking or as early as possible</strong>; if normal, repeat at <strong>24–28 weeks</strong>. Universal screening at 24–28 weeks is recommended.
+    </div>
+<div class="grid three">
+<div>
+<label>Current gestation (weeks)</label>
+<input id="gdmWeeks" max="45" min="0" placeholder="e.g. 12" step="0.1" type="number"/>
 </div>
-<div class="calc-panel" id="calc-procedural">
-<button class="btn secondary calc-back" type="button">← Back</button>
-<div class="card"><h2>Procedural Calculators</h2><div><label>Calculator</label><select id="prType"><option value="la">Local anaesthetic maximum dose</option><option value="oxygen">Oxygen cylinder duration</option></select></div><div id="prInputs"></div>
-<div class="actions"><button class="btn primary" id="prCalc" type="button">Calculate</button></div><div class="result-box" id="prResult">Select a calculator.</div></div>
+<div>
+<label>Booking BMI (kg/m²)</label>
+<input id="gdmBMI" min="0" placeholder="BMI &gt;27 = risk factor" step="0.1" type="number"/>
 </div>
-<div class="calc-panel" id="calc-stopbang">
+<div>
+<label>Previous / early MGTT status</label>
+<select id="gdmPreviousTest">
+<option selected="" value="notdone">Not done / unknown</option>
+<option value="normalearly">Normal MGTT done at booking / early pregnancy</option>
+<option value="diagnosed">GDM or overt diabetes already diagnosed</option>
+</select>
+</div>
+</div>
+<div class="section-subtitle">GDM risk factors</div>
+<div class="check-grid" id="gdmRiskFactors">
+<label class="check-item"><input type="checkbox" value="previous GDM"/> Previous history of GDM</label>
+<label class="check-item"><input type="checkbox" value="first-degree relative with diabetes mellitus"/> First-degree relative with diabetes mellitus</label>
+<label class="check-item"><input type="checkbox" value="previous macrosomia &gt;4 kg"/> History of macrosomia / birth weight &gt;4 kg</label>
+<label class="check-item"><input type="checkbox" value="unexplained intrauterine death"/> Unexplained intrauterine death</label>
+<label class="check-item"><input type="checkbox" value="previous congenital anomaly"/> Previous congenital anomaly</label>
+<label class="check-item"><input type="checkbox" value="previous shoulder dystocia"/> Previous shoulder dystocia</label>
+<label class="check-item"><input type="checkbox" value="glycosuria ≥2+ on two occasions"/> Glycosuria ≥2+ on two occasions</label>
+<label class="check-item"><input type="checkbox" value="essential hypertension"/> Essential hypertension</label>
+<label class="check-item"><input type="checkbox" value="pregnancy-induced hypertension"/> Pregnancy-induced hypertension</label>
+<label class="check-item"><input type="checkbox" value="polyhydramnios"/> Polyhydramnios</label>
+<label class="check-item"><input type="checkbox" value="current corticosteroid use"/> Current corticosteroid use</label>
+</div>
+<div class="helper">BMI &gt;27 kg/m² is added automatically as a risk factor.</div>
+<div class="actions"><button class="btn primary" id="gdmCalculate" type="button">Assess MGTT timing</button></div>
+<div class="result-box" id="gdmResult">Enter gestation, BMI, previous test status and applicable risk factors.</div>
+<div class="helper">
+      Diagnostic reference for the Malaysian 75-g two-point OGTT: GDM if fasting plasma glucose ≥5.1 mmol/L or 2-hour plasma glucose ≥7.8 mmol/L. Overt diabetes thresholds require separate clinical confirmation and management.
+    </div>
+<a class="ref" href="https://www.moh.gov.my/penerbitan-dan-laporan/dasar-akta-polisi-garis-panduan/penerbitan-klinikal/senarai-penerbitan-klinikal/panduan-amalan-klinikal-cpg" rel="noopener noreferrer" target="_blank">MOH Clinical Practice Guidelines</a>
+</div>
+</div><div class="calc-panel" id="calc-stopbang">
 <button class="btn secondary calc-back" type="button">← Back</button>
 <div class="card"><h2>STOP-BANG</h2><div class="check-grid" id="sbInputs">
 <label class="check-item"><input type="checkbox"/>Snoring loudly</label><label class="check-item"><input type="checkbox"/>Tired / sleepy daytime</label><label class="check-item"><input type="checkbox"/>Observed apnoea</label><label class="check-item"><input type="checkbox"/>High blood pressure</label>
@@ -5421,6 +5695,11 @@ function syncDengueAgeUnit(prefix,groupId){
   if(!unit||!input) return;
 
   const paediatric=value(groupId)==="paeds";
+  input.disabled=false;
+  input.readOnly=false;
+  input.removeAttribute("readonly");
+  input.setAttribute("inputmode","numeric");
+  input.style.pointerEvents="auto";
   if(!paediatric){
     unit.value="years";
     unit.disabled=true;
@@ -5455,6 +5734,19 @@ function dengueAgeInYears(prefix){
 window.syncDengueAgeUnit=syncDengueAgeUnit;
 window.dengueAgeDisplay=dengueAgeDisplay;
 window.dengueAgeInYears=dengueAgeInYears;
+
+function attachDengueAgeTypingFix(inputId){
+  const input=$(inputId);
+  if(!input) return;
+  input.disabled=false;
+  input.readOnly=false;
+  input.addEventListener("input",()=>{
+    const cleaned=String(input.value||"").replace(/\D+/g,"").slice(0,3);
+    if(input.value!==cleaned) input.value=cleaned;
+  });
+}
+attachDengueAgeTypingFix("clAge");
+attachDengueAgeTypingFix("dfuAge");
 
 // Dengue clerking
 function syncDengueSex(){
@@ -5812,9 +6104,38 @@ function syncDengueInterventions(){
 
 window.syncDengueInterventions=syncDengueInterventions;
 
+function splitPlanFreeText(raw){
+  return String(raw||"")
+    .split(/\r?\n/)
+    .map(line=>line.trim())
+    .filter(Boolean);
+}
+
+function escapePlanHtml(raw){
+  return String(raw??"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+window.splitPlanFreeText=splitPlanFreeText;
+window.escapePlanHtml=escapePlanHtml;
+
+function validateCustomPlan(optionId,extraId){
+  if(value(optionId)!=="others") return true;
+  const lines=splitPlanFreeText(value(extraId));
+  if(lines.length) return true;
+  alert("Enter at least one plan item under Others.");
+  const field=$(extraId);
+  field?.focus();
+  field?.scrollIntoView({behavior:"smooth",block:"center"});
+  return false;
+}
+window.validateCustomPlan=validateCustomPlan;
+
 function getDenguePlanLines(){
   const option=value("clPlanOption");
-  const extra=value("clPlanExtra");
   const lines=[];
 
   if(option==="refer"){
@@ -5825,26 +6146,39 @@ function getDenguePlanLines(){
     lines.push(`${fluidPlan} at ${ivdTime} in KK before referral to ED.`);
     lines.push("Refer ED for further assessment and management.");
     lines.push("Notify dengue case via e-notification.");
-  }else{
+  }else if(option==="outpatient"){
     lines.push("Repeat FBC CM.");
     lines.push("Encourage oral fluid intake 2 L/day.");
     lines.push("TCA STAT if warning signs develop. Dengue pamphlet given to patient for education and FBC serial monitoring.");
     lines.push("Notify dengue case via e-notification.");
+  }else if(option==="antibiotic"){
+    const antibiotic=window.getPlanAntibioticPrescription(window.DENGUE_NEW_PLAN_ABX_CONFIG);
+    lines.push(antibiotic.valid?antibiotic.line:"Start antibiotic / antimicrobial — complete the prescription before finalising the plan.");
+    lines.push("Advise on medication compliance and to complete the prescribed treatment course.");
+    lines.push("TCA STAT if any allergic reaction or medication side effect develops.");
+    lines.push("TCA back if symptoms are not resolved for reassessment.");
+  }else if(option==="others"){
+    lines.push(...splitPlanFreeText(value("clPlanExtra")));
   }
-
-  if(extra) lines.push(extra);
 
   return lines;
 }
 
 function renderDenguePlanPreview(){
-  const isReferral=value("clPlanOption")==="refer";
+  const option=value("clPlanOption");
+  const isReferral=option==="refer";
   const lines=getDenguePlanLines();
   const referralReady=Boolean(value("clReferralOutput"));
+  const headings={
+    refer:"Option 1 — ED referral",
+    outpatient:"Option 2 — Outpatient follow-up",
+    antibiotic:"Option 3 — Treat concurrent infection / start antibiotic",
+    others:"Option 4 — Others / custom plan"
+  };
 
   $("clPlanPreview").innerHTML=
-    `<strong>${isReferral?"Option 1 — ED referral":"Option 2 — Outpatient follow-up"}</strong><br>`+
-    lines.map((line,index)=>`${index+1}. ${line}`).join("<br>");
+    `<strong>${headings[option]||"Selected plan"}</strong><br>`+
+    lines.map((line,index)=>`${index+1}. ${escapePlanHtml(line)}`).join("<br>");
 
   $("clGenerate").textContent=isReferral
     ?"Generate clinical note + referral letter"
@@ -5855,17 +6189,28 @@ function renderDenguePlanPreview(){
   $("clReferralWrap").classList.toggle("hidden",!isReferral || !referralReady);
   $("clIvdStartWrap").classList.toggle("hidden",!isReferral);
   $("clIvdStartTime").disabled=!isReferral;
+  $("clPlanAntibioticPanel").classList.toggle("hidden",option!=="antibiotic");
+  $("clPlanOthersPanel").classList.toggle("hidden",option!=="others");
 
   if(isReferral){
     $("clReferralStatus").innerHTML=referralReady
       ? "<strong>Referral letter ready.</strong> Regenerate after making any change."
       : "<strong>ED referral selected.</strong> Complete the form, then click Generate clinical note + referral letter.";
+  }else if(option==="antibiotic"){
+    $("clReferralStatus").textContent=
+      "Option 3 selected. Complete the antimicrobial prescription before generating the note.";
+    $("clReferralOutput").value="";
+  }else if(option==="others"){
+    $("clReferralStatus").textContent=
+      "Option 4 selected. Enter your own plan in the free-text field.";
+    $("clReferralOutput").value="";
   }else{
     $("clReferralStatus").textContent=
       "Outpatient plan selected. No ED referral letter required.";
     $("clReferralOutput").value="";
   }
 }
+
 
 function isCoughTbScreeningTriggered(){
   const coughChecked=Boolean($("clSymCough")?.checked);
@@ -5910,8 +6255,8 @@ function getTbContactPositiveLine(){
   }
 
   return details.length
-    ? `+ TB contact: ${details.join(", ")}`
-    : "+ TB contact";
+    ? `TB contact: ${details.join(", ")}`
+    : "TB contact present";
 }
 
 function getTbScreeningLines(){
@@ -5922,16 +6267,16 @@ function getTbScreeningLines(){
   const positives=items
     .filter(item=>item.checked)
     .map(item=>item.id==="clTbContact"
-      ? getTbContactPositiveLine()
-      : `+ ${item.value}`
+      ? `    - ${getTbContactPositiveLine()}`
+      : `    - ${item.value} present`
     );
 
   const negatives=items
     .filter(item=>!item.checked)
-    .map(item=>`no ${item.value}`);
+    .map(item=>`    - no ${item.value}`);
 
   return [
-    "TB screening (cough ≥ 2 weeks):",
+    "  TB screening:",
     ...positives,
     ...negatives
   ];
@@ -6613,6 +6958,91 @@ window.dengueReferralNoteLines=dengueReferralNoteLines;
 window.syncReferralDetailFields=syncReferralDetailFields;
 window.setDengueReferralPlan=setDengueReferralPlan;
 
+function syncDengueUrineDetails(){
+  const reduced=value("clUrine")==="yes";
+  const paediatric=value("dfGroup")==="paeds";
+  const paedsWrap=$("clUrinePaedsDetails");
+  const adultWrap=$("clUrineAdultDetails");
+  const inlineCard=$("clUrineInlineCard");
+
+  inlineCard?.classList.toggle("is-active",reduced);
+
+  const showPaeds=reduced && paediatric;
+  const showAdult=reduced && !paediatric;
+
+  paedsWrap?.classList.toggle("hidden",!showPaeds);
+  adultWrap?.classList.toggle("hidden",!showAdult);
+
+  paedsWrap?.querySelectorAll("input, select, textarea").forEach(field=>{
+    field.disabled=!showPaeds;
+  });
+  adultWrap?.querySelectorAll("input, select, textarea").forEach(field=>{
+    field.disabled=!showAdult;
+  });
+}
+
+function dengueOralIntakeLine(){
+  const status=value("clDrink");
+  if(status==="unable") return "unable to tolerate oral fluids";
+  if(status==="reduced") return "reduced oral intake";
+  return "able to tolerate oral fluids";
+}
+
+function dengueUrineWarningLine(){
+  if(value("clUrine")!=="yes"){
+    return "PU normal volume and concentration";
+  }
+
+  const details=[];
+  const paediatric=value("dfGroup")==="paeds";
+
+  if(paediatric){
+    const diapers=value("clUrinePaedsDiapers").trim();
+    const concentrated=value("clUrinePaedsConcentrated");
+    const pampersWeight=value("clUrinePaedsWeight");
+
+    if(diapers) details.push(`wet pampers changed ${diapers} time${diapers==="1"?"":"s"}/day`);
+    if(concentrated==="yes") details.push("urine concentrated");
+    if(concentrated==="no") details.push("urine not concentrated");
+    if(pampersWeight==="lighter") details.push("pampers lighter than usual");
+    if(pampersWeight==="same") details.push("pampers weight as usual");
+    if(pampersWeight==="heavier") details.push("pampers heavier than usual");
+  }else{
+    const concentrated=value("clUrineAdultConcentrated");
+    const volume=value("clUrineAdultVolume").trim();
+    const lastPuDate=value("clUrineAdultLastPuDate");
+    const lastPuHour=value("clUrineAdultLastPuHour");
+    const lastPuMinute=value("clUrineAdultLastPuMinute");
+    const lastPu=(lastPuDate && lastPuHour!=="" && lastPuMinute!=="")
+      ? `${lastPuDate}T${lastPuHour}:${lastPuMinute}`
+      : "";
+
+    if(concentrated==="yes") details.push("urine concentrated");
+    if(concentrated==="no") details.push("urine not concentrated");
+    if(volume==="no urine passed") details.push("no urine passed");
+    else if(volume) details.push(`urine volume ${volume}`);
+    if(lastPu) details.push(`last PU ${formatDateTimeDisplay(lastPu)}`);
+  }
+
+  return details.length
+    ? `reduced PU: ${details.join("; ")}`
+    : "reduced PU";
+}
+
+function dengueActivityLine(){
+  return value("clActivity")==="no"
+    ? "unable to perform daily activity"
+    : "able to perform daily activity";
+}
+
+function dengueLethargyLine(){
+  return value("clLethargy")==="yes" ? "+ lethargy" : "no lethargy";
+}
+
+function dengueYesNoWarningLine(id,label){
+  return value(id)==="yes" ? `+ ${label}` : `no ${label}`;
+}
+
 function buildDengueClinicalNote(planLines){
   const symptomRows=[...document.querySelectorAll("#clSymptoms .symptom-row")];
 
@@ -6650,11 +7080,16 @@ function buildDengueClinicalNote(planLines){
     .filter(Boolean)
     .map(item=>`+ ${item}`);
 
-  const symptomLines=[
-    ...positiveSymptoms,
-    ...otherSymptoms,
-    ...negativeSymptoms
-  ];
+  const symptomLines=[...positiveSymptoms];
+
+  if(isCoughTbScreeningTriggered()){
+    const coughIndex=symptomLines.findIndex(line=>/^\+\s+(?:dry\s+)?cough\b/i.test(line));
+    if(coughIndex>=0){
+      symptomLines.splice(coughIndex+1,0,...getTbScreeningLines());
+    }
+  }
+
+  symptomLines.push(...otherSymptoms,...negativeSymptoms);
 
   const allergy=value("clAllergySelect")==="custom"
     ? value("clAllergyCustom")
@@ -6699,8 +7134,7 @@ function buildDengueClinicalNote(planLines){
 
   const associatedLines=[
     "Associated symptoms:",
-    ...symptomLines,
-    ...(isCoughTbScreeningTriggered()?getTbScreeningLines():[])
+    ...symptomLines
   ].filter(Boolean);
 
   const comorbidityLines=[
@@ -6726,15 +7160,15 @@ function buildDengueClinicalNote(planLines){
 
   const warningLines=[
     "WARNING SIGNS",
-    value("clDrink")?`1. Oral intake / amount able to drink: ${value("clDrink")}`:"",
-    value("clUrine")?`2. Reduced urine volume: ${value("clUrine")}`:"",
-    value("clActivity")?`3. Able to perform daily activities: ${value("clActivity")}`:"",
-    `4. Lethargy: ${value("clLethargy")||"no"}`,
-    `5. ${newCaseFrequencyDescription("vomiting",value("clVomiting")||"none","clVomitingCount").replace(/^\+\s*/,"")}`,
-    `6. ${newCaseFrequencyDescription("stool",value("clDiarrhoea")||"none","clDiarrhoeaCount").replace(/^\+\s*/,"")}`,
-    `7. Abdominal pain: ${value("clAbdPain")||"no"}`,
-    `8. Bleeding / bruising: ${value("clBleeding")||"no"}`,
-    `9. Seizure: ${value("clSeizure")||"no"}`
+    dengueOralIntakeLine(),
+    dengueUrineWarningLine(),
+    dengueActivityLine(),
+    dengueLethargyLine(),
+    newCaseFrequencyDescription("vomiting",value("clVomiting")||"none","clVomitingCount"),
+    newCaseFrequencyDescription("stool",value("clDiarrhoea")||"none","clDiarrhoeaCount"),
+    dengueYesNoWarningLine("clAbdPain","abdominal pain"),
+    dengueYesNoWarningLine("clBleeding","bleeding / bruising"),
+    dengueYesNoWarningLine("clSeizure","seizure")
   ].filter(Boolean);
 
   const examinationLines=[
@@ -6829,6 +7263,8 @@ function generateDengueReferralLetter(planLines){
 }
 
 function generateDengueOutputs(options={}){
+  if(!window.validateCustomPlan("clPlanOption","clPlanExtra")) return;
+  if(!window.validatePlanAntibiotic(window.DENGUE_NEW_PLAN_ABX_CONFIG)) return;
   const planLines=getDenguePlanLines();
 
   $("clOutput").value=buildDengueClinicalNote(planLines);
@@ -6930,12 +7366,15 @@ $("clIntNebType").addEventListener("change",syncDengueInterventions);
 $("dfGroup").addEventListener("change",()=>{
   syncDengueAgeUnit("cl","dfGroup");
   syncDengueInterventions();
+  syncDengueUrineDetails();
   calcClerkingWeight();
 });
 $("clAgeUnit").addEventListener("change",()=>{
   syncDengueAgeUnit("cl","dfGroup");
 });
 syncDengueAgeUnit("cl","dfGroup");
+$("clUrine")?.addEventListener("change",syncDengueUrineDetails);
+syncDengueUrineDetails();
 $("clWeight").addEventListener("input",syncDengueInterventionsDebounced);
 syncDengueInterventions();
 
@@ -6993,7 +7432,7 @@ $("page-clerking").addEventListener("change",invalidateDengueReferral);
 
 const renderDenguePlanPreviewDebounced=debounce(renderDenguePlanPreview,180);
 
-$("clPlanOption").addEventListener("change",renderDenguePlanPreview);
+$("clPlanOption").addEventListener("change",()=>window.syncPlanAntibioticUi(window.DENGUE_NEW_PLAN_ABX_CONFIG,renderDenguePlanPreview));
 $("clPlanExtra").addEventListener("input",renderDenguePlanPreviewDebounced);
 $("clIvdStartTime").addEventListener("input",renderDenguePlanPreviewDebounced);
 renderDenguePlanPreview();
@@ -7436,8 +7875,404 @@ const amsRegimens = {
       note:"Topical antibiotic with or without topical steroid. Assess tympanic membrane status and contraindications.",
       concentrations:[]
     }
+  ],
+
+  uti: [
+    {
+      id:"uti-coamox14",
+      label:"Amoxicillin/clavulanate 14:1 — lower UTI",
+      drug:"Amoxicillin/clavulanate 14:1",
+      doseLabel:"amoxicillin component",
+      doseMode:"mgkgday",
+      doses:[80,90],
+      frequencies:[2],
+      defaultFrequency:2,
+      maxDose:null,
+      maxDaily:2000,
+      duration:"3–5 days",
+      route:"PO",
+      note:"Lower UTI. Calculate using the amoxicillin component; confirm the dispensed formulation is 14:1.",
+      concentrations:[]
+    },
+    {
+      id:"uti-coamox7",
+      label:"Amoxicillin/clavulanate 7:1 — lower UTI",
+      drug:"Amoxicillin/clavulanate 7:1",
+      doseLabel:"amoxicillin component",
+      doseMode:"mgkgday",
+      doses:[40,50],
+      frequencies:[2],
+      defaultFrequency:2,
+      maxDose:null,
+      maxDaily:2000,
+      duration:"3–5 days",
+      route:"PO",
+      note:"Lower UTI. Calculate using the amoxicillin component; confirm the dispensed formulation is 7:1.",
+      concentrations:[]
+    },
+    {
+      id:"uti-cefuroxime",
+      label:"Cefuroxime — lower UTI",
+      drug:"Cefuroxime",
+      doseMode:"mgkgday",
+      doses:[30],
+      frequencies:[2],
+      defaultFrequency:2,
+      maxDose:null,
+      maxDaily:500,
+      duration:"3–5 days",
+      route:"PO",
+      note:"Adjust treatment according to urine culture and susceptibility when available.",
+      concentrations:[]
+    },
+    {
+      id:"uti-nitrofurantoin-sr",
+      label:"Nitrofurantoin sustained-release — lower UTI",
+      drug:"Nitrofurantoin",
+      doseMode:"mgkgdose",
+      doses:[2],
+      frequencies:[2],
+      defaultFrequency:2,
+      maxDose:100,
+      maxDaily:null,
+      duration:"3–5 days",
+      route:"PO",
+      note:"Sustained-release regimen. Use only for lower UTI; not for suspected pyelonephritis.",
+      concentrations:[]
+    },
+    {
+      id:"uti-nitrofurantoin-ir",
+      label:"Nitrofurantoin immediate-release — lower UTI",
+      drug:"Nitrofurantoin",
+      doseMode:"mgkgdose",
+      doses:[1],
+      frequencies:[4],
+      defaultFrequency:4,
+      maxDose:100,
+      maxDaily:null,
+      duration:"3–5 days",
+      route:"PO",
+      note:"Immediate-release tablet regimen. Use only for lower UTI; not for suspected pyelonephritis.",
+      concentrations:[]
+    }
   ]
 };
+
+const DENGUE_PLAN_ABX_CATEGORY_LABELS={
+  cap:"Community-acquired pneumonia",
+  pharyngitis:"Tonsillitis / pharyngitis",
+  sinusitis:"Bacterial rhinosinusitis",
+  aom:"Acute otitis media",
+  aoe:"Acute otitis externa",
+  uti:"Urinary tract infection — lower UTI / uncomplicated cystitis"
+};
+
+const DENGUE_ADULT_PLAN_REGIMENS={
+  cap:[
+    {id:"adult-cap-amox500",label:"Amoxicillin 500 mg PO TDS for 5–7 days",line:"Start Amoxicillin 500 mg PO TDS for 5–7 days."},
+    {id:"adult-cap-amox1g",label:"Amoxicillin 1 g PO TDS for 5–7 days",line:"Start Amoxicillin 1 g PO TDS for 5–7 days."},
+    {id:"adult-cap-doxy",label:"Doxycycline 100 mg PO BD for 5–7 days",line:"Start Doxycycline 100 mg PO BD for 5–7 days."},
+    {id:"adult-cap-coamox",label:"Amoxicillin/clavulanate 625 mg PO TDS for 5–7 days — with comorbidity",line:"Start Amoxicillin/clavulanate 625 mg PO TDS for 5–7 days (CAP with comorbidity)."},
+    {id:"adult-cap-levo",label:"Levofloxacin 750 mg PO OD for 5 days — antibiotic allergy with comorbidity",line:"Start Levofloxacin 750 mg PO OD for 5 days (antibiotic-allergy alternative for CAP with comorbidity)."}
+  ],
+  pharyngitis:[
+    {id:"adult-pharyngitis-penv500",label:"Phenoxymethylpenicillin 500 mg PO QID for 5–10 days",line:"Start Phenoxymethylpenicillin 500 mg PO QID for 5–10 days."},
+    {id:"adult-pharyngitis-penv1g",label:"Phenoxymethylpenicillin 1 g PO BD for 5–10 days",line:"Start Phenoxymethylpenicillin 1 g PO BD for 5–10 days."},
+    {id:"adult-pharyngitis-benzathine",label:"Benzathine penicillin 1.2 MU IM STAT — single dose",line:"Administer Benzathine penicillin 1.2 MU IM STAT as a single dose."},
+    {id:"adult-pharyngitis-amox",label:"Amoxicillin 500 mg PO TDS for 5–10 days",line:"Start Amoxicillin 500 mg PO TDS for 5–10 days."},
+    {id:"adult-pharyngitis-ees",label:"Erythromycin ethylsuccinate 800 mg PO BD for 5–10 days — allergy alternative",line:"Start Erythromycin ethylsuccinate 800 mg PO BD for 5–10 days (antibiotic-allergy alternative)."}
+  ],
+  sinusitis:[
+    {id:"adult-sinusitis-amox500",label:"Amoxicillin 500 mg PO TDS for 5 days",line:"Start Amoxicillin 500 mg PO TDS for 5 days."},
+    {id:"adult-sinusitis-amox1g",label:"Amoxicillin 1 g PO TDS for 5 days",line:"Start Amoxicillin 1 g PO TDS for 5 days."},
+    {id:"adult-sinusitis-coamox",label:"Amoxicillin/clavulanate 625 mg PO TDS for 5 days",line:"Start Amoxicillin/clavulanate 625 mg PO TDS for 5 days."},
+    {id:"adult-sinusitis-doxy",label:"Doxycycline 100 mg PO BD for 5 days — penicillin allergy",line:"Start Doxycycline 100 mg PO BD for 5 days (penicillin-allergy alternative)."},
+    {id:"adult-sinusitis-azithro",label:"Azithromycin 500 mg PO OD for 3 days — pregnancy with antibiotic allergy",line:"Start Azithromycin 500 mg PO OD for 3 days (pregnancy with antibiotic allergy)."}
+  ],
+  aom:[],
+  aoe:[
+    {id:"adult-aoe-local-clox",label:"Cloxacillin 500 mg PO QID for 5 days — acute localised otitis externa",line:"Start Cloxacillin 500 mg PO QID for 5 days (acute localised otitis externa)."},
+    {id:"adult-aoe-local-cephalexin",label:"Cephalexin 500 mg PO QID for 5 days — acute localised otitis externa",line:"Start Cephalexin 500 mg PO QID for 5 days (acute localised otitis externa)."},
+    {id:"adult-aoe-local-clinda",label:"Clindamycin 600 mg PO TDS for 5 days — penicillin allergy",line:"Start Clindamycin 600 mg PO TDS for 5 days (penicillin-allergy alternative for acute localised otitis externa)."},
+    {id:"adult-aoe-diffuse-ofloxacin",label:"Ofloxacin 0.3% otic solution 10 drops affected ear OD for 7 days — diffuse otitis externa",line:"Start Ofloxacin 0.3% otic solution: instill 10 drops into the affected ear(s) OD for 7 days (acute diffuse otitis externa)."}
+  ],
+  uti:[
+    {id:"adult-uti-nitro50",label:"Nitrofurantoin immediate-release 50 mg PO QID for 3–5 days",line:"Start Nitrofurantoin immediate-release 50 mg PO QID for 3–5 days.",note:"For uncomplicated lower UTI only. Avoid nitrofurantoin if GFR <30 mL/min and in the third trimester of pregnancy."},
+    {id:"adult-uti-nitro100qid",label:"Nitrofurantoin immediate-release 100 mg PO QID for 3–5 days",line:"Start Nitrofurantoin immediate-release 100 mg PO QID for 3–5 days.",note:"For uncomplicated lower UTI only. Avoid nitrofurantoin if GFR <30 mL/min and in the third trimester of pregnancy."},
+    {id:"adult-uti-nitro100bd",label:"Nitrofurantoin sustained-release 100 mg PO BD for 3–5 days",line:"Start Nitrofurantoin sustained-release 100 mg PO BD for 3–5 days.",note:"For uncomplicated lower UTI only. Avoid nitrofurantoin if GFR <30 mL/min and in the third trimester of pregnancy."},
+    {id:"adult-uti-coamox",label:"Amoxicillin/clavulanate 625 mg PO TDS for 3–5 days",line:"Start Amoxicillin/clavulanate 625 mg PO TDS for 3–5 days."},
+    {id:"adult-uti-ampisul375",label:"Ampicillin/sulbactam 375 mg PO BD for 3–5 days",line:"Start Ampicillin/sulbactam 375 mg PO BD for 3–5 days."},
+    {id:"adult-uti-ampisul750",label:"Ampicillin/sulbactam 750 mg PO BD for 3–5 days",line:"Start Ampicillin/sulbactam 750 mg PO BD for 3–5 days."},
+    {id:"adult-uti-cephalexin",label:"Cephalexin 500 mg PO BD for 3–5 days",line:"Start Cephalexin 500 mg PO BD for 3–5 days."},
+    {id:"adult-uti-cefuroxime250",label:"Cefuroxime 250 mg PO BD for 3–5 days",line:"Start Cefuroxime 250 mg PO BD for 3–5 days."},
+    {id:"adult-uti-cefuroxime500",label:"Cefuroxime 500 mg PO BD for 3–5 days",line:"Start Cefuroxime 500 mg PO BD for 3–5 days."},
+    {id:"adult-uti-fosfomycin",label:"Fosfomycin 3 g PO STAT — single dose",line:"Start Fosfomycin 3 g PO STAT as a single dose.",note:"For uncomplicated lower UTI. NAG notes reduced reliability for gram-negative organisms other than E. coli; interpret culture and susceptibility when available."}
+  ]
+};
+
+const DENGUE_NEW_PLAN_ABX_CONFIG={
+  groupId:"dfGroup",weightId:"clWeight",ageId:"clAge",ageUnitId:"clAgeUnit",
+  optionId:"clPlanOption",antibioticOptionValue:"antibiotic",panelId:"clPlanAntibioticPanel",
+  categoryId:"clPlanAbxCategory",regimenId:"clPlanAbxRegimen",
+  resultId:"clPlanAbxAutoResult",customId:"clPlanAbxCustom"
+};
+
+const DENGUE_FOLLOWUP_PLAN_ABX_CONFIG={
+  groupId:"dfuGroup",weightId:"dfuWeight",ageId:"dfuAge",ageUnitId:"dfuAgeUnit",
+  optionId:"dfuPlanOption",antibioticOptionValue:"antibiotic",panelId:"dfuPlanAntibioticPanel",
+  categoryId:"dfuPlanAbxCategory",regimenId:"dfuPlanAbxRegimen",
+  resultId:"dfuPlanAbxAutoResult",customId:"dfuPlanAbxCustom"
+};
+
+function planElement(id){return document.getElementById(id);}
+function planValue(id){return (planElement(id)?.value||"").trim();}
+function planAntibioticEnabled(config){
+  return planValue(config.optionId)===config.antibioticOptionValue;
+}
+function planAgeYears(config){
+  const age=Number(planValue(config.ageId));
+  if(!Number.isFinite(age)||age<0) return 0;
+  return planValue(config.ageUnitId)==="months"?age/12:age;
+}
+function planAgeMonths(config){
+  const years=planAgeYears(config);
+  return years>0?years*12:0;
+}
+function planFrequencyLabel(frequency){
+  return ({1:"OD",2:"BD",3:"TDS",4:"QID"})[Number(frequency)]||`${frequency} times/day`;
+}
+function planAomDuration(config){
+  const years=planAgeYears(config);
+  if(!years) return "";
+  return years<2?"7–10 days":"5–7 days";
+}
+function planRegimenDuration(regimen,config){
+  return regimen.duration==="age-based-aom"?planAomDuration(config):regimen.duration;
+}
+function formatPlanMg(value){
+  const number=Number(value);
+  if(!Number.isFinite(number)) return "";
+  return Number.isInteger(number)?String(number):number.toFixed(1);
+}
+function normaliseCustomAntibiotic(raw){
+  const custom=String(raw||"").trim();
+  if(!custom) return "";
+  const sentence=/^(start|administer|give|apply|instill)\b/i.test(custom)?custom:`Start ${custom}`;
+  return /[.!?]$/.test(sentence)?sentence:`${sentence}.`;
+}
+function paediatricPlanVariant(regimen,dose,frequency,weight,config){
+  const duration=planRegimenDuration(regimen,config);
+  if(!duration) return null;
+  const component=regimen.doseLabel?` ${regimen.doseLabel}`:"";
+  let perDose=0;
+  let dailyDose=0;
+  const capNotes=[];
+
+  if(regimen.doseMode==="mgkgdose"){
+    perDose=weight*dose;
+    if(regimen.maxDose&&perDose>regimen.maxDose){
+      perDose=regimen.maxDose;
+      capNotes.push(`maximum ${regimen.maxDose} mg/dose applied`);
+    }
+    dailyDose=perDose*frequency;
+    if(regimen.maxDaily&&dailyDose>regimen.maxDaily){
+      dailyDose=regimen.maxDaily;
+      perDose=dailyDose/frequency;
+      capNotes.push(`maximum ${regimen.maxDaily} mg/day applied`);
+    }
+  }else{
+    dailyDose=weight*dose;
+    if(regimen.maxDaily&&dailyDose>regimen.maxDaily){
+      dailyDose=regimen.maxDaily;
+      capNotes.push(`maximum ${regimen.maxDaily} mg/day applied`);
+    }
+    perDose=dailyDose/frequency;
+    if(regimen.maxDose&&perDose>regimen.maxDose){
+      perDose=regimen.maxDose;
+      dailyDose=perDose*frequency;
+      capNotes.push(`maximum ${regimen.maxDose} mg/dose applied`);
+    }
+  }
+
+  const basis=regimen.doseMode==="mgkgdose"
+    ?`${dose} mg/kg/dose${component}`
+    :`${dose} mg/kg/day${component}`;
+  const capText=capNotes.length?`; ${capNotes.join(", ")}`:"";
+  const doseText=formatPlanMg(perDose);
+  const line=`Start ${regimen.drug} ${doseText} mg ${regimen.route||"PO"} ${planFrequencyLabel(frequency)} for ${duration}.`;
+  return {
+    id:`${regimen.id}|${dose}|${frequency}`,
+    label:`${regimen.drug} ${doseText} mg ${planFrequencyLabel(frequency)} for ${duration} — ${basis}`,
+    line,
+    note:regimen.note||""
+  };
+}
+function buildPaediatricPlanOptions(config){
+  const category=planValue(config.categoryId)||"cap";
+  const weight=Number(planValue(config.weightId));
+  const ageMonths=planAgeMonths(config);
+  if(!Number.isFinite(weight)||weight<=0) return [];
+  if(category==="uti"&&ageMonths>0&&ageMonths<3) return [];
+
+  const options=[];
+  for(const regimen of (amsRegimens[category]||[]).filter(item=>item.doseMode!=="oseltamivir")){
+    const duration=planRegimenDuration(regimen,config);
+    if(!duration) continue;
+    if(regimen.doseMode==="fixed"){
+      options.push({
+        id:regimen.id,
+        label:`${regimen.drug}: ${regimen.fixedText} for ${duration}`,
+        line:`Start ${regimen.drug}: ${regimen.fixedText} for ${duration}.`,
+        note:regimen.note||""
+      });
+      continue;
+    }
+    if(regimen.doseMode==="azithromycin"){
+      const day1=Math.min(weight*10,500);
+      const day2=Math.min(weight*5,250);
+      options.push({
+        id:regimen.id,
+        label:`Azithromycin ${formatPlanMg(day1)} mg OD Day 1, then ${formatPlanMg(day2)} mg OD Days 2–5`,
+        line:`Start Azithromycin ${formatPlanMg(day1)} mg PO OD on Day 1, then ${formatPlanMg(day2)} mg PO OD on Days 2–5.`,
+        note:regimen.note||""
+      });
+      continue;
+    }
+    if(regimen.doseMode==="mgkgday"||regimen.doseMode==="mgkgdose"){
+      for(const dose of (regimen.doses||[])){
+        for(const frequency of (regimen.frequencies||[])){
+          const variant=paediatricPlanVariant(regimen,Number(dose),Number(frequency),weight,config);
+          if(variant) options.push(variant);
+        }
+      }
+    }
+  }
+  return options;
+}
+function buildPlanAntibioticOptions(config){
+  const category=planValue(config.categoryId)||"cap";
+  if(planValue(config.groupId)==="paeds") return buildPaediatricPlanOptions(config);
+  return DENGUE_ADULT_PLAN_REGIMENS[category]||[];
+}
+function getSelectedPlanAntibioticOption(config){
+  const selected=planValue(config.regimenId);
+  return buildPlanAntibioticOptions(config).find(item=>item.id===selected)||null;
+}
+function populatePlanAntibioticCategories(config){
+  const select=planElement(config.categoryId);
+  if(!select) return;
+  const current=select.value;
+  select.innerHTML=Object.entries(DENGUE_PLAN_ABX_CATEGORY_LABELS)
+    .map(([key,label])=>`<option value="${key}">${label}</option>`).join("");
+  if(current&&DENGUE_PLAN_ABX_CATEGORY_LABELS[current]) select.value=current;
+  populatePlanAntibioticRegimens(config);
+}
+function populatePlanAntibioticRegimens(config){
+  const select=planElement(config.regimenId);
+  if(!select) return;
+  const current=select.value;
+  const category=planValue(config.categoryId)||"cap";
+  const paediatric=planValue(config.groupId)==="paeds";
+  const options=buildPlanAntibioticOptions(config);
+  let placeholder="Select a complete NAG antibiotic option";
+  if(paediatric){
+    const weight=Number(planValue(config.weightId));
+    if(!Number.isFinite(weight)||weight<=0) placeholder="Enter paediatric weight above to generate complete options";
+    else if(category==="aom"&&!planAgeYears(config)) placeholder="Enter paediatric age above to determine AOM duration";
+    else if(category==="uti"&&planAgeMonths(config)>0&&planAgeMonths(config)<3) placeholder="Age <3 months with suspected UTI: arrange urgent assessment / referral";
+  }else if(category==="aom"){
+    placeholder="Adult AOM: use custom prescription and current primary-care pathway";
+  }
+  select.innerHTML=`<option value="">${placeholder}</option>`+
+    options.map(item=>`<option value="${item.id}">${item.label}</option>`).join("");
+  if(current&&options.some(item=>item.id===current)) select.value=current;
+  else if(options.length) select.value=options[0].id;
+  select.title=select.options[select.selectedIndex]?.text||"";
+  updatePlanAntibioticResult(config);
+}
+function getPlanAntibioticPrescription(config){
+  if(!planAntibioticEnabled(config)) return {valid:true,line:""};
+  const custom=normaliseCustomAntibiotic(planValue(config.customId));
+  if(custom) return {valid:true,line:custom};
+  const option=getSelectedPlanAntibioticOption(config);
+  if(option) return {valid:true,line:option.line,note:option.note||""};
+  const category=planValue(config.categoryId);
+  if(planValue(config.groupId)==="paeds"){
+    const weight=Number(planValue(config.weightId));
+    if(!Number.isFinite(weight)||weight<=0) return {valid:false,message:"Enter a valid paediatric weight above."};
+    if(category==="aom"&&!planAgeYears(config)) return {valid:false,message:"Enter the child’s age above to determine the AOM duration."};
+    if(category==="uti"&&planAgeMonths(config)>0&&planAgeMonths(config)<3){
+      return {valid:false,message:"Suspected UTI in a child younger than 3 months requires urgent clinical assessment / referral; an outpatient auto-regimen is not generated."};
+    }
+  }
+  if(category==="aom"&&planValue(config.groupId)!=="paeds"){
+    return {valid:false,message:"Adult AOM auto-regimen is not generated. Enter a custom prescription after checking the current primary-care pathway."};
+  }
+  return {valid:false,message:"Select a complete NAG antibiotic option or enter a custom antibiotic prescription."};
+}
+function updatePlanAntibioticResult(config){
+  const result=planElement(config.resultId);
+  if(!result) return;
+  const prescription=getPlanAntibioticPrescription(config);
+  if(!planAntibioticEnabled(config)){
+    result.textContent="Select Option 3 to configure treatment for a concurrent infection.";
+  }else if(prescription.valid){
+    result.textContent=prescription.note?`${prescription.line}\n${prescription.note}`:prescription.line;
+  }else{
+    result.textContent=prescription.message;
+  }
+}
+function syncPlanAntibioticUi(config,renderPlan){
+  const enabled=planAntibioticEnabled(config);
+  planElement(config.panelId)?.classList.toggle("hidden",!enabled);
+  if(enabled&&planElement(config.categoryId)?.options.length===0){
+    populatePlanAntibioticCategories(config);
+  }else if(enabled){
+    populatePlanAntibioticRegimens(config);
+  }
+  updatePlanAntibioticResult(config);
+  if(typeof renderPlan==="function") renderPlan();
+}
+function validatePlanAntibiotic(config){
+  if(!planAntibioticEnabled(config)) return true;
+  const prescription=getPlanAntibioticPrescription(config);
+  if(prescription.valid) return true;
+  alert(prescription.message||"Complete antibiotic details before generating the note.");
+  planElement(config.panelId)?.scrollIntoView({behavior:"smooth",block:"center"});
+  return false;
+}
+function initialiseDenguePlanAntibiotic(config,renderPlan){
+  const rerender=()=>syncPlanAntibioticUi(config,renderPlan);
+  populatePlanAntibioticCategories(config);
+  planElement(config.optionId)?.addEventListener("change",rerender);
+  planElement(config.groupId)?.addEventListener("change",rerender);
+  [config.weightId,config.ageId].forEach(id=>{
+    planElement(id)?.addEventListener("input",rerender);
+    planElement(id)?.addEventListener("change",rerender);
+  });
+  planElement(config.ageUnitId)?.addEventListener("change",rerender);
+  planElement(config.categoryId)?.addEventListener("change",()=>{
+    populatePlanAntibioticRegimens(config);
+    if(typeof renderPlan==="function") renderPlan();
+  });
+  planElement(config.regimenId)?.addEventListener("change",()=>{
+    const select=planElement(config.regimenId);
+    if(select) select.title=select.options[select.selectedIndex]?.text||"";
+    updatePlanAntibioticResult(config);
+    if(typeof renderPlan==="function") renderPlan();
+  });
+  planElement(config.customId)?.addEventListener("input",rerender);
+  planElement(config.customId)?.addEventListener("change",rerender);
+  syncPlanAntibioticUi(config,renderPlan);
+}
+Object.assign(window,{
+  DENGUE_NEW_PLAN_ABX_CONFIG,
+  DENGUE_FOLLOWUP_PLAN_ABX_CONFIG,
+  getPlanAntibioticPrescription,
+  syncPlanAntibioticUi,
+  validatePlanAntibiotic,
+  initialiseDenguePlanAntibiotic
+});
 
 function getAmsRegimen(){
   const category=value("abxCategory");
@@ -7476,46 +8311,30 @@ function refreshAmsRegimenFields(){
   const regimen=getAmsRegimen();
   if(!regimen) return;
 
-  const needsDose=regimen.doseMode==="mgkgday";
-  const needsFrequency=regimen.doseMode==="mgkgday";
-  const needsConcentration=regimen.concentrations.length>0;
+  const needsDose=regimen.doseMode==="mgkgday"||regimen.doseMode==="mgkgdose";
+  const needsFrequency=needsDose;
 
   $("abxDoseChoiceWrap").classList.toggle("hidden",!needsDose);
   $("abxFrequencyWrap").classList.toggle("hidden",!needsFrequency);
-  $("abxConcentrationWrap").classList.toggle("hidden",!needsConcentration);
 
+  const doseUnit=regimen.doseMode==="mgkgdose"?"mg/kg/dose":"mg/kg/day";
   $("abxDoseChoice").innerHTML=(regimen.doses||[])
-    .map(dose=>`<option value="${dose}">${dose} mg/kg/day</option>`)
+    .map(dose=>`<option value="${dose}">${dose} ${doseUnit}</option>`)
     .join("");
 
   $("abxFrequency").innerHTML=(regimen.frequencies||[])
     .map(freq=>`<option value="${freq}" ${freq===regimen.defaultFrequency?"selected":""}>${freq} dose${freq>1?"s":""}/day</option>`)
     .join("");
 
-  $("abxConcentration").innerHTML=(regimen.concentrations||[])
-    .map(([value,label])=>`<option value="${value}">${label}</option>`)
-    .join("");
-
-  $("abxCustomConcWrap").classList.add("hidden");
-
   const duration=regimen.duration==="age-based-aom" ? aomDuration() : regimen.duration;
   $("abxRegimenSummary").textContent=
     `${regimen.drug} • ${regimen.route} • Duration: ${duration}. ${regimen.note}`;
-}
-
-function selectedConcentration(){
-  const raw=value("abxConcentration");
-  if(raw==="custom") return Number(value("abxCustomConc"));
-  return Number(raw);
 }
 
 $("abxCategory").addEventListener("change",refreshAmsRegimens);
 $("abxRegimen").addEventListener("change",refreshAmsRegimenFields);
 $("abxAge").addEventListener("input",updateAmsSummary);
 $("abxAgeUnit").addEventListener("change",updateAmsSummary);
-$("abxConcentration").addEventListener("change",()=>{
-  $("abxCustomConcWrap").classList.toggle("hidden",value("abxConcentration")!=="custom");
-});
 
 $("abxCalculate").addEventListener("click",()=>{
 
@@ -7540,12 +8359,6 @@ $("abxCalculate").addEventListener("click",()=>{
     $("abxResult").textContent="Enter a valid child weight.";
     return;
   }
-
-  const concentration=selectedConcentration();
-  const volumeText=mg=>{
-    if(!concentration||concentration<=0) return "";
-    return `<br>At ${concentration.toFixed(2)} mg/mL: <strong>${(mg/concentration).toFixed(2)} mL per dose</strong>`;
-  };
 
   if(regimen.doseMode==="oseltamivir"){
     const years=ageInYears();
@@ -7572,7 +8385,6 @@ $("abxCalculate").addEventListener("click",()=>{
       `${basis}<br>`+
       `Calculated prescription: <strong>${dose.toFixed(1)} mg per dose, twice daily</strong><br>`+
       `Duration: <strong>5 days</strong>`+
-      volumeText(dose)+
       `<br><br><em>${regimen.note}</em>`;
     return;
   }
@@ -7584,12 +8396,7 @@ $("abxCalculate").addEventListener("click",()=>{
     let result=
       `<strong>Azithromycin</strong><br>`+
       `Day 1: <strong>${day1.toFixed(1)} mg once</strong>`+
-      volumeText(day1)+
       `<br>Days 2–5: <strong>${day2.toFixed(1)} mg once daily</strong>`;
-
-    if(concentration>0){
-      result+=`<br>Days 2–5 volume: <strong>${(day2/concentration).toFixed(2)} mL once daily</strong>`;
-    }
 
     result+=`<br>Duration: <strong>5 days</strong>`+
       `<br><br><em>${regimen.note}</em>`;
@@ -7606,20 +8413,34 @@ $("abxCalculate").addEventListener("click",()=>{
     return;
   }
 
-  let dailyDose=weight*mgkg;
+  let dailyDose=0;
+  let perDose=0;
   let capNotes=[];
 
-  if(regimen.maxDaily && dailyDose>regimen.maxDaily){
-    dailyDose=regimen.maxDaily;
-    capNotes.push(`capped at maximum ${regimen.maxDaily} mg/day`);
-  }
-
-  let perDose=dailyDose/frequency;
-
-  if(regimen.maxDose && perDose>regimen.maxDose){
-    perDose=regimen.maxDose;
+  if(regimen.doseMode==="mgkgdose"){
+    perDose=weight*mgkg;
+    if(regimen.maxDose && perDose>regimen.maxDose){
+      perDose=regimen.maxDose;
+      capNotes.push(`capped at maximum ${regimen.maxDose} mg/dose`);
+    }
     dailyDose=perDose*frequency;
-    capNotes.push(`capped at maximum ${regimen.maxDose} mg/dose`);
+    if(regimen.maxDaily && dailyDose>regimen.maxDaily){
+      dailyDose=regimen.maxDaily;
+      perDose=dailyDose/frequency;
+      capNotes.push(`capped at maximum ${regimen.maxDaily} mg/day`);
+    }
+  }else{
+    dailyDose=weight*mgkg;
+    if(regimen.maxDaily && dailyDose>regimen.maxDaily){
+      dailyDose=regimen.maxDaily;
+      capNotes.push(`capped at maximum ${regimen.maxDaily} mg/day`);
+    }
+    perDose=dailyDose/frequency;
+    if(regimen.maxDose && perDose>regimen.maxDose){
+      perDose=regimen.maxDose;
+      dailyDose=perDose*frequency;
+      capNotes.push(`capped at maximum ${regimen.maxDose} mg/dose`);
+    }
   }
 
   const duration=regimen.duration==="age-based-aom" ? aomDuration() : regimen.duration;
@@ -7627,14 +8448,10 @@ $("abxCalculate").addEventListener("click",()=>{
 
   let result=
     `<strong>${regimen.drug}</strong><br>`+
-    `Selected dose: ${mgkg} mg/kg/day${component} in ${frequency} divided dose${frequency>1?"s":""}<br>`+
+    `Selected dose: ${mgkg} ${regimen.doseMode==="mgkgdose"?"mg/kg/dose":"mg/kg/day"}${component} in ${frequency} dose${frequency>1?"s":""}/day<br>`+
     `Calculated prescription: <strong>${perDose.toFixed(1)} mg per dose, ${frequency} time${frequency>1?"s":""}/day</strong><br>`+
     `Total delivered: ${dailyDose.toFixed(1)} mg/day<br>`+
     `Duration: <strong>${duration}</strong>`;
-
-  if(concentration>0){
-    result+=`<br>At ${concentration.toFixed(2)} mg/mL: <strong>${(perDose/concentration).toFixed(2)} mL per dose</strong>`;
-  }
 
   if(regimen.maxDose) result+=`<br>Maximum: ${regimen.maxDose} mg/dose`;
   if(regimen.maxDaily) result+=`<br>Maximum: ${regimen.maxDaily} mg/day`;
@@ -7645,6 +8462,7 @@ $("abxCalculate").addEventListener("click",()=>{
 });
 
 refreshAmsRegimens();
+window.initialiseDenguePlanAntibiotic(window.DENGUE_NEW_PLAN_ABX_CONFIG,renderDenguePlanPreview);
 
 // Vitals
 const bands=[{max:.25,label:"0–3 months",hr:[115,170],rr:[25,60],sbp:[60,105]},{max:1,label:"3–12 months",hr:[105,170],rr:[20,55],sbp:[70,105]},{max:2,label:"1–2 years",hr:[95,150],rr:[20,40],sbp:[70,105]},{max:5,label:"2–5 years",hr:[80,140],rr:[17,30],sbp:[75,110]},{max:12,label:"6–12 years",hr:[60,130],rr:[15,30],sbp:[80,120]},{max:18,label:"13–18 years",hr:[60,115],rr:[14,25],sbp:[90,130]}];
@@ -7653,19 +8471,24 @@ $("pvCalculate").addEventListener("click",()=>{let age=Number(value("pvAge"));if
 // Pack-year
 $("pkCalculate").addEventListener("click",()=>{const c=Number(value("pkCigs")),y=Number(value("pkYears"));if(!c&&!y){$("pkResult").textContent="Enter smoking history.";return}$("pkResult").innerHTML=`Pack-year: <strong>${((c/20)*y).toFixed(1)}</strong>`;});
 
-// Scores
-function renderScore(){const t=value("scoreType");if(t==="qsofa")$("scoreInputs").innerHTML='<label class="check-item"><input id="s1" type="checkbox"> RR ≥22</label><label class="check-item"><input id="s2" type="checkbox"> SBP ≤100</label><label class="check-item"><input id="s3" type="checkbox"> Altered mentation</label>';else if(t==="curb65")$("scoreInputs").innerHTML='<label class="check-item"><input id="s1" type="checkbox"> Confusion</label><label class="check-item"><input id="s2" type="checkbox"> Urea >7</label><label class="check-item"><input id="s3" type="checkbox"> RR ≥30</label><label class="check-item"><input id="s4" type="checkbox"> Low BP</label><label class="check-item"><input id="s5" type="checkbox"> Age ≥65</label>';else $("scoreInputs").innerHTML='<label class="check-item"><input id="s1" type="checkbox"> Tonsillar exudate</label><label class="check-item"><input id="s2" type="checkbox"> Tender anterior nodes</label><label class="check-item"><input id="s3" type="checkbox"> Fever >38°C</label><label class="check-item"><input id="s4" type="checkbox"> No cough</label><div><label>Age adjustment</label><select id="centorAge"><option value="1">3–14 years (+1)</option><option value="0" selected>15–44 years</option><option value="-1">≥45 years (-1)</option></select></div>';}
-$("scoreType").addEventListener("change",renderScore);renderScore();
-$("scoreCalculate").addEventListener("click",()=>{let s=0;["s1","s2","s3","s4","s5"].forEach(id=>{if($(id)?.checked)s++});if(value("scoreType")==="centor")s+=Number(value("centorAge")||0);$("scoreResult").innerHTML=`Score: <strong>${s}</strong>`;});
-
-
-// NEWS2
-const scoreBand=(v,bands)=>{for(const [test,score] of bands)if(test(v))return score;return 0};
-$("nCalc").addEventListener("click",()=>{const rr=+value("nRR"),spo=+value("nSpO2"),t=+value("nTemp"),sbp=+value("nSBP"),hr=+value("nHR");if(!rr||!spo||!t||!sbp||!hr){$("nResult").textContent="Complete all physiological observations.";return}
-let parts=[];const add=(name,x)=>{parts.push(`${name}: ${x}`);return x};let total=0;total+=add("RR",scoreBand(rr,[[x=>x<=8,3],[x=>x<=11,1],[x=>x<=20,0],[x=>x<=24,2],[x=>true,3]]));
-if(value("nScale")==="1")total+=add("SpO₂",scoreBand(spo,[[x=>x<=91,3],[x=>x<=93,2],[x=>x<=95,1],[x=>true,0]]));else total+=add("SpO₂",scoreBand(spo,[[x=>x<=83,3],[x=>x<=85,2],[x=>x<=87,1],[x=>x<=92,0],[x=>x<=94,1],[x=>x<=96,2],[x=>true,3]]));
-total+=add("Oxygen",+value("nO2"));total+=add("Temperature",scoreBand(t,[[x=>x<=35,3],[x=>x<=36,1],[x=>x<=38,0],[x=>x<=39,1],[x=>true,2]]));total+=add("SBP",scoreBand(sbp,[[x=>x<=90,3],[x=>x<=100,2],[x=>x<=110,1],[x=>x<=219,0],[x=>true,3]]));total+=add("HR",scoreBand(hr,[[x=>x<=40,3],[x=>x<=50,1],[x=>x<=90,0],[x=>x<=110,1],[x=>x<=130,2],[x=>true,3]]));total+=add("Consciousness",+value("nCon"));
-const any3=parts.some(x=>x.endsWith(": 3"));let risk=total>=7?"High risk — emergency assessment / continuous monitoring":total>=5?"Medium risk — urgent clinical review":any3?"Low total but one parameter scores 3 — urgent review":total>=1?"Low risk — ward/clinical response per protocol":"Score 0 — continue routine monitoring";$("nResult").innerHTML=`NEWS2: <strong>${total}</strong><br>${risk}<br><span class="helper">${parts.join("; ")}</span>`;});
+// Centor score
+$("centorCalculate").addEventListener("click",()=>{
+  let score=0;
+  ["centorExudate","centorNodes","centorFever","centorNoCough"].forEach(id=>{
+    if($(id)?.checked) score++;
+  });
+  score+=Number(value("centorAge")||0);
+  const interpretation = score<=0
+    ? "Very low likelihood of GAS; routine testing is generally not required unless clinical concern overrides."
+    : score===1
+      ? "Low likelihood of GAS; consider no testing unless clinical concern or local protocol indicates otherwise."
+      : score<=3
+        ? "Intermediate likelihood of GAS; consider RADT and/or throat culture according to the local pathway."
+        : "Higher likelihood of GAS; perform microbiological testing where available and manage according to the local sore-throat guideline.";
+  $("centorResult").innerHTML=
+    `Modified Centor score: <strong>${score}</strong><br>${interpretation}<br>`+
+    `<span class="helper">The score does not confirm streptococcal infection and should not be used alone to start antibiotics.</span>`;
+});
 
 // Renal — 2021 CKD-EPI creatinine equation (race-free)
 function renalGCategory(egfr){
@@ -7758,14 +8581,6 @@ $("rCalc").addEventListener("click",calculateRenal);
 const mh={phq:["Little interest or pleasure in doing things","Feeling down, depressed or hopeless","Trouble falling/staying asleep or sleeping too much","Feeling tired or having little energy","Poor appetite or overeating","Feeling bad about yourself / failure","Trouble concentrating","Moving/speaking slowly or being fidgety/restless","Thoughts that you would be better off dead or of self-harm"],gad:["Feeling nervous, anxious or on edge","Not being able to stop/control worrying","Worrying too much about different things","Trouble relaxing","Being so restless it is hard to sit still","Becoming easily annoyed or irritable","Feeling afraid as if something awful might happen"]};
 function renderMH(){const qs=mh[value("mhTool")];$("mhQuestions").innerHTML=qs.map((q,i)=>`<div class="grid two"><label>${i+1}. ${q}</label><select class="mhItem"><option value="0">Not at all (0)</option><option value="1">Several days (1)</option><option value="2">More than half the days (2)</option><option value="3">Nearly every day (3)</option></select></div>`).join("");}$("mhTool").addEventListener("change",renderMH);runWhenIdle(renderMH);
 $("mhCalc").addEventListener("click",()=>{const vals=[...document.querySelectorAll(".mhItem")].map(x=>+x.value),sum=vals.reduce((a,b)=>a+b,0),tool=value("mhTool");let sev=tool==="phq"?(sum<5?"minimal":sum<10?"mild":sum<15?"moderate":sum<20?"moderately severe":"severe"):(sum<5?"minimal":sum<10?"mild":sum<15?"moderate":"severe");let alert=tool==="phq"&&vals[8]>0?"<br><strong>Item 9 is positive: perform immediate suicide/self-harm risk assessment.</strong>":"";$("mhResult").innerHTML=`${tool==="phq"?"PHQ-9":"GAD-7"}: <strong>${sum}</strong> — ${sev}${alert}`;});
-
-// VTE
-function renderVTE(){const t=value("vteType");let items=t==="pe"?[["Clinical signs of DVT",3],["PE more likely than alternative diagnosis",3],["Heart rate >100",1.5],["Immobilisation ≥3 days or surgery in previous 4 weeks",1.5],["Previous DVT/PE",1.5],["Haemoptysis",1],["Malignancy",1]]:t==="dvt"?[["Active cancer",1],["Paralysis/immobilisation of lower limb",1],["Bedridden ≥3 days or major surgery within 12 weeks",1],["Tenderness along deep venous system",1],["Entire leg swollen",1],["Calf swelling ≥3 cm",1],["Pitting oedema confined to symptomatic leg",1],["Collateral superficial veins",1],["Previous DVT",1],["Alternative diagnosis at least as likely",-2]]:[["Age ≥50",1],["Pulse ≥100",1],["SpO₂ <95%",1],["Unilateral leg swelling",1],["Haemoptysis",1],["Recent surgery/trauma",1],["Previous DVT/PE",1],["Exogenous oestrogen",1]];$("vteInputs").innerHTML=items.map(([x,p],i)=>`<label class="check-item"><input type="checkbox" class="vteItem" data-p="${p}">${x} (${p>0?"+":""}${p})</label>`).join("");}$("vteType").addEventListener("change",renderVTE);runWhenIdle(renderVTE);
-$("vteCalc").addEventListener("click",()=>{const t=value("vteType"),s=[...document.querySelectorAll(".vteItem:checked")].reduce((a,x)=>a+(+x.dataset.p),0);let text=t==="pe"?(s>4?"PE likely (two-tier model)":"PE unlikely (two-tier model)"):t==="dvt"?(s>=2?"DVT likely":"DVT unlikely"):(s===0?"PERC negative — only applicable when clinician judges pre-test probability low":"PERC positive — cannot rule out by PERC");$("vteResult").innerHTML=`Score/positive items: <strong>${s}</strong><br>${text}`;});
-
-// Cardiac
-function renderCardiac(){const t=value("cType");if(t==="heart")$("cInputs").innerHTML=`<div class="grid three">${[["History","cH"],["ECG","cE"],["Age","cA"],["Risk factors","cR"],["Troponin","cT"]].map(([l,id])=>`<div><label>${l}</label><select id="${id}"><option value="0">0 points</option><option value="1">1 point</option><option value="2">2 points</option></select></div>`).join("")}</div>`;else if(t==="chads")$("cInputs").innerHTML=`<div id="chItems" class="check-grid"><label class="check-item"><input data-p="1" type="checkbox">Heart failure (1)</label><label class="check-item"><input data-p="1" type="checkbox">Hypertension (1)</label><label class="check-item"><input data-p="2" type="checkbox">Age ≥75 (2)</label><label class="check-item"><input data-p="1" type="checkbox">Diabetes (1)</label><label class="check-item"><input data-p="2" type="checkbox">Stroke/TIA/systemic embolism (2)</label><label class="check-item"><input data-p="1" type="checkbox">Vascular disease (1)</label><label class="check-item"><input data-p="1" type="checkbox">Age 65–74 (1)</label><label class="check-item"><input data-p="1" type="checkbox">Female sex (1)</label></div>`;else $("cInputs").innerHTML=`<div class="grid three"><div><label>QT (ms)</label><input id="qt" type="number"></div><div><label>Heart rate</label><input id="qhr" type="number"></div><div><label>Formula</label><select id="qform"><option value="bazett">Bazett</option><option value="fridericia">Fridericia</option></select></div></div>`;}$("cType").addEventListener("change",renderCardiac);runWhenIdle(renderCardiac);
-$("cCalc").addEventListener("click",()=>{const t=value("cType");if(t==="heart"){const s=["cH","cE","cA","cR","cT"].reduce((a,id)=>a+(+value(id)),0);$("cResult").innerHTML=`HEART score: <strong>${s}</strong> — ${s<=3?"low":s<=6?"intermediate":"high"} risk category.`;}else if(t==="chads"){const s=[...$("chItems").querySelectorAll("input:checked")].reduce((a,x)=>a+(+x.dataset.p),0);$("cResult").innerHTML=`CHA₂DS₂-VASc: <strong>${s}</strong><br><span class="helper">Use current AF anticoagulation guidance and bleeding-risk/clinical context.</span>`;}else{const qt=+value("qt"),hr=+value("qhr");if(!qt||!hr){$("cResult").textContent="Enter QT and heart rate.";return}const rr=60/hr,qtc=value("qform")==="bazett"?qt/Math.sqrt(rr):qt/Math.cbrt(rr);$("cResult").innerHTML=`QTc (${value("qform")}): <strong>${qtc.toFixed(0)} ms</strong>`;}});
 
 // BWPS
 $("bwCalc").addEventListener("click",()=>{const ids=["bwTemp","bwCns","bwGi","bwHr","bwAf","bwHf","bwPre"],s=ids.reduce((a,id)=>a+(+value(id)),0);const x=s>=45?"Highly suggestive of thyroid storm":s>=25?"Impending storm / supports urgent specialist assessment":"Thyroid storm less likely by BWPS, but clinical judgement prevails";$("bwResult").innerHTML=`BWPS: <strong>${s}</strong><br>${x}`;});
@@ -8925,6 +9740,7 @@ function nnjPlanLines(assessment,resolvedPlan){
     lines.push("Refer paediatrics promptly if conjugated bilirubin is elevated, stool is pale/acholic, urine is dark, baby is unwell or any other abnormality is detected.");
   }
 
+  lines.push(...window.splitPlanFreeText(value("nnjPlanOthers")));
   return lines;
 }
 function nnjRelevantNegatives(negativeList){
@@ -9123,7 +9939,7 @@ $("nnjValue").addEventListener("input",renderNnjSerialTable);
   "nnjGestation","nnjBirthWeight","nnjCurrentWeight","nnjMbg","nnjBbg","nnjG6pdStatus","nnjValue","nnjDirect",
   "nnjOnPhoto","nnjRapidRise","nnjCondition","nnjHydration","nnjExtent","nnjStoolColour",
   "nnjUrineColour","nnjTone","nnjPallor","nnjCephalo","nnjHsm","nnjRash","nnjAbe",
-  "nnjOtherHistory","nnjOtherHistoryPosition","nnjOtherExam"
+  "nnjOtherHistory","nnjOtherHistoryPosition","nnjOtherExam","nnjPlanOthers"
 ].forEach(id=>{
   const element=$(id);
 
@@ -9177,7 +9993,7 @@ $("nnjCopyReferral").addEventListener("click",async()=>{
 $("nnjClear").addEventListener("click",()=>{
   [
     "nnjName","nnjId","nnjHours","nnjBirthDate24","nnjAssessmentDate24","nnjBirthDateTime","nnjAssessmentDateTime","nnjBirthDate","nnjBirthTime","nnjBirthWeight","nnjCurrentWeight","nnjFeedFrequency",
-    "nnjValue","nnjDirect","nnjOtherHistory","nnjOtherExam","nnjOutput","nnjReferralLetter"
+    "nnjValue","nnjDirect","nnjOtherHistory","nnjOtherExam","nnjPlanOthers","nnjOutput","nnjReferralLetter"
   ].forEach(id=>$(id).value="");
 
   document.querySelectorAll("#nnjSymptoms .nnj-yn").forEach(select=>{
@@ -9236,34 +10052,76 @@ renderNnjQuickRisk();
 renderNnjLive();
 
 
-// Paeds emergency — manual weight only
-$("pedCalc").addEventListener("click",()=>{
-  const age=Number(value("pedAge"));
-  const w=Number(value("pedWt"));
+// GDM risk and MGTT timing — MOH Handbook of Obstetrics Guideline 2024 / CPG 2017
+function assessGdmMgttTiming(){
+  const weeks=Number(value("gdmWeeks"));
+  const bmi=Number(value("gdmBMI"));
+  const previous=value("gdmPreviousTest");
+  const risks=[...document.querySelectorAll("#gdmRiskFactors input:checked")].map(x=>x.value);
 
-  if(!w||w<=0){
-    $("pedResult").textContent="Enter the child’s actual weight manually.";
+  if(bmi>27) risks.unshift("BMI >27 kg/m²");
+  const uniqueRisks=[...new Set(risks)];
+  const atRisk=uniqueRisks.length>0;
+
+  if(!Number.isFinite(weeks) || weeks<=0 || weeks>45){
+    $("gdmResult").textContent="Enter a valid current gestation in weeks.";
     return;
   }
 
-  const ettUnc=age>0 ? age/4+4 : null;
-  const ettCuff=age>0 ? age/4+3.5 : null;
-  const lma=w<5?1:w<10?1.5:w<20?2:w<30?2.5:w<50?3:w<70?4:5;
-  const epiMg=Math.min(0.01*w,0.5);
-  const epiMl=epiMg; // 1 mg/mL concentration
+  if(previous==="diagnosed"){
+    $("gdmResult").innerHTML=
+      `<strong>Diabetes in pregnancy has already been diagnosed.</strong><br>`+
+      `Do not use this calculator to schedule another screening MGTT. Continue the appropriate GDM / overt diabetes management pathway.`;
+    return;
+  }
 
-  $("pedResult").innerHTML=
-    `Weight entered: <strong>${w.toFixed(1)} kg</strong><br>`+
-    `${age>0?`ETT uncuffed: <strong>${ettUnc.toFixed(1)} mm</strong>; cuffed: <strong>${ettCuff.toFixed(1)} mm</strong><br>`:""}`+
-    `LMA size: <strong>${lma}</strong><br>`+
-    `IM adrenaline 1 mg/mL for anaphylaxis: <strong>${epiMg.toFixed(2)} mg = ${epiMl.toFixed(2)} mL</strong><br>`+
-    `Fluid bolus 10 mL/kg: <strong>${(10*w).toFixed(0)} mL</strong><br>`+
-    `Defibrillation 4 J/kg: <strong>${(4*w).toFixed(0)} J</strong>`;
+  let recommendation="";
+  if(atRisk){
+    if(previous==="normalearly"){
+      if(weeks<24){
+        recommendation="Early MGTT was normal. Schedule repeat 75-g MGTT at 24–28 weeks.";
+      }else if(weeks<=28){
+        recommendation="Repeat 75-g MGTT now because the patient is within 24–28 weeks and has GDM risk factor(s).";
+      }else{
+        recommendation="The recommended repeat-screening window of 24–28 weeks has passed. The 2024 handbook does not recommend routine further screening beyond this period; review the individual case with FMS/O&G or the local protocol rather than automatically ordering a late MGTT.";
+      }
+    }else{
+      if(weeks<24){
+        recommendation="Perform a 75-g MGTT now / as early as possible because GDM risk factor(s) are present. If normal, repeat at 24–28 weeks.";
+      }else if(weeks<=28){
+        recommendation="Perform a 75-g MGTT now. The patient has risk factor(s) and is currently within the 24–28-week screening window.";
+      }else{
+        recommendation="The recommended screening window has passed. The 2024 handbook does not recommend routine screening beyond 24–28 weeks; discuss individualised assessment with FMS/O&G or follow the local protocol.";
+      }
+    }
+  }else{
+    if(weeks<24){
+      recommendation="No listed GDM risk factor detected. Arrange universal 75-g MGTT screening at 24–28 weeks.";
+    }else if(weeks<=28){
+      recommendation="Perform universal 75-g MGTT screening now because the patient is within 24–28 weeks.";
+    }else{
+      recommendation="No listed risk factor detected and the universal 24–28-week screening window has passed. Review prior antenatal records and discuss any further testing according to the local protocol.";
+    }
+  }
+
+  $("gdmResult").innerHTML=
+    `<strong>${atRisk?"GDM risk factor(s) present":"No listed GDM risk factor detected"}</strong><br>`+
+    `${atRisk?`Risk factor(s): ${uniqueRisks.join(", ")}.<br>`:""}`+
+    `${recommendation}<br>`+
+    `<span class="helper">Malaysian diagnostic reference: fasting plasma glucose ≥5.1 mmol/L or 2-hour plasma glucose ≥7.8 mmol/L meets GDM criteria. Clinical assessment and local workflow prevail.</span>`;
+}
+
+$("gdmCalculate").addEventListener("click",assessGdmMgttTiming);
+["gdmWeeks","gdmBMI","gdmPreviousTest"].forEach(id=>{
+  $(id)?.addEventListener("change",()=>{
+    if(value("gdmWeeks")) assessGdmMgttTiming();
+  });
 });
-
-// Procedural
-function renderProcedural(){if(value("prType")==="la")$("prInputs").innerHTML=`<div class="grid three"><div><label>Weight (kg)</label><input id="laW" type="number"></div><div><label>Agent</label><select id="laAgent"><option value="3">Lignocaine plain — 3 mg/kg</option><option value="7">Lignocaine with adrenaline — 7 mg/kg</option></select></div><div><label>Concentration</label><select id="laConc"><option value="10">1% (10 mg/mL)</option><option value="20">2% (20 mg/mL)</option></select></div></div>`;else $("prInputs").innerHTML=`<div class="grid three"><div><label>Cylinder capacity (L)</label><input id="oxyCap" type="number"></div><div><label>Current pressure (bar)</label><input id="oxyBar" type="number"></div><div><label>Flow (L/min)</label><input id="oxyFlow" type="number"></div></div>`;}$("prType").addEventListener("change",renderProcedural);runWhenIdle(renderProcedural);
-$("prCalc").addEventListener("click",()=>{if(value("prType")==="la"){const w=+value("laW"),mgkg=+value("laAgent"),conc=+value("laConc");if(!w){$("prResult").textContent="Enter weight.";return}const mg=w*mgkg;$("prResult").innerHTML=`Maximum calculated dose: <strong>${mg.toFixed(0)} mg</strong><br>Maximum volume at selected concentration: <strong>${(mg/conc).toFixed(1)} mL</strong><br><span class="helper">Use the lowest effective dose; reduce in frailty, hepatic/cardiac disease, pregnancy and interacting drugs.</span>`;}else{const cap=+value("oxyCap"),bar=+value("oxyBar"),flow=+value("oxyFlow");if(!cap||!bar||!flow){$("prResult").textContent="Complete all values.";return}const min=cap*bar/flow;$("prResult").innerHTML=`Approximate duration: <strong>${Math.floor(min/60)} h ${Math.round(min%60)} min</strong><br><span class="helper">Apply a safety reserve and confirm the cylinder’s actual water capacity/pressure specification.</span>`;}});
+document.querySelectorAll("#gdmRiskFactors input").forEach(input=>{
+  input.addEventListener("change",()=>{
+    if(value("gdmWeeks")) assessGdmMgttTiming();
+  });
+});
 
 // STOP-BANG
 $("sbCalc").addEventListener("click",()=>{const s=$("sbInputs").querySelectorAll("input:checked").length;$("sbResult").innerHTML=`STOP-BANG: <strong>${s}/8</strong> — ${s<=2?"low":s<=4?"intermediate":"high"} risk of obstructive sleep apnoea.`;});
@@ -10143,11 +11001,7 @@ function followUpPlanLines(){
 
   if(option==="refer"){
     const fluid=getDengueFollowUpFluidInstruction();
-
-    if(fluid.valid){
-      lines.push(fluid.plan);
-    }
-
+    if(fluid.valid) lines.push(fluid.plan);
     lines.push("Refer ED for further assessment and management.");
   }else if(option==="monitoring"){
     lines.push("Continue serial FBC monitoring.");
@@ -10156,12 +11010,19 @@ function followUpPlanLines(){
       const date=parts.length===3?`${parts[2]}/${parts[1]}/${parts[0]}`:fv("dfuNextTca");
       lines.push(`TCA on ${date} for clinical review and repeat FBC.`);
     }
-  }else{
+  }else if(option==="antibiotic"){
+    const antibiotic=window.getPlanAntibioticPrescription(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG);
+    lines.push(antibiotic.valid?antibiotic.line:"Start antibiotic / antimicrobial — complete the prescription before finalising the plan.");
+    lines.push("Advise on medication compliance and to complete the prescribed treatment course.");
+    lines.push("TCA STAT if any allergic reaction or medication side effect develops.");
+    lines.push("TCA back if symptoms are not resolved for reassessment.");
+  }else if(option==="others"){
+    lines.push(...window.splitPlanFreeText(fv("dfuPlanExtra")));
+  }else if(option==="discharge"){
     lines.push("Off FBC monitoring.");
     lines.push("Advise to monitor and eliminate stagnant water collections that may become Aedes breeding sites.");
   }
 
-  if(fv("dfuPlanExtra")) lines.push(fv("dfuPlanExtra"));
   return lines;
 }
 
@@ -10169,12 +11030,21 @@ function renderDengueFollowUpPlan(){
   const option=fv("dfuPlanOption");
   const lines=followUpPlanLines();
   const isReferral=option==="refer";
+  const headings={
+    refer:"Option 1 — Refer ED",
+    monitoring:"Option 2 — Continue FBC monitoring",
+    antibiotic:"Option 3 — Treat concurrent infection / start antibiotic",
+    others:"Option 4 — Others / custom plan",
+    discharge:"Option 5 — Discharge from FBC monitoring"
+  };
 
   f$("dfuPlanPreview").innerHTML=
-    `<strong>${option==="refer"?"Option 1 — Refer ED":option==="monitoring"?"Option 2 — Continue FBC monitoring":"Option 3 — Discharge"}</strong><br>`+
-    lines.map((line,index)=>`${index+1}. ${line}`).join("<br>");
+    `<strong>${headings[option]||"Selected plan"}</strong><br>`+
+    lines.map((line,index)=>`${index+1}. ${window.escapePlanHtml(line)}`).join("<br>");
 
   f$("dfuNextTcaWrap").classList.toggle("hidden",option!=="monitoring");
+  f$("dfuPlanAntibioticPanel").classList.toggle("hidden",option!=="antibiotic");
+  f$("dfuPlanOthersPanel").classList.toggle("hidden",option!=="others");
   f$("dfuGenerate").textContent=isReferral?"Generate clinical note + referral letter":"Generate clinical note";
   f$("dfuGenerateReferral").classList.toggle("hidden",!isReferral);
   f$("dfuCopyReferral").classList.toggle("hidden",!isReferral || !fv("dfuReferralOutput"));
@@ -10183,6 +11053,16 @@ function renderDengueFollowUpPlan(){
     f$("dfuReferralStatus").innerHTML=fv("dfuReferralOutput")
       ?"<strong>Referral letter ready.</strong>"
       :"<strong>ED referral selected.</strong> Complete the form and generate the note.";
+  }else if(option==="antibiotic"){
+    f$("dfuReferralStatus").textContent=
+      "Option 3 selected. Complete the antimicrobial prescription before generating the note.";
+    f$("dfuReferralOutput").value="";
+    f$("dfuReferralWrap").classList.add("hidden");
+  }else if(option==="others"){
+    f$("dfuReferralStatus").textContent=
+      "Option 4 selected. Enter your own plan in the free-text field.";
+    f$("dfuReferralOutput").value="";
+    f$("dfuReferralWrap").classList.add("hidden");
   }else{
     f$("dfuReferralStatus").textContent="";
     f$("dfuReferralOutput").value="";
@@ -10327,6 +11207,7 @@ function buildDengueFollowUpClinicalNote(){
 }
 
 function generateDengueFollowUpReferral(){
+  if(!window.validatePlanAntibiotic(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG)) return "";
   const note=buildDengueFollowUpClinicalNote();
   const referral=[
     "Dear colleague, thank you for seeing this pt",
@@ -10343,6 +11224,8 @@ function generateDengueFollowUpReferral(){
 }
 
 function generateDengueFollowUp(){
+  if(!window.validateCustomPlan("dfuPlanOption","dfuPlanExtra")) return;
+  if(!window.validatePlanAntibiotic(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG)) return;
   f$("dfuOutput").value=buildDengueFollowUpClinicalNote();
   if(fv("dfuPlanOption")==="refer") generateDengueFollowUpReferral();
   f$("dfuOutput").scrollIntoView({behavior:"smooth",block:"start"});
@@ -10376,6 +11259,7 @@ function resetDengueFollowUp(){
   f$("dengueFollowUpTemplate").querySelectorAll("select").forEach(select=>select.selectedIndex=0);
   f$("dengueFollowUpTemplate").querySelectorAll("textarea").forEach(area=>area.value="");
   f$("dfuAllergy").value="NKDA";
+  f$("dfuPlanOption").value="monitoring";
   f$("dfuOutput").value="";
   f$("dfuReferralOutput").value="";
   f$("dfuReferralWrap").classList.add("hidden");
@@ -10388,6 +11272,7 @@ function resetDengueFollowUp(){
   updateDengueFollowUpFluidRateOptions();
   renderDengueFollowUpWarningClassification();
   renderDengueFollowUpFluid();
+  window.syncPlanAntibioticUi(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG,renderDengueFollowUpPlan);
   renderDengueFollowUpPlan();
 }
 
@@ -10496,9 +11381,10 @@ f$("dfuFluidCalculate").addEventListener(
   renderDengueFollowUpFluid
 );
 
-f$("dfuPlanOption").addEventListener("change",renderDengueFollowUpPlan);
+f$("dfuPlanOption").addEventListener("change",()=>window.syncPlanAntibioticUi(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG,renderDengueFollowUpPlan));
 f$("dfuNextTca").addEventListener("change",renderDengueFollowUpPlan);
 f$("dfuPlanExtra").addEventListener("input",debounce(renderDengueFollowUpPlan,180));
+window.initialiseDenguePlanAntibiotic(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG,renderDengueFollowUpPlan);
 f$("dengueFollowUpTemplate").addEventListener("input",invalidateFollowUpReferral);
 f$("dengueFollowUpTemplate").addEventListener("change",invalidateFollowUpReferral);
 f$("dfuGenerate").addEventListener("click",generateDengueFollowUp);
@@ -10787,18 +11673,14 @@ const SEARCH_ITEMS=[
   {title:"AMS / NAG Paediatric",subtitle:"Outpatient antimicrobial doses",keywords:"antibiotic antimicrobial paeds dose nag ams",calc:"antibiotic"},
   {title:"Paeds vital signs",subtitle:"Age-based interpretation",keywords:"paeds vital signs pulse respiratory rate bp",calc:"vitals"},
   {title:"Pack-year",subtitle:"Smoking exposure",keywords:"smoking cigarette pack year",calc:"pack"},
-  {title:"Clinical scores",subtitle:"qSOFA, CURB-65 and Centor",keywords:"qsofa curb65 centor sepsis pneumonia tonsillitis",calc:"scores"},
-  {title:"NEWS2",subtitle:"Auto-score and escalation",keywords:"news news2 deterioration observation",calc:"news2"},
-  {title:"eGFR — CKD-EPI",subtitle:"2021 adult creatinine equation",keywords:"egfr renal kidney creatinine ckdepi ckd",calc:"renal"},
+  {title:"Centor score",subtitle:"Modified Centor for GAS pharyngitis",keywords:"centor modified centor strep streptococcal pharyngitis tonsillitis sore throat",calc:"scores"},
+    {title:"eGFR — CKD-EPI",subtitle:"2021 adult creatinine equation",keywords:"egfr renal kidney creatinine ckdepi ckd",calc:"renal"},
   {title:"Mental health",subtitle:"PHQ-9 and GAD-7",keywords:"mental health depression anxiety phq9 gad7",calc:"mental"},
-  {title:"VTE assessment",subtitle:"Wells PE/DVT and PERC",keywords:"vte wells pe dvt perc pulmonary embolism",calc:"vte"},
-  {title:"Cardiac scores",subtitle:"HEART, CHA₂DS₂-VASc and QTc",keywords:"heart chads chadsvasc qtc cardiac af stroke",calc:"cardiac"},
-  {title:"Framingham CVD risk",subtitle:"10-year General CVD risk",keywords:"framingham cardiovascular cvd risk cholesterol",calc:"framingham"},
+      {title:"Framingham CVD risk",subtitle:"10-year General CVD risk",keywords:"framingham cardiovascular cvd risk cholesterol",calc:"framingham"},
   {title:"Thyroid storm",subtitle:"Burch-Wartofsky score",keywords:"thyroid storm hyperthyroid burch wartofsky",calc:"endocrine"},
   {title:"PE prophylaxis",subtitle:"Pre-eclampsia prophylaxis assessment",keywords:"preeclampsia pre eclampsia aspirin pregnancy prophylaxis",calc:"preeclampsia"},
-  {title:"Paeds emergency",subtitle:"Emergency paediatric calculations",keywords:"paeds emergency resuscitation weight drug dose",calc:"paedsemergency"},
-  {title:"Procedural",subtitle:"Local anaesthetic and oxygen",keywords:"procedure local anaesthetic lignocaine oxygen",calc:"procedural"},
-  {title:"STOP-BANG",subtitle:"OSA risk screening",keywords:"stopbang sleep apnoea osa snoring",calc:"stopbang"},
+  {title:"GDM risk & MGTT",subtitle:"Risk factors and when to perform 75-g MGTT",keywords:"gdm gestational diabetes mgtt mogtt ogtt pregnancy booking 24 28 weeks",calc:"gdm"},
+      {title:"STOP-BANG",subtitle:"OSA risk screening",keywords:"stopbang sleep apnoea osa snoring",calc:"stopbang"},
   {title:"Pregnancy dates",subtitle:"EDD and gestational age",keywords:"pregnancy lmp edd gestation dates",calc:"pregnancy"}
 ];
 
