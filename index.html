@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.71 — Dengue Follow-up 24H, Unified Plan and MC</title>
+<title>MedAssist KK Bangi V18.77 — Polished NNJ Layout</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -87,6 +87,11 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:
 .dashboard-card span,.calc-option span{font-size:27px;display:block;margin-bottom:9px}
 .dashboard-card strong,.calc-option strong{display:block;font-size:16px;margin-bottom:5px}
 .dashboard-card small,.calc-option small{color:var(--muted)}
+.external-nav-link{display:block;text-decoration:none}
+.external-dashboard-card{display:block;color:inherit;text-decoration:none;position:relative}
+.external-dashboard-card::after{content:"↗";position:absolute;top:14px;right:16px;color:var(--primary);font-size:15px;font-weight:900}
+.external-dashboard-card:focus-visible,.external-nav-link:focus-visible{outline:3px solid #9ad8ca;outline-offset:2px}
+
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px}
 .card h2{margin:0 0 16px;font-size:20px}
 .grid{display:grid;gap:14px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -2244,6 +2249,245 @@ html,body{max-width:100%;overflow-x:hidden}
   .urine-inline-card{padding:12px}
 }
 
+
+/* V18.73: browser-independent inline SVG icons */
+.svg-icon{
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  margin-bottom:9px;
+  line-height:1;
+}
+.svg-icon svg{display:block;width:100%;height:100%;overflow:visible}
+.external-nav-link{display:flex!important;align-items:center;gap:8px}
+.external-nav-link .svg-icon{
+  width:20px;
+  height:20px;
+  flex:0 0 20px;
+  margin:0;
+}
+
+
+/* V18.77 — NNJ layout polish and stable rendering */
+#page-nnj .card{
+  content-visibility:visible!important;
+  contain:none!important;
+  border:1px solid #cfe3de;
+  border-radius:17px;
+  padding:20px;
+  margin-bottom:16px;
+  background:#fff;
+  box-shadow:0 5px 18px rgba(19,74,66,.055);
+  overflow:visible;
+}
+#page-nnj .nnj-quick-card,
+#page-nnj .nnj-risk-screen,
+#page-nnj .nnj-live{
+  border-width:2px;
+  border-color:#8fc9be;
+  background:linear-gradient(180deg,#fbfffe 0%,#f7fcfa 100%);
+}
+#page-nnj .nnj-card-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:-2px 0 17px;
+  padding-bottom:12px;
+  border-bottom:1px solid #dcebe7;
+}
+#page-nnj .nnj-card-title h2{
+  margin:0;
+  color:#123f38;
+  font-size:19px;
+  line-height:1.25;
+}
+#page-nnj .nnj-step{
+  width:30px;
+  height:30px;
+  margin:0;
+  flex:0 0 30px;
+  box-shadow:0 3px 8px rgba(19,111,98,.16);
+}
+#page-nnj label{
+  line-height:1.3;
+}
+#page-nnj input,
+#page-nnj select,
+#page-nnj textarea{
+  border-color:#cbded9;
+  background:#fff;
+}
+#page-nnj input:focus,
+#page-nnj select:focus,
+#page-nnj textarea:focus{
+  border-color:#45998b;
+  box-shadow:0 0 0 3px rgba(43,137,123,.11);
+}
+
+/* Use comfortable columns in the narrower centre workspace. */
+#page-nnj .grid.four,
+#page-nnj .grid.three{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:13px;
+}
+#page-nnj .check-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+#page-nnj .nnj-datetime-grid{
+  grid-template-columns:1fr;
+  gap:12px;
+}
+#page-nnj .nnj-datetime-panel{
+  grid-template-columns:minmax(190px,1.5fr) minmax(88px,.55fr) auto minmax(88px,.55fr);
+  padding:14px 15px;
+  border-radius:14px;
+  background:#f7fbfa;
+}
+#page-nnj .nnj-quick-top-row{
+  grid-template-columns:minmax(210px,.75fr) minmax(250px,1fr);
+  gap:13px;
+}
+#page-nnj .nnj-auto-age-box{
+  min-height:82px;
+  border-radius:14px;
+}
+
+/* Previous TSB row: aligned controls without squeezing. */
+#page-nnj .nnj-previous-tsb-grid{
+  grid-template-columns:minmax(180px,1.5fr) minmax(80px,.55fr) minmax(80px,.55fr) minmax(150px,1fr);
+  gap:10px;
+  padding:13px;
+  border:1px solid #d5e6e2;
+  border-radius:13px;
+  background:#f8fcfb;
+}
+#page-nnj .nnj-previous-tsb-grid>.btn{
+  grid-column:1/-1;
+  justify-self:start;
+}
+
+/* Baby details and haemolysis section. */
+#page-nnj .nnj-blood-risk-card{
+  padding:15px;
+  border-radius:14px;
+  background:#f8fcfb;
+}
+#page-nnj .nnj-blood-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+}
+
+/* Neurotoxicity cards: roomy, structured and easy to scan. */
+#page-nnj .nnj-risk-screen-top{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px;
+}
+#page-nnj .nnj-quick-risk-banner{
+  grid-column:1/-1;
+  min-height:88px;
+}
+#page-nnj .nnj-risk-choice-grid,
+#page-nnj .nnj-risk-matrix{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+#page-nnj .nnj-risk-choice{
+  min-height:104px;
+  padding:14px 13px;
+}
+#page-nnj .nnj-risk-choice:has(input:checked)::after{
+  top:9px;
+  right:9px;
+}
+
+/* History rows stay compact but no longer look crowded. */
+#page-nnj .yn-list{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+#page-nnj .yn-row{
+  grid-template-columns:minmax(0,1fr) 98px;
+  gap:9px;
+  align-items:center;
+  min-height:58px;
+  padding:11px 12px;
+  border-radius:12px;
+}
+#page-nnj .yn-row .nnj-yn-detail{
+  grid-column:1/-1;
+  width:100%;
+}
+#page-nnj .yn-row.alert{
+  background:#fff5f4;
+  border-color:#edc1bd;
+}
+#page-nnj .nnj-history-position{
+  margin-top:13px;
+  padding:13px;
+  border:1px solid #d6e7e3;
+  border-radius:13px;
+  background:#f8fcfb;
+}
+
+/* Results and plan blocks. */
+#page-nnj .nnj-treatment-card,
+#page-nnj .nnj-tsb-graph-card{
+  border-radius:14px;
+  background:#fff;
+}
+#page-nnj #nnjPlanOthers{
+  min-height:94px;
+}
+#page-nnj .actions{
+  padding-top:4px;
+}
+#page-nnj .actions .btn{
+  min-height:43px;
+}
+#page-nnj .nnj-note-output,
+#page-nnj .nnj-referral-output{
+  min-height:380px;
+  border-radius:13px;
+}
+
+@media(max-width:1180px){
+  #page-nnj .nnj-blood-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  #page-nnj .card{padding:16px;border-radius:15px}
+  #page-nnj .grid.four,
+  #page-nnj .grid.three,
+  #page-nnj .grid.two,
+  #page-nnj .check-grid,
+  #page-nnj .nnj-quick-top-row,
+  #page-nnj .nnj-risk-screen-top,
+  #page-nnj .nnj-risk-choice-grid,
+  #page-nnj .nnj-risk-matrix,
+  #page-nnj .yn-list,
+  #page-nnj .nnj-blood-grid{
+    grid-template-columns:1fr;
+  }
+  #page-nnj .nnj-datetime-panel{
+    grid-template-columns:minmax(135px,1fr) minmax(72px,.55fr) auto minmax(72px,.55fr);
+  }
+  #page-nnj .nnj-previous-tsb-grid{
+    grid-template-columns:1fr 1fr;
+  }
+  #page-nnj .nnj-previous-tsb-grid>div:first-child,
+  #page-nnj .nnj-previous-tsb-grid>div:nth-child(4),
+  #page-nnj .nnj-previous-tsb-grid>.btn{
+    grid-column:1/-1;
+  }
+}
+@media(max-width:480px){
+  #page-nnj .nnj-datetime-panel{grid-template-columns:1fr 1fr}
+  #page-nnj .nnj-datetime-panel>div:first-of-type{grid-column:1/-1}
+  #page-nnj .nnj-datetime-panel .time-separator{display:none}
+  #page-nnj .yn-row{grid-template-columns:1fr 86px}
+}
 </style>
 </head>
 <body>
@@ -2267,6 +2511,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <button class="nav-btn" data-page="dm">🩸 DM Clerking</button>
 <button class="nav-btn" data-page="nnj">🟡 NNJ Clerking</button>
 <button class="nav-btn" data-page="calculator">🧮 Calculators</button>
+<a aria-label="Open LHI / NALURY portal in a new tab" class="nav-btn external-nav-link" href="https://nalury.mrichealthcare.com/" rel="noopener noreferrer" target="_blank"><span aria-hidden="true" class="svg-icon"><svg viewbox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" fill="#dff4f0" r="27" stroke="#174f47" stroke-width="3"></circle><path d="M15 27h21c5 0 8-3 8-7 0-4-3-7-7-7-4 0-7 2-8 5" fill="none" stroke="#238f82" stroke-linecap="round" stroke-width="4"></path><path d="M15 36h29c5 0 8 3 8 7s-3 7-7 7c-4 0-7-2-8-5" fill="none" stroke="#238f82" stroke-linecap="round" stroke-width="4"></path><path d="M15 45h13" fill="none" stroke="#238f82" stroke-linecap="round" stroke-width="4"></path><circle cx="47" cy="22" fill="#ffffff" r="9" stroke="#174f47" stroke-width="2.5"></circle><path d="M47 17v10M42 22h10" fill="none" stroke="#e85f6a" stroke-linecap="round" stroke-width="3"></path></svg></span><span>LHI / NALURY ↗</span></a>
 </aside>
 <nav aria-label="Quick component navigation" class="section-quickbar hidden" id="sectionQuickBar">
 <div class="section-quickbar-head">
@@ -2286,6 +2531,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <button class="dashboard-card" data-open="dm"><span>🩸</span><strong>DM Clerking</strong><small>Compact T2DM follow-up clerking with structured symptoms and plan.</small></button>
 <button class="dashboard-card" data-open="nnj"><span>🟡</span><strong>NNJ Clerking &amp; Calculator</strong><small>Clerking, bilirubin thresholds, plan, note and referral letter.</small></button>
 <button class="dashboard-card" data-open="calculator"><span>🧮</span><strong>Clinical Calculators</strong><small>Open one calculator at a time.</small></button>
+<a aria-label="Open LHI / NALURY portal in a new tab" class="dashboard-card external-dashboard-card" href="https://nalury.mrichealthcare.com/" rel="noopener noreferrer" target="_blank"><span aria-hidden="true" class="svg-icon"><svg viewbox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" fill="#dff4f0" r="27" stroke="#174f47" stroke-width="3"></circle><path d="M15 27h21c5 0 8-3 8-7 0-4-3-7-7-7-4 0-7 2-8 5" fill="none" stroke="#238f82" stroke-linecap="round" stroke-width="4"></path><path d="M15 36h29c5 0 8 3 8 7s-3 7-7 7c-4 0-7-2-8-5" fill="none" stroke="#238f82" stroke-linecap="round" stroke-width="4"></path><path d="M15 45h13" fill="none" stroke="#238f82" stroke-linecap="round" stroke-width="4"></path><circle cx="47" cy="22" fill="#ffffff" r="9" stroke="#174f47" stroke-width="2.5"></circle><path d="M47 17v10M42 22h10" fill="none" stroke="#e85f6a" stroke-linecap="round" stroke-width="3"></path></svg></span><strong>LHI / NALURY</strong><small>Open the National Lung Health Registry portal.</small></a>
 </div>
 </section>
 <section class="page" id="page-clerking">
@@ -2572,7 +2818,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <label>Last PU</label>
 <div class="last-pu-24h-grid">
 <input aria-label="Last PU date" id="clUrineAdultLastPuDate" type="date"/>
-<div class="last-pu-time-row" aria-label="Last PU time in 24-hour format">
+<div aria-label="Last PU time in 24-hour format" class="last-pu-time-row">
 <select aria-label="Hour (00 to 23)" id="clUrineAdultLastPuHour"><option value="">HH</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
 <span class="last-pu-colon">:</span>
 <select aria-label="Minute" id="clUrineAdultLastPuMinute"><option value="">MM</option><option value="00">00</option><option value="30">30</option></select>
@@ -3561,7 +3807,6 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="decompensated shock">Decompensated shock</option>
 </select>
 </div>
-
 </div>
 <label>Generated diagnosis</label>
 <textarea id="dfuGeneratedDx" readonly=""></textarea>
@@ -4559,16 +4804,11 @@ html,body{max-width:100%;overflow-x:hidden}
 <button class="calc-option" data-calc="vitals"><span>🩺</span><strong>Paeds vital signs</strong><small>Age-based interpretation</small></button>
 <button class="calc-option" data-calc="pack"><span>🚬</span><strong>Pack-year</strong><small>Smoking exposure</small></button>
 <button class="calc-option" data-calc="scores"><span>🧫</span><strong>Centor score</strong><small>Modified Centor for GAS pharyngitis</small></button>
-
-<button class="calc-option" data-calc="renal"><span>🫘</span><strong>eGFR — CKD-EPI</strong><small>2021 adult creatinine equation</small></button>
+<button class="calc-option" data-calc="renal"><span aria-hidden="true" class="svg-icon"><svg viewbox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M24 8C13 8 7 18 9 32c2 12 8 21 17 20 7-1 9-7 8-15-1-6-4-9-8-10 6-2 9-8 8-13-1-4-4-6-10-6Z" fill="#c98765" stroke="#173f38" stroke-linejoin="round" stroke-width="3"></path><path d="M40 8c11 0 17 10 15 24-2 12-8 21-17 20-7-1-9-7-8-15 1-6 4-9 8-10-6-2-9-8-8-13 1-4 4-6 10-6Z" fill="#c98765" stroke="#173f38" stroke-linejoin="round" stroke-width="3"></path><path d="M29 29c-5 2-7 7-6 13" fill="none" stroke="#fff3ec" stroke-linecap="round" stroke-width="3"></path><path d="M35 29c5 2 7 7 6 13" fill="none" stroke="#fff3ec" stroke-linecap="round" stroke-width="3"></path></svg></span><strong>eGFR — CKD-EPI</strong><small>2021 adult creatinine equation</small></button>
 <button class="calc-option" data-calc="mental"><span>🧠</span><strong>Mental health</strong><small>PHQ-9 and GAD-7</small></button>
 
-
-<button class="calc-option" data-calc="framingham"><span>🫀</span><strong>Framingham CVD risk</strong><small>10-year General CVD risk</small></button>
 <button class="calc-option" data-calc="endocrine"><span>🌡️</span><strong>Thyroid storm</strong><small>Burch-Wartofsky score</small></button>
 <button class="calc-option" data-calc="preeclampsia"><span>🤰</span><strong>PE prophylaxis</strong><small>MOH Handbook 2024</small></button><button class="calc-option" data-calc="gdm"><span>🧪</span><strong>GDM risk &amp; MGTT</strong><small>Risk factors and screening timing</small></button>
-
-
 <button class="calc-option" data-calc="stopbang"><span>😴</span><strong>STOP-BANG</strong><small>OSA risk screening</small></button>
 <button class="calc-option" data-calc="pregnancy"><span>📅</span><strong>Pregnancy dates</strong><small>EDD and gestational age</small></button>
 </div>
@@ -4709,7 +4949,6 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="helper">Use the local sore-throat pathway, clinical assessment and testing availability. Avoid prescribing antibiotics solely from the score.</div>
 </div>
 </div>
-
 <div class="calc-panel" id="calc-renal">
 <button class="btn secondary calc-back" type="button">← Back</button>
 <div class="card">
@@ -4789,118 +5028,6 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 
-
-<div class="calc-panel" id="calc-framingham">
-<button class="btn secondary calc-back" type="button">← Back</button>
-<div class="card">
-<h2>Framingham General CVD 10-Year Risk</h2>
-<div class="notice">
-  Uses the official Framingham Heart Study <strong>General CVD</strong> equation.
-  It estimates the 10-year risk of a first major cardiovascular event in adults
-  aged <strong>30–74 years</strong> without established cardiovascular disease.
-</div>
-<div class="grid four">
-<div>
-<label>Model</label>
-<select id="frsModel">
-<option selected="" value="lipids">Lipid-based</option>
-<option value="bmi">Office-based BMI model</option>
-</select>
-</div>
-<div>
-<label>Sex</label>
-<select id="frsSex">
-<option value="">Select</option>
-<option value="male">Male</option>
-<option value="female">Female</option>
-</select>
-</div>
-<div>
-<label>Age (years)</label>
-<input id="frsAge" max="74" min="30" placeholder="30–74" step="1" type="number"/>
-</div>
-<div>
-<label>Established CVD</label>
-<select id="frsKnownCvd">
-<option selected="" value="no">No</option>
-<option value="yes">Yes</option>
-</select>
-</div>
-<div>
-<label>Systolic BP (mmHg)</label>
-<input id="frsSbp" max="260" min="70" step="1" type="number"/>
-</div>
-<div>
-<label>On antihypertensive treatment</label>
-<select id="frsBpTreated">
-<option selected="" value="no">No</option>
-<option value="yes">Yes</option>
-</select>
-</div>
-<div>
-<label>Current smoker</label>
-<select id="frsSmoker">
-<option selected="" value="no">No</option>
-<option value="yes">Yes</option>
-</select>
-</div>
-<div>
-<label>Diabetes</label>
-<select id="frsDiabetes">
-<option selected="" value="no">No</option>
-<option value="yes">Yes</option>
-</select>
-</div>
-</div>
-<div id="frsLipidFields">
-<div class="section-subtitle">Lipid values</div>
-<div class="grid three">
-<div>
-<label>Lipid unit</label>
-<select id="frsLipidUnit">
-<option selected="" value="mmol">mmol/L</option>
-<option value="mgdl">mg/dL</option>
-</select>
-</div>
-<div>
-<label>Total cholesterol</label>
-<input id="frsTc" min="0" step="0.01" type="number"/>
-</div>
-<div>
-<label>HDL cholesterol</label>
-<input id="frsHdl" min="0" step="0.01" type="number"/>
-</div>
-</div>
-</div>
-<div class="hidden" id="frsBmiFields">
-<div class="section-subtitle">Office-based value</div>
-<div class="grid two">
-<div>
-<label>BMI (kg/m²)</label>
-<input id="frsBmi" max="80" min="10" step="0.1" type="number"/>
-</div>
-</div>
-</div>
-<div class="actions">
-<button class="btn primary" id="frsCalculate" type="button">
-    Calculate Framingham risk
-  </button>
-</div>
-<div class="result-box" id="frsResult">
-  Enter the required risk factors.
-</div>
-<div class="helper">
-  General CVD outcome includes coronary death, myocardial infarction,
-  coronary insufficiency, angina, stroke, TIA, peripheral arterial disease
-  and heart failure. This is not the same as the ASCVD Pooled Cohort Equation.
-  Clinical decisions should follow the applicable local guideline and the
-  patient’s overall risk category.
-</div>
-<a class="ref" href="https://www.framinghamheartstudy.org/fhs-risk-functions/cardiovascular-disease-10-year-risk/" rel="noopener noreferrer" target="_blank">
-  Official Framingham Heart Study General CVD Risk Function
-</a>
-</div>
-</div>
 <div class="calc-panel" id="calc-endocrine">
 <button class="btn secondary calc-back" type="button">← Back</button>
 <div class="card"><h2>Burch-Wartofsky Point Scale</h2><div class="notice">Supports assessment of suspected thyroid storm; do not delay emergency treatment or referral when clinically suspected.</div><div class="grid three">
@@ -5009,8 +5136,6 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 </div>
-
-
 <div class="calc-panel" id="calc-gdm">
 <button class="btn secondary calc-back" type="button">← Back</button>
 <div class="card">
@@ -11582,213 +11707,7 @@ syncDengueFollowUpMcUi();
 renderDengueFollowUpPlan();
 })();
 </script>
-<script>
-(()=>{
-"use strict";
 
-const frs$=id=>document.getElementById(id);
-const frsValue=id=>(frs$(id)?.value||"").trim();
-
-const FRS_COEFFICIENTS={
-  lipids:{
-    male:{
-      age:3.06117,
-      tc:1.12370,
-      hdl:-0.93263,
-      sbpUntreated:1.93303,
-      sbpTreated:1.99881,
-      smoker:0.65451,
-      diabetes:0.57367,
-      baseline:0.88936,
-      mean:23.9802
-    },
-    female:{
-      age:2.32888,
-      tc:1.20904,
-      hdl:-0.70833,
-      sbpUntreated:2.76157,
-      sbpTreated:2.82263,
-      smoker:0.52873,
-      diabetes:0.69154,
-      baseline:0.95012,
-      mean:26.1931
-    }
-  },
-  bmi:{
-    male:{
-      age:3.11296,
-      bmi:0.79277,
-      sbpUntreated:1.85508,
-      sbpTreated:1.92672,
-      smoker:0.70953,
-      diabetes:0.53160,
-      baseline:0.88431,
-      mean:23.9388
-    },
-    female:{
-      age:2.72107,
-      bmi:0.51125,
-      sbpUntreated:2.81291,
-      sbpTreated:2.88267,
-      smoker:0.61868,
-      diabetes:0.77763,
-      baseline:0.94833,
-      mean:26.0145
-    }
-  }
-};
-
-function syncFraminghamModel(){
-  const lipidModel=frsValue("frsModel")==="lipids";
-  frs$("frsLipidFields").classList.toggle("hidden",!lipidModel);
-  frs$("frsBmiFields").classList.toggle("hidden",lipidModel);
-}
-
-function framinghamRiskCategory(riskPercent){
-  if(riskPercent>20){
-    return {
-      label:"High risk",
-      explanation:"10-year General CVD risk >20%."
-    };
-  }
-
-  if(riskPercent>=10){
-    return {
-      label:"Intermediate risk",
-      explanation:"10-year General CVD risk 10–20%."
-    };
-  }
-
-  return {
-    label:"Low risk",
-    explanation:"10-year General CVD risk <10%."
-  };
-}
-
-function calculateFraminghamRisk(){
-  const model=frsValue("frsModel");
-  const sex=frsValue("frsSex");
-  const age=Number(frsValue("frsAge"));
-  const sbp=Number(frsValue("frsSbp"));
-  const treated=frsValue("frsBpTreated")==="yes";
-  const smoker=frsValue("frsSmoker")==="yes";
-  const diabetes=frsValue("frsDiabetes")==="yes";
-  const knownCvd=frsValue("frsKnownCvd")==="yes";
-
-  if(knownCvd){
-    frs$("frsResult").innerHTML=
-      "<strong>Framingham primary-prevention risk calculation is not applicable.</strong><br>"+
-      "Established cardiovascular disease already places the patient in a secondary-prevention group.";
-    return;
-  }
-
-  if(!sex || !Number.isFinite(age) || !Number.isFinite(sbp)){
-    frs$("frsResult").innerHTML=
-      "<strong>Calculation incomplete.</strong><br>"+
-      "Enter sex, age and systolic blood pressure.";
-    return;
-  }
-
-  if(age<30 || age>74){
-    frs$("frsResult").innerHTML=
-      "<strong>Outside validated age range.</strong><br>"+
-      "The Framingham General CVD equation is intended for adults aged 30–74 years.";
-    return;
-  }
-
-  if(sbp<=0){
-    frs$("frsResult").innerHTML=
-      "<strong>Invalid systolic blood pressure.</strong>";
-    return;
-  }
-
-  const coefficients=FRS_COEFFICIENTS[model]?.[sex];
-  if(!coefficients){
-    frs$("frsResult").innerHTML=
-      "<strong>Unable to calculate.</strong><br>Select a valid model and sex.";
-    return;
-  }
-
-  let sum=
-    coefficients.age*Math.log(age)+
-    (treated?coefficients.sbpTreated:coefficients.sbpUntreated)*Math.log(sbp)+
-    (smoker?coefficients.smoker:0)+
-    (diabetes?coefficients.diabetes:0);
-
-  let modelDescription="";
-
-  if(model==="lipids"){
-    const tcEntered=Number(frsValue("frsTc"));
-    const hdlEntered=Number(frsValue("frsHdl"));
-
-    if(
-      !Number.isFinite(tcEntered) || tcEntered<=0 ||
-      !Number.isFinite(hdlEntered) || hdlEntered<=0
-    ){
-      frs$("frsResult").innerHTML=
-        "<strong>Calculation incomplete.</strong><br>"+
-        "Enter total cholesterol and HDL cholesterol.";
-      return;
-    }
-
-    const conversion=frsValue("frsLipidUnit")==="mmol" ? 38.67 : 1;
-    const tcMgDl=tcEntered*conversion;
-    const hdlMgDl=hdlEntered*conversion;
-
-    sum+=
-      coefficients.tc*Math.log(tcMgDl)+
-      coefficients.hdl*Math.log(hdlMgDl);
-
-    modelDescription=
-      `Lipid-based model (${frsValue("frsLipidUnit")==="mmol"?"mmol/L converted internally to mg/dL":"mg/dL"}).`;
-  }else{
-    const bmi=Number(frsValue("frsBmi"));
-
-    if(!Number.isFinite(bmi) || bmi<=0){
-      frs$("frsResult").innerHTML=
-        "<strong>Calculation incomplete.</strong><br>"+
-        "Enter BMI for the office-based model.";
-      return;
-    }
-
-    sum+=coefficients.bmi*Math.log(bmi);
-    modelDescription="Office-based BMI model.";
-  }
-
-  const exponent=Math.exp(sum-coefficients.mean);
-  const rawRisk=1-Math.pow(coefficients.baseline,exponent);
-  const riskPercent=Math.max(0,Math.min(100,rawRisk*100));
-  const category=framinghamRiskCategory(riskPercent);
-
-  const riskDisplay=riskPercent<1
-    ? riskPercent.toFixed(1)
-    : riskPercent.toFixed(1);
-
-  frs$("frsResult").innerHTML=
-    `<strong>10-year General CVD risk: ${riskDisplay}%</strong><br>`+
-    `<strong>Risk category: ${category.label}</strong><br>`+
-    `${category.explanation}<br>`+
-    `${modelDescription}<br>`+
-    `Population: age 30–74 years, no established CVD.`;
-}
-
-frs$("frsModel").addEventListener("change",syncFraminghamModel);
-frs$("frsCalculate").addEventListener("click",calculateFraminghamRisk);
-
-[
-  "frsSex","frsAge","frsKnownCvd","frsSbp","frsBpTreated",
-  "frsSmoker","frsDiabetes","frsLipidUnit","frsTc","frsHdl","frsBmi"
-].forEach(id=>{
-  frs$(id).addEventListener("change",()=>{
-    if(frsValue("frsKnownCvd")==="yes"){
-      calculateFraminghamRisk();
-    }
-  });
-});
-
-syncFraminghamModel();
-})();
-</script>
 <script>
 (()=>{
 "use strict";
@@ -11856,8 +11775,7 @@ const SEARCH_ITEMS=[
   {title:"Centor score",subtitle:"Modified Centor for GAS pharyngitis",keywords:"centor modified centor strep streptococcal pharyngitis tonsillitis sore throat",calc:"scores"},
     {title:"eGFR — CKD-EPI",subtitle:"2021 adult creatinine equation",keywords:"egfr renal kidney creatinine ckdepi ckd",calc:"renal"},
   {title:"Mental health",subtitle:"PHQ-9 and GAD-7",keywords:"mental health depression anxiety phq9 gad7",calc:"mental"},
-      {title:"Framingham CVD risk",subtitle:"10-year General CVD risk",keywords:"framingham cardiovascular cvd risk cholesterol",calc:"framingham"},
-  {title:"Thyroid storm",subtitle:"Burch-Wartofsky score",keywords:"thyroid storm hyperthyroid burch wartofsky",calc:"endocrine"},
+{title:"Thyroid storm",subtitle:"Burch-Wartofsky score",keywords:"thyroid storm hyperthyroid burch wartofsky",calc:"endocrine"},
   {title:"PE prophylaxis",subtitle:"Pre-eclampsia prophylaxis assessment",keywords:"preeclampsia pre eclampsia aspirin pregnancy prophylaxis",calc:"preeclampsia"},
   {title:"GDM risk & MGTT",subtitle:"Risk factors and when to perform 75-g MGTT",keywords:"gdm gestational diabetes mgtt mogtt ogtt pregnancy booking 24 28 weeks",calc:"gdm"},
       {title:"STOP-BANG",subtitle:"OSA risk screening",keywords:"stopbang sleep apnoea osa snoring",calc:"stopbang"},
