@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.69 — Last PU 30-minute intervals</title>
+<title>MedAssist KK Bangi V18.71 — Dengue Follow-up 24H, Unified Plan and MC</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -232,6 +232,16 @@ textarea{min-height:90px;resize:vertical}
 .nnj-datetime-24{display:grid;grid-template-columns:minmax(150px,1.4fr) minmax(82px,.6fr) auto minmax(82px,.6fr);gap:8px;align-items:end}
 .nnj-datetime-24 .time-separator{align-self:center;padding-bottom:11px;font-size:18px;font-weight:900;color:#526963}
 .nnj-datetime-label{grid-column:1/-1;margin-bottom:-3px}
+.dfu-datetime-field{grid-column:span 2}
+.dengue-datetime-24{display:grid;grid-template-columns:minmax(180px,1.5fr) minmax(76px,.5fr) auto minmax(76px,.5fr);gap:8px;align-items:end}
+.dengue-datetime-24 .time-separator{align-self:center;padding-bottom:11px;font-size:18px;font-weight:900;color:#526963}
+.dengue-datetime-label{grid-column:1/-1;margin-bottom:-3px}
+.plan-mc-box{display:grid;grid-template-columns:minmax(190px,.7fr) minmax(180px,1fr);gap:12px;align-items:end;margin-top:14px;padding:12px;border:1px solid #cfe4df;border-radius:12px;background:#f8fcfb}
+.plan-mc-box .check-item{margin:0;min-height:46px;align-items:center}
+.plan-mc-box .mc-days-wrap label{margin-top:0}
+@media(max-width:900px){.dfu-datetime-field{grid-column:auto}}
+@media(max-width:620px){.plan-mc-box{grid-template-columns:1fr}}
+@media(max-width:520px){.dengue-datetime-24{grid-template-columns:1fr 1fr auto 1fr}.dengue-datetime-24>input[type="date"]{grid-column:1/-1}}
 .dx-dengue-fields.hidden,.dx-other-wrap.hidden{display:none}
 .intervention-picker{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:10px;align-items:end;margin-bottom:12px}
 #clInterventionCard .cl-intervention-row{display:none}
@@ -2183,6 +2193,7 @@ html,body{max-width:100%;overflow-x:hidden}
 }
 
 /* V18.69: reduced urine details remain inline; Last PU uses a 24-hour clock with 00/30 minute intervals */
+/* V18.70: Follow-up dengue Last PCM uses separate 24-hour controls with 00/30 minute options */
 .warning-sign-grid{align-items:start}
 .urine-inline-card{
   grid-column:span 2;
@@ -3095,6 +3106,13 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="helper">This time will be included in the generated plan and referral letter.</div>
 </div>
 </div>
+<div class="plan-mc-box">
+<label class="check-item"><input id="clMcGiven" type="checkbox"/> MC given</label>
+<div class="hidden mc-days-wrap" id="clMcDaysWrap">
+<label>MC duration</label>
+<select id="clMcDays"><option value="1">1 day</option><option value="2">2 days</option><option value="3">3 days</option><option value="4">4 days</option><option value="5">5 days</option><option value="6">6 days</option><option value="7">7 days</option><option value="8">8 days</option><option value="9">9 days</option><option value="10">10 days</option><option value="11">11 days</option><option value="12">12 days</option><option value="13">13 days</option><option value="14">14 days</option></select>
+</div>
+</div>
 <div class="plan-antibiotic-panel hidden" id="clPlanAntibioticPanel">
 <div class="section-subtitle">Option 3 — Treat concurrent infection / start antibiotic</div>
 <div class="plan-fixed-items">
@@ -3163,10 +3181,41 @@ html,body{max-width:100%;overflow-x:hidden}
 <div><label>Sex</label><select id="dfuSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div id="dfuAgeWrap"><label>Age</label><div class="age-input-row"><input autocomplete="off" id="dfuAge" inputmode="numeric" maxlength="3" pattern="[0-9]*" placeholder="e.g. 4" type="text"/><select aria-label="Age unit" id="dfuAgeUnit"><option value="years">Years old</option><option value="months">Months old</option></select></div><div class="helper age-unit-help" id="dfuAgeHelp">Adult age is recorded in years.</div></div>
 <div><label>Day of illness</label><input id="dfuDayIllness" min="1" placeholder="e.g. 5" step="1" type="number"/></div>
 <div><label>Drug allergy</label><input id="dfuAllergy" value="NKDA"/></div>
+<div>
+<label>Comorbidity status</label>
+<select id="dfuDxComorbidStatus">
+<option value="none">No comorbid</option>
+<option value="present">With comorbid</option>
+</select>
+</div>
+<div class="hidden" id="dfuDxComorbidWrap">
+<label>Comorbidities</label>
+<input id="dfuDxComorbid" placeholder="e.g. DM, HPT, CKD"/>
+</div>
 <div><label>Address</label><input id="dfuAddress"/></div>
 <div><label>Latest phone number</label><input id="dfuPhone"/></div>
-<div><label>Last PCM taken</label><input id="dfuLastPcm" type="datetime-local"/></div>
-<div><label>Afebrile without antipyretic since</label><input id="dfuAfebrileSince" type="datetime-local"/></div>
+<div class="dfu-datetime-field">
+<div class="dengue-datetime-24">
+<label class="dengue-datetime-label">Last PCM taken (24-hour format)</label>
+<input aria-label="Last PCM date" id="dfuLastPcmDate" type="date"/>
+<select aria-label="Last PCM hour in 24-hour format" id="dfuLastPcmHour"></select>
+<span aria-hidden="true" class="time-separator">:</span>
+<select aria-label="Last PCM minute" id="dfuLastPcmMinute"><option value="00">00</option><option value="30">30</option></select>
+<input id="dfuLastPcm" type="hidden"/>
+</div>
+<div class="helper">Hour: 00–23. Minute: 00 or 30 only.</div>
+</div>
+<div class="dfu-datetime-field">
+<div class="dengue-datetime-24">
+<label class="dengue-datetime-label">Afebrile without antipyretic since (24-hour format)</label>
+<input aria-label="Afebrile date" id="dfuAfebrileSinceDate" type="date"/>
+<select aria-label="Afebrile hour in 24-hour format" id="dfuAfebrileSinceHour"></select>
+<span aria-hidden="true" class="time-separator">:</span>
+<select aria-label="Afebrile minute" id="dfuAfebrileSinceMinute"><option value="00">00</option><option value="30">30</option></select>
+<input id="dfuAfebrileSince" type="hidden"/>
+</div>
+<div class="helper">Hour: 00–23. Minute: 00 or 30 only.</div>
+</div>
 <div><label>Pregnancy</label><select id="dfuPregnancy"><option selected="" value="-">-</option><option value="no">No</option><option value="yes">Yes</option></select></div><div><label>Antiplatelet / anticoagulant</label><select id="dfuBloodThinner"><option selected="" value="no">No</option><option value="yes">Yes</option></select></div><div><label>Social factor limiting follow-up</label><select id="dfuSocialLimit"><option selected="" value="no">No</option><option value="yes">Yes</option></select><div class="hidden referral-extra-detail" id="dfuSocialLimitDetailsWrap"><label>Details</label><input id="dfuSocialLimitDetails" placeholder="e.g. lives alone, no transport, far from health facility"/></div></div></div>
 </div>
 <div class="card">
@@ -3512,17 +3561,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="decompensated shock">Decompensated shock</option>
 </select>
 </div>
-<div>
-<label>Comorbidity status</label>
-<select id="dfuDxComorbidStatus">
-<option value="none">No comorbid</option>
-<option value="present">With comorbid</option>
-</select>
-</div>
-<div class="hidden" id="dfuDxComorbidWrap">
-<label>Comorbidities</label>
-<input id="dfuDxComorbid" placeholder="e.g. DM and HPT"/>
-</div>
+
 </div>
 <label>Generated diagnosis</label>
 <textarea id="dfuGeneratedDx" readonly=""></textarea>
@@ -3574,14 +3613,26 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="grid two">
 <div><label>Select plan</label>
 <select id="dfuPlanOption">
-<option value="refer">Option 1 — Refer ED</option>
-<option selected="" value="monitoring">Option 2 — Continue FBC monitoring</option>
+<option value="refer">Option 1 — Refer ED + start IVD NS</option>
+<option selected="" value="monitoring">Option 2 — Outpatient follow-up / serial FBC</option>
 <option value="antibiotic">Option 3 — Treat concurrent infection / start antibiotic</option>
 <option value="others">Option 4 — Others / custom plan</option>
 <option value="discharge">Option 5 — Discharge from FBC monitoring</option>
 </select>
 </div>
+<div class="hidden" id="dfuIvdStartWrap">
+<label>Time IVD started in KK before ED referral</label>
+<input id="dfuIvdStartTime" type="time"/>
+<div class="helper">Included in the generated plan and referral letter.</div>
+</div>
 <div id="dfuNextTcaWrap"><label>Next TCA date</label><input id="dfuNextTca" type="date"/></div>
+</div>
+<div class="plan-mc-box">
+<label class="check-item"><input id="dfuMcGiven" type="checkbox"/> MC given</label>
+<div class="hidden mc-days-wrap" id="dfuMcDaysWrap">
+<label>MC duration</label>
+<select id="dfuMcDays"><option value="1">1 day</option><option value="2">2 days</option><option value="3">3 days</option><option value="4">4 days</option><option value="5">5 days</option><option value="6">6 days</option><option value="7">7 days</option><option value="8">8 days</option><option value="9">9 days</option><option value="10">10 days</option><option value="11">11 days</option><option value="12">12 days</option><option value="13">13 days</option><option value="14">14 days</option></select>
+</div>
 </div>
 <div class="plan-antibiotic-panel hidden" id="dfuPlanAntibioticPanel">
 <div class="section-subtitle">Option 3 — Treat concurrent infection / start antibiotic</div>
@@ -6134,6 +6185,18 @@ function validateCustomPlan(optionId,extraId){
 }
 window.validateCustomPlan=validateCustomPlan;
 
+function getDengueMcLine(){
+  if(!$("clMcGiven")?.checked) return "";
+  const days=value("clMcDays")||"1";
+  return `MC given for ${days} day${days==="1"?"":"s"}.`;
+}
+
+function syncDengueMcUi(){
+  const enabled=Boolean($("clMcGiven")?.checked);
+  $("clMcDaysWrap")?.classList.toggle("hidden",!enabled);
+  if($("clMcDays")) $("clMcDays").disabled=!enabled;
+}
+
 function getDenguePlanLines(){
   const option=value("clPlanOption");
   const lines=[];
@@ -6160,6 +6223,9 @@ function getDenguePlanLines(){
   }else if(option==="others"){
     lines.push(...splitPlanFreeText(value("clPlanExtra")));
   }
+
+  const mcLine=getDengueMcLine();
+  if(mcLine) lines.push(mcLine);
 
   return lines;
 }
@@ -7435,6 +7501,12 @@ const renderDenguePlanPreviewDebounced=debounce(renderDenguePlanPreview,180);
 $("clPlanOption").addEventListener("change",()=>window.syncPlanAntibioticUi(window.DENGUE_NEW_PLAN_ABX_CONFIG,renderDenguePlanPreview));
 $("clPlanExtra").addEventListener("input",renderDenguePlanPreviewDebounced);
 $("clIvdStartTime").addEventListener("input",renderDenguePlanPreviewDebounced);
+$("clMcGiven").addEventListener("change",()=>{
+  syncDengueMcUi();
+  renderDenguePlanPreview();
+});
+$("clMcDays").addEventListener("change",renderDenguePlanPreview);
+syncDengueMcUi();
 renderDenguePlanPreview();
 
 $("clReset").addEventListener("click",()=>location.reload());
@@ -10457,6 +10529,59 @@ function formatFollowUpDateTime(raw){
   return new Intl.DateTimeFormat("en-GB",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(date).replace(",","");
 }
 
+function populateDengueFollowUpHourSelect(id){
+  const hourSelect=f$(id);
+  if(!hourSelect || hourSelect.options.length) return;
+
+  const placeholder=document.createElement("option");
+  placeholder.value="";
+  placeholder.textContent="HH";
+  hourSelect.appendChild(placeholder);
+
+  for(let hour=0;hour<24;hour+=1){
+    const option=document.createElement("option");
+    option.value=String(hour).padStart(2,"0");
+    option.textContent=option.value;
+    hourSelect.appendChild(option);
+  }
+}
+
+function syncDengueFollowUpDateTime(hiddenId,dateId,hourId,minuteId){
+  const date=fv(dateId);
+  const hour=fv(hourId);
+  const minute=fv(minuteId)||"00";
+  f$(hiddenId).value=date && hour ? `${date}T${hour}:${minute}` : "";
+}
+
+function hydrateDengueFollowUpDateTime(hiddenId,dateId,hourId,minuteId){
+  const raw=fv(hiddenId);
+  if(!raw) return;
+
+  const match=raw.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})/);
+  if(!match) return;
+
+  f$(dateId).value=match[1];
+  f$(hourId).value=match[2];
+  f$(minuteId).value=Number(match[3])>=30?"30":"00";
+  syncDengueFollowUpDateTime(hiddenId,dateId,hourId,minuteId);
+}
+
+function syncDengueFollowUpLastPcm(){
+  syncDengueFollowUpDateTime("dfuLastPcm","dfuLastPcmDate","dfuLastPcmHour","dfuLastPcmMinute");
+}
+
+function hydrateDengueFollowUpLastPcmControls(){
+  hydrateDengueFollowUpDateTime("dfuLastPcm","dfuLastPcmDate","dfuLastPcmHour","dfuLastPcmMinute");
+}
+
+function syncDengueFollowUpAfebrileSince(){
+  syncDengueFollowUpDateTime("dfuAfebrileSince","dfuAfebrileSinceDate","dfuAfebrileSinceHour","dfuAfebrileSinceMinute");
+}
+
+function hydrateDengueFollowUpAfebrileSinceControls(){
+  hydrateDengueFollowUpDateTime("dfuAfebrileSince","dfuAfebrileSinceDate","dfuAfebrileSinceHour","dfuAfebrileSinceMinute");
+}
+
 function setDengueTemplate(type){
   const newCase=type==="new";
   const followUp=type==="followup";
@@ -10995,16 +11120,36 @@ function renderDengueFollowUpFluid(){
   }
 }
 
+function getDengueFollowUpMcLine(){
+  if(!f$("dfuMcGiven")?.checked) return "";
+  const days=fv("dfuMcDays")||"1";
+  return `MC given for ${days} day${days==="1"?"":"s"}.`;
+}
+
+function syncDengueFollowUpMcUi(){
+  const enabled=Boolean(f$("dfuMcGiven")?.checked);
+  f$("dfuMcDaysWrap")?.classList.toggle("hidden",!enabled);
+  if(f$("dfuMcDays")) f$("dfuMcDays").disabled=!enabled;
+}
+
 function followUpPlanLines(){
   const option=fv("dfuPlanOption");
   const lines=[];
 
   if(option==="refer"){
     const fluid=getDengueFollowUpFluidInstruction();
-    if(fluid.valid) lines.push(fluid.plan);
+    const ivdTime=fv("dfuIvdStartTime")||"[ENTER TIME]";
+    const fluidPlan=(fluid.valid?fluid.plan:fluid.display).replace(/\.$/,"");
+    lines.push(`${fluidPlan} at ${ivdTime} in KK before referral to ED.`);
     lines.push("Refer ED for further assessment and management.");
   }else if(option==="monitoring"){
     lines.push("Continue serial FBC monitoring.");
+    lines.push(
+      fv("dfuGroup")==="paeds"
+        ? "Encourage adequate oral fluids according to age, weight and clinical tolerance."
+        : "Encourage oral fluid intake approximately 2 L/day as tolerated, unless clinically contraindicated."
+    );
+    lines.push("TCA STAT if warning signs develop. Dengue education and safety-net advice given.");
     if(fv("dfuNextTca")){
       const parts=fv("dfuNextTca").split("-");
       const date=parts.length===3?`${parts[2]}/${parts[1]}/${parts[0]}`:fv("dfuNextTca");
@@ -11023,6 +11168,9 @@ function followUpPlanLines(){
     lines.push("Advise to monitor and eliminate stagnant water collections that may become Aedes breeding sites.");
   }
 
+  const mcLine=getDengueFollowUpMcLine();
+  if(mcLine) lines.push(mcLine);
+
   return lines;
 }
 
@@ -11031,8 +11179,8 @@ function renderDengueFollowUpPlan(){
   const lines=followUpPlanLines();
   const isReferral=option==="refer";
   const headings={
-    refer:"Option 1 — Refer ED",
-    monitoring:"Option 2 — Continue FBC monitoring",
+    refer:"Option 1 — ED referral",
+    monitoring:"Option 2 — Outpatient follow-up / serial FBC",
     antibiotic:"Option 3 — Treat concurrent infection / start antibiotic",
     others:"Option 4 — Others / custom plan",
     discharge:"Option 5 — Discharge from FBC monitoring"
@@ -11043,6 +11191,8 @@ function renderDengueFollowUpPlan(){
     lines.map((line,index)=>`${index+1}. ${window.escapePlanHtml(line)}`).join("<br>");
 
   f$("dfuNextTcaWrap").classList.toggle("hidden",option!=="monitoring");
+  f$("dfuIvdStartWrap").classList.toggle("hidden",!isReferral);
+  f$("dfuIvdStartTime").disabled=!isReferral;
   f$("dfuPlanAntibioticPanel").classList.toggle("hidden",option!=="antibiotic");
   f$("dfuPlanOthersPanel").classList.toggle("hidden",option!=="others");
   f$("dfuGenerate").textContent=isReferral?"Generate clinical note + referral letter":"Generate clinical note";
@@ -11075,7 +11225,7 @@ function buildDengueFollowUpClinicalNote(){
   const day=fv("dfuDayIllness");
 
   const vitalLines=[
-    fv("dfuVitalDateTime")?`Date/Time: ${formatDateTimeDisplay(fv("dfuVitalDateTime"))}`:"",
+    fv("dfuVitalDateTime")?`Date/Time: ${formatFollowUpDateTime(fv("dfuVitalDateTime"))}`:"",
     fv("dfuVitalText")
   ].filter(Boolean);
 
@@ -11098,6 +11248,9 @@ function buildDengueFollowUpClinicalNote(){
     fv("dfuAddress")?`address: ${fv("dfuAddress")}`:"",
     fv("dfuPhone")?`latest phone number: ${fv("dfuPhone")}`:"",
     window.dengueAgeDisplay("dfu")?`age: ${window.dengueAgeDisplay("dfu")}`:"",
+    fv("dfuDxComorbidStatus")==="present"
+      ? `comorbidities: ${fv("dfuDxComorbid")||"present — details not entered"}`
+      : "",
     fv("dfuPregnancy")&&fv("dfuPregnancy")!=="-"?`pregnancy: ${fv("dfuPregnancy")}`:"",
     fv("dfuBloodThinner")?`antiplatelet / anticoagulant: ${fv("dfuBloodThinner")}`:"",
     fv("dfuSocialLimit")
@@ -11265,6 +11418,9 @@ function resetDengueFollowUp(){
   f$("dfuReferralWrap").classList.add("hidden");
   f$("dfuCopyReferral").classList.add("hidden");
   f$("dfuDxComorbidWrap").classList.add("hidden");
+  syncDengueFollowUpLastPcm();
+  syncDengueFollowUpAfebrileSince();
+  syncDengueFollowUpMcUi();
   calculateDengueFollowUpBodyWeight();
   syncDengueFollowUpInterventions();
   buildDengueFollowUpDiagnosis();
@@ -11275,6 +11431,23 @@ function resetDengueFollowUp(){
   window.syncPlanAntibioticUi(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG,renderDengueFollowUpPlan);
   renderDengueFollowUpPlan();
 }
+
+populateDengueFollowUpHourSelect("dfuLastPcmHour");
+populateDengueFollowUpHourSelect("dfuAfebrileSinceHour");
+["dfuLastPcmDate","dfuLastPcmHour","dfuLastPcmMinute"].forEach(id=>{
+  f$(id).addEventListener("input",syncDengueFollowUpLastPcm);
+  f$(id).addEventListener("change",syncDengueFollowUpLastPcm);
+});
+["dfuAfebrileSinceDate","dfuAfebrileSinceHour","dfuAfebrileSinceMinute"].forEach(id=>{
+  f$(id).addEventListener("input",syncDengueFollowUpAfebrileSince);
+  f$(id).addEventListener("change",syncDengueFollowUpAfebrileSince);
+});
+f$("dfuLastPcm").addEventListener("input",hydrateDengueFollowUpLastPcmControls);
+f$("dfuLastPcm").addEventListener("change",hydrateDengueFollowUpLastPcmControls);
+f$("dfuAfebrileSince").addEventListener("input",hydrateDengueFollowUpAfebrileSinceControls);
+f$("dfuAfebrileSince").addEventListener("change",hydrateDengueFollowUpAfebrileSinceControls);
+hydrateDengueFollowUpLastPcmControls();
+hydrateDengueFollowUpAfebrileSinceControls();
 
 f$("openDengueNewCase").addEventListener("click",()=>setDengueTemplate("new"));
 f$("openDengueFollowUp").addEventListener("click",()=>setDengueTemplate("followup"));
@@ -11383,6 +11556,12 @@ f$("dfuFluidCalculate").addEventListener(
 
 f$("dfuPlanOption").addEventListener("change",()=>window.syncPlanAntibioticUi(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG,renderDengueFollowUpPlan));
 f$("dfuNextTca").addEventListener("change",renderDengueFollowUpPlan);
+f$("dfuIvdStartTime").addEventListener("input",debounce(renderDengueFollowUpPlan,180));
+f$("dfuMcGiven").addEventListener("change",()=>{
+  syncDengueFollowUpMcUi();
+  renderDengueFollowUpPlan();
+});
+f$("dfuMcDays").addEventListener("change",renderDengueFollowUpPlan);
 f$("dfuPlanExtra").addEventListener("input",debounce(renderDengueFollowUpPlan,180));
 window.initialiseDenguePlanAntibiotic(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG,renderDengueFollowUpPlan);
 f$("dengueFollowUpTemplate").addEventListener("input",invalidateFollowUpReferral);
@@ -11399,6 +11578,7 @@ buildDengueFollowUpDiagnosis();
 syncDengueFollowUpFluidWeight();
 updateDengueFollowUpFluidRateOptions();
 renderDengueFollowUpWarningClassification();
+syncDengueFollowUpMcUi();
 renderDengueFollowUpPlan();
 })();
 </script>
