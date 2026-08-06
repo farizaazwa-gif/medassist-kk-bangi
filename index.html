@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.77 — Polished NNJ Layout</title>
+<title>MedAssist KK Bangi V18.78 — NNJ Output Contrast Fix</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -2315,13 +2315,13 @@ html,body{max-width:100%;overflow-x:hidden}
 }
 #page-nnj input,
 #page-nnj select,
-#page-nnj textarea{
+#page-nnj textarea:not(.output){
   border-color:#cbded9;
   background:#fff;
 }
 #page-nnj input:focus,
 #page-nnj select:focus,
-#page-nnj textarea:focus{
+#page-nnj textarea:not(.output):focus{
   border-color:#45998b;
   box-shadow:0 0 0 3px rgba(43,137,123,.11);
 }
@@ -2488,6 +2488,29 @@ html,body{max-width:100%;overflow-x:hidden}
   #page-nnj .nnj-datetime-panel .time-separator{display:none}
   #page-nnj .yn-row{grid-template-columns:1fr 86px}
 }
+
+/* V18.78 — keep generated NNJ note and referral letter readable.
+   The general NNJ form rule must not override the dark output fields. */
+#page-nnj textarea.output,
+#page-nnj .nnj-note-output,
+#page-nnj .nnj-referral-output{
+  background:#102521!important;
+  color:#edfffa!important;
+  -webkit-text-fill-color:#edfffa!important;
+  caret-color:#edfffa;
+  border-color:#315d55!important;
+  opacity:1!important;
+}
+#page-nnj textarea.output:focus,
+#page-nnj .nnj-note-output:focus,
+#page-nnj .nnj-referral-output:focus{
+  background:#102521!important;
+  color:#edfffa!important;
+  -webkit-text-fill-color:#edfffa!important;
+  border-color:#5faf9f!important;
+  box-shadow:0 0 0 3px rgba(95,175,159,.18)!important;
+}
+
 </style>
 </head>
 <body>
