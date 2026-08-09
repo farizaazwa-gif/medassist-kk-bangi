@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.112 — IUCD Insertion Clerking</title>
+<title>MedAssist KK Bangi V18.153 — Clean Growth Note Output</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -23,6 +23,28 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:
   border:1px solid rgba(255,255,255,.15);
   background:rgba(255,255,255,.07)
 }
+
+
+
+/* V18.143 — restored grouped dashboard */
+#page-dashboard .hero{margin-bottom:18px}
+.module-category-shell{margin-bottom:20px;padding:18px;border:1px solid #d9e7e3;border-radius:22px;background:#f7fbfa}
+.module-category-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.module-category-heading strong{display:block;font-size:22px;color:#173f38}
+.module-category-heading small{display:block;margin-top:3px;color:#6a7b77;font-size:13px}
+.module-category-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.module-category-btn{display:flex;flex-direction:column;align-items:flex-start;min-height:112px;padding:14px;border:1px solid #d7e5e1;border-radius:16px;background:#fff;color:#173f38;text-align:left;cursor:pointer;transition:.18s ease}
+.module-category-btn:hover{transform:translateY(-2px);border-color:#8fc7bc;background:#f4faf8}
+.module-category-btn.active{border-color:#5faf9f;background:#eaf7f3;box-shadow:inset 0 0 0 1px #5faf9f}
+.module-category-btn span{font-size:25px;margin-bottom:8px}
+.module-category-btn strong{font-size:15px;line-height:1.25;margin-bottom:4px}
+.module-category-btn small{font-size:11px;line-height:1.35;color:#73827f}
+.grouped-dashboard-grid{align-items:stretch}
+.module-dashboard-card{position:relative;min-width:0}
+.module-dashboard-card.hidden-by-category{display:none!important}
+.module-dashboard-card em{position:absolute;top:10px;right:10px;padding:4px 7px;border-radius:999px;background:#edf7f4;color:#35675f;font-size:9px;font-style:normal;font-weight:800;letter-spacing:.04em}
+@media(max-width:1250px){.module-category-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.module-category-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.module-category-btn{min-height:104px}.module-category-heading strong{font-size:20px}}
 .site-search{position:relative;margin:0 0 16px}
 .site-search-row{display:grid;grid-template-columns:minmax(0,1fr) 42px;gap:7px}
 .site-search-row input{min-width:0;height:42px;padding:9px 11px;border:1px solid rgba(255,255,255,.24);border-radius:10px;background:rgba(255,255,255,.1);color:#fff;font-size:13px;outline:none}
@@ -3029,6 +3051,839 @@ html,body{max-width:100%;overflow-x:hidden}
 #page-neurodevelopment > [data-neuro-template]{margin-top:0}
 #page-neurodevelopment .neuro-template-head{margin-top:0}
 </style>
+<style id="medassist-neuro-enhancements-v2">
+/* MedAssist neurodevelopment enhancements — strictly scoped to ADHD/Autism clerking. */
+#page-neurodevelopment .neuro-enhancement-card{border-color:#b9d9d1;background:#fbfefd}
+#page-neurodevelopment .neuro-enhancement-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+#page-neurodevelopment .neuro-enhancement-card-head h2{margin:0 0 4px}
+#page-neurodevelopment .neuro-enhancement-card-head p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+#page-neurodevelopment .neuro-version{padding:5px 8px;border-radius:999px;background:#e7f4f1;color:#35675f;font-size:10px;font-weight:800;white-space:nowrap}
+#page-neurodevelopment .neuro-privacy-controls,#page-neurodevelopment .neuro-actions-inline,#page-neurodevelopment .neuro-gateway-actions{display:flex;flex-wrap:wrap;align-items:center;gap:9px}
+#page-neurodevelopment .neuro-switch{display:flex;align-items:center;gap:9px;margin:0;padding:9px 12px;border:1px solid var(--border);border-radius:11px;background:#fff;cursor:pointer}
+#page-neurodevelopment .neuro-switch input{width:auto;margin:0}
+#page-neurodevelopment .neuro-enhancement-status{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:12px}
+#page-neurodevelopment .neuro-enhancement-status.safe{background:#e9f7ef;border:1px solid #b9dfc9;color:#146c43}
+#page-neurodevelopment .neuro-enhancement-status.caution{background:#fff7df;border:1px solid #ead28a;color:#805400}
+#page-neurodevelopment .neuro-enhancement-viewbar{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:10px 0 14px;padding:12px 14px;border:1px solid #bddbd4;border-radius:13px;background:#f7fcfb}
+#page-neurodevelopment .neuro-enhancement-viewbar strong,#page-neurodevelopment .neuro-enhancement-viewbar small{display:block}
+#page-neurodevelopment .neuro-enhancement-viewbar small{margin-top:3px;color:var(--muted);font-size:11px;line-height:1.4}
+#page-neurodevelopment .neuro-view-buttons{display:flex;gap:7px;flex-shrink:0}
+#page-neurodevelopment .neuro-view-btn{border:1px solid #a8cdc5;border-radius:9px;padding:8px 11px;background:#fff;color:#184e45;font-weight:800;cursor:pointer}
+#page-neurodevelopment .neuro-view-btn.active{background:#19796f;color:#fff;border-color:#19796f}
+#page-neurodevelopment .neuro-view-quick .neuro-advanced-block{display:none!important}
+#page-neurodevelopment .neuro-concern-chips{display:flex;flex-wrap:wrap;gap:8px}
+#page-neurodevelopment .neuro-concern-chips button{border:1px solid #bddbd4;border-radius:999px;padding:8px 11px;background:#fff;color:#184e45;cursor:pointer;font-weight:700;font-size:12px}
+#page-neurodevelopment .neuro-concern-chips button.active{background:#dff1ed;border-color:#5ba391;box-shadow:inset 0 0 0 1px #5ba391}
+#page-neurodevelopment .neuro-routing-result{margin:12px 0;padding:11px 12px;border-radius:10px;background:#eef7f5;border:1px solid #cfe4df;color:#244e47;font-size:12px;line-height:1.5}
+#page-neurodevelopment .neuro-screening-grid{display:grid;gap:9px}
+#page-neurodevelopment .neuro-screening-row{display:grid;grid-template-columns:minmax(170px,.9fr) minmax(170px,.8fr) minmax(220px,1.4fr);gap:9px;align-items:center;padding:9px;border:1px solid var(--border);border-radius:10px;background:#fff}
+#page-neurodevelopment .neuro-screening-row strong{font-size:12px}
+#page-neurodevelopment .neuro-screening-row select,#page-neurodevelopment .neuro-screening-row input{margin:0}
+#page-neurodevelopment .neuro-original-checkbox{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+#page-neurodevelopment #adhdSectionSymptoms .neuro-symptom{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;cursor:default}
+#page-neurodevelopment .neuro-tristate-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;width:100%}
+#page-neurodevelopment .neuro-tristate-controls button{border:1px solid #c9ddd8;border-radius:8px;padding:6px 5px;background:#fff;color:#526963;font-size:10px;font-weight:800;cursor:pointer}
+#page-neurodevelopment .neuro-tristate-controls button[data-symptom-state="present"].active{background:#e5f5ec;border-color:#77b58b;color:#17643d}
+#page-neurodevelopment .neuro-tristate-controls button[data-symptom-state="absent"].active{background:#edf3f6;border-color:#9bb5c1;color:#385866}
+#page-neurodevelopment .neuro-tristate-controls button[data-symptom-state="unassessed"].active{background:#fff7df;border-color:#dec875;color:#805400}
+#page-neurodevelopment .neuro-tristate-summary{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:12px}
+#page-neurodevelopment .neuro-tristate-summary span{display:block;margin-top:3px}
+#page-neurodevelopment .neuro-tristate-summary.incomplete{background:#fff7df;border:1px solid #ead28a;color:#805400}
+#page-neurodevelopment .neuro-tristate-summary.complete{background:#e9f7ef;border:1px solid #b9dfc9;color:#146c43}
+#page-neurodevelopment .neuro-growth-panel{margin-top:15px;padding:14px;border:1px solid #bddbd4;border-radius:13px;background:#f7fcfb}
+#page-neurodevelopment .neuro-growth-result{margin-top:10px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid #d6e8e4;color:#184e45;font-weight:700;font-size:12px}
+#page-neurodevelopment .neuro-therapy-output{margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+#page-neurodevelopment .neuro-adult-scope-warning{margin-top:12px;padding:10px 12px;border-radius:10px;background:#fff3cd;border:1px solid #e9cf79;color:#714f00;font-size:12px;line-height:1.45}
+#page-neurodevelopment .hidden{display:none!important}
+
+#page-neurodevelopment .neuro-enhanced-template{max-width:1180px}
+#page-neurodevelopment .neuro-template-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:start;
+  gap:18px;
+  margin-bottom:18px;
+}
+#page-neurodevelopment .neuro-template-head h2{font-size:28px;line-height:1.12}
+#page-neurodevelopment .neuro-template-head p{font-size:14px;line-height:1.5;max-width:760px}
+#page-neurodevelopment .neuro-template-head .btn{align-self:start;min-width:170px;padding:12px 16px;border-radius:14px}
+#page-neurodevelopment .neuro-live-banner,
+#page-neurodevelopment .neuro-mode-bar,
+#page-neurodevelopment .neuro-enhancement-viewbar,
+#page-neurodevelopment .neuro-sticky-tools,
+#page-neurodevelopment .card{
+  border-radius:18px;
+}
+#page-neurodevelopment .card{
+  padding:22px 24px;
+  margin-bottom:18px;
+  box-shadow:0 6px 18px rgba(16,63,57,.045);
+}
+#page-neurodevelopment .neuro-live-banner{padding:16px 18px;margin-bottom:16px}
+#page-neurodevelopment .neuro-mode-bar{padding:12px 14px;margin-bottom:16px}
+#page-neurodevelopment .neuro-enhancement-viewbar{margin:0 0 16px;padding:16px 18px;gap:18px}
+#page-neurodevelopment .neuro-enhancement-viewbar strong{font-size:15px}
+#page-neurodevelopment .neuro-enhancement-viewbar small{font-size:12px;line-height:1.5}
+#page-neurodevelopment .neuro-view-buttons{gap:10px}
+#page-neurodevelopment .neuro-view-btn{padding:11px 16px;border-radius:12px;font-size:13px}
+#page-neurodevelopment .neuro-sticky-tools{top:10px;padding:14px 16px;margin-bottom:18px}
+#page-neurodevelopment .neuro-progress-row{gap:14px;margin-bottom:12px}
+#page-neurodevelopment .neuro-progress-track{height:10px}
+#page-neurodevelopment .neuro-nav-chips{gap:8px;flex-wrap:wrap;overflow-x:visible;padding-bottom:0}
+#page-neurodevelopment .neuro-nav-chip{padding:8px 12px;font-size:12px}
+#page-neurodevelopment .neuro-completeness-grid{gap:18px}
+#page-neurodevelopment .neuro-readiness-score{padding:18px;border-radius:14px}
+#page-neurodevelopment .neuro-missing-list{line-height:1.75}
+#page-neurodevelopment .grid,
+#page-neurodevelopment .check-grid,
+#page-neurodevelopment .neuro-domain-grid,
+#page-neurodevelopment .autism-criteria-list,
+#page-neurodevelopment .neuro-screening-grid{gap:14px}
+#page-neurodevelopment label{margin-bottom:6px}
+#page-neurodevelopment input,
+#page-neurodevelopment select,
+#page-neurodevelopment textarea{border-radius:12px}
+#page-neurodevelopment textarea{min-height:96px}
+#page-neurodevelopment .neuro-mini-summary{gap:12px;margin-top:14px}
+#page-neurodevelopment .neuro-mini-summary>div{padding:14px;border-radius:14px}
+#page-neurodevelopment .neuro-section-label{margin:4px 0 12px}
+#page-neurodevelopment .neuro-status-grid{gap:12px;margin-top:14px}
+#page-neurodevelopment .neuro-status-box{padding:14px;border-radius:14px}
+#page-neurodevelopment .neuro-growth-panel{padding:16px 18px;border-radius:16px}
+#page-neurodevelopment .neuro-output,
+#page-neurodevelopment .neuro-short-output{min-height:220px;border-radius:14px}
+#page-neurodevelopment .helper{line-height:1.55}
+@media(max-width:1180px){
+  #page-neurodevelopment .neuro-template-head h2{font-size:25px}
+  #page-neurodevelopment .card{padding:20px}
+}
+@media(max-width:900px){
+  #page-neurodevelopment .neuro-template-head{grid-template-columns:1fr}
+  #page-neurodevelopment .neuro-template-head .btn{width:100%}
+}
+@media(max-width:720px){
+  #page-neurodevelopment .card{padding:18px}
+  #page-neurodevelopment .neuro-live-banner,
+  #page-neurodevelopment .neuro-mode-bar,
+  #page-neurodevelopment .neuro-enhancement-viewbar,
+  #page-neurodevelopment .neuro-sticky-tools{padding:14px}
+  #page-neurodevelopment .neuro-template-head h2{font-size:23px}
+  #page-neurodevelopment .neuro-nav-chips{overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}
+}
+
+</style>
+<script id="medassist-neuro-enhancements-v2-script">
+(() => {
+  'use strict';
+
+  const VERSION = '2026.08.09-neuro-v5-no-parent-form';
+  const ENHANCEMENT_KEY = prefix => `medassist_neuro_enhancement_${prefix}_v3`;
+  const isBlockedNeuroStorageKey = key => {
+    const textKey = String(key || '');
+    return textKey.startsWith('medassist_neuro_enhancement_') || textKey.includes('_autosave_');
+  };
+
+  let localStorageRef = null;
+  try { localStorageRef = window.localStorage; } catch (_) { }
+
+  const originalStorageSetItem = Storage.prototype.setItem;
+  Storage.prototype.setItem = function patchedSetItem(key, value) {
+    const textKey = String(key || '');
+    if (localStorageRef && this === localStorageRef && isBlockedNeuroStorageKey(textKey)) return;
+    return originalStorageSetItem.call(this, key, value);
+  };
+
+  function clearLocalNeuroData() {
+    try {
+      const storage = window.localStorage;
+      const keys = [];
+      for (let index = 0; index < storage.length; index += 1) {
+        const key = storage.key(index);
+        if (key && isBlockedNeuroStorageKey(key)) keys.push(key);
+      }
+      keys.forEach(key => storage.removeItem(key));
+    } catch (_) {
+      // Some embedded/private browser contexts disable storage completely.
+    }
+  }
+
+  clearLocalNeuroData();
+
+  const $ = id => document.getElementById(id);
+  const qs = (selector, root = document) => root.querySelector(selector);
+  const qsa = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const value = id => ($(id)?.value || '').trim();
+  const escapeHtml = input => String(input ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
+
+  const defaultState = () => ({
+    viewMode: 'quick',
+    concerns: [],
+    symptomStates: {},
+    screeningFlags: {},
+    growth: {},
+  });
+
+  const runtimeState = { adhd: defaultState(), autism: defaultState() };
+
+  function loadState(prefix) {
+    runtimeState[prefix] = defaultState();
+  }
+
+  function saveState(prefix) {
+    runtimeState[prefix] = { ...defaultState(), ...runtimeState[prefix] };
+  }
+
+  function dispatchFieldChange(field) {
+    field.dispatchEvent(new Event('input', { bubbles: true }));
+    field.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  async function copyText(text) {
+    const clean = String(text || '');
+    if (!clean) return false;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(clean);
+        return true;
+      }
+    } catch (_) { }
+    const area = document.createElement('textarea');
+    area.value = clean;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    let copied = false;
+    try { copied = document.execCommand('copy'); } catch (_) { }
+    area.remove();
+    return copied;
+  }
+
+  function createPrivacyCard(prefix, template) {
+    return null;
+  }
+
+  function createViewControls(prefix, template) {
+    const bar = document.createElement('div');
+    bar.className = 'neuro-enhancement-viewbar';
+    bar.innerHTML = `
+      <div><strong>Documentation depth</strong><small>Quick KK keeps safety-critical domains visible. Comprehensive opens detailed milestone and longitudinal tools.</small></div>
+      <div class="neuro-view-buttons">
+        <button type="button" class="neuro-view-btn" data-neuro-view="quick">Quick KK</button>
+        <button type="button" class="neuro-view-btn" data-neuro-view="comprehensive">Comprehensive</button>
+      </div>
+    `;
+    qs('.neuro-mode-bar', template)?.insertAdjacentElement('afterend', bar);
+
+    const advancedSelectors = prefix === 'adhd'
+      ? ['#adhdSectionHistory .neuro-milestone-tool', '#adhdSectionScaleTrend', '#adhdSectionVisitTrend', '#adhdSectionTracker']
+      : ['#autismSectionHistory .neuro-milestone-tool', '#autismSectionVisitTrend', '#autismSectionTracker'];
+    advancedSelectors.forEach(selector => qs(selector, template)?.classList.add('neuro-advanced-block'));
+
+    function applyMode(mode) {
+      runtimeState[prefix].viewMode = mode;
+      template.classList.toggle('neuro-view-quick', mode === 'quick');
+      qsa('[data-neuro-view]', bar).forEach(button => button.classList.toggle('active', button.dataset.neuroView === mode));
+      saveState(prefix);
+    }
+
+    qsa('[data-neuro-view]', bar).forEach(button => button.addEventListener('click', () => applyMode(button.dataset.neuroView)));
+    applyMode(runtimeState[prefix].viewMode || 'quick');
+  }
+
+
+  const screeningDomains = [
+    ['speech', 'Speech / language'], ['motor', 'Motor / coordination'], ['learning', 'Learning / academic'],
+    ['adaptive', 'Adaptive / self-care'], ['social', 'Social communication'], ['behaviour', 'Behaviour / emotional'],
+    ['regression', 'Regression / skill loss'], ['sensory', 'Sensory / feeding'], ['hearingVision', 'Hearing / vision'],
+  ];
+
+  function createScreeningFlags(prefix, template) {
+    const card = document.createElement('div');
+    card.className = 'card neuro-enhancement-card';
+    card.dataset.neuroEnhancement = 'screening-flags';
+    card.innerHTML = `
+      <div class="neuro-enhancement-card-head"><div><h2>Developmental screening flags</h2><p>Broad flags for GDD, learning, language and adaptive concerns. These are not diagnostic criteria.</p></div></div>
+      <div class="neuro-screening-grid">
+        ${screeningDomains.map(([key, label]) => `
+          <div class="neuro-screening-row" data-screening-domain="${key}">
+            <strong>${label}</strong>
+            <select aria-label="${label} status">
+              <option value="">Not assessed</option><option value="concern">Concern present</option>
+              <option value="none">No concern identified</option><option value="uncertain">Uncertain</option>
+            </select>
+            <input type="text" placeholder="Example / evidence (optional)" data-screening-detail>
+          </div>`).join('')}
+      </div>
+      <div class="helper">Use formal developmental, cognitive, adaptive, educational or therapy assessment where indicated. Do not convert these flags into GDD, ID or SLD diagnoses automatically.</div>
+    `;
+    const anchor = prefix === 'adhd' ? $('adhdSectionSafety') : $('autismSectionSafety');
+    anchor?.insertAdjacentElement('beforebegin', card);
+
+    qsa('[data-screening-domain]', card).forEach(row => {
+      const key = row.dataset.screeningDomain;
+      const select = qs('select', row);
+      const detail = qs('[data-screening-detail]', row);
+      const saved = runtimeState[prefix].screeningFlags[key] || {};
+      select.value = saved.status || '';
+      detail.value = saved.detail || '';
+      detail.classList.toggle('hidden', select.value !== 'concern' && select.value !== 'uncertain');
+      const persist = () => {
+        runtimeState[prefix].screeningFlags[key] = { status: select.value, detail: detail.value.trim() };
+        detail.classList.toggle('hidden', select.value !== 'concern' && select.value !== 'uncertain');
+        saveState(prefix);
+      };
+      select.addEventListener('change', persist);
+      detail.addEventListener('input', persist);
+    });
+  }
+
+  function initAdhdTriState(template) {
+    const inputs = qsa('#adhdSectionSymptoms input[data-adhd-domain]', template);
+    if (!inputs.length) return;
+
+    const summary = document.createElement('div');
+    summary.className = 'neuro-tristate-summary';
+    summary.dataset.adhdTriSummary = '';
+    qs('#adhdSectionSymptoms .neuro-mini-summary', template)?.insertAdjacentElement('afterend', summary);
+
+    function updateSummary() {
+      const states = Object.values(runtimeState.adhd.symptomStates);
+      const present = states.filter(item => item === 'present').length;
+      const absent = states.filter(item => item === 'absent').length;
+      const unassessed = inputs.length - present - absent;
+      summary.className = `neuro-tristate-summary ${unassessed ? 'incomplete' : 'complete'}`;
+      summary.innerHTML = `<strong>Symptom documentation:</strong> ${present} present · ${absent} absent · ${unassessed} not assessed${unassessed ? '<span>Complete or explicitly mark remaining items absent before relying on the checklist pattern.</span>' : '<span>All 18 symptoms have an explicit state.</span>'}`;
+    }
+
+    function applyState(input, state, dispatch = true) {
+      const key = input.id || `${input.dataset.adhdDomain}-${inputs.indexOf(input)}`;
+      const label = input.closest('.neuro-symptom');
+      const originalNegative = input.dataset.originalNegative || input.dataset.negative || '';
+      input.dataset.originalNegative = originalNegative;
+      runtimeState.adhd.symptomStates[key] = state;
+      input.checked = state === 'present';
+      input.dataset.negative = state === 'absent' ? originalNegative : '';
+      label.dataset.symptomState = state;
+      qsa('[data-symptom-state]', label).forEach(button => button.classList.toggle('active', button.dataset.symptomState === state));
+      if (dispatch) dispatchFieldChange(input);
+      saveState('adhd');
+      updateSummary();
+    }
+
+    inputs.forEach((input, index) => {
+      const key = input.id || `${input.dataset.adhdDomain}-${index}`;
+      input.dataset.originalNegative = input.dataset.negative || '';
+      input.classList.add('neuro-original-checkbox');
+      input.tabIndex = -1;
+      const label = input.closest('.neuro-symptom');
+      label.addEventListener('click', event => {
+        if (!event.target.closest('[data-symptom-state]')) event.preventDefault();
+      });
+      const controls = document.createElement('div');
+      controls.className = 'neuro-tristate-controls';
+      controls.innerHTML = `
+        <button type="button" data-symptom-state="present">Present</button>
+        <button type="button" data-symptom-state="absent">Absent</button>
+        <button type="button" data-symptom-state="unassessed">Not assessed</button>`;
+      label.appendChild(controls);
+      qsa('[data-symptom-state]', controls).forEach(button => button.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        applyState(input, button.dataset.symptomState);
+      }));
+      const initialState = runtimeState.adhd.symptomStates[key] || (input.checked ? 'present' : 'unassessed');
+      applyState(input, initialState, false);
+    });
+
+    qsa('[data-clear-neuro="adhdTemplate"]').forEach(button => button.addEventListener('click', () => {
+      setTimeout(() => {
+        runtimeState.adhd.symptomStates = {};
+        inputs.forEach(input => applyState(input, 'unassessed', false));
+        saveState('adhd');
+      }, 0);
+    }));
+  }
+
+  const WHO_GROWTH_REFERENCES = {
+    under5: {
+      title: 'WHO 2006 Child Growth Standards — birth to 5 years',
+      shortReference: 'WHO 2006 Child Growth Standards',
+      ageLabel: '0–5 years',
+      sourceText: 'Official WHO Child Growth Standards (2006).',
+      charts: {
+        weight: {
+          Male: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/weight-for-age/cht-wfa-boys-z-0-5.pdf?sfvrsn=9d3adc06_12', ageMin: 0, ageMax: 60, yMin: 1, yMax: 29, unit: 'kg', label: 'Weight-for-age', plot: { xStart: 13.05, xEnd: 84.41, yTop: 20.12, yBottom: 84.96 }, aspectRatio: 1.421875 },
+          Female: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/weight-for-age/cht-wfa-girls-z-0-5.pdf?sfvrsn=e113a2fa_10', ageMin: 0, ageMax: 60, yMin: 1, yMax: 31, unit: 'kg', label: 'Weight-for-age', plot: { xStart: 13.05, xEnd: 84.41, yTop: 20.12, yBottom: 84.96 }, aspectRatio: 1.421875 }
+        },
+        height: {
+          Male: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/cht-lhfa-boys-z-0-5.pdf?sfvrsn=a839cd27_10', ageMin: 0, ageMax: 60, yMin: 40, yMax: 125, unit: 'cm', label: 'Length/height-for-age', plot: { xStart: 13.05, xEnd: 84.41, yTop: 20.12, yBottom: 84.96 }, aspectRatio: 1.421875 },
+          Female: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/cht-lhfa-girls-z-0-5.pdf?sfvrsn=252d03a5_14', ageMin: 0, ageMax: 60, yMin: 40, yMax: 125, unit: 'cm', label: 'Length/height-for-age', plot: { xStart: 13.05, xEnd: 84.41, yTop: 20.12, yBottom: 84.96 }, aspectRatio: 1.421875 }
+        },
+        bmi: {
+          Male: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/body-mass-index-for-age/cht-bfa-boys-z-0-5.pdf?sfvrsn=2e1bd6a5_17', ageMin: 0, ageMax: 60, yMin: 9.2, yMax: 22.8, unit: 'kg/m²', label: 'BMI-for-age', plot: { xStart: 13.05, xEnd: 84.41, yTop: 20.12, yBottom: 84.96 }, aspectRatio: 1.421875 },
+          Female: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/body-mass-index-for-age/cht-bfa-girls-z-0-5.pdf?sfvrsn=cf716a4a_17', ageMin: 0, ageMax: 60, yMin: 9.2, yMax: 22.8, unit: 'kg/m²', label: 'BMI-for-age', plot: { xStart: 13.05, xEnd: 84.41, yTop: 20.12, yBottom: 84.96 }, aspectRatio: 1.421875 }
+        }
+      }
+    },
+    fiveTo19: {
+      title: 'WHO 2007 Growth Reference — 5 to 19 years',
+      shortReference: 'WHO 2007 Growth Reference',
+      ageLabel: '5–19 years',
+      sourceText: 'Official WHO Growth Reference (2007) for school-age children and adolescents.',
+      charts: {
+        weight: {
+          Male: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/growth-reference-5-19-years/weight-for-age-%285-10-years%29/cht-wfa-boys-z-5-10years.pdf?sfvrsn=a219df7d_4', ageMin: 60, ageMax: 120, yMin: 10, yMax: 58, unit: 'kg', label: 'Weight-for-age', plot: { xStart: 13.35, xEnd: 83.88, yTop: 18.70, yBottom: 85.45 }, aspectRatio: 1.421875 },
+          Female: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/growth-reference-5-19-years/weight-for-age-%285-10-years%29/cht-wfa-girls-z-5-10years.pdf?sfvrsn=47c7069d_4', ageMin: 60, ageMax: 120, yMin: 10, yMax: 60, unit: 'kg', label: 'Weight-for-age', plot: { xStart: 13.35, xEnd: 83.88, yTop: 18.70, yBottom: 85.45 }, aspectRatio: 1.421875 }
+        },
+        height: {
+          Male: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/growth-reference-5-19-years/height-for-age-%285-19-years%29/cht-hfa-boys-z-5-19years.pdf?sfvrsn=d0cdf1fe_4', ageMin: 60, ageMax: 228, yMin: 90, yMax: 200, unit: 'cm', label: 'Height-for-age', plot: { xStart: 13.35, xEnd: 83.88, yTop: 18.70, yBottom: 85.45 }, aspectRatio: 1.421875 },
+          Female: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/growth-reference-5-19-years/height-for-age-%285-19-years%29/cht-hfa-girls-z-5-19years.pdf?sfvrsn=58771973_4', ageMin: 60, ageMax: 228, yMin: 90, yMax: 185, unit: 'cm', label: 'Height-for-age', plot: { xStart: 13.35, xEnd: 83.88, yTop: 18.70, yBottom: 85.45 }, aspectRatio: 1.421875 }
+        },
+        bmi: {
+          Male: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/growth-reference-5-19-years/bmi-for-age-%285-19-years%29/bmifa-boys-z-5-19-labels.pdf?sfvrsn=5775aced_4', ageMin: 60, ageMax: 228, yMin: 10, yMax: 32, unit: 'kg/m²', label: 'BMI-for-age', plot: { xStart: 10.98, xEnd: 85.05, yTop: 20.90, yBottom: 89.65 }, aspectRatio: 1.396484375 },
+          Female: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/growth-reference-5-19-years/bmi-for-age-%285-19-years%29/bmifa-girls-z-5-19-labels.pdf?sfvrsn=94b20617_4', ageMin: 60, ageMax: 228, yMin: 10, yMax: 32, unit: 'kg/m²', label: 'BMI-for-age', plot: { xStart: 10.98, xEnd: 85.05, yTop: 20.90, yBottom: 89.65 }, aspectRatio: 1.396484375 }
+        }
+      }
+    }
+  };
+
+  function whoReferenceForAge(ageMonths) {
+    if (!Number.isFinite(ageMonths) || ageMonths < 0) return null;
+    if (ageMonths < 60) return WHO_GROWTH_REFERENCES.under5;
+    if (ageMonths <= 228) return WHO_GROWTH_REFERENCES.fiveTo19;
+    return null;
+  }
+
+  function whoAgeDisplay(ageMonths) {
+    if (!Number.isFinite(ageMonths)) return '';
+    if (ageMonths < 24) return `${Number(ageMonths.toFixed(1))} months`;
+    const roundedMonths = Math.round(ageMonths);
+    const years = Math.floor(roundedMonths / 12);
+    const months = roundedMonths % 12;
+    if (!months) return `${years} years`;
+    return `${years} years ${months} ${months === 1 ? 'month' : 'months'}`;
+  }
+
+  function whoAgeMonths(prefix) {
+    const age = Number(value(`${prefix}Age`));
+    if (!Number.isFinite(age) || age < 0) return NaN;
+    return value(`${prefix}AgeUnit`) === 'months' ? age : age * 12;
+  }
+
+  function whoMetricValue(prefix, type) {
+    const weight = Number(value(`${prefix}Weight`));
+    const height = Number(value(`${prefix}Height`));
+    if (type === 'weight') return weight;
+    if (type === 'height') return height;
+    if (type === 'bmi' && Number.isFinite(weight) && weight > 0 && Number.isFinite(height) && height > 0) return weight / Math.pow(height / 100, 2);
+    return NaN;
+  }
+
+  function renderWhoGrowthChart(prefix, panel) {
+    const chartPanel = qs('[data-who-chart-panel]', panel);
+    if (!chartPanel) return;
+    const sex = value(`${prefix}Sex`);
+    const ageMonths = whoAgeMonths(prefix);
+    const reference = whoReferenceForAge(ageMonths);
+    const title = qs('[data-who-chart-title]', chartPanel);
+    const subtitle = qs('[data-who-chart-subtitle]', chartPanel);
+    const source = qs('[data-who-chart-source]', chartPanel);
+    const message = qs('[data-who-chart-message]', chartPanel);
+    const stage = qs('[data-who-chart-stage]', chartPanel);
+    const frame = qs('[data-who-chart-frame]', chartPanel);
+    const star = qs('[data-who-chart-star]', chartPanel);
+    const summary = qs('[data-who-chart-summary]', chartPanel);
+    const buttons = qsa('[data-who-chart-type]', chartPanel);
+
+    if (reference) {
+      title.textContent = reference.title;
+      subtitle.textContent = `Sex-specific chart selected automatically from age. The patient's current point is marked with a red star.`;
+      source.textContent = `${reference.sourceText} Weight-for-age is available only up to 10 years; use BMI-for-age and height-for-age thereafter. Internet connection is required to load the official chart.`;
+    } else {
+      title.textContent = 'WHO paediatric growth reference';
+      subtitle.textContent = 'Uses WHO 2006 standards from birth to 5 years and WHO 2007 reference from 5 to 19 years.';
+      source.textContent = 'Official WHO charts. Plotting assists visual review and should be interpreted with longitudinal growth trajectory and clinical context.';
+    }
+
+    buttons.forEach(button => {
+      const chartType = button.dataset.whoChartType;
+      const ageWithinPaediatricReference = !Number.isFinite(ageMonths) || (ageMonths >= 0 && ageMonths <= 228);
+      const available = ageWithinPaediatricReference && (!Number.isFinite(ageMonths) || chartType !== 'weight' || ageMonths <= 120);
+      button.disabled = !available;
+      button.classList.toggle('unavailable', !available);
+      button.title = !available ? 'WHO weight-for-age reference is not available beyond 10 years; use BMI-for-age and height-for-age.' : '';
+    });
+
+    let activeButton = qs('[data-who-chart-type].active:not(:disabled)', chartPanel);
+    if (!activeButton) {
+      activeButton = qs('[data-who-chart-type="bmi"]:not(:disabled)', chartPanel) || qs('[data-who-chart-type]:not(:disabled)', chartPanel);
+      buttons.forEach(button => button.classList.toggle('active', button === activeButton));
+    }
+    const type = activeButton?.dataset.whoChartType || 'bmi';
+
+    const hideChart = text => {
+      message.textContent = text;
+      message.classList.remove('hidden');
+      stage.classList.add('hidden');
+      summary.classList.add('hidden');
+      star.classList.remove('visible');
+    };
+
+    if (!Number.isFinite(ageMonths)) return hideChart('Enter the patient age to select the appropriate WHO growth reference automatically.');
+    if (ageMonths < 0) return hideChart('Enter a valid patient age.');
+    if (ageMonths > 228) return hideChart('Automatic WHO paediatric growth plotting is available from birth to 19 years. For older patients, use adult BMI interpretation and the relevant clinical reference.');
+    if (!['Male', 'Female'].includes(sex)) return hideChart('Select Male or Female to load the sex-specific WHO chart.');
+
+    const config = reference?.charts?.[type]?.[sex];
+    if (!config || ageMonths < config.ageMin || ageMonths > config.ageMax) {
+      if (type === 'weight' && ageMonths > 120) return hideChart('WHO weight-for-age is not available beyond 10 years because it cannot distinguish a tall adolescent from excess body mass. Use BMI-for-age and height-for-age.');
+      return hideChart(`The selected WHO chart is not available for age ${whoAgeDisplay(ageMonths)}.`);
+    }
+
+    const metric = whoMetricValue(prefix, type);
+    if (!Number.isFinite(metric) || metric <= 0) {
+      const needed = type === 'weight' ? 'weight' : type === 'height' ? 'height / length' : 'both weight and height';
+      return hideChart(`Enter ${needed} to plot ${config.label.toLowerCase()}.`);
+    }
+
+    const targetUrl = `${config.url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`;
+    if (frame.dataset.loadedUrl !== targetUrl) {
+      frame.src = targetUrl;
+      frame.dataset.loadedUrl = targetUrl;
+    }
+    stage.style.aspectRatio = String(config.aspectRatio || 1.421875);
+    const plot = config.plot;
+    const ageRatio = (Math.max(config.ageMin, Math.min(config.ageMax, ageMonths)) - config.ageMin) / (config.ageMax - config.ageMin);
+    const x = plot.xStart + ageRatio * (plot.xEnd - plot.xStart);
+    const clampedMetric = Math.max(config.yMin, Math.min(config.yMax, metric));
+    const y = plot.yBottom - ((clampedMetric - config.yMin) / (config.yMax - config.yMin)) * (plot.yBottom - plot.yTop);
+    star.style.left = `${x}%`;
+    star.style.top = `${y}%`;
+    star.classList.add('visible');
+    message.classList.add('hidden');
+    stage.classList.remove('hidden');
+    summary.classList.remove('hidden');
+    const metricText = type === 'bmi' ? metric.toFixed(1) : type === 'weight' ? metric.toFixed(2) : metric.toFixed(1);
+    const outside = metric < config.yMin || metric > config.yMax;
+    summary.textContent = `${reference.shortReference} · ${config.label}: ${sex.toLowerCase()}, age ${whoAgeDisplay(ageMonths)}, ${metricText} ${config.unit}.${outside ? ' Measurement is outside the displayed chart range; the star is shown at the nearest chart boundary.' : ''}`;
+  }
+
+  function createGrowthPanel(prefix, template) {
+    const exam = $(`${prefix}SectionExam`);
+    if (!exam) return;
+    const statusGrid = qs('.neuro-status-grid', exam);
+    const panel = document.createElement('div');
+    panel.className = 'neuro-growth-panel';
+    panel.innerHTML = `
+      <div class="neuro-section-label">Growth trajectory</div>
+      <div class="helper">Serial measurements and clinician interpretation. Enter previous values to review trend alongside the latest visit.</div>
+      <div class="grid four neuro-growth-grid">
+        <div><label>Previous measurement date</label><input type="date" data-growth="previousDate"></div>
+        <div><label>Previous weight (kg)</label><input type="number" step="0.01" min="0" data-growth="previousWeight"></div>
+        <div><label>Previous height (cm)</label><input type="number" step="0.1" min="0" data-growth="previousHeight"></div>
+        ${prefix === 'autism' ? '<div><label>Previous head circumference (cm)</label><input type="number" step="0.1" min="0" data-growth="previousHead"></div>' : '<div><label>Measurement date</label><input type="date" data-growth="currentDate"></div>'}
+      </div>
+      <div class="grid two">
+        <div><label>Clinician growth interpretation</label><select data-growth="interpretation"><option value="">Not assessed</option><option>Appropriate trajectory</option><option>Possible faltering growth</option><option>Rapid weight gain / obesity concern</option><option>Short stature / linear growth concern</option><option>Head circumference concern</option><option>Other concern</option></select></div>
+        <div><label>Growth notes / centile source</label><input data-growth="notes" placeholder="Document chart/reference used and any concern"></div>
+      </div>
+      <div class="neuro-growth-result" data-growth-result>Enter a previous measurement to calculate change.</div>
+      <div class="who-growth-chart-panel" data-who-chart-panel>
+        <div class="who-growth-chart-head"><div><strong data-who-chart-title>WHO paediatric growth reference</strong><small data-who-chart-subtitle>Uses WHO 2006 standards from birth to 5 years and WHO 2007 reference from 5 to 19 years.</small></div></div>
+        <div class="who-growth-chart-tabs" role="tablist" aria-label="Growth chart type">
+          <button type="button" class="active" data-who-chart-type="weight">Weight-for-age</button>
+          <button type="button" data-who-chart-type="height">Length/height-for-age</button>
+          <button type="button" data-who-chart-type="bmi">BMI-for-age</button>
+        </div>
+        <div class="who-growth-chart-message" data-who-chart-message>Enter age, sex and anthropometry. The correct WHO reference will be selected automatically.</div>
+        <div class="who-growth-chart-stage hidden" data-who-chart-stage>
+          <iframe data-who-chart-frame title="WHO growth chart" loading="lazy"></iframe>
+          <div class="who-growth-chart-star" data-who-chart-star aria-label="Patient measurement point">★</div>
+        </div>
+        <div class="who-growth-chart-summary hidden" data-who-chart-summary></div>
+        <div class="who-growth-chart-source" data-who-chart-source>Official WHO charts. Plotting assists visual review and should be interpreted with the longitudinal growth trend.</div>
+      </div>
+    `;
+    statusGrid?.insertAdjacentElement('beforebegin', panel);
+
+    qsa('[data-growth]', panel).forEach(field => {
+      const key = field.dataset.growth;
+      field.value = runtimeState[prefix].growth[key] || '';
+      const persist = () => {
+        runtimeState[prefix].growth[key] = field.value;
+        saveState(prefix);
+        renderGrowth(prefix, panel);
+      };
+      field.addEventListener('input', persist);
+      field.addEventListener('change', persist);
+    });
+    [`${prefix}Weight`, `${prefix}Height`, prefix === 'autism' ? 'autismHeadCirc' : null].filter(Boolean).forEach(id => {
+      $(id)?.addEventListener('input', () => renderGrowth(prefix, panel));
+    });
+    [`${prefix}Age`, `${prefix}AgeUnit`, `${prefix}Sex`].forEach(id => {
+      $(id)?.addEventListener('input', () => renderWhoGrowthChart(prefix, panel));
+      $(id)?.addEventListener('change', () => renderWhoGrowthChart(prefix, panel));
+    });
+    qsa('[data-who-chart-type]', panel).forEach(button => button.addEventListener('click', () => {
+      qsa('[data-who-chart-type]', panel).forEach(item => item.classList.toggle('active', item === button));
+      renderWhoGrowthChart(prefix, panel);
+    }));
+    renderGrowth(prefix, panel);
+    renderWhoGrowthChart(prefix, panel);
+  }
+
+  function renderGrowth(prefix, panel) {
+    const previousWeight = Number(runtimeState[prefix].growth.previousWeight);
+    const previousHeight = Number(runtimeState[prefix].growth.previousHeight);
+    const currentWeight = Number(value(`${prefix}Weight`));
+    const currentHeight = Number(value(`${prefix}Height`));
+    const changes = [];
+    if (Number.isFinite(previousWeight) && previousWeight > 0 && Number.isFinite(currentWeight) && currentWeight > 0) changes.push(`Weight ${currentWeight - previousWeight >= 0 ? '+' : ''}${(currentWeight - previousWeight).toFixed(2)} kg`);
+    if (Number.isFinite(previousHeight) && previousHeight > 0 && Number.isFinite(currentHeight) && currentHeight > 0) changes.push(`Height ${currentHeight - previousHeight >= 0 ? '+' : ''}${(currentHeight - previousHeight).toFixed(1)} cm`);
+    if (prefix === 'autism') {
+      const previousHead = Number(runtimeState[prefix].growth.previousHead);
+      const currentHead = Number(value('autismHeadCirc'));
+      if (Number.isFinite(previousHead) && previousHead > 0 && Number.isFinite(currentHead) && currentHead > 0) changes.push(`Head circumference ${currentHead - previousHead >= 0 ? '+' : ''}${(currentHead - previousHead).toFixed(1)} cm`);
+    }
+    const result = qs('[data-growth-result]', panel);
+    result.textContent = changes.length ? changes.join(' · ') : 'Enter a previous measurement to calculate change.';
+    renderWhoGrowthChart(prefix, panel);
+  }
+
+  function screeningFlagLines(prefix) {
+    return screeningDomains.flatMap(([key, label]) => {
+      const item = runtimeState[prefix].screeningFlags[key];
+      if (!item?.status || item.status === 'none') return [];
+      const status = item.status === 'concern' ? 'concern present' : 'uncertain';
+      return [`- ${label}: ${status}${item.detail ? ` — ${item.detail}` : ''}.`];
+    });
+  }
+
+  function growthLines(prefix) {
+    const data = runtimeState[prefix].growth;
+    const lines = [];
+    if (data.previousDate) lines.push(`Previous measurement date: ${data.previousDate}.`);
+    if (data.previousWeight) lines.push(`Previous weight: ${data.previousWeight} kg.`);
+    if (data.previousHeight) lines.push(`Previous height: ${data.previousHeight} cm.`);
+    if (prefix === 'autism' && data.previousHead) lines.push(`Previous head circumference: ${data.previousHead} cm.`);
+    if (data.interpretation) lines.push(`Growth interpretation: ${data.interpretation}.`);
+    if (data.notes) lines.push(`Growth note: ${data.notes}.`);
+    return lines;
+  }
+
+  function postProcessOutput(prefix) {
+    return;
+  }
+
+  function growthExaminationLine(prefix) {
+    // Keep this helper self-contained because it is called from a separate
+    // ADHD/Autism generator script scope.
+    const formatGrowthDate = raw => {
+      if (!raw) return "";
+      const parts = String(raw).split("-");
+      return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : String(raw);
+    };
+    const growthSentence = raw => {
+      const text = String(raw ?? "").trim().replace(/\s+/g, " ");
+      if (!text) return "";
+      const sentence = text.charAt(0).toUpperCase() + text.slice(1);
+      return sentence.replace(/[.!?]+$/, "");
+    };
+    const data = runtimeState[prefix]?.growth || {};
+    const currentWeight = Number(value(`${prefix}Weight`));
+    const currentHeight = Number(value(`${prefix}Height`));
+    const currentHead = prefix === 'autism' ? Number(value('autismHeadCirc')) : NaN;
+    const previousWeight = Number(data.previousWeight);
+    const previousHeight = Number(data.previousHeight);
+    const previousHead = Number(data.previousHead);
+    const details = [];
+    if (data.previousDate) {
+      const previousMeasures = [];
+      if (Number.isFinite(previousWeight) && previousWeight > 0) previousMeasures.push(`weight ${previousWeight} kg`);
+      if (Number.isFinite(previousHeight) && previousHeight > 0) previousMeasures.push(`height ${previousHeight} cm`);
+      if (prefix === 'autism' && Number.isFinite(previousHead) && previousHead > 0) previousMeasures.push(`head circumference ${previousHead} cm`);
+      details.push(`Previous measurement on ${formatGrowthDate(data.previousDate)}${previousMeasures.length ? `: ${previousMeasures.join(', ')}` : ''}`);
+    }
+    const changes = [];
+    if (Number.isFinite(previousWeight) && previousWeight > 0 && Number.isFinite(currentWeight) && currentWeight > 0) changes.push(`weight ${currentWeight - previousWeight >= 0 ? '+' : ''}${(currentWeight - previousWeight).toFixed(2)} kg`);
+    if (Number.isFinite(previousHeight) && previousHeight > 0 && Number.isFinite(currentHeight) && currentHeight > 0) changes.push(`height ${currentHeight - previousHeight >= 0 ? '+' : ''}${(currentHeight - previousHeight).toFixed(1)} cm`);
+    if (prefix === 'autism' && Number.isFinite(previousHead) && previousHead > 0 && Number.isFinite(currentHead) && currentHead > 0) changes.push(`head circumference ${currentHead - previousHead >= 0 ? '+' : ''}${(currentHead - previousHead).toFixed(1)} cm`);
+    if (changes.length) details.push(`Change since previous review: ${changes.join('; ')}`);
+    // Keep the generated clinical note concise. The active WHO reference is
+    // shown in the growth-chart interface, but is not repeated in the note.
+    if (data.interpretation) details.push(`Growth interpretation: ${growthSentence(data.interpretation)}`);
+    if (data.notes) details.push(`Growth note: ${growthSentence(data.notes)}`);
+    return details.length ? `Serial growth: ${details.join('. ')}.` : '';
+  }
+
+  // Expose growth helper to the main neurodevelopment document generator.
+  // The growth-chart enhancement and the ADHD/Autism generators live in
+  // separate script scopes, so an unexposed helper caused blank outputs.
+  window.growthExaminationLine = growthExaminationLine;
+
+  function createOutputTools(prefix, template) {
+    const outputCard = $(`${prefix}OutputCard`);
+    if (!outputCard) return;
+    const actions = qs('.neuro-actions', outputCard);
+    const editButton = document.createElement('button');
+    editButton.type = 'button';
+    editButton.className = 'btn secondary';
+    editButton.textContent = 'Unlock output editing';
+    editButton.addEventListener('click', () => {
+      const fields = [$(`${prefix}NoteOutput`), $(`${prefix}ReferralOutput`)].filter(Boolean);
+      const unlock = fields.some(field => field.readOnly);
+      fields.forEach(field => { field.readOnly = !unlock; });
+      editButton.textContent = unlock ? 'Lock output editing' : 'Unlock output editing';
+    });
+    actions?.appendChild(editButton);
+
+    const therapy = document.createElement('div');
+    therapy.className = 'neuro-therapy-output';
+    therapy.innerHTML = `
+      <div class="neuro-section-label">Therapy referral pack</div>
+      <div class="neuro-actions-inline">
+        <button class="btn secondary" type="button" data-generate-therapy="speech">Generate speech-language referral</button>
+        <button class="btn secondary" type="button" data-generate-therapy="ot">Generate occupational therapy referral</button>
+        <button class="btn secondary" type="button" data-copy-therapy>Copy therapy referral</button>
+      </div>
+      <textarea class="output neuro-short-output" data-therapy-output readonly placeholder="Generated therapy referral will appear here."></textarea>
+    `;
+    outputCard.appendChild(therapy);
+    qsa('[data-generate-therapy]', therapy).forEach(button => button.addEventListener('click', () => {
+      qs('[data-therapy-output]', therapy).value = buildTherapyReferral(prefix, button.dataset.generateTherapy);
+    }));
+    qs('[data-copy-therapy]', therapy)?.addEventListener('click', async () => {
+      const field = qs('[data-therapy-output]', therapy);
+      if (field.value) await copyText(field.value);
+    });
+
+    ['Note', 'Referral', 'All'].forEach(kind => {
+      $(`generate${prefix[0].toUpperCase()}${prefix.slice(1)}${kind}`)?.addEventListener('click', () => setTimeout(() => postProcessOutput(prefix), 50), true);
+    });
+  }
+
+  function therapyChildDescription(prefix) {
+    const age = value(`${prefix}Age`);
+    const unit = value(`${prefix}AgeUnit`) === 'months' ? 'month' : 'year';
+    const sex = value(`${prefix}Sex`).toLowerCase();
+    const noun = sex === 'male' ? 'boy' : sex === 'female' ? 'girl' : 'child';
+    return age ? `${age}-${unit}-old ${noun}` : noun;
+  }
+
+  function buildTherapyReferral(prefix, type) {
+    const child = therapyChildDescription(prefix);
+    const concern = value(`${prefix}PresentingConcern`) || 'developmental concern';
+    const note = value(`${prefix}NoteOutput`);
+    const discipline = type === 'speech' ? 'Speech-Language Therapy' : 'Occupational Therapy';
+    const focus = type === 'speech'
+      ? (prefix === 'autism' ? value('autismLanguageHistory') || value('autismPlayObservation') : value('adhdSpeech') || value('adhdLearning'))
+      : (prefix === 'autism' ? value('autismDailyFunction') || value('autismRrbObservation') : value('adhdRoutine') || value('adhdObservation'));
+    return [
+      `Dear ${discipline} team,`,
+      '',
+      `Thank you for assessing this ${child || 'child'}.`,
+      `Reason for referral: ${concern}.`,
+      focus ? `Relevant functional concern: ${focus}.` : '',
+      '',
+      'Clinical summary:',
+      note || 'Please refer to the accompanying clinical documentation.',
+      '',
+      `Kindly assess the child’s ${type === 'speech' ? 'communication, receptive/expressive language, speech and functional communication needs' : 'sensory, motor, adaptive, self-care and participation needs'} and advise on intervention and home/school strategies.`,
+      '',
+      'Thank you.'
+    ].filter(line => line !== '').join('\n');
+  }
+
+  function initAdultScopeWarning(template) {
+    const age = $('adhdAge');
+    const unit = $('adhdAgeUnit');
+    if (!age || !unit) return;
+    const warning = document.createElement('div');
+    warning.className = 'neuro-adult-scope-warning hidden';
+    warning.innerHTML = '<strong>Adult-scope caution:</strong> The displayed Malaysian reference is the child/adolescent ADHD CPG. Use an adult-specific comprehensive diagnostic pathway for patients aged 17 years or older.';
+    $('adhdSectionPatient')?.appendChild(warning);
+    const render = () => warning.classList.toggle('hidden', !(unit.value === 'years' && Number(age.value) >= 17));
+    age.addEventListener('input', render);
+    unit.addEventListener('change', render);
+    render();
+  }
+
+  const initErrors = [];
+
+  function safeInitStep(prefix, label, action) {
+    try { action(); }
+    catch (error) {
+      initErrors.push({ prefix, label, message: error?.message || String(error) });
+      console.error(`[MedAssist neuro] ${prefix} ${label} failed`, error);
+    }
+  }
+
+  function initPrefix(prefix) {
+    safeInitStep(prefix, 'state', () => loadState(prefix));
+    const template = $(`${prefix}Template`);
+    if (!template) return;
+    template.classList.add('neuro-enhanced-template');
+    safeInitStep(prefix, 'view controls', () => createViewControls(prefix, template));
+    safeInitStep(prefix, 'screening flags', () => createScreeningFlags(prefix, template));
+    safeInitStep(prefix, 'growth trajectory', () => createGrowthPanel(prefix, template));
+    safeInitStep(prefix, 'output tools', () => createOutputTools(prefix, template));
+    if (prefix === 'adhd') {
+      safeInitStep(prefix, 'tri-state symptoms', () => initAdhdTriState(template));
+      safeInitStep(prefix, 'adult scope warning', () => initAdultScopeWarning(template));
+    }
+  }
+
+  function runStaticSelfTest() {
+    const results = {
+      pageScoped: Boolean($('page-neurodevelopment')),
+      adhdSymptoms: qsa('#adhdSectionSymptoms input[data-adhd-domain]').length === 18,
+      autismCriteria: qsa('[data-autism-code]').length >= 7,
+      otherModulesUntouched: Boolean($('page-clerking') && $('page-nnj') && $('page-iucd') && $('page-dm') && $('page-calculator')),
+    };
+    console.table(results);
+    return Object.values(results).every(Boolean);
+  }
+
+  function init() {
+    if (!$('page-neurodevelopment')) return;
+    initPrefix('adhd');
+    initPrefix('autism');
+    window.MedAssistNeuroEnhancements = { version: VERSION, runStaticSelfTest, clearLocalNeuroData, initErrors };
+    if (new URLSearchParams(location.search).get('neuro-test') === '1') runStaticSelfTest();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
+  else init();
+})();
+
+</script>
+
+
+
+
+<style id="whoGrowthChartStyles">
+.who-growth-chart-panel{margin-top:16px;padding:16px;border:1px solid #cfe1dc;border-radius:18px;background:#fbfefd}
+.who-growth-chart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.who-growth-chart-head strong{display:block;color:#174e45;font-size:16px}
+.who-growth-chart-head small{display:block;margin-top:4px;color:#667a75;line-height:1.45}
+.who-growth-chart-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.who-growth-chart-tabs button{border:1px solid #bdd8d1;border-radius:999px;padding:8px 12px;background:#fff;color:#2a5c54;font-weight:800;cursor:pointer}
+.who-growth-chart-tabs button.active{border-color:#16796d;background:#16796d;color:#fff}
+.who-growth-chart-tabs button:disabled,.who-growth-chart-tabs button.unavailable{cursor:not-allowed;opacity:.48;background:#f2f5f4;color:#71817d;border-color:#d8e2df}
+.who-growth-chart-tabs button:disabled.active{background:#f2f5f4;color:#71817d;border-color:#d8e2df}
+.who-growth-chart-message{padding:12px 14px;border:1px dashed #bfd7d1;border-radius:13px;background:#fff;color:#526d67;line-height:1.45}
+.who-growth-chart-stage{position:relative;width:100%;aspect-ratio:1.421875;overflow:hidden;border:1px solid #cadbd7;border-radius:14px;background:#eef5f3}
+.who-growth-chart-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+.who-growth-chart-star{position:absolute;z-index:5;display:none;transform:translate(-50%,-50%);font-size:30px;line-height:1;color:#e31937;text-shadow:-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff,2px 2px 0 #fff,0 0 6px rgba(0,0,0,.45);pointer-events:none}
+.who-growth-chart-star.visible{display:block}
+.who-growth-chart-summary{margin-top:10px;padding:10px 12px;border-radius:12px;background:#edf7f4;color:#285b53;font-weight:700;line-height:1.45}
+.who-growth-chart-source{margin-top:8px;color:#6c7e7a;font-size:11px;line-height:1.45}
+@media(max-width:760px){.who-growth-chart-head{display:block}.who-growth-chart-stage{border-radius:10px}.who-growth-chart-star{font-size:24px}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -3079,8 +3934,6 @@ html,body{max-width:100%;overflow-x:hidden}
   <button class="nav-btn module-direct-link calculator-module-link" data-page="calculator" type="button">
     <span class="module-direct-icon" aria-hidden="true">🧮</span><span><strong>Calculators</strong><small>Clinical calculators</small></span>
   </button>
-
-  <button class="module-display-all" id="displayAllModules" type="button"><span aria-hidden="true">▦</span> Display all modules</button>
 </div>
 </aside>
 <nav aria-label="Quick component navigation" class="section-quickbar hidden" id="sectionQuickBar">
@@ -3098,24 +3951,24 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="hero"><h1>MedAssist KK Bangi</h1><p>Clinical clerking and protocol-guided calculators.</p></div>
 <div class="module-category-shell" id="moduleCategoryShell">
   <div class="module-category-heading">
-    <div><strong>Clinical components</strong><small>Select a component or display every module.</small></div>
+    <div><strong>Clinical components</strong><small>Select a component to display its modules.</small></div>
   </div>
   <div class="module-category-tabs" role="group" aria-label="Filter clinical modules">
     <button class="module-category-btn" data-dashboard-category="opd" type="button"><span>🩺</span><strong>OPD</strong><small>Dengue, ADHD, autism</small></button>
     <button class="module-category-btn" data-dashboard-category="mch" type="button"><span>👶</span><strong>MCH</strong><small>IUCD and NNJ</small></button>
     <button class="module-category-btn" data-dashboard-category="ncd" type="button"><span>🩸</span><strong>NCD</strong><small>Diabetes clerking</small></button>
     <button class="module-category-btn" data-dashboard-category="lhi" type="button"><span>🫁</span><strong>LHI / NALURY</strong><small>External portal</small></button>
-    <button class="module-category-btn" data-dashboard-category="calculator" type="button"><span>🧮</span><strong>Calculator</strong><small>Clinical tools</small></button>
+    <button class="module-category-btn" data-dashboard-category="calculator" type="button"><span>🧮</span><strong>Clinical calculator</strong><small>Clinical tools</small></button>
     <button class="module-category-btn active" data-dashboard-category="all" type="button"><span>▦</span><strong>Display all</strong><small>Show every module</small></button>
   </div>
 </div>
 <div class="dashboard-grid grouped-dashboard-grid" id="moduleDashboardGrid">
   <button class="dashboard-card module-dashboard-card" data-module-category="opd" data-open="clerking" type="button"><span>🦟</span><strong>Dengue Clerking</strong><small>New case and follow-up FBC workflow.</small><em>OPD</em></button>
   <button class="dashboard-card module-dashboard-card" data-module-category="opd" data-neuro-target="adhd" data-open="neurodevelopment" type="button"><span>🧠</span><strong>ADHD Clerking</strong><small>Structured symptom, impairment, assessment and referral.</small><em>OPD</em></button>
-  <button class="dashboard-card module-dashboard-card" data-module-category="opd" data-neuro-target="autism" data-open="neurodevelopment" type="button"><span>🧩</span><strong>Autism Clerking</strong><small>Compact developmental clerking, note and referral.</small><em>OPD</em></button>
+  <button class="dashboard-card module-dashboard-card" data-module-category="opd" data-neuro-target="autism" data-open="neurodevelopment" type="button"><span>🧩</span><strong>Autism Clerking</strong><small>Developmental clerking, note and referral.</small><em>OPD</em></button>
   <button class="dashboard-card module-dashboard-card" data-module-category="mch" data-open="iucd" type="button"><span>♀</span><strong>IUCD Insertion</strong><small>Eligibility, examination, procedure and counselling.</small><em>MCH</em></button>
   <button class="dashboard-card module-dashboard-card" data-module-category="mch" data-open="nnj" type="button"><span>🟡</span><strong>NNJ Clerking</strong><small>Clerking, bilirubin assessment, plan and referral.</small><em>MCH</em></button>
-  <button class="dashboard-card module-dashboard-card" data-module-category="ncd" data-open="dm" type="button"><span>🩸</span><strong>DM Clerking</strong><small>Compact diabetes follow-up clerking and plan.</small><em>NCD</em></button>
+  <button class="dashboard-card module-dashboard-card" data-module-category="ncd" data-open="dm" type="button"><span>🩸</span><strong>DM Clerking</strong><small>Diabetes follow-up clerking and plan.</small><em>NCD</em></button>
   <a aria-label="Open LHI / NALURY portal in a new tab" class="dashboard-card external-dashboard-card module-dashboard-card" data-module-category="lhi" href="https://nalury.mrichealthcare.com/" rel="noopener noreferrer" target="_blank"><span>🫁</span><strong>LHI / NALURY</strong><small>Open the external portal in a new tab.</small><em>LHI / NALURY</em></a>
   <button class="dashboard-card module-dashboard-card" data-module-category="calculator" data-open="calculator" type="button"><span>🧮</span><strong>Clinical Calculators</strong><small>Open one calculator at a time.</small><em>CALCULATOR</em></button>
 </div>
@@ -5405,9 +6258,6 @@ html,body{max-width:100%;overflow-x:hidden}
 <button class="neuro-mode-btn" data-neuro-mode="followup" data-neuro-prefix="adhd" type="button">Follow-up</button>
 </div>
 <div class="neuro-mode-label" id="adhdModeLabel">Initial assessment workflow</div>
-</div><div class="neuro-sticky-tools" id="adhdStickyTools">
-<div class="neuro-progress-row"><div class="neuro-progress-track"><div class="neuro-progress-fill" id="adhdProgressFill"></div></div><div class="neuro-progress-text" id="adhdProgressText">0% complete</div></div>
-<div class="neuro-nav-chips" id="adhdNavChips"></div>
 </div><div class="card" data-neuro-common="true" data-neuro-section="Readiness" id="adhdCompletenessCard">
 <h2>Clinical completeness checker</h2>
 <div class="helper">This checks whether important documentation domains have been entered. It does not diagnose ADHD or autism and does not replace clinical judgement.</div>
@@ -5673,7 +6523,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="card" data-neuro-common="true" data-neuro-section="Plan" id="adhdSectionPlan">
 <h2>8. Assessment and plan</h2>
 <div class="grid two">
-<div><label>Working assessment</label><select id="adhdAssessment"><option value="features">Features suggestive of ADHD — further assessment required</option><option value="features-comorbid">ADHD features with possible comorbidity / differential</option><option value="insufficient">Insufficient information — obtain collateral history</option><option value="alternative">Alternative / contributing diagnosis more likely</option><option value="urgent">Urgent behavioural or safety concern</option></select></div>
+<div><label>Working assessment</label><select id="adhdAssessment"><option value="features">Features suggestive of ADHD — further assessment required</option><option value="features-comorbid">ADHD features with possible comorbidity / differential</option><option value="insufficient" selected>Insufficient information — obtain collateral history</option><option value="alternative">Alternative / contributing diagnosis more likely</option><option value="urgent">Urgent behavioural or safety concern</option></select></div>
 <div><label>Preferred referral destination</label><select id="adhdReferralTo"><option>Paediatrics / developmental paediatrics</option><option>Child and adolescent psychiatry</option><option>Family medicine specialist</option><option>Clinical psychology</option><option>Multidisciplinary developmental service</option><option>Emergency department / urgent mental health assessment</option></select></div>
 </div>
 <div class="grid two">
@@ -5729,9 +6579,6 @@ html,body{max-width:100%;overflow-x:hidden}
 <button class="neuro-mode-btn" data-neuro-mode="followup" data-neuro-prefix="autism" type="button">Follow-up</button>
 </div>
 <div class="neuro-mode-label" id="autismModeLabel">Initial assessment workflow</div>
-</div><div class="neuro-sticky-tools" id="autismStickyTools">
-<div class="neuro-progress-row"><div class="neuro-progress-track"><div class="neuro-progress-fill" id="autismProgressFill"></div></div><div class="neuro-progress-text" id="autismProgressText">0% complete</div></div>
-<div class="neuro-nav-chips" id="autismNavChips"></div>
 </div><div class="card" data-neuro-common="true" data-neuro-section="Readiness" id="autismCompletenessCard">
 <h2>Clinical completeness checker</h2>
 <div class="helper">This checks whether important documentation domains have been entered. It does not diagnose ADHD or autism and does not replace clinical judgement.</div>
@@ -6004,7 +6851,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="card" data-neuro-common="true" data-neuro-section="Plan" id="autismSectionPlan">
 <h2>9. Assessment and plan</h2>
 <div class="grid two">
-<div><label>Working assessment</label><select id="autismAssessment"><option value="features">Features suggestive of autism — comprehensive assessment required</option><option value="features-delay">Autism features with developmental / language delay</option><option value="regression">Developmental regression — urgent specialist assessment required</option><option value="insufficient">Insufficient information — obtain collateral developmental history</option><option value="alternative">Alternative / contributing diagnosis more likely</option><option value="urgent">Urgent behavioural, neurological or safety concern</option></select></div>
+<div><label>Working assessment</label><select id="autismAssessment"><option value="features">Features suggestive of autism — comprehensive assessment required</option><option value="features-delay">Autism features with developmental / language delay</option><option value="regression">Developmental regression — urgent specialist assessment required</option><option value="insufficient" selected>Insufficient information — obtain collateral developmental history</option><option value="alternative">Alternative / contributing diagnosis more likely</option><option value="urgent">Urgent behavioural, neurological or safety concern</option></select></div>
 <div><label>Preferred referral destination</label><select id="autismReferralTo"><option>Paediatrics / developmental paediatrics</option><option>Child and adolescent psychiatry</option><option>Family medicine specialist</option><option>Multidisciplinary developmental service</option><option>Clinical genetics</option><option>Emergency department / urgent specialist assessment</option></select></div>
 </div>
 <div class="neuro-section-label">Plan</div>
@@ -6221,17 +7068,18 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="card" id="calcMenu">
 <h2>Choose calculator</h2>
 <div class="calc-menu">
-<button class="calc-option" data-calc="maintenance"><span>💧</span><strong>Paeds maintenance</strong><small>100/50/20 and 4/2/1</small></button>
 <button class="calc-option" data-calc="antibiotic"><span>💊</span><strong>AMS / NAG Paediatric</strong><small>Outpatient antimicrobial options</small></button>
-<button class="calc-option" data-calc="vitals"><span>🩺</span><strong>Paeds vital signs</strong><small>Age-based interpretation</small></button>
-<button class="calc-option" data-calc="pack"><span>🚬</span><strong>Pack-year</strong><small>Smoking exposure</small></button>
 <button class="calc-option" data-calc="scores"><span>🧫</span><strong>Centor score</strong><small>Modified Centor for GAS pharyngitis</small></button>
 <button class="calc-option" data-calc="renal"><span aria-hidden="true" class="svg-icon"><svg viewbox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M24 8C13 8 7 18 9 32c2 12 8 21 17 20 7-1 9-7 8-15-1-6-4-9-8-10 6-2 9-8 8-13-1-4-4-6-10-6Z" fill="#c98765" stroke="#173f38" stroke-linejoin="round" stroke-width="3"></path><path d="M40 8c11 0 17 10 15 24-2 12-8 21-17 20-7-1-9-7-8-15 1-6 4-9 8-10-6-2-9-8-8-13 1-4 4-6 10-6Z" fill="#c98765" stroke="#173f38" stroke-linejoin="round" stroke-width="3"></path><path d="M29 29c-5 2-7 7-6 13" fill="none" stroke="#fff3ec" stroke-linecap="round" stroke-width="3"></path><path d="M35 29c5 2 7 7 6 13" fill="none" stroke="#fff3ec" stroke-linecap="round" stroke-width="3"></path></svg></span><strong>eGFR — CKD-EPI</strong><small>2021 adult creatinine equation</small></button>
+<button class="calc-option" data-calc="gdm"><span>🧪</span><strong>GDM risk &amp; MGTT</strong><small>Risk factors and screening timing</small></button>
 <button class="calc-option" data-calc="mental"><span>🧠</span><strong>Mental health</strong><small>PHQ-9 and GAD-7</small></button>
-<button class="calc-option" data-calc="endocrine"><span>🌡️</span><strong>Thyroid storm</strong><small>Burch-Wartofsky score</small></button>
-<button class="calc-option" data-calc="preeclampsia"><span>🤰</span><strong>PE prophylaxis</strong><small>MOH Handbook 2024</small></button><button class="calc-option" data-calc="gdm"><span>🧪</span><strong>GDM risk &amp; MGTT</strong><small>Risk factors and screening timing</small></button>
-<button class="calc-option" data-calc="stopbang"><span>😴</span><strong>STOP-BANG</strong><small>OSA risk screening</small></button>
+<button class="calc-option" data-calc="pack"><span>🚬</span><strong>Pack-year</strong><small>Smoking exposure</small></button>
+<button class="calc-option" data-calc="maintenance"><span>💧</span><strong>Paeds maintenance</strong><small>100/50/20 and 4/2/1</small></button>
+<button class="calc-option" data-calc="vitals"><span>🩺</span><strong>Paeds vital signs</strong><small>Age-based interpretation</small></button>
+<button class="calc-option" data-calc="preeclampsia"><span>🤰</span><strong>PE prophylaxis</strong><small>MOH Handbook 2024</small></button>
 <button class="calc-option" data-calc="pregnancy"><span>📅</span><strong>Pregnancy dates</strong><small>EDD and gestational age</small></button>
+<button class="calc-option" data-calc="stopbang"><span>😴</span><strong>STOP-BANG</strong><small>OSA risk screening</small></button>
+<button class="calc-option" data-calc="endocrine"><span>🌡️</span><strong>Thyroid storm</strong><small>Burch-Wartofsky score</small></button>
 </div>
 </div>
 <div class="calc-panel" id="calc-maintenance">
@@ -7280,6 +8128,14 @@ function openCalc(name){
 window.showPage=showPage;
 window.openCalc=openCalc;
 window.debounce=debounce;
+function sortCalculatorMenuAlphabetically(){
+  const menu=document.querySelector('#calcMenu .calc-menu');
+  if(!menu) return;
+  [...menu.querySelectorAll('.calc-option')]
+    .sort((a,b)=>a.querySelector('strong').textContent.localeCompare(b.querySelector('strong').textContent, undefined, {sensitivity:'base'}))
+    .forEach(button=>menu.appendChild(button));
+}
+sortCalculatorMenuAlphabetically();
 document.querySelectorAll(".calc-option").forEach(b=>b.addEventListener("click",()=>openCalc(b.dataset.calc)));
 document.querySelectorAll(".calc-back").forEach(b=>b.addEventListener("click",showCalcMenu));
 
@@ -13881,7 +14737,12 @@ renderDengueFollowUpPlan();
   }
 
   function professionalSentence(value) {
-    const text = String(value ?? "").trim().replace(/\s+/g, " ");
+    const text = String(value ?? "")
+      .trim()
+      .replace(/\[Parent reported — verify\]\s*/gi, "History from parents: ")
+      .replace(/Caregiver priority:\s*caregiver described:\s*/gi, "Parent hopes for the patient ")
+      .replace(/caregiver described:\s*/gi, "caregiver reports ")
+      .replace(/\s+/g, " ");
     if (!text) return "";
     const sentence = text.charAt(0).toUpperCase() + text.slice(1);
     return /[.!?]$/.test(sentence) ? sentence : `${sentence}.`;
@@ -14359,7 +15220,7 @@ renderDengueFollowUpPlan();
     const heightCm = Number(neuroValue(`${prefix}Height`));
     if (!(weight > 0) || !(heightCm > 0)) return "Enter weight and height";
     const bmi = weight / ((heightCm / 100) ** 2);
-    return `BMI ${bmi.toFixed(1)} kg/m² (no centile generated)`;
+    return `BMI ${bmi.toFixed(1)} kg/m²`;
   }
 
   function renderMeasurementTrends(prefix) {
@@ -15129,10 +15990,12 @@ renderDengueFollowUpPlan();
     if (neuroValue("adhdPulse")) vitals.push(`pulse ${neuroValue("adhdPulse")} bpm`);
     const entries = [];
     if (vitals.length) entries.push(`Vital signs / anthropometry: ${vitals.join(", ")}. ${bmiText("adhd")}.`);
-    if (neuroValue("adhdExamination")) entries.push(`Physical / neurological examination: ${professionalSentence(neuroValue("adhdExamination"))}`);
-    if (neuroValue("adhdObservation")) entries.push(`Behaviour / mental state observed: ${professionalSentence(neuroValue("adhdObservation"))}`);
+    const growthLine = growthExaminationLine("adhd");
+    if (growthLine) entries.push(growthLine);
     if (neuroValue("adhdHearingStatus")) entries.push(`Hearing status: ${professionalSentence(neuroValue("adhdHearingStatus"))}`);
     if (neuroValue("adhdVisionStatus")) entries.push(`Vision status: ${professionalSentence(neuroValue("adhdVisionStatus"))}`);
+    if (neuroValue("adhdExamination")) entries.push(`Physical / neurological examination: ${professionalSentence(neuroValue("adhdExamination"))}`);
+    if (neuroValue("adhdObservation")) entries.push(`Behaviour / mental state observed: ${professionalSentence(neuroValue("adhdObservation"))}`);
     if (entries.length) lines.push(...entries);
     else lines.push("No examination or direct clinical observation was documented.");
   }
@@ -15454,7 +16317,11 @@ renderDengueFollowUpPlan();
     if (neuroValue("autismHeight")) growth.push(`height ${neuroValue("autismHeight")} cm`);
     if (neuroValue("autismHeadCirc")) growth.push(`head circumference ${neuroValue("autismHeadCirc")} cm`);
     if (neuroValue("autismGrowth")) growth.push(neuroValue("autismGrowth"));
-    if (growth.length) examinationEntries.push(`${growth.join(", ")}. ${bmiText("autism")}.`);
+    if (growth.length) examinationEntries.push(`Vital signs / anthropometry: ${growth.join(", ")}. ${bmiText("autism")}.`);
+    const growthLine = growthExaminationLine("autism");
+    if (growthLine) examinationEntries.push(growthLine);
+    if (neuroValue("autismHearingStatus")) examinationEntries.push(`Hearing / audiological status: ${professionalSentence(neuroValue("autismHearingStatus"))}`);
+    if (neuroValue("autismVisionStatus")) examinationEntries.push(`Vision status: ${professionalSentence(neuroValue("autismVisionStatus"))}`);
     if (neuroValue("autismDysmorphism")) examinationEntries.push(`Dysmorphic features: ${professionalSentence(neuroValue("autismDysmorphism"))}`);
     if (neuroValue("autismCongenitalAnomalies")) examinationEntries.push(`Congenital anomalies: ${professionalSentence(neuroValue("autismCongenitalAnomalies"))}`);
     if (neuroValue("autismNeurocutaneous")) examinationEntries.push(`Neurocutaneous stigmata: ${professionalSentence(neuroValue("autismNeurocutaneous"))}`);
@@ -15462,8 +16329,6 @@ renderDengueFollowUpPlan();
     if (neuroValue("autismSocialObservation")) examinationEntries.push(`Social communication observed: ${professionalSentence(neuroValue("autismSocialObservation"))}`);
     if (neuroValue("autismPlayObservation")) examinationEntries.push(`Speech / language / play observed: ${professionalSentence(neuroValue("autismPlayObservation"))}`);
     if (neuroValue("autismRrbObservation")) examinationEntries.push(`Repetitive / sensory behaviour observed: ${professionalSentence(neuroValue("autismRrbObservation"))}`);
-    if (neuroValue("autismHearingStatus")) examinationEntries.push(`Hearing / audiological status: ${professionalSentence(neuroValue("autismHearingStatus"))}`);
-    if (neuroValue("autismVisionStatus")) examinationEntries.push(`Vision status: ${professionalSentence(neuroValue("autismVisionStatus"))}`);
     if (examinationEntries.length) lines.push("", "EXAMINATION / DIRECT OBSERVATION", ...examinationEntries);
   }
 
@@ -15723,18 +16588,18 @@ const SEARCH_ITEMS=[
   {title:"ADHD Clerking",subtitle:"Child attention and behaviour assessment",keywords:"adhd attention hyperactivity impulsivity behaviour school teacher developmental clerking referral",action:()=>{searchShowPage("neurodevelopment");requestAnimationFrame(()=>window.setNeuroTemplate?.("adhd"));}},
   {title:"Autism Clerking",subtitle:"Developmental and social communication assessment",keywords:"autism asd developmental speech social communication sensory repetitive mchat clerking referral",action:()=>{searchShowPage("neurodevelopment");requestAnimationFrame(()=>window.setNeuroTemplate?.("autism"));}},
   {title:"IUCD Insertion Clerking",subtitle:"Eligibility, procedure and follow-up",keywords:"iucd iud copper intrauterine device contraception insertion family planning mec",action:()=>searchShowPage("iucd")},
-  {title:"Paeds maintenance fluid",subtitle:"100/50/20 and 4/2/1",keywords:"paediatric pediatric paeds fluid maintenance drip",calc:"maintenance"},
   {title:"AMS / NAG Paediatric",subtitle:"Outpatient antimicrobial doses",keywords:"antibiotic antimicrobial paeds dose nag ams",calc:"antibiotic"},
-  {title:"Paeds vital signs",subtitle:"Age-based interpretation",keywords:"paeds vital signs pulse respiratory rate bp",calc:"vitals"},
-  {title:"Pack-year",subtitle:"Smoking exposure",keywords:"smoking cigarette pack year",calc:"pack"},
   {title:"Centor score",subtitle:"Modified Centor for GAS pharyngitis",keywords:"centor modified centor strep streptococcal pharyngitis tonsillitis sore throat",calc:"scores"},
-    {title:"eGFR — CKD-EPI",subtitle:"2021 adult creatinine equation",keywords:"egfr renal kidney creatinine ckdepi ckd",calc:"renal"},
-  {title:"Mental health",subtitle:"PHQ-9 and GAD-7",keywords:"mental health depression anxiety phq9 gad7",calc:"mental"},
-{title:"Thyroid storm",subtitle:"Burch-Wartofsky score",keywords:"thyroid storm hyperthyroid burch wartofsky",calc:"endocrine"},
-  {title:"PE prophylaxis",subtitle:"Pre-eclampsia prophylaxis assessment",keywords:"preeclampsia pre eclampsia aspirin pregnancy prophylaxis",calc:"preeclampsia"},
+  {title:"eGFR — CKD-EPI",subtitle:"2021 adult creatinine equation",keywords:"egfr renal kidney creatinine ckdepi ckd",calc:"renal"},
   {title:"GDM risk & MGTT",subtitle:"Risk factors and when to perform 75-g MGTT",keywords:"gdm gestational diabetes mgtt mogtt ogtt pregnancy booking 24 28 weeks",calc:"gdm"},
-      {title:"STOP-BANG",subtitle:"OSA risk screening",keywords:"stopbang sleep apnoea osa snoring",calc:"stopbang"},
-  {title:"Pregnancy dates",subtitle:"EDD and gestational age",keywords:"pregnancy lmp edd gestation dates",calc:"pregnancy"}
+  {title:"Mental health",subtitle:"PHQ-9 and GAD-7",keywords:"mental health depression anxiety phq9 gad7",calc:"mental"},
+  {title:"Pack-year",subtitle:"Smoking exposure",keywords:"smoking cigarette pack year",calc:"pack"},
+  {title:"Paeds maintenance fluid",subtitle:"100/50/20 and 4/2/1",keywords:"paediatric pediatric paeds fluid maintenance drip",calc:"maintenance"},
+  {title:"Paeds vital signs",subtitle:"Age-based interpretation",keywords:"paeds vital signs pulse respiratory rate bp",calc:"vitals"},
+  {title:"PE prophylaxis",subtitle:"Pre-eclampsia prophylaxis assessment",keywords:"preeclampsia pre eclampsia aspirin pregnancy prophylaxis",calc:"preeclampsia"},
+  {title:"Pregnancy dates",subtitle:"EDD and gestational age",keywords:"pregnancy lmp edd gestation dates",calc:"pregnancy"},
+  {title:"STOP-BANG",subtitle:"OSA risk screening",keywords:"stopbang sleep apnoea osa snoring",calc:"stopbang"},
+  {title:"Thyroid storm",subtitle:"Burch-Wartofsky score",keywords:"thyroid storm hyperthyroid burch wartofsky",calc:"endocrine"}
 ];
 
 SEARCH_ITEMS.forEach(item=>{
@@ -16214,9 +17079,15 @@ document.addEventListener("keydown",event=>{
   function updateVisibility() {
     const type = activeType();
     const button = document.getElementById("unifiedDraftSaveButton");
-    if (!button) return;
+    const sidebar = document.getElementById("unifiedDraftSidebar");
+    const mobileToggle = document.getElementById("unifiedDraftMobileToggle");
+    if (!button || !sidebar || !mobileToggle) return;
 
-    button.classList.toggle("visible", Boolean(type));
+    const showDraftUi = Boolean(type);
+    button.classList.toggle("visible", showDraftUi);
+    sidebar.style.display = showDraftUi ? "" : "none";
+    mobileToggle.style.display = showDraftUi ? "" : "none";
+    if (!showDraftUi) sidebar.classList.remove("mobile-open");
 
     const current = loadDrafts().find(draft => draft.id === currentDraftId);
     button.childNodes[0].textContent = current && current.type === type
@@ -17289,10 +18160,7 @@ window.renderIucdClerking=()=>{renderEligibility();renderSound();};
       if(active) openGroupForPage(active.dataset.page);
     }).observe(sidebar,{subtree:true,attributes:true,attributeFilter:["class"]});
   }
-
-  let initial="all";
-  try{const saved=localStorage.getItem("medassistModuleCategory");if(["opd","mch","ncd","lhi","calculator","all"].includes(saved))initial=saved;}catch(_){ }
-  filterDashboard(initial);
+  filterDashboard("all");
 })();
 </script>
 </body>
