@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.158 — CLN Layout Fix</title>
+<title>MedAssist KK Bangi V18.165 — Generator Reliability Fix</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -26,25 +26,29 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:
 
 
 
-/* V18.143 — restored grouped dashboard */
+/* V18.159 — final dashboard UX cleanup */
 #page-dashboard .hero{margin-bottom:18px}
-.module-category-shell{margin-bottom:20px;padding:18px;border:1px solid #d9e7e3;border-radius:22px;background:#f7fbfa}
+.module-category-shell{margin-bottom:18px;padding:18px;border:1px solid #d9e7e3;border-radius:22px;background:#f7fbfa}
 .module-category-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .module-category-heading strong{display:block;font-size:22px;color:#173f38}
 .module-category-heading small{display:block;margin-top:3px;color:#6a7b77;font-size:13px}
-.module-category-tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
-.module-category-btn{display:flex;flex-direction:column;align-items:flex-start;min-height:112px;padding:14px;border:1px solid #d7e5e1;border-radius:16px;background:#fff;color:#173f38;text-align:left;cursor:pointer;transition:.18s ease}
+.module-category-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.module-category-btn{display:flex;flex-direction:column;align-items:flex-start;min-height:108px;padding:14px;border:1px solid #d7e5e1;border-radius:16px;background:#fff;color:#173f38;text-align:left;cursor:pointer;transition:.18s ease;position:relative}
 .module-category-btn:hover{transform:translateY(-2px);border-color:#8fc7bc;background:#f4faf8}
 .module-category-btn.active{border-color:#5faf9f;background:#eaf7f3;box-shadow:inset 0 0 0 1px #5faf9f}
 .module-category-btn span{font-size:25px;margin-bottom:8px}
 .module-category-btn strong{font-size:15px;line-height:1.25;margin-bottom:4px}
 .module-category-btn small{font-size:11px;line-height:1.35;color:#73827f}
+.module-category-btn.utility::after{content:"→";position:absolute;right:12px;bottom:10px;color:#63958c;font-weight:900;font-size:14px}
+.module-category-btn.utility.external::after{content:"↗"}
+.dashboard-module-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:2px 2px 12px;padding:0 2px}
+.dashboard-module-intro strong{display:block;font-size:18px;color:#173f38}
+.dashboard-module-intro small{display:block;margin-top:4px;color:#6a7b77;font-size:12px;line-height:1.4}
 .grouped-dashboard-grid{align-items:stretch}
 .module-dashboard-card{position:relative;min-width:0}
 .module-dashboard-card.hidden-by-category{display:none!important}
-.module-dashboard-card em{position:absolute;top:10px;right:10px;padding:4px 7px;border-radius:999px;background:#edf7f4;color:#35675f;font-size:9px;font-style:normal;font-weight:800;letter-spacing:.04em}
 @media(max-width:1250px){.module-category-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:760px){.module-category-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.module-category-btn{min-height:104px}.module-category-heading strong{font-size:20px}}
+@media(max-width:760px){.module-category-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.module-category-btn{min-height:100px}.module-category-heading strong{font-size:20px}.dashboard-module-intro{display:block}}
 .site-search{position:relative;margin:0 0 16px}
 .site-search-row{display:grid;grid-template-columns:minmax(0,1fr) 42px;gap:7px}
 .site-search-row input{min-width:0;height:42px;padding:9px 11px;border:1px solid rgba(255,255,255,.24);border-radius:10px;background:rgba(255,255,255,.1);color:#fff;font-size:13px;outline:none}
@@ -2319,6 +2323,25 @@ html,body{max-width:100%;overflow-x:hidden}
 .last-pu-time-row select{text-align:center;font-variant-numeric:tabular-nums}
 .last-pu-colon{text-align:center;font-size:18px;font-weight:900;color:#34554f}
 .last-pu-24h-field .helper{margin-top:5px;font-size:11px}
+
+/* V18.160 — Dengue new-case PCM / antipyretic history */
+.cl-fever-pcm-panel{grid-column:1/-1;margin-top:2px;padding:14px 16px;border:1px solid #d7e6e1;border-radius:14px;background:#f8fcfb}
+.cl-fever-pcm-panel .section-subtitle{margin:0 0 10px;color:#173f38}
+.cl-fever-pcm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:end}
+.cl-fever-pcm-grid>div{min-width:0}
+.cl-fever-pcm-grid label{margin-top:0}
+.cl-pcm-time-wrap.hidden,.cl-pcm-when-wrap.hidden{display:none!important}
+.cl-pcm-time-wrap{grid-column:1/-1;display:grid;grid-template-columns:minmax(150px,210px) minmax(190px,280px);gap:5px 14px;align-items:end;padding-top:2px}
+.cl-pcm-time-wrap>label{grid-column:1;grid-row:1;margin:0 0 11px}
+.cl-pcm-time-row{grid-column:2;grid-row:1;display:grid;grid-template-columns:minmax(72px,1fr) 14px minmax(72px,1fr);gap:5px;align-items:center;max-width:280px}
+.cl-pcm-time-row select{min-width:0;text-align:center;font-variant-numeric:tabular-nums}
+.cl-pcm-time-colon{text-align:center;font-size:18px;font-weight:800;color:#657a75}
+.cl-pcm-time-wrap>.helper{grid-column:2;grid-row:2;margin-top:0}
+@media(max-width:720px){.cl-fever-pcm-grid{grid-template-columns:1fr}.cl-pcm-time-wrap{grid-column:auto;display:block}.cl-pcm-time-wrap>label{display:block;margin-bottom:6px}.cl-pcm-time-wrap>.helper{margin-top:5px}.cl-pcm-time-row{max-width:none}}
+
+/* V18.162 — AMS-linked diagnosis prompt */
+.dx-ams-hint{margin-top:12px;padding:11px 13px;border:1px solid #c9dfd9;border-radius:12px;background:#f2faf8;color:#285b53;font-size:12px;line-height:1.45}
+.dx-ams-hint strong{display:block;margin-bottom:3px;color:#174e45}
 @media(max-width:1150px){
   .urine-inline-card{grid-column:1/-1}
 }
@@ -4009,31 +4032,30 @@ html,body{max-width:100%;overflow-x:hidden}
 </nav>
 <main class="main">
 <section class="page active" id="page-dashboard">
-<div class="hero"><h1>MedAssist KK Bangi</h1><p>Clinical clerking and protocol-guided calculators.</p></div>
+<div class="hero"><h1>MedAssist KK Bangi</h1><p>Clinical clerking, calculators and clinic utilities in one place.</p></div>
 <div class="module-category-shell" id="moduleCategoryShell">
   <div class="module-category-heading">
-    <div><strong>Clinical components</strong><small>Select a component to display its modules.</small></div>
+    <div><strong>What do you need?</strong><small>Choose a clinical area, or open a utility directly.</small></div>
   </div>
-  <div class="module-category-tabs" role="group" aria-label="Filter clinical modules">
-    <button class="module-category-btn" data-dashboard-category="opd" type="button"><span>🩺</span><strong>OPD</strong><small>Dengue, ADHD, autism</small></button>
+  <div class="module-category-tabs" role="group" aria-label="Clinical areas and utilities">
+    <button class="module-category-btn active" data-dashboard-category="opd" type="button"><span>🩺</span><strong>OPD</strong><small>Dengue, ADHD, autism</small></button>
     <button class="module-category-btn" data-dashboard-category="mch" type="button"><span>👶</span><strong>MCH</strong><small>IUCD and NNJ</small></button>
     <button class="module-category-btn" data-dashboard-category="ncd" type="button"><span>🩸</span><strong>NCD</strong><small>Diabetes clerking</small></button>
-    <button class="module-category-btn" data-dashboard-category="lhi" type="button"><span class="lhi-lung-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 32 32"><path d="M15 4v11"/><path d="M17 4v11"/><path d="M15 10c-2.2 1.1-3.7 2.7-4.8 4.4"/><path d="M17 10c2.2 1.1 3.7 2.7 4.8 4.4"/><path d="M13.8 12.3C9.3 11 6.4 14.1 5.2 18.5 3.7 24 5.8 28 9.8 28c3.7 0 5.2-3 5.2-7.4V15"/><path d="M18.2 12.3c4.5-1.3 7.4 1.8 8.6 6.2C28.3 24 26.2 28 22.2 28c-3.7 0-5.2-3-5.2-7.4V15"/></svg></span><strong>LHI / NALURY</strong><small>External portal</small></button>
-    <button class="module-category-btn" data-dashboard-category="lab" type="button"><span>🧪</span><strong>Makmal</strong><small>Ujian &amp; jadual pengambilan</small></button>
-    <button class="module-category-btn" data-dashboard-category="calculator" type="button"><span>🧮</span><strong>Clinical calculator</strong><small>Clinical tools</small></button>
-    <button class="module-category-btn active" data-dashboard-category="all" type="button"><span>▦</span><strong>Display all</strong><small>Show every module</small></button>
+    <button class="module-category-btn utility external" data-dashboard-utility="lhi" type="button"><span class="lhi-lung-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 32 32"><path d="M15 4v11"/><path d="M17 4v11"/><path d="M15 10c-2.2 1.1-3.7 2.7-4.8 4.4"/><path d="M17 10c2.2 1.1 3.7 2.7 4.8 4.4"/><path d="M13.8 12.3C9.3 11 6.4 14.1 5.2 18.5 3.7 24 5.8 28 9.8 28c3.7 0 5.2-3 5.2-7.4V15"/><path d="M18.2 12.3c4.5-1.3 7.4 1.8 8.6 6.2C28.3 24 26.2 28 22.2 28c-3.7 0-5.2-3-5.2-7.4V15"/></svg></span><strong>LHI / NALURY</strong><small>Open external portal</small></button>
+    <button class="module-category-btn utility" data-dashboard-utility="lab" type="button"><span>🧪</span><strong>Makmal</strong><small>Ujian &amp; jadual pengambilan</small></button>
+    <button class="module-category-btn utility" data-dashboard-utility="calculator" type="button"><span>🧮</span><strong>Clinical calculator</strong><small>Open clinical tools</small></button>
   </div>
 </div>
+<div class="dashboard-module-intro" id="dashboardModuleIntro">
+  <div><strong id="dashboardModuleTitle">OPD tools</strong><small id="dashboardModuleSubtitle">Dengue and neurodevelopment clerking.</small></div>
+</div>
 <div class="dashboard-grid grouped-dashboard-grid" id="moduleDashboardGrid">
-  <button class="dashboard-card module-dashboard-card" data-module-category="opd" data-open="clerking" type="button"><span>🦟</span><strong>Dengue Clerking</strong><small>New case and follow-up FBC workflow.</small><em>OPD</em></button>
-  <button class="dashboard-card module-dashboard-card" data-module-category="opd" data-neuro-target="adhd" data-open="neurodevelopment" type="button"><span>🧠</span><strong>ADHD Clerking</strong><small>Structured symptom, impairment, assessment and referral.</small><em>OPD</em></button>
-  <button class="dashboard-card module-dashboard-card" data-module-category="opd" data-neuro-target="autism" data-open="neurodevelopment" type="button"><span>🧩</span><strong>Autism Clerking</strong><small>Developmental clerking, note and referral.</small><em>OPD</em></button>
-  <button class="dashboard-card module-dashboard-card" data-module-category="mch" data-open="iucd" type="button"><span>♀</span><strong>IUCD Insertion</strong><small>Eligibility, examination, procedure and counselling.</small><em>MCH</em></button>
-  <button class="dashboard-card module-dashboard-card" data-module-category="mch" data-open="nnj" type="button"><span>🟡</span><strong>NNJ Clerking</strong><small>Clerking, bilirubin assessment, plan and referral.</small><em>MCH</em></button>
-  <button class="dashboard-card module-dashboard-card" data-module-category="ncd" data-open="dm" type="button"><span>🩸</span><strong>DM Clerking</strong><small>Diabetes follow-up clerking and plan.</small><em>NCD</em></button>
-  <a aria-label="Open LHI / NALURY portal in a new tab" class="dashboard-card external-dashboard-card module-dashboard-card" data-module-category="lhi" href="https://nalury.mrichealthcare.com/" rel="noopener noreferrer" target="_blank"><span class="lhi-lung-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 32 32"><path d="M15 4v11"/><path d="M17 4v11"/><path d="M15 10c-2.2 1.1-3.7 2.7-4.8 4.4"/><path d="M17 10c2.2 1.1 3.7 2.7 4.8 4.4"/><path d="M13.8 12.3C9.3 11 6.4 14.1 5.2 18.5 3.7 24 5.8 28 9.8 28c3.7 0 5.2-3 5.2-7.4V15"/><path d="M18.2 12.3c4.5-1.3 7.4 1.8 8.6 6.2C28.3 24 26.2 28 22.2 28c-3.7 0-5.2-3-5.2-7.4V15"/></svg></span><strong>LHI / NALURY</strong><small>Open the external portal in a new tab.</small><em>LHI / NALURY</em></a>
-  <button class="dashboard-card module-dashboard-card" data-module-category="lab" data-open="lablist" type="button"><span>🧪</span><strong>Senarai ujian makmal</strong><small>Ujian darah &amp; jadual hari pengambilan.</small><em>MAKMAL</em></button>
-  <button class="dashboard-card module-dashboard-card" data-module-category="calculator" data-open="calculator" type="button"><span>🧮</span><strong>Clinical Calculators</strong><small>Open one calculator at a time.</small><em>CALCULATOR</em></button>
+  <button class="dashboard-card module-dashboard-card" data-module-category="opd" data-open="clerking" type="button"><span>🦟</span><strong>Dengue Clerking</strong><small>New case and follow-up FBC workflow.</small></button>
+  <button class="dashboard-card module-dashboard-card" data-module-category="opd" data-neuro-target="adhd" data-open="neurodevelopment" type="button"><span>🧠</span><strong>ADHD Clerking</strong><small>Structured symptom, impairment, assessment and referral.</small></button>
+  <button class="dashboard-card module-dashboard-card" data-module-category="opd" data-neuro-target="autism" data-open="neurodevelopment" type="button"><span>🧩</span><strong>Autism Clerking</strong><small>Developmental clerking, note and referral.</small></button>
+  <button class="dashboard-card module-dashboard-card" data-module-category="mch" data-open="iucd" type="button"><span>♀</span><strong>IUCD Insertion</strong><small>Eligibility, examination, procedure and counselling.</small></button>
+  <button class="dashboard-card module-dashboard-card" data-module-category="mch" data-open="nnj" type="button"><span>🟡</span><strong>NNJ Clerking</strong><small>Clerking, bilirubin assessment, plan and referral.</small></button>
+  <button class="dashboard-card module-dashboard-card" data-module-category="ncd" data-open="dm" type="button"><span>🩸</span><strong>DM Clerking</strong><small>Diabetes follow-up clerking and plan.</small></button>
 </div>
 <div class="module-empty-state hidden" id="moduleEmptyState">No module is available in this component.</div>
 </section>
@@ -4104,6 +4126,38 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div><label>Chief complaint</label><input id="clChief" placeholder="e.g. Fever"/></div>
 <div><label>Duration of symptom</label><input id="clDuration" placeholder="e.g. 3 days"/></div>
+<div class="cl-fever-pcm-panel" id="clFeverPcmPanel">
+<div class="section-subtitle">Fever / antipyretic history</div>
+<div class="cl-fever-pcm-grid">
+<div>
+<label for="clPcmTaken">PCM taken?</label>
+<select id="clPcmTaken">
+<option value="">Select</option>
+<option value="no">No</option>
+<option value="yes">Yes</option>
+</select>
+</div>
+<div class="cl-pcm-when-wrap hidden" id="clPcmWhenWrap">
+<label for="clPcmLastWhen">Last PCM taken</label>
+<select id="clPcmLastWhen">
+<option value="">Select</option>
+<option value="today">Today</option>
+<option value="yesterday">Yesterday</option>
+<option value="2days">2 days ago</option>
+<option value="gt48">&gt;48 hours ago</option>
+</select>
+</div>
+<div class="cl-pcm-time-wrap hidden" id="clPcmTimeWrap">
+<label>Time taken <span class="helper">(24-hour)</span></label>
+<div aria-label="Last PCM time in 24-hour format" class="cl-pcm-time-row">
+<select aria-label="PCM hour (00 to 23)" id="clPcmLastHour"><option value="">HH</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+<span class="cl-pcm-time-colon">:</span>
+<select aria-label="PCM minute" id="clPcmLastMinute"><option value="">MM</option><option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option></select>
+</div>
+<div class="helper">24-hour format, e.g. 14:30.</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="card">
@@ -4799,12 +4853,14 @@ html,body{max-width:100%;overflow-x:hidden}
 <select id="clDxType">
 <option value="Dengue fever">Dengue fever</option>
 <option value="Acute upper respiratory tract infection">Acute URTI</option>
+<option value="Acute bacterial rhinosinusitis">Acute bacterial rhinosinusitis</option>
 <option value="Acute pharyngitis">Acute pharyngitis</option>
 <option value="Acute tonsillitis">Acute tonsillitis</option>
 <option value="Community-acquired pneumonia">Community-acquired pneumonia</option>
 <option value="Urinary tract infection">Urinary tract infection</option>
 <option value="Acute otitis media">Acute otitis media</option>
 <option value="Acute otitis externa">Acute otitis externa</option>
+<option value="Cellulitis">Cellulitis</option>
 <option value="Acute gastroenteritis">Acute gastroenteritis</option>
 <option value="Influenza-like illness">Influenza-like illness</option>
 <option value="COVID-19 infection">COVID-19 infection</option>
@@ -4817,6 +4873,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <input id="clDxOther" placeholder="Enter diagnosis"/>
 </div>
 </div>
+<div class="dx-ams-hint hidden" id="clDxAmsHint"></div>
 <div class="grid three dx-dengue-fields" id="clDengueDxFields">
 <div><label>Day of illness</label><input id="clDxDay" min="1" type="number"/></div>
 <div><label>Phase</label><select id="clPhase"><option value="febrile phase">Febrile</option><option value="critical phase">Critical</option><option value="recovery phase">Recovery</option></select></div>
@@ -4837,7 +4894,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="hidden" id="clDxComorbidWrap"><label>Comorbidities</label><input id="clDxComorbid" placeholder="e.g. DM and HPT"/></div>
 </div>
 <label>Generated diagnosis</label><textarea id="clGeneratedDx" readonly=""></textarea>
-</div><div class="card">
+</div><div class="card" id="clDengueFluidCard">
 <h2>Dengue Fluid Management</h2>
 <div class="notice">
       Uses the patient group, weight, height and sex already entered above. Actual body weight is the default.
@@ -4891,7 +4948,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <select id="clPlanOption">
 <option value="refer">Option 1 — Refer ED + notify + start IVD NS</option>
 <option selected="" value="outpatient">Option 2 — Outpatient follow-up / serial FBC</option>
-<option value="antibiotic">Option 3 — Treat concurrent infection / start antibiotic</option>
+<option value="antibiotic">Option 3 — Concurrent infection / antimicrobial plan</option>
 <option value="others">Option 4 — Others / custom plan</option>
 </select>
 </div>
@@ -4909,21 +4966,21 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 <div class="plan-antibiotic-panel hidden" id="clPlanAntibioticPanel">
-<div class="section-subtitle">Option 3 — Treat concurrent infection / start antibiotic</div>
+<div class="section-subtitle">Option 3 — Concurrent infection / antimicrobial plan</div>
 <div class="plan-fixed-items">
-<div class="plan-fixed-item">Advise on medication compliance and completion of the prescribed course.</div>
-<div class="plan-fixed-item">TCA STAT if any allergic reaction or medication side effect develops.</div>
-<div class="plan-fixed-item">TCA back if symptoms are not resolved for reassessment.</div>
+<div class="plan-fixed-item">Counsel according to the selected NAG antimicrobial / stewardship plan.</div>
+<div class="plan-fixed-item">If medication is started, TCA STAT for any allergic reaction or significant medication side effect.</div>
+<div class="plan-fixed-item">TCA back if symptoms are not resolving or worsen for reassessment.</div>
 </div>
 <div class="grid two">
 <div><label>Concurrent infection / diagnosis</label><select id="clPlanAbxCategory"></select></div>
-<div><label>Complete NAG antibiotic option</label><select id="clPlanAbxRegimen"></select></div>
+<div><label>NAG antimicrobial / stewardship option</label><select id="clPlanAbxRegimen"></select></div>
 </div>
-<div class="notice">Select the diagnosis, then choose one complete antibiotic option. Dose, frequency and duration are generated together. For paediatric patients, the dose is recalculated automatically from the weight and age entered above.</div>
+<div class="notice">Select the diagnosis, then choose one NAG antimicrobial / stewardship option. When a drug is indicated, dose, frequency and duration are generated together. For paediatric patients, the dose is recalculated automatically from the weight and age entered above. NAG online content checked 10 Aug 2026.</div>
 <div class="plan-custom-antibiotic">
-<label>Other / custom antibiotic prescription — optional</label>
+<label>Other / custom antimicrobial prescription — optional</label>
 <textarea id="clPlanAbxCustom" placeholder="Free text, e.g. Start Doxycycline 100 mg PO BD for 5 days. This overrides the NAG selection above."></textarea>
-<div class="helper">Use this only when another antibiotic or regimen is clinically selected.</div>
+<div class="helper">Use this only when another antimicrobial or regimen is clinically selected.</div>
 </div>
 <div class="result-box plan-antibiotic-result" id="clPlanAbxAutoResult">Select a diagnosis and antimicrobial regimen.</div>
 </div>
@@ -5430,7 +5487,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <select id="dfuPlanOption">
 <option value="refer">Option 1 — Refer ED + start IVD NS</option>
 <option selected="" value="monitoring">Option 2 — Outpatient follow-up / serial FBC</option>
-<option value="antibiotic">Option 3 — Treat concurrent infection / start antibiotic</option>
+<option value="antibiotic">Option 3 — Concurrent infection / antimicrobial plan</option>
 <option value="others">Option 4 — Others / custom plan</option>
 <option value="discharge">Option 5 — Discharge from FBC monitoring</option>
 </select>
@@ -5450,21 +5507,21 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 <div class="plan-antibiotic-panel hidden" id="dfuPlanAntibioticPanel">
-<div class="section-subtitle">Option 3 — Treat concurrent infection / start antibiotic</div>
+<div class="section-subtitle">Option 3 — Concurrent infection / antimicrobial plan</div>
 <div class="plan-fixed-items">
-<div class="plan-fixed-item">Advise on medication compliance and completion of the prescribed course.</div>
-<div class="plan-fixed-item">TCA STAT if any allergic reaction or medication side effect develops.</div>
-<div class="plan-fixed-item">TCA back if symptoms are not resolved for reassessment.</div>
+<div class="plan-fixed-item">Counsel according to the selected NAG antimicrobial / stewardship plan.</div>
+<div class="plan-fixed-item">If medication is started, TCA STAT for any allergic reaction or significant medication side effect.</div>
+<div class="plan-fixed-item">TCA back if symptoms are not resolving or worsen for reassessment.</div>
 </div>
 <div class="grid two">
 <div><label>Concurrent infection / diagnosis</label><select id="dfuPlanAbxCategory"></select></div>
-<div><label>Complete NAG antibiotic option</label><select id="dfuPlanAbxRegimen"></select></div>
+<div><label>NAG antimicrobial / stewardship option</label><select id="dfuPlanAbxRegimen"></select></div>
 </div>
 <div class="notice">Select the diagnosis, then choose one complete antibiotic option. Dose, frequency and duration are generated together. For paediatric patients, the dose is recalculated automatically from the weight and age entered above.</div>
 <div class="plan-custom-antibiotic">
-<label>Other / custom antibiotic prescription — optional</label>
+<label>Other / custom antimicrobial prescription — optional</label>
 <textarea id="dfuPlanAbxCustom" placeholder="Free text, e.g. Start Doxycycline 100 mg PO BD for 5 days. This overrides the NAG selection above."></textarea>
-<div class="helper">Use this only when another antibiotic or regimen is clinically selected.</div>
+<div class="helper">Use this only when another antimicrobial or regimen is clinically selected.</div>
 </div>
 <div class="result-box plan-antibiotic-result" id="dfuPlanAbxAutoResult">Select a diagnosis and antimicrobial regimen.</div>
 </div>
@@ -7186,7 +7243,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="card" id="calcMenu">
 <h2>Choose calculator</h2>
 <div class="calc-menu">
-<button class="calc-option" data-calc="antibiotic"><span>💊</span><strong>AMS / NAG Paediatric</strong><small>Outpatient antimicrobial options</small></button>
+<button class="calc-option" data-calc="antibiotic"><span>💊</span><strong>AMS / NAG Primary Care</strong><small>Adult + paediatric outpatient guidance</small></button>
 <button class="calc-option" data-calc="scores"><span>🧫</span><strong>Centor score</strong><small>Modified Centor for GAS pharyngitis</small></button>
 <button class="calc-option" data-calc="renal"><span aria-hidden="true" class="svg-icon"><svg viewbox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M24 8C13 8 7 18 9 32c2 12 8 21 17 20 7-1 9-7 8-15-1-6-4-9-8-10 6-2 9-8 8-13-1-4-4-6-10-6Z" fill="#c98765" stroke="#173f38" stroke-linejoin="round" stroke-width="3"></path><path d="M40 8c11 0 17 10 15 24-2 12-8 21-17 20-7-1-9-7-8-15 1-6 4-9 8-10-6-2-9-8-8-13 1-4 4-6 10-6Z" fill="#c98765" stroke="#173f38" stroke-linejoin="round" stroke-width="3"></path><path d="M29 29c-5 2-7 7-6 13" fill="none" stroke="#fff3ec" stroke-linecap="round" stroke-width="3"></path><path d="M35 29c5 2 7 7 6 13" fill="none" stroke="#fff3ec" stroke-linecap="round" stroke-width="3"></path></svg></span><strong>eGFR — CKD-EPI</strong><small>2021 adult creatinine equation</small></button>
 <button class="calc-option" data-calc="gdm"><span>🧪</span><strong>GDM risk &amp; MGTT</strong><small>Risk factors and screening timing</small></button>
@@ -7215,74 +7272,66 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="calc-panel" id="calc-antibiotic">
 <button class="btn secondary calc-back" type="button">← Back</button>
 <div class="card">
-<h2>AMS / Paediatric Antimicrobial Calculator</h2>
+<h2>AMS / NAG Primary Care Antimicrobial Calculator</h2>
 <div class="notice">
-        Based on the MOH National Antimicrobial Guideline, 4th Edition online guideline.
-        The NAG website is updated periodically. Confirm the diagnosis, allergy type,
-        renal/hepatic function, route and need for referral.
+        MOH National Antimicrobial Guideline (NAG) 2024, 4th Edition — online content audited against updates listed through January 2026.
+        NAG is updated periodically online. Confirm diagnosis, severity, allergy type, renal/hepatic function, pregnancy status, route/formulation and referral need before prescribing.
       </div>
 <div class="grid three">
 <div>
+<label>Patient group</label>
+<select id="abxGroup"><option value="adult">Adult</option><option value="paeds">Paediatric</option></select>
+</div>
+<div id="abxWeightWrap">
 <label>Weight (kg)</label>
 <input id="abxWeight" min="0" step="0.1" type="number"/>
 </div>
-<div>
+<div id="abxAgeWrap">
 <label>Age</label>
 <input id="abxAge" min="0" step="0.1" type="number"/>
 </div>
-<div>
+<div id="abxAgeUnitWrap">
 <label>Age unit</label>
-<select id="abxAgeUnit">
-<option value="years">Years</option>
-<option value="months">Months</option>
-</select>
+<select id="abxAgeUnit"><option value="years">Years</option><option value="months">Months</option></select>
 </div>
 <div>
-<label>Infection / AMS category</label>
+<label>Infection / NAG category</label>
 <select id="abxCategory">
-<option value="cap">Community-acquired pneumonia / influenza</option>
+<option value="cap">Community-acquired pneumonia — outpatient</option>
 <option value="pharyngitis">Tonsillitis / pharyngitis</option>
-<option value="sinusitis">Bacterial rhinosinusitis</option>
+<option value="sinusitis">Acute bacterial rhinosinusitis</option>
 <option value="aom">Acute otitis media</option>
 <option value="aoe">Acute otitis externa</option>
-<option value="uti">Lower urinary tract infection</option>
+<option value="uti">Lower UTI / uncomplicated cystitis</option>
+<option value="cellulitis">Cellulitis — mild outpatient</option>
+<option value="influenza">Influenza / influenza-like illness</option>
+<option value="urti">Acute URTI / acute bronchitis — stewardship</option>
+<option value="gastroenteritis">Acute gastroenteritis — stewardship</option>
+<option value="covid">COVID-19 — stewardship</option>
+<option value="viral">Viral fever — stewardship</option>
+<option value="dengue">Dengue fever — stewardship</option>
 </select>
 </div>
 <div>
-<label>Antimicrobial regimen</label>
+<label>NAG antimicrobial / stewardship option</label>
 <select id="abxRegimen"></select>
 </div>
-<div id="abxDoseChoiceWrap">
-<label>Dose selected</label>
-<select id="abxDoseChoice"></select>
-</div>
-<div id="abxFrequencyWrap">
-<label>Frequency</label>
-<select id="abxFrequency"></select>
-</div>
-<div>
-<label> </label>
-<button class="btn primary" id="abxCalculate" type="button">
-            Calculate antimicrobial
-          </button>
-</div>
+<div id="abxDoseChoiceWrap"><label>Dose selected</label><select id="abxDoseChoice"></select></div>
+<div id="abxFrequencyWrap"><label>Frequency</label><select id="abxFrequency"></select></div>
+<div><label>&nbsp;</label><button class="btn primary" id="abxCalculate" type="button">Generate NAG recommendation</button></div>
 </div>
 <div class="helper" id="abxRegimenSummary"></div>
-<div class="result-box" id="abxResult">
-        Select the infection and regimen, then enter the child’s weight.
-      </div>
-<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b10-respiratory-infections" rel="noopener" target="_blank">
-        NAG Paediatric Respiratory
-      </a>
-<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b9-otorhinolaryngology-infections" rel="noopener" target="_blank">
-        NAG Paediatric ENT
-      </a>
-<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b13-urinary-tract-infections" rel="noopener" target="_blank">
-        NAG Paediatric UTI
-      </a>
-<a class="ref" href="https://sites.google.com/moh.gov.my/nag/information/whats-new" rel="noopener" target="_blank">
-        NAG Latest Updates
-      </a>
+<div class="result-box" id="abxResult">Select patient group, infection and NAG option.</div>
+<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-c-clinical-pathways-in-primary-care" rel="noopener" target="_blank">NAG Primary Care Clinical Pathways</a>
+<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a10-otorhinolaryngology-infections" rel="noopener" target="_blank">NAG Adult ENT</a>
+<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a11-respiratory-infections" rel="noopener" target="_blank">NAG Adult Respiratory</a>
+<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a14-skin-soft-tissue-infections" rel="noopener" target="_blank">NAG Adult SSTI</a>
+<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a17-urinary-tract-infections" rel="noopener" target="_blank">NAG Adult UTI</a>
+<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b10-respiratory-infections" rel="noopener" target="_blank">NAG Paediatric Respiratory</a>
+<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b9-otorhinolaryngology-infections" rel="noopener" target="_blank">NAG Paediatric ENT</a>
+<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b13-urinary-tract-infections" rel="noopener" target="_blank">NAG Paediatric UTI</a>
+<a class="ref" href="https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b11-skin-soft-tissue-infections" rel="noopener" target="_blank">NAG Paediatric SSTI</a>
+<a class="ref" href="https://sites.google.com/moh.gov.my/nag/information/whats-new" rel="noopener" target="_blank">NAG Latest Updates</a>
 </div>
 </div>
 <div class="calc-panel" id="calc-vitals">
@@ -7669,6 +7718,7 @@ function formatCervicalLn(sectionPrefix){
   if(other) sentence+=`, ${other}`;
   return sentence;
 }
+window.formatCervicalLn = formatCervicalLn;
 function toggleCervicalLnExtra(sectionPrefix){
   const extra=$(`${sectionPrefix}CervicalLNExtra`);
   if(!extra) return;
@@ -8516,13 +8566,53 @@ $("clDxOther")?.addEventListener("input",buildDiagnosis);
   $(id).addEventListener("change",buildDiagnosis);
 });
 $("clWarningSigns").querySelectorAll("input").forEach(x=>x.addEventListener("change",buildDiagnosis));
+const CL_DX_TO_AMS_CATEGORY={
+  "Dengue fever":"dengue",
+  "Acute upper respiratory tract infection":"urti",
+  "Community-acquired pneumonia":"cap",
+  "Acute pharyngitis":"pharyngitis",
+  "Acute tonsillitis":"pharyngitis",
+  "Acute bacterial rhinosinusitis":"sinusitis",
+  "Acute otitis media":"aom",
+  "Acute otitis externa":"aoe",
+  "Urinary tract infection":"uti",
+  "Cellulitis":"cellulitis",
+  "Acute gastroenteritis":"gastroenteritis",
+  "Influenza-like illness":"influenza",
+  "COVID-19 infection":"covid",
+  "Viral fever":"viral"
+};
+function syncDiagnosisAmsLink(){
+  const dx=value("clDxType");
+  const category=CL_DX_TO_AMS_CATEGORY[dx]||"";
+  const hint=$("clDxAmsHint");
+  if(!hint) return;
+  if(!category){
+    hint.classList.add("hidden");
+    hint.textContent="";
+    return;
+  }
+  const label=(typeof DENGUE_PLAN_ABX_CATEGORY_LABELS!=="undefined"&&DENGUE_PLAN_ABX_CATEGORY_LABELS[category])||dx;
+  hint.classList.remove("hidden");
+  hint.innerHTML=`<strong>AMS / NAG linked diagnosis</strong>${label} will be preloaded under Plan → Option 3. The NAG option may be an antibiotic, antiviral, topical antimicrobial, or an explicit no-empiric-antimicrobial stewardship recommendation.`;
+  const config=window.DENGUE_NEW_PLAN_ABX_CONFIG;
+  if(config&&typeof populatePlanAntibioticCategories==="function"){
+    const categorySelect=$(config.categoryId);
+    if(categorySelect){
+      if(!categorySelect.options.length) populatePlanAntibioticCategories(config);
+      categorySelect.value=category;
+      populatePlanAntibioticRegimens(config);
+    }
+  }
+}
 function syncDiagnosisBuilder(){
   const dengue=value("clDxType")==="Dengue fever";
   const other=value("clDxType")==="Other";
 
   $("clDengueDxFields")?.classList.toggle("hidden",!dengue);
   $("clDxOtherWrap")?.classList.toggle("hidden",!other);
-
+  $("clDengueFluidCard")?.classList.toggle("hidden",!dengue);
+  syncDiagnosisAmsLink();
   buildDiagnosis();
 }
 
@@ -8830,11 +8920,15 @@ function getDenguePlanLines(){
     lines.push("TCA STAT if warning signs develop. Dengue pamphlet given to patient for education and FBC serial monitoring.");
     lines.push("Notify dengue case via e-notification.");
   }else if(option==="antibiotic"){
-    const antibiotic=window.getPlanAntibioticPrescription(window.DENGUE_NEW_PLAN_ABX_CONFIG);
-    lines.push(antibiotic.valid?antibiotic.line:"Start antibiotic / antimicrobial — complete the prescription before finalising the plan.");
-    lines.push("Advise on medication compliance and to complete the prescribed treatment course.");
-    lines.push("TCA STAT if any allergic reaction or medication side effect develops.");
-    lines.push("TCA back if symptoms are not resolved for reassessment.");
+    const antimicrobial=window.getPlanAntibioticPrescription(window.DENGUE_NEW_PLAN_ABX_CONFIG);
+    const treatmentLine=antimicrobial.valid?antimicrobial.line:"Complete the NAG antimicrobial / stewardship selection before finalising the plan.";
+    lines.push(treatmentLine);
+    const noDrug=/^No (empiric |routine |immediate )?(antibiotic|antibacterial)/i.test(treatmentLine);
+    if(!noDrug){
+      lines.push("Advise on medication compliance and to complete the prescribed treatment course.");
+      lines.push("If medication is started, TCA STAT for any allergic reaction or significant medication side effect.");
+    }
+    lines.push("TCA back if symptoms are not resolving or worsen for reassessment.");
   }else if(option==="others"){
     lines.push(...extraLines);
   }
@@ -8857,7 +8951,7 @@ function renderDenguePlanPreview(){
   const headings={
     refer:"Option 1 — ED referral",
     outpatient:"Option 2 — Outpatient follow-up",
-    antibiotic:"Option 3 — Treat concurrent infection / start antibiotic",
+    antibiotic:"Option 3 — Concurrent infection / antimicrobial plan",
     others:"Option 4 — Others / custom plan"
   };
 
@@ -10099,7 +10193,8 @@ function buildDengueClinicalNote(planLines){
   const chiefLines=[
     value("clChief")
       ? `Chief complaint: ${value("clChief")}${value("clDuration")?" for "+value("clDuration"):""}`
-      : ""
+      : "",
+    typeof denguePcmHistoryLine === "function" ? denguePcmHistoryLine() : ""
   ].filter(Boolean);
 
   const associatedLines=[
@@ -10855,6 +10950,21 @@ const amsRegimens = {
       route:"Topical",
       note:"Topical antibiotic with or without topical steroid. Assess tympanic membrane status and contraindications.",
       concentrations:[]
+    },
+    {
+      id:"aoe-ofloxacin",
+      label:"Ofloxacin 0.3% otic — age 1–12 years",
+      drug:"Ofloxacin 0.3% otic solution",
+      doseMode:"fixed",
+      fixedText:"5 drops into the affected ear once daily",
+      doses:[],
+      frequencies:[],
+      duration:"7 days",
+      route:"Topical",
+      minAgeYears:1,
+      maxAgeYears:12,
+      note:"NAG paediatric AOE option for age 1–12 years. Avoid ototoxic drops such as gentamicin/neomycin when tympanic membrane perforation or tympanostomy tube is present.",
+      concentrations:[]
     }
   ],
 
@@ -10907,6 +11017,22 @@ const amsRegimens = {
       concentrations:[]
     },
     {
+      id:"uti-tmpsmx",
+      label:"Trimethoprim/sulfamethoxazole — TMP component",
+      drug:"Trimethoprim/sulfamethoxazole",
+      doseLabel:"trimethoprim component",
+      doseMode:"mgkgday",
+      doses:[8,9,10],
+      frequencies:[2],
+      defaultFrequency:2,
+      maxDose:null,
+      maxDaily:null,
+      duration:"3–5 days",
+      route:"PO",
+      note:"Dose is calculated using the trimethoprim component. Adjust treatment according to urine culture and susceptibility when available.",
+      concentrations:[]
+    },
+    {
       id:"uti-nitrofurantoin-sr",
       label:"Nitrofurantoin sustained-release — lower UTI",
       drug:"Nitrofurantoin",
@@ -10936,58 +11062,161 @@ const amsRegimens = {
       note:"Immediate-release tablet regimen. Use only for lower UTI; not for suspected pyelonephritis.",
       concentrations:[]
     }
+  ],
+
+  cellulitis: [
+    {
+      id:"cellulitis-clox",
+      label:"Cloxacillin — mild cellulitis",
+      drug:"Cloxacillin",
+      doseMode:"mgkgday",
+      doses:[50,75,100],
+      frequencies:[4],
+      defaultFrequency:4,
+      maxDose:null,
+      maxDaily:2000,
+      duration:"5–7 days",
+      route:"PO",
+      note:"NAG paediatric mild cellulitis. For children >25 kg, the NAG notes use of the adult dosage (500 mg PO q6h).",
+      concentrations:[]
+    },
+    {
+      id:"cellulitis-cephalexin",
+      label:"Cephalexin — alternative",
+      drug:"Cephalexin",
+      doseMode:"mgkgday",
+      doses:[25,50],
+      frequencies:[2],
+      defaultFrequency:2,
+      maxDose:null,
+      maxDaily:2000,
+      duration:"5–7 days",
+      route:"PO",
+      note:"Alternative for mild paediatric cellulitis. Reassess if extensive, systemically unwell or not improving.",
+      concentrations:[]
+    }
+  ]
+,
+  influenza:[
+    {
+      id:"influenza-oseltamivir",
+      label:"Oseltamivir — suspected influenza",
+      drug:"Oseltamivir",
+      doseMode:"oseltamivir",
+      doses:[],frequencies:[2],defaultFrequency:2,maxDose:null,maxDaily:null,
+      duration:"5 days",route:"PO",
+      note:"Initiate as early as possible. <9 months: 3 mg/kg/dose BD; 9–11 months: 3.5 mg/kg/dose BD; age 1–12 years uses NAG weight bands."
+    }
+  ],
+  urti:[
+    {id:"paeds-urti-noabx",label:"No empiric antibiotic — uncomplicated acute URTI / bronchitis",drug:"No empiric antibiotic",doseMode:"fixed",fixedText:"Supportive care and safety-netting",duration:"Not applicable",route:"—",actionLine:"No empiric antibiotic indicated for uncomplicated acute URTI / acute bronchitis; provide symptomatic treatment and safety-netting.",note:"Reassess for pneumonia or another bacterial focus if red flags or deterioration develop."}
+  ],
+  gastroenteritis:[
+    {id:"paeds-age-noabx",label:"No antibiotic — uncomplicated acute gastroenteritis",drug:"No empiric antibiotic",doseMode:"fixed",fixedText:"Oral rehydration / supportive care",duration:"Not applicable",route:"—",actionLine:"No antibiotic indicated for uncomplicated paediatric acute gastroenteritis; oral rehydration is the cornerstone of treatment.",note:"NAG: most acute gastroenteritis in children is viral and antibiotics are not recommended."}
+  ],
+  covid:[
+    {id:"paeds-covid-noabx",label:"No empiric antibacterial — follow current Malaysian COVID-19 guideline",drug:"No empiric antibacterial",doseMode:"fixed",fixedText:"Follow current COVID-19 management guideline",duration:"Not applicable",route:"—",actionLine:"No empiric antibacterial treatment indicated solely for COVID-19 infection; manage according to the current Malaysian COVID-19 guideline and assess for bacterial coinfection only when clinically suspected.",note:"Antibiotics are not generated for COVID-19 without a bacterial indication."}
+  ],
+  viral:[
+    {id:"paeds-viral-noabx",label:"No empiric antibiotic — viral fever",drug:"No empiric antibiotic",doseMode:"fixed",fixedText:"Supportive care and safety-netting",duration:"Not applicable",route:"—",actionLine:"No empiric antibiotic indicated for an uncomplicated viral febrile illness; provide symptomatic treatment, safety-netting and reassessment if the clinical course changes.",note:"Select a bacterial diagnosis if a bacterial focus is clinically identified."}
+  ],
+  dengue:[
+    {id:"paeds-dengue-noabx",label:"No routine antibiotic — dengue fever",drug:"No routine antibiotic",doseMode:"fixed",fixedText:"Dengue supportive management",duration:"Not applicable",route:"—",actionLine:"No routine antibiotic indicated for dengue fever alone; use supportive dengue management and treat a concurrent bacterial infection only when clinically identified.",note:"If a concurrent bacterial infection is suspected, select that infection category instead."}
   ]
 };
 
 const DENGUE_PLAN_ABX_CATEGORY_LABELS={
-  cap:"Community-acquired pneumonia",
+  cap:"Community-acquired pneumonia — outpatient",
   pharyngitis:"Tonsillitis / pharyngitis",
-  sinusitis:"Bacterial rhinosinusitis",
+  sinusitis:"Acute bacterial rhinosinusitis",
   aom:"Acute otitis media",
   aoe:"Acute otitis externa",
-  uti:"Urinary tract infection — lower UTI / uncomplicated cystitis"
+  uti:"Urinary tract infection — lower UTI / uncomplicated cystitis",
+  cellulitis:"Cellulitis — mild outpatient",
+  influenza:"Influenza / influenza-like illness",
+  urti:"Acute URTI / acute bronchitis — stewardship",
+  gastroenteritis:"Acute gastroenteritis — stewardship",
+  covid:"COVID-19 — stewardship / current COVID pathway",
+  viral:"Viral fever — stewardship",
+  dengue:"Dengue fever — stewardship"
 };
 
 const DENGUE_ADULT_PLAN_REGIMENS={
   cap:[
     {id:"adult-cap-amox500",label:"Amoxicillin 500 mg PO TDS for 5–7 days",line:"Start Amoxicillin 500 mg PO TDS for 5–7 days."},
     {id:"adult-cap-amox1g",label:"Amoxicillin 1 g PO TDS for 5–7 days",line:"Start Amoxicillin 1 g PO TDS for 5–7 days."},
-    {id:"adult-cap-doxy",label:"Doxycycline 100 mg PO BD for 5–7 days",line:"Start Doxycycline 100 mg PO BD for 5–7 days."},
-    {id:"adult-cap-coamox",label:"Amoxicillin/clavulanate 625 mg PO TDS for 5–7 days — with comorbidity",line:"Start Amoxicillin/clavulanate 625 mg PO TDS for 5–7 days (CAP with comorbidity)."},
-    {id:"adult-cap-levo",label:"Levofloxacin 750 mg PO OD for 5 days — antibiotic allergy with comorbidity",line:"Start Levofloxacin 750 mg PO OD for 5 days (antibiotic-allergy alternative for CAP with comorbidity)."}
+    {id:"adult-cap-doxy",label:"Doxycycline 100 mg PO BD for 5–7 days — alternative",line:"Start Doxycycline 100 mg PO BD for 5–7 days."},
+    {id:"adult-cap-coamox",label:"Amoxicillin/clavulanate 625 mg PO TDS for 5–7 days — with comorbidity",line:"Start Amoxicillin/clavulanate 625 mg PO TDS for 5–7 days."},
+    {id:"adult-cap-coamox-azithro",label:"Co-amoxiclav 625 mg TDS 5–7 d + Azithromycin 500 mg OD 3 d — comorbidity + suspected atypical",line:"Start Amoxicillin/clavulanate 625 mg PO TDS for 5–7 days; add Azithromycin 500 mg PO OD for 3 days."},
+    {id:"adult-cap-coamox-doxy",label:"Co-amoxiclav 625 mg TDS 5–7 d + Doxycycline 100 mg BD 5–7 d — comorbidity + suspected atypical",line:"Start Amoxicillin/clavulanate 625 mg PO TDS for 5–7 days; add Doxycycline 100 mg PO BD for 5–7 days."},
+    {id:"adult-cap-levo",label:"Levofloxacin 750 mg PO OD for 5 days — antibiotic allergy with comorbidity",line:"Start Levofloxacin 750 mg PO OD for 5 days.",note:"NAG states levofloxacin should be strictly reserved for antibiotic allergy because of higher adverse-event risk."}
   ],
   pharyngitis:[
-    {id:"adult-pharyngitis-penv500",label:"Phenoxymethylpenicillin 500 mg PO QID for 5–10 days",line:"Start Phenoxymethylpenicillin 500 mg PO QID for 5–10 days."},
-    {id:"adult-pharyngitis-penv1g",label:"Phenoxymethylpenicillin 1 g PO BD for 5–10 days",line:"Start Phenoxymethylpenicillin 1 g PO BD for 5–10 days."},
+    {id:"adult-pharyngitis-noabx",label:"No antibiotic — Modified Centor <3 / viral features",line:"No antibiotic indicated for uncomplicated sore throat with Modified Centor score <3; provide symptomatic treatment and safety-netting.",note:"NAG adult ENT: Modified Centor <3 does not require antibiotic treatment."},
+    {id:"adult-pharyngitis-penv500",label:"Phenoxymethylpenicillin 500 mg PO QID for 5–10 days — Centor ≥3",line:"Start Phenoxymethylpenicillin 500 mg PO QID for 5–10 days."},
+    {id:"adult-pharyngitis-penv1g",label:"Phenoxymethylpenicillin 1 g PO BD for 5–10 days — Centor ≥3",line:"Start Phenoxymethylpenicillin 1 g PO BD for 5–10 days."},
     {id:"adult-pharyngitis-benzathine",label:"Benzathine penicillin 1.2 MU IM STAT — single dose",line:"Administer Benzathine penicillin 1.2 MU IM STAT as a single dose."},
-    {id:"adult-pharyngitis-amox",label:"Amoxicillin 500 mg PO TDS for 5–10 days",line:"Start Amoxicillin 500 mg PO TDS for 5–10 days."},
-    {id:"adult-pharyngitis-ees",label:"Erythromycin ethylsuccinate 800 mg PO BD for 5–10 days — allergy alternative",line:"Start Erythromycin ethylsuccinate 800 mg PO BD for 5–10 days (antibiotic-allergy alternative)."}
+    {id:"adult-pharyngitis-amox",label:"Amoxicillin 500 mg PO TDS for 5–10 days — alternative",line:"Start Amoxicillin 500 mg PO TDS for 5–10 days."},
+    {id:"adult-pharyngitis-ees",label:"Erythromycin ethylsuccinate 800 mg PO BD for 5–10 days — allergy",line:"Start Erythromycin ethylsuccinate 800 mg PO BD for 5–10 days."}
   ],
   sinusitis:[
-    {id:"adult-sinusitis-amox500",label:"Amoxicillin 500 mg PO TDS for 5 days",line:"Start Amoxicillin 500 mg PO TDS for 5 days."},
-    {id:"adult-sinusitis-amox1g",label:"Amoxicillin 1 g PO TDS for 5 days",line:"Start Amoxicillin 1 g PO TDS for 5 days."},
-    {id:"adult-sinusitis-coamox",label:"Amoxicillin/clavulanate 625 mg PO TDS for 5 days",line:"Start Amoxicillin/clavulanate 625 mg PO TDS for 5 days."},
-    {id:"adult-sinusitis-doxy",label:"Doxycycline 100 mg PO BD for 5 days — penicillin allergy",line:"Start Doxycycline 100 mg PO BD for 5 days (penicillin-allergy alternative)."},
-    {id:"adult-sinusitis-azithro",label:"Azithromycin 500 mg PO OD for 3 days — pregnancy with antibiotic allergy",line:"Start Azithromycin 500 mg PO OD for 3 days (pregnancy with antibiotic allergy)."}
+    {id:"adult-sinusitis-noabx",label:"No antibiotic — likely viral acute rhinosinusitis",line:"No antibiotic indicated for likely viral acute rhinosinusitis; provide symptomatic treatment and safety-netting.",note:"NAG notes that most acute rhinosinusitis is viral and self-limiting."},
+    {id:"adult-sinusitis-amox500",label:"Amoxicillin 500 mg PO TDS for 5 days — ABRS",line:"Start Amoxicillin 500 mg PO TDS for 5 days."},
+    {id:"adult-sinusitis-amox1g",label:"Amoxicillin 1 g PO TDS for 5 days — ABRS",line:"Start Amoxicillin 1 g PO TDS for 5 days."},
+    {id:"adult-sinusitis-coamox",label:"Amoxicillin/clavulanate 625 mg PO TDS for 5 days — ABRS",line:"Start Amoxicillin/clavulanate 625 mg PO TDS for 5 days."},
+    {id:"adult-sinusitis-doxy",label:"Doxycycline 100 mg PO BD for 5 days — penicillin allergy",line:"Start Doxycycline 100 mg PO BD for 5 days."},
+    {id:"adult-sinusitis-azithro",label:"Azithromycin 500 mg PO OD for 3 days — pregnancy + antibiotic allergy",line:"Start Azithromycin 500 mg PO OD for 3 days."}
   ],
-  aom:[],
+  aom:[
+    {id:"adult-aom-observe",label:"No immediate antibiotic — non-severe AOM; analgesia + review 48–72 h",line:"No immediate antibiotic selected for non-severe acute otitis media; provide adequate analgesia, safety-netting and reassess within 48–72 hours if symptoms do not improve.",note:"Adult NAG A10 delegates AOM management to the current Primary Care C2 pathway; apply otoscopy findings, severity and risk factors."},
+    {id:"adult-aom-amox",label:"Amoxicillin 500 mg PO TDS for 5–7 days — when antibiotic indicated",line:"Start Amoxicillin 500 mg PO TDS for 5–7 days.",note:"Use the current NAG Primary Care C2 AOM pathway and clinical severity criteria."},
+    {id:"adult-aom-coamox",label:"Amoxicillin/clavulanate 625 mg PO TDS for 5–7 days — severe/perforation/recent amoxicillin",line:"Start Amoxicillin/clavulanate 625 mg PO TDS for 5–7 days.",note:"Use the current NAG Primary Care C2 AOM pathway and clinical severity criteria."},
+    {id:"adult-aom-ees400",label:"Erythromycin ethylsuccinate 400 mg PO QID for 5–7 days — penicillin allergy",line:"Start Erythromycin ethylsuccinate 400 mg PO QID for 5–7 days.",note:"Check allergy type and current NAG Primary Care C2 pathway."},
+    {id:"adult-aom-ees800",label:"Erythromycin ethylsuccinate 800 mg PO BD for 5–7 days — penicillin allergy",line:"Start Erythromycin ethylsuccinate 800 mg PO BD for 5–7 days.",note:"Check allergy type and current NAG Primary Care C2 pathway."}
+  ],
   aoe:[
-    {id:"adult-aoe-local-clox",label:"Cloxacillin 500 mg PO QID for 5 days — acute localised otitis externa",line:"Start Cloxacillin 500 mg PO QID for 5 days (acute localised otitis externa)."},
-    {id:"adult-aoe-local-cephalexin",label:"Cephalexin 500 mg PO QID for 5 days — acute localised otitis externa",line:"Start Cephalexin 500 mg PO QID for 5 days (acute localised otitis externa)."},
-    {id:"adult-aoe-local-clinda",label:"Clindamycin 600 mg PO TDS for 5 days — penicillin allergy",line:"Start Clindamycin 600 mg PO TDS for 5 days (penicillin-allergy alternative for acute localised otitis externa)."},
-    {id:"adult-aoe-diffuse-ofloxacin",label:"Ofloxacin 0.3% otic solution 10 drops affected ear OD for 7 days — diffuse otitis externa",line:"Start Ofloxacin 0.3% otic solution: instill 10 drops into the affected ear(s) OD for 7 days (acute diffuse otitis externa)."}
+    {id:"adult-aoe-local-clox",label:"Cloxacillin 500 mg PO QID for 5 days — acute localised OE",line:"Start Cloxacillin 500 mg PO QID for 5 days."},
+    {id:"adult-aoe-local-cephalexin",label:"Cephalexin 500 mg PO QID for 5 days — acute localised OE",line:"Start Cephalexin 500 mg PO QID for 5 days."},
+    {id:"adult-aoe-local-clinda",label:"Clindamycin 600 mg PO TDS for 5 days — penicillin allergy",line:"Start Clindamycin 600 mg PO TDS for 5 days."},
+    {id:"adult-aoe-diffuse-ofloxacin",label:"Ofloxacin 0.3% otic 10 drops affected ear OD for 7 days — diffuse OE",line:"Start Ofloxacin 0.3% otic solution: instill 10 drops into the affected ear(s) OD for 7 days.",note:"Aural toileting is required in discharging ears; topical steroid may be added when fungal infection is not suspected."}
   ],
   uti:[
-    {id:"adult-uti-nitro50",label:"Nitrofurantoin immediate-release 50 mg PO QID for 3–5 days",line:"Start Nitrofurantoin immediate-release 50 mg PO QID for 3–5 days.",note:"For uncomplicated lower UTI only. Avoid nitrofurantoin if GFR <30 mL/min and in the third trimester of pregnancy."},
-    {id:"adult-uti-nitro100qid",label:"Nitrofurantoin immediate-release 100 mg PO QID for 3–5 days",line:"Start Nitrofurantoin immediate-release 100 mg PO QID for 3–5 days.",note:"For uncomplicated lower UTI only. Avoid nitrofurantoin if GFR <30 mL/min and in the third trimester of pregnancy."},
-    {id:"adult-uti-nitro100bd",label:"Nitrofurantoin sustained-release 100 mg PO BD for 3–5 days",line:"Start Nitrofurantoin sustained-release 100 mg PO BD for 3–5 days.",note:"For uncomplicated lower UTI only. Avoid nitrofurantoin if GFR <30 mL/min and in the third trimester of pregnancy."},
+    {id:"adult-uti-nitro50",label:"Nitrofurantoin immediate-release 50 mg PO QID for 3–5 days",line:"Start Nitrofurantoin immediate-release 50 mg PO QID for 3–5 days.",note:"Uncomplicated lower UTI only. Avoid nitrofurantoin if GFR <30 mL/min and in the third trimester of pregnancy."},
+    {id:"adult-uti-nitro100qid",label:"Nitrofurantoin immediate-release 100 mg PO QID for 3–5 days",line:"Start Nitrofurantoin immediate-release 100 mg PO QID for 3–5 days.",note:"Uncomplicated lower UTI only. Avoid nitrofurantoin if GFR <30 mL/min and in the third trimester of pregnancy."},
+    {id:"adult-uti-nitro100bd",label:"Nitrofurantoin sustained-release 100 mg PO BD for 3–5 days",line:"Start Nitrofurantoin sustained-release 100 mg PO BD for 3–5 days.",note:"Uncomplicated lower UTI only. Avoid nitrofurantoin if GFR <30 mL/min and in the third trimester of pregnancy."},
     {id:"adult-uti-coamox",label:"Amoxicillin/clavulanate 625 mg PO TDS for 3–5 days",line:"Start Amoxicillin/clavulanate 625 mg PO TDS for 3–5 days."},
     {id:"adult-uti-ampisul375",label:"Ampicillin/sulbactam 375 mg PO BD for 3–5 days",line:"Start Ampicillin/sulbactam 375 mg PO BD for 3–5 days."},
     {id:"adult-uti-ampisul750",label:"Ampicillin/sulbactam 750 mg PO BD for 3–5 days",line:"Start Ampicillin/sulbactam 750 mg PO BD for 3–5 days."},
-    {id:"adult-uti-cephalexin",label:"Cephalexin 500 mg PO BD for 3–5 days",line:"Start Cephalexin 500 mg PO BD for 3–5 days."},
-    {id:"adult-uti-cefuroxime250",label:"Cefuroxime 250 mg PO BD for 3–5 days",line:"Start Cefuroxime 250 mg PO BD for 3–5 days."},
-    {id:"adult-uti-cefuroxime500",label:"Cefuroxime 500 mg PO BD for 3–5 days",line:"Start Cefuroxime 500 mg PO BD for 3–5 days."},
-    {id:"adult-uti-fosfomycin",label:"Fosfomycin 3 g PO STAT — single dose",line:"Start Fosfomycin 3 g PO STAT as a single dose.",note:"For uncomplicated lower UTI. NAG notes reduced reliability for gram-negative organisms other than E. coli; interpret culture and susceptibility when available."}
+    {id:"adult-uti-cephalexin",label:"Cephalexin 500 mg PO BD for 3–5 days — alternative",line:"Start Cephalexin 500 mg PO BD for 3–5 days."},
+    {id:"adult-uti-cefuroxime250",label:"Cefuroxime 250 mg PO BD for 3–5 days — alternative",line:"Start Cefuroxime 250 mg PO BD for 3–5 days."},
+    {id:"adult-uti-cefuroxime500",label:"Cefuroxime 500 mg PO BD for 3–5 days — alternative",line:"Start Cefuroxime 500 mg PO BD for 3–5 days."},
+    {id:"adult-uti-fosfomycin",label:"Fosfomycin 3 g PO STAT — single dose",line:"Start Fosfomycin 3 g PO STAT as a single dose.",note:"Uncomplicated lower UTI. NAG notes reduced reliability for gram-negative organisms other than E. coli; use culture/susceptibility when available."}
+  ],
+  cellulitis:[
+    {id:"adult-cellulitis-clox",label:"Cloxacillin 500 mg PO QID for 5–10 days — preferred",line:"Start Cloxacillin 500 mg PO QID for 5–10 days."},
+    {id:"adult-cellulitis-cephalexin",label:"Cephalexin 1 g PO BD for 5–10 days — preferred",line:"Start Cephalexin 1 g PO BD for 5–10 days."},
+    {id:"adult-cellulitis-amox",label:"Amoxicillin 500 mg PO TDS for 5–10 days — preferred",line:"Start Amoxicillin 500 mg PO TDS for 5–10 days."},
+    {id:"adult-cellulitis-coamox",label:"Amoxicillin/clavulanate 625 mg PO TDS for 5–10 days — alternative",line:"Start Amoxicillin/clavulanate 625 mg PO TDS for 5–10 days."},
+    {id:"adult-cellulitis-ampisul",label:"Ampicillin/sulbactam 375 mg PO BD for 5–10 days — alternative",line:"Start Ampicillin/sulbactam 375 mg PO BD for 5–10 days."},
+    {id:"adult-cellulitis-cefuroxime",label:"Cefuroxime 500 mg PO BD for 5–10 days — alternative",line:"Start Cefuroxime 500 mg PO BD for 5–10 days."}
+  ],
+  influenza:[
+    {id:"adult-influenza-oseltamivir",label:"Oseltamivir 75 mg PO BD for 5 days",line:"Start Oseltamivir 75 mg PO BD for 5 days.",note:"NAG: clinical benefit is greatest when started within 48 hours; hospitalized or immunocompromised patients may be treated regardless of symptom duration and may require longer treatment."}
+  ],
+  urti:[
+    {id:"adult-urti-noabx",label:"No empiric antibiotic — uncomplicated acute URTI / bronchitis",line:"No empiric antibiotic indicated for uncomplicated acute URTI / acute bronchitis; provide symptomatic treatment and safety-netting.",note:"Reassess for pneumonia or another bacterial focus if red flags, focal chest findings, hypoxaemia or clinical deterioration develop."}
+  ],
+  gastroenteritis:[
+    {id:"adult-age-noabx",label:"No empiric antibiotic — uncomplicated acute gastroenteritis",line:"No empiric antibiotic indicated for uncomplicated acute gastroenteritis; prioritise oral rehydration, electrolyte replacement and safety-netting.",note:"NAG: most community-acquired watery diarrhoea is self-limiting and viral; antibiotics should be discouraged unless a specific bacterial indication is present."}
+  ],
+  covid:[
+    {id:"adult-covid-noabx",label:"No empiric antibacterial — follow current Malaysian COVID-19 guideline",line:"No empiric antibacterial treatment indicated solely for COVID-19 infection; manage according to the current Malaysian COVID-19 guideline and assess for bacterial coinfection only when clinically suspected."}
+  ],
+  viral:[
+    {id:"adult-viral-noabx",label:"No empiric antibiotic — viral fever",line:"No empiric antibiotic indicated for an uncomplicated viral febrile illness; provide symptomatic treatment, safety-netting and reassessment if the clinical course changes."}
+  ],
+  dengue:[
+    {id:"adult-dengue-noabx",label:"No routine antibiotic — dengue fever",line:"No routine antibiotic indicated for dengue fever alone; use supportive dengue management and treat a concurrent bacterial infection only when clinically identified.",note:"If a concurrent bacterial infection is suspected, select that infection category instead."}
   ]
 };
 
@@ -11092,18 +11321,27 @@ function buildPaediatricPlanOptions(config){
   const category=planValue(config.categoryId)||"cap";
   const weight=Number(planValue(config.weightId));
   const ageMonths=planAgeMonths(config);
+  const ageYears=planAgeYears(config);
   if(!Number.isFinite(weight)||weight<=0) return [];
   if(category==="uti"&&ageMonths>0&&ageMonths<3) return [];
 
   const options=[];
+  if(category==="cellulitis" && weight>25){
+    return [
+      {id:"paeds-cellulitis-adult-clox",label:"Cloxacillin 500 mg PO QID for 5–7 days — >25 kg adult dose",line:"Start Cloxacillin 500 mg PO QID for 5–7 days.",note:"NAG paediatric SSTI: for children >25 kg, use adult dosage."},
+      {id:"paeds-cellulitis-adult-cephalexin",label:"Cephalexin 1 g PO BD for 5–7 days — >25 kg adult dose",line:"Start Cephalexin 1 g PO BD for 5–7 days.",note:"NAG paediatric SSTI: for children >25 kg, use adult dosage."}
+    ];
+  }
   for(const regimen of (amsRegimens[category]||[]).filter(item=>item.doseMode!=="oseltamivir")){
+    if(regimen.minAgeYears!=null && (!ageYears || ageYears<regimen.minAgeYears)) continue;
+    if(regimen.maxAgeYears!=null && ageYears>regimen.maxAgeYears) continue;
     const duration=planRegimenDuration(regimen,config);
     if(!duration) continue;
     if(regimen.doseMode==="fixed"){
       options.push({
         id:regimen.id,
-        label:`${regimen.drug}: ${regimen.fixedText} for ${duration}`,
-        line:`Start ${regimen.drug}: ${regimen.fixedText} for ${duration}.`,
+        label:regimen.label||`${regimen.drug}: ${regimen.fixedText} for ${duration}`,
+        line:regimen.actionLine||`Start ${regimen.drug}: ${regimen.fixedText} for ${duration}.`,
         note:regimen.note||""
       });
       continue;
@@ -11127,6 +11365,14 @@ function buildPaediatricPlanOptions(config){
         }
       }
     }
+  }
+  if(category==="influenza"){
+    const ageMonths=planAgeMonths(config);
+    let dose=0,basis="";
+    if(ageMonths>0 && ageMonths<9){ dose=3*weight; basis="3 mg/kg/dose"; }
+    else if(ageMonths>=9 && ageMonths<12){ dose=3.5*weight; basis="3.5 mg/kg/dose"; }
+    else { if(weight<=15) dose=30; else if(weight<=23) dose=45; else if(weight<=40) dose=60; else dose=75; basis="NAG weight-band dose"; }
+    options.push({id:"influenza-oseltamivir-auto",label:`Oseltamivir ${formatPlanMg(dose)} mg PO BD for 5 days (${basis})`,line:`Start Oseltamivir ${formatPlanMg(dose)} mg PO BD for 5 days.`,note:"Initiate as early as possible; apply NAG age/weight dosing."});
   }
   return options;
 }
@@ -11155,14 +11401,12 @@ function populatePlanAntibioticRegimens(config){
   const category=planValue(config.categoryId)||"cap";
   const paediatric=planValue(config.groupId)==="paeds";
   const options=buildPlanAntibioticOptions(config);
-  let placeholder="Select a complete NAG antibiotic option";
+  let placeholder="Select a NAG antimicrobial / stewardship option";
   if(paediatric){
     const weight=Number(planValue(config.weightId));
     if(!Number.isFinite(weight)||weight<=0) placeholder="Enter paediatric weight above to generate complete options";
     else if(category==="aom"&&!planAgeYears(config)) placeholder="Enter paediatric age above to determine AOM duration";
     else if(category==="uti"&&planAgeMonths(config)>0&&planAgeMonths(config)<3) placeholder="Age <3 months with suspected UTI: arrange urgent assessment / referral";
-  }else if(category==="aom"){
-    placeholder="Adult AOM: use custom prescription and current primary-care pathway";
   }
   select.innerHTML=`<option value="">${placeholder}</option>`+
     options.map(item=>`<option value="${item.id}">${item.label}</option>`).join("");
@@ -11186,10 +11430,7 @@ function getPlanAntibioticPrescription(config){
       return {valid:false,message:"Suspected UTI in a child younger than 3 months requires urgent clinical assessment / referral; an outpatient auto-regimen is not generated."};
     }
   }
-  if(category==="aom"&&planValue(config.groupId)!=="paeds"){
-    return {valid:false,message:"Adult AOM auto-regimen is not generated. Enter a custom prescription after checking the current primary-care pathway."};
-  }
-  return {valid:false,message:"Select a complete NAG antibiotic option or enter a custom antibiotic prescription."};
+  return {valid:false,message:"Select a NAG antimicrobial / stewardship option or enter a custom antimicrobial prescription."};
 }
 function updatePlanAntibioticResult(config){
   const result=planElement(config.resultId);
@@ -11218,7 +11459,7 @@ function validatePlanAntibiotic(config){
   if(!planAntibioticEnabled(config)) return true;
   const prescription=getPlanAntibioticPrescription(config);
   if(prescription.valid) return true;
-  alert(prescription.message||"Complete antibiotic details before generating the note.");
+  alert(prescription.message||"Complete antimicrobial details before generating the note.");
   planElement(config.panelId)?.scrollIntoView({behavior:"smooth",block:"center"});
   return false;
 }
@@ -11272,67 +11513,92 @@ function aomDuration(){
   return years<2 ? "7–10 days" : "5–7 days";
 }
 
+function amsCalculatorPaediatric(){
+  return value("abxGroup")==="paeds";
+}
+
+function getAmsRegimen(){
+  const category=value("abxCategory");
+  if(amsCalculatorPaediatric()){
+    return (amsRegimens[category]||[]).find(item=>item.id===value("abxRegimen"))||null;
+  }
+  return (DENGUE_ADULT_PLAN_REGIMENS[category]||[]).find(item=>item.id===value("abxRegimen"))||null;
+}
+
+function syncAmsCalculatorGroup(){
+  const paeds=amsCalculatorPaediatric();
+  ["abxWeightWrap","abxAgeWrap","abxAgeUnitWrap"].forEach(id=>$(id)?.classList.toggle("hidden",!paeds));
+  refreshAmsRegimens();
+}
+
 function refreshAmsRegimens(){
   const category=value("abxCategory");
-  const list=amsRegimens[category]||[];
-  $("abxRegimen").innerHTML=list
-    .map(item=>`<option value="${item.id}">${item.label}</option>`)
-    .join("");
+  const list=amsCalculatorPaediatric() ? (amsRegimens[category]||[]) : (DENGUE_ADULT_PLAN_REGIMENS[category]||[]);
+  $("abxRegimen").innerHTML=list.map(item=>`<option value="${item.id}">${item.label}</option>`).join("");
   refreshAmsRegimenFields();
 }
 
 function updateAmsSummary(){
   const regimen=getAmsRegimen();
-  if(!regimen) return;
+  if(!regimen){
+    $("abxRegimenSummary").textContent="No NAG option is available for this category.";
+    return;
+  }
+  if(!amsCalculatorPaediatric()){
+    $("abxRegimenSummary").textContent=regimen.note||"Adult outpatient NAG option. Confirm the clinical pathway criteria before prescribing.";
+    return;
+  }
   const duration=regimen.duration==="age-based-aom" ? aomDuration() : regimen.duration;
-  $("abxRegimenSummary").textContent=`${regimen.drug} • ${regimen.route} • Duration: ${duration}. ${regimen.note}`;
+  $("abxRegimenSummary").textContent=`${regimen.drug} • ${regimen.route} • Duration: ${duration}. ${regimen.note||""}`;
 }
 
 function refreshAmsRegimenFields(){
   const regimen=getAmsRegimen();
-  if(!regimen) return;
-
+  const paeds=amsCalculatorPaediatric();
+  if(!regimen){
+    $("abxDoseChoiceWrap")?.classList.add("hidden");
+    $("abxFrequencyWrap")?.classList.add("hidden");
+    updateAmsSummary();
+    return;
+  }
+  if(!paeds){
+    $("abxDoseChoiceWrap").classList.add("hidden");
+    $("abxFrequencyWrap").classList.add("hidden");
+    updateAmsSummary();
+    return;
+  }
   const needsDose=regimen.doseMode==="mgkgday"||regimen.doseMode==="mgkgdose";
-  const needsFrequency=needsDose;
-
   $("abxDoseChoiceWrap").classList.toggle("hidden",!needsDose);
-  $("abxFrequencyWrap").classList.toggle("hidden",!needsFrequency);
-
+  $("abxFrequencyWrap").classList.toggle("hidden",!needsDose);
   const doseUnit=regimen.doseMode==="mgkgdose"?"mg/kg/dose":"mg/kg/day";
-  $("abxDoseChoice").innerHTML=(regimen.doses||[])
-    .map(dose=>`<option value="${dose}">${dose} ${doseUnit}</option>`)
-    .join("");
-
-  $("abxFrequency").innerHTML=(regimen.frequencies||[])
-    .map(freq=>`<option value="${freq}" ${freq===regimen.defaultFrequency?"selected":""}>${freq} dose${freq>1?"s":""}/day</option>`)
-    .join("");
-
-  const duration=regimen.duration==="age-based-aom" ? aomDuration() : regimen.duration;
-  $("abxRegimenSummary").textContent=
-    `${regimen.drug} • ${regimen.route} • Duration: ${duration}. ${regimen.note}`;
+  $("abxDoseChoice").innerHTML=(regimen.doses||[]).map(dose=>`<option value="${dose}">${dose} ${doseUnit}</option>`).join("");
+  $("abxFrequency").innerHTML=(regimen.frequencies||[]).map(freq=>`<option value="${freq}" ${freq===regimen.defaultFrequency?"selected":""}>${freq} dose${freq>1?"s":""}/day</option>`).join("");
+  updateAmsSummary();
 }
 
+$("abxGroup").addEventListener("change",syncAmsCalculatorGroup);
 $("abxCategory").addEventListener("change",refreshAmsRegimens);
 $("abxRegimen").addEventListener("change",refreshAmsRegimenFields);
 $("abxAge").addEventListener("input",updateAmsSummary);
 $("abxAgeUnit").addEventListener("change",updateAmsSummary);
 
 $("abxCalculate").addEventListener("click",()=>{
-
   const regimen=getAmsRegimen();
-  const weight=Number(value("abxWeight"));
-
   if(!regimen){
-    $("abxResult").textContent="Select an antimicrobial regimen.";
+    $("abxResult").textContent="Select a NAG antimicrobial / stewardship option.";
     return;
   }
 
+  if(!amsCalculatorPaediatric()){
+    $("abxResult").innerHTML=`<strong>NAG recommendation</strong><br>${regimen.line}${regimen.note?`<br><br><em>${regimen.note}</em>`:""}`;
+    return;
+  }
+
+  const weight=Number(value("abxWeight"));
+
   if(regimen.doseMode==="fixed"){
-    $("abxResult").innerHTML=
-      `<strong>${regimen.drug}</strong><br>`+
-      `Dose: <strong>${regimen.fixedText}</strong><br>`+
-      `Duration: <strong>${regimen.duration}</strong><br><br>`+
-      `<em>${regimen.note}</em>`;
+    const recommendation=regimen.actionLine||`${regimen.drug}: ${regimen.fixedText}${regimen.duration&&regimen.duration!=="Not applicable"?` for ${regimen.duration}`:""}.`;
+    $("abxResult").innerHTML=`<strong>NAG recommendation</strong><br>${recommendation}${regimen.note?`<br><br><em>${regimen.note}</em>`:""}`;
     return;
   }
 
@@ -11344,106 +11610,56 @@ $("abxCalculate").addEventListener("click",()=>{
   if(regimen.doseMode==="oseltamivir"){
     const years=ageInYears();
     const months=years*12;
-    let dose=0;
-    let basis="";
-
-    if(months>0 && months<9){
-      dose=3*weight;
-      basis="Age <9 months: 3 mg/kg/dose";
-    }else if(months>=9 && months<12){
-      dose=3.5*weight;
-      basis="Age 9–11 months: 3.5 mg/kg/dose";
-    }else{
-      if(weight<=15) dose=30;
-      else if(weight<=23) dose=45;
-      else if(weight<=40) dose=60;
-      else dose=75;
-      basis="Age 1–12 years: weight-band dosing";
-    }
-
-    $("abxResult").innerHTML=
-      `<strong>Oseltamivir</strong><br>`+
-      `${basis}<br>`+
-      `Calculated prescription: <strong>${dose.toFixed(1)} mg per dose, twice daily</strong><br>`+
-      `Duration: <strong>5 days</strong>`+
-      `<br><br><em>${regimen.note}</em>`;
+    let dose=0,basis="";
+    if(months>0 && months<9){ dose=3*weight; basis="Age <9 months: 3 mg/kg/dose"; }
+    else if(months>=9 && months<12){ dose=3.5*weight; basis="Age 9–11 months: 3.5 mg/kg/dose"; }
+    else { if(weight<=15) dose=30; else if(weight<=23) dose=45; else if(weight<=40) dose=60; else dose=75; basis="Age 1–12 years: NAG weight-band dosing"; }
+    $("abxResult").innerHTML=`<strong>Oseltamivir</strong><br>${basis}<br>Calculated prescription: <strong>${dose.toFixed(1)} mg per dose, twice daily</strong><br>Duration: <strong>5 days</strong>${regimen.note?`<br><br><em>${regimen.note}</em>`:""}`;
     return;
   }
 
   if(regimen.doseMode==="azithromycin"){
-    const day1=Math.min(weight*10,500);
-    const day2=Math.min(weight*5,250);
-
-    let result=
-      `<strong>Azithromycin</strong><br>`+
-      `Day 1: <strong>${day1.toFixed(1)} mg once</strong>`+
-      `<br>Days 2–5: <strong>${day2.toFixed(1)} mg once daily</strong>`;
-
-    result+=`<br>Duration: <strong>5 days</strong>`+
-      `<br><br><em>${regimen.note}</em>`;
-
-    $("abxResult").innerHTML=result;
+    const day1=Math.min(weight*10,500),day2=Math.min(weight*5,250);
+    $("abxResult").innerHTML=`<strong>Azithromycin</strong><br>Day 1: <strong>${day1.toFixed(1)} mg once</strong><br>Days 2–5: <strong>${day2.toFixed(1)} mg once daily</strong><br>Duration: <strong>5 days</strong>${regimen.note?`<br><br><em>${regimen.note}</em>`:""}`;
     return;
   }
 
   const mgkg=Number(value("abxDoseChoice"));
   const frequency=Number(value("abxFrequency"));
+  if(!mgkg||!frequency){ $("abxResult").textContent="Select dose and frequency."; return; }
 
-  if(!mgkg||!frequency){
-    $("abxResult").textContent="Select dose and frequency.";
-    return;
-  }
-
-  let dailyDose=0;
-  let perDose=0;
-  let capNotes=[];
-
+  let dailyDose=0,perDose=0,capNotes=[];
   if(regimen.doseMode==="mgkgdose"){
     perDose=weight*mgkg;
-    if(regimen.maxDose && perDose>regimen.maxDose){
-      perDose=regimen.maxDose;
-      capNotes.push(`capped at maximum ${regimen.maxDose} mg/dose`);
-    }
+    if(regimen.maxDose && perDose>regimen.maxDose){ perDose=regimen.maxDose; capNotes.push(`capped at maximum ${regimen.maxDose} mg/dose`); }
     dailyDose=perDose*frequency;
-    if(regimen.maxDaily && dailyDose>regimen.maxDaily){
-      dailyDose=regimen.maxDaily;
-      perDose=dailyDose/frequency;
-      capNotes.push(`capped at maximum ${regimen.maxDaily} mg/day`);
-    }
+    if(regimen.maxDaily && dailyDose>regimen.maxDaily){ dailyDose=regimen.maxDaily; perDose=dailyDose/frequency; capNotes.push(`capped at maximum ${regimen.maxDaily} mg/day`); }
   }else{
     dailyDose=weight*mgkg;
-    if(regimen.maxDaily && dailyDose>regimen.maxDaily){
-      dailyDose=regimen.maxDaily;
-      capNotes.push(`capped at maximum ${regimen.maxDaily} mg/day`);
-    }
+    if(regimen.maxDaily && dailyDose>regimen.maxDaily){ dailyDose=regimen.maxDaily; capNotes.push(`capped at maximum ${regimen.maxDaily} mg/day`); }
     perDose=dailyDose/frequency;
-    if(regimen.maxDose && perDose>regimen.maxDose){
-      perDose=regimen.maxDose;
-      dailyDose=perDose*frequency;
-      capNotes.push(`capped at maximum ${regimen.maxDose} mg/dose`);
-    }
+    if(regimen.maxDose && perDose>regimen.maxDose){ perDose=regimen.maxDose; dailyDose=perDose*frequency; capNotes.push(`capped at maximum ${regimen.maxDose} mg/dose`); }
+  }
+
+  // NAG paediatric SSTI notes that children >25 kg should use adult dosage.
+  if(value("abxCategory")==="cellulitis" && weight>25){
+    if(regimen.id==="cellulitis-clox"){ perDose=500; dailyDose=2000; capNotes=["weight >25 kg: adult NAG dose applied (500 mg q6h)"]; }
+    if(regimen.id==="cellulitis-cephalexin"){ perDose=1000; dailyDose=2000; capNotes=["weight >25 kg: adult NAG dose applied (1 g q12h)"]; }
   }
 
   const duration=regimen.duration==="age-based-aom" ? aomDuration() : regimen.duration;
   const component=regimen.doseLabel ? ` (${regimen.doseLabel})` : "";
-
-  let result=
-    `<strong>${regimen.drug}</strong><br>`+
-    `Selected dose: ${mgkg} ${regimen.doseMode==="mgkgdose"?"mg/kg/dose":"mg/kg/day"}${component} in ${frequency} dose${frequency>1?"s":""}/day<br>`+
-    `Calculated prescription: <strong>${perDose.toFixed(1)} mg per dose, ${frequency} time${frequency>1?"s":""}/day</strong><br>`+
-    `Total delivered: ${dailyDose.toFixed(1)} mg/day<br>`+
-    `Duration: <strong>${duration}</strong>`;
-
+  let result=`<strong>${regimen.drug}</strong><br>Selected dose: ${mgkg} ${regimen.doseMode==="mgkgdose"?"mg/kg/dose":"mg/kg/day"}${component} in ${frequency} dose${frequency>1?"s":""}/day<br>Calculated prescription: <strong>${perDose.toFixed(1)} mg per dose, ${frequency} time${frequency>1?"s":""}/day</strong><br>Total delivered: ${dailyDose.toFixed(1)} mg/day<br>Duration: <strong>${duration}</strong>`;
   if(regimen.maxDose) result+=`<br>Maximum: ${regimen.maxDose} mg/dose`;
   if(regimen.maxDaily) result+=`<br>Maximum: ${regimen.maxDaily} mg/day`;
-  if(capNotes.length) result+=`<br><strong>Maximum applied:</strong> ${capNotes.join("; ")}.`;
-
-  result+=`<br><br><em>${regimen.note}</em>`;
+  if(capNotes.length) result+=`<br><strong>Maximum / adult-dose rule applied:</strong> ${capNotes.join("; ")}.`;
+  if(regimen.note) result+=`<br><br><em>${regimen.note}</em>`;
   $("abxResult").innerHTML=result;
 });
 
-refreshAmsRegimens();
+syncAmsCalculatorGroup();
 window.initialiseDenguePlanAntibiotic(window.DENGUE_NEW_PLAN_ABX_CONFIG,renderDenguePlanPreview);
+if(typeof syncDiagnosisAmsLink==="function") syncDiagnosisAmsLink();
 
 // Vitals
 const bands=[{max:.25,label:"0–3 months",hr:[115,170],rr:[25,60],sbp:[60,105]},{max:1,label:"3–12 months",hr:[105,170],rr:[20,55],sbp:[70,105]},{max:2,label:"1–2 years",hr:[95,150],rr:[20,40],sbp:[70,105]},{max:5,label:"2–5 years",hr:[80,140],rr:[17,30],sbp:[75,110]},{max:12,label:"6–12 years",hr:[60,130],rr:[15,30],sbp:[80,120]},{max:18,label:"13–18 years",hr:[60,115],rr:[14,25],sbp:[90,130]}];
@@ -14066,11 +14282,15 @@ function followUpPlanLines(){
       lines.push(`TCA on ${date} for clinical review and repeat FBC.`);
     }
   }else if(option==="antibiotic"){
-    const antibiotic=window.getPlanAntibioticPrescription(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG);
-    lines.push(antibiotic.valid?antibiotic.line:"Start antibiotic / antimicrobial — complete the prescription before finalising the plan.");
-    lines.push("Advise on medication compliance and to complete the prescribed treatment course.");
-    lines.push("TCA STAT if any allergic reaction or medication side effect develops.");
-    lines.push("TCA back if symptoms are not resolved for reassessment.");
+    const antimicrobial=window.getPlanAntibioticPrescription(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG);
+    const treatmentLine=antimicrobial.valid?antimicrobial.line:"Complete the NAG antimicrobial / stewardship selection before finalising the plan.";
+    lines.push(treatmentLine);
+    const noDrug=/^No (empiric |routine |immediate )?(antibiotic|antibacterial)/i.test(treatmentLine);
+    if(!noDrug){
+      lines.push("Advise on medication compliance and to complete the prescribed treatment course.");
+      lines.push("If medication is started, TCA STAT for any allergic reaction or significant medication side effect.");
+    }
+    lines.push("TCA back if symptoms are not resolving or worsen for reassessment.");
   }else if(option==="others"){
     lines.push(...extraLines);
   }else if(option==="discharge"){
@@ -14095,7 +14315,7 @@ function renderDengueFollowUpPlan(){
   const headings={
     refer:"Option 1 — ED referral",
     monitoring:"Option 2 — Outpatient follow-up / serial FBC",
-    antibiotic:"Option 3 — Treat concurrent infection / start antibiotic",
+    antibiotic:"Option 3 — Concurrent infection / antimicrobial plan",
     others:"Option 4 — Others / custom plan",
     discharge:"Option 5 — Discharge from FBC monitoring"
   };
@@ -18332,7 +18552,13 @@ window.renderIucdClerking=()=>{renderEligibility();renderSound();};
   "use strict";
   const groupButtons=[...document.querySelectorAll("[data-module-group]")];
   const categoryButtons=[...document.querySelectorAll("[data-dashboard-category]")];
+  const utilityButtons=[...document.querySelectorAll("[data-dashboard-utility]")];
   const moduleCards=[...document.querySelectorAll("[data-module-category]")];
+  const dashboardMeta={
+    opd:{title:"OPD tools",subtitle:"Dengue and neurodevelopment clerking."},
+    mch:{title:"MCH tools",subtitle:"IUCD insertion and neonatal jaundice clerking."},
+    ncd:{title:"NCD tools",subtitle:"Diabetes follow-up clerking and management support."}
+  };
 
   function setGroup(group, expanded){
     const button=document.querySelector(`[data-module-group="${group}"]`);
@@ -18356,14 +18582,20 @@ window.renderIucdClerking=()=>{renderEligibility();renderSound();};
     });
   });
 
-  function filterDashboard(category="all"){
+  function filterDashboard(category="opd"){
+    if(!dashboardMeta[category]) category="opd";
     let visible=0;
     categoryButtons.forEach(button=>button.classList.toggle("active",button.dataset.dashboardCategory===category));
     moduleCards.forEach(card=>{
-      const show=category==="all" || card.dataset.moduleCategory===category;
+      const show=card.dataset.moduleCategory===category;
       card.classList.toggle("hidden-by-category",!show);
       if(show) visible++;
     });
+    const meta=dashboardMeta[category];
+    const title=document.getElementById("dashboardModuleTitle");
+    const subtitle=document.getElementById("dashboardModuleSubtitle");
+    if(title) title.textContent=meta.title;
+    if(subtitle) subtitle.textContent=meta.subtitle;
     document.getElementById("moduleEmptyState")?.classList.toggle("hidden",visible>0);
     try{localStorage.setItem("medassistModuleCategory",category);}catch(_){ }
   }
@@ -18371,10 +18603,15 @@ window.renderIucdClerking=()=>{renderEligibility();renderSound();};
 
   categoryButtons.forEach(button=>button.addEventListener("click",()=>filterDashboard(button.dataset.dashboardCategory)));
 
-  document.getElementById("displayAllModules")?.addEventListener("click",()=>{
-    window.showPage?.("dashboard");
-    filterDashboard("all");
-  });
+  utilityButtons.forEach(button=>button.addEventListener("click",()=>{
+    const utility=button.dataset.dashboardUtility;
+    if(utility==="lhi"){
+      window.open("https://nalury.mrichealthcare.com/","_blank","noopener,noreferrer");
+      return;
+    }
+    if(utility==="lab") window.showPage?.("lablist");
+    if(utility==="calculator") window.showPage?.("calculator");
+  }));
 
   function setNeuroSidebarActive(target){
     document.querySelectorAll('.module-child[data-page="neurodevelopment"]').forEach(button=>{
@@ -18394,7 +18631,6 @@ window.renderIucdClerking=()=>{renderEligibility();renderSound();};
     });
   });
 
-
   document.querySelectorAll(".module-child[data-page],.calculator-module-link[data-page],.lab-module-link[data-page]").forEach(button=>{
     button.addEventListener("click",()=>openGroupForPage(button.dataset.page));
   });
@@ -18407,8 +18643,79 @@ window.renderIucdClerking=()=>{renderEligibility();renderSound();};
       if(active) openGroupForPage(active.dataset.page);
     }).observe(sidebar,{subtree:true,attributes:true,attributeFilter:["class"]});
   }
-  filterDashboard("all");
+
+  let initialCategory="opd";
+  try{
+    const saved=localStorage.getItem("medassistModuleCategory");
+    if(saved && dashboardMeta[saved]) initialCategory=saved;
+  }catch(_){ }
+  filterDashboard(initialCategory);
 })();
 </script>
+
+<script id="denguePcmHistoryV18160">
+/* V18.160 — Dengue new-case PCM / antipyretic history */
+(function(){
+  function el(id){ return document.getElementById(id); }
+  function fieldValue(id){ return (el(id)?.value || "").trim(); }
+
+  function syncDenguePcmHistory(){
+    const taken=fieldValue("clPcmTaken");
+    const when=fieldValue("clPcmLastWhen");
+    const showWhen=taken==="yes";
+    const showTime=showWhen && ["today","yesterday","2days"].includes(when);
+
+    el("clPcmWhenWrap")?.classList.toggle("hidden",!showWhen);
+    el("clPcmTimeWrap")?.classList.toggle("hidden",!showTime);
+
+    if(!showWhen){
+      if(el("clPcmLastWhen")) el("clPcmLastWhen").value="";
+    }
+    if(!showTime){
+      if(el("clPcmLastHour")) el("clPcmLastHour").value="";
+      if(el("clPcmLastMinute")) el("clPcmLastMinute").value="";
+    }
+  }
+
+  function denguePcmHistoryLine(){
+    const taken=fieldValue("clPcmTaken");
+    if(!taken) return "";
+    if(taken==="no") return "PCM taken: no";
+
+    const when=fieldValue("clPcmLastWhen");
+    const hour=fieldValue("clPcmLastHour");
+    const minute=fieldValue("clPcmLastMinute");
+    const labels={
+      today:"today",
+      yesterday:"yesterday",
+      "2days":"2 days ago",
+      gt48:">48 hours ago"
+    };
+
+    const parts=["PCM taken: yes"];
+    if(when){
+      let last=`last PCM taken ${labels[when] || when}`;
+      if(["today","yesterday","2days"].includes(when) && hour && minute){
+        last += ` at ${hour}:${minute}`;
+      }
+      parts.push(last);
+    }
+    return parts.join(" — ");
+  }
+
+  window.syncDenguePcmHistory=syncDenguePcmHistory;
+  window.denguePcmHistoryLine=denguePcmHistoryLine;
+
+  function init(){
+    el("clPcmTaken")?.addEventListener("change",syncDenguePcmHistory);
+    el("clPcmLastWhen")?.addEventListener("change",syncDenguePcmHistory);
+    syncDenguePcmHistory();
+  }
+
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init,{once:true});
+  else init();
+})();
+</script>
+
 </body>
 </html>
