@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.182 — All Clinical Notes Fixed</title>
+<title>MedAssist KK Bangi V18.190 — Dengue Frequency Layout Fixed</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -4492,6 +4492,27 @@ html,body{max-width:100%;overflow-x:hidden}
 }
 </style>
 
+
+<style id="v18187-dengue-comorbid-position">
+/* Restore requested comorbidity + allergy pairing; layout only. */
+#dengueNewCaseTemplate .cl-comorbid-allergy-pair{grid-column:span 2;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+@media(max-width:760px){#dengueNewCaseTemplate .cl-comorbid-allergy-pair{grid-column:1/-1;grid-template-columns:1fr}}
+</style>
+<style id="v18187-all-clerking-typography-standard">
+/* Typography-only standardisation for clerking pages. Dashboard/calculators remain untouched. */
+:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd){--ck-font-body:12.5px;--ck-font-label:12px;--ck-font-helper:10.5px;--ck-font-h1:20px;--ck-font-h2:15.5px;--ck-font-h3:13.25px;--ck-font-h4:12.25px;font-size:var(--ck-font-body)!important;line-height:1.42!important}
+:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) h1{font-size:var(--ck-font-h1)!important;line-height:1.22!important;letter-spacing:-.01em!important}
+:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) h2{font-size:var(--ck-font-h2)!important;line-height:1.28!important;letter-spacing:-.005em!important}
+:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) h3{font-size:var(--ck-font-h3)!important;line-height:1.3!important}
+:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) h4{font-size:var(--ck-font-h4)!important;line-height:1.32!important}
+:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) label,:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) .label{font-size:var(--ck-font-label)!important;line-height:1.35!important}
+:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) input:not([type="checkbox"]):not([type="radio"]),:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) select,:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) textarea{font-size:var(--ck-font-body)!important;line-height:1.38!important}
+:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) button,:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) .btn{font-size:12px!important;line-height:1.25!important}
+:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) small,:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) .helper,:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) .muted,:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) .subtle,:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) .note-hint{font-size:var(--ck-font-helper)!important;line-height:1.4!important}
+:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) .check-item,:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) .rme1-symptom-item,:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) .option-card,:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) .choice-card{font-size:11.5px!important;line-height:1.32!important}
+:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) :is(.result,.result-box,.status-box,.alert,.warning,.info-box,.rme1-engine-result,.rme1-derived,.rme1-vte-summary){font-size:11.5px!important;line-height:1.4!important}
+@media(max-width:700px){:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd){--ck-font-body:12.75px;--ck-font-label:12.1px;--ck-font-helper:10.75px;--ck-font-h1:19px;--ck-font-h2:15px;--ck-font-h3:13px;--ck-font-h4:12.25px}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -4654,13 +4675,18 @@ html,body{max-width:100%;overflow-x:hidden}
 </select>
 </div>
 <div><label>Sex</label><select id="clSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div id="clAgeWrap"><label>Age</label><div class="age-input-row"><input autocomplete="off" id="clAge" inputmode="numeric" maxlength="3" pattern="[0-9]*" placeholder="e.g. 4" type="text"/><select aria-label="Age unit" id="clAgeUnit"><option value="years">Years old</option><option value="months">Months old</option></select></div><div class="helper age-unit-help" id="clAgeHelp">Adult age is recorded in years.</div></div>
+<div><label>Foreigner</label><select id="clForeigner"><option value="no">No</option><option value="yes">Yes</option></select></div>
+<div class="hidden" id="clCitizenshipWrap"><label>Citizenship</label><input id="clCitizenship" placeholder="Free text, e.g. Indonesia"/></div>
 <div class="hidden" id="clLmpWrap"><label>LMP</label><input id="clLmp" type="date"/></div>
 <div><label>Address</label><input id="clAddress"/></div>
 <div><label>Latest phone number</label><input id="clPhone"/></div>
+<div class="cl-comorbid-allergy-pair">
+<div><label>Comorbidities</label><input id="clComorbid" value="no" placeholder="e.g. DM, HPT, CKD or no"/></div>
 <div>
 <label>Drug allergy</label>
 <select id="clAllergySelect"><option value="NKDA">NKDA</option><option value="custom">Other / free text</option></select>
 <input class="hidden" id="clAllergyCustom" placeholder="Enter drug allergy"/>
+</div>
 </div>
 <div><label>Chief complaint</label><input id="clChief" placeholder="e.g. Fever"/></div>
 <div><label>Duration of symptom</label><input id="clDuration" placeholder="e.g. 3 days"/></div>
@@ -4982,7 +5008,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div><label>Previous dengue illness</label><select id="clPrevious"><option>no</option><option>yes</option></select></div>
 <div><label>Smoking</label><select id="clSmoking"><option>no</option><option>yes</option><option>ex-smoker</option></select></div>
 <div><label>Pregnancy</label><select id="clPregnancy"><option>-</option><option>no</option><option>yes</option></select></div>
-<div><label>Other comorbid</label><input id="clComorbid" value="no"/></div>
+
 <div class="exposure-history-block">
 <div class="section-subtitle">History of recent exposure</div>
 <div class="helper">Select Yes to document when and where the exposure occurred.</div>
@@ -5560,14 +5586,13 @@ html,body{max-width:100%;overflow-x:hidden}
 </div></div>
 <div class="card">
 <h2>Generated clinical note</h2>
-<textarea class="output" id="clOutput" readonly=""></textarea>
+<div class="helper" style="margin-bottom:8px">Editable after generation. Regenerating the note will replace manual edits.</div>
+<textarea class="output" id="clOutput" spellcheck="false"></textarea>
 </div>
 <div class="card hidden" id="clReferralWrap">
 <h2>Generated ED Referral Letter</h2>
-<div class="helper" style="margin-bottom:8px">
-    Generated automatically for Option 1 — Refer ED. Review clinically before copy-paste.
-  </div>
-<textarea class="output nnj-referral-output" id="clReferralOutput" readonly=""></textarea>
+<div class="helper" style="margin-bottom:8px">Generated automatically for the ED referral pathway. Editable after generation; regenerating will replace manual edits.</div>
+<textarea class="output nnj-referral-output" id="clReferralOutput" spellcheck="false"></textarea>
 </div>
 <div class="actions clerking-back-top-wrap"><button class="btn secondary clerking-back-top" type="button">↑ Back to top</button></div></div>
 <div class="hidden" id="dengueFollowUpTemplate">
@@ -5592,8 +5617,9 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="grid three">
 <div><label>Patient group</label><select id="dfuGroup"><option value="adult">Adult</option><option value="paeds">Paediatric</option></select></div>
 <div><label>Sex</label><select id="dfuSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div id="dfuAgeWrap"><label>Age</label><div class="age-input-row"><input autocomplete="off" id="dfuAge" inputmode="numeric" maxlength="3" pattern="[0-9]*" placeholder="e.g. 4" type="text"/><select aria-label="Age unit" id="dfuAgeUnit"><option value="years">Years old</option><option value="months">Months old</option></select></div><div class="helper age-unit-help" id="dfuAgeHelp">Adult age is recorded in years.</div></div>
+<div><label>Foreigner</label><select id="dfuForeigner"><option value="no">No</option><option value="yes">Yes</option></select></div>
+<div class="hidden" id="dfuCitizenshipWrap"><label>Citizenship</label><input id="dfuCitizenship" placeholder="Free text, e.g. Indonesia"/></div>
 <div><label>Day of illness</label><input id="dfuDayIllness" min="1" placeholder="e.g. 5" step="1" type="number"/></div>
-<div><label>Drug allergy</label><input id="dfuAllergy" value="NKDA"/></div>
 <div>
 <label>Comorbidity status</label>
 <select id="dfuDxComorbidStatus">
@@ -5605,6 +5631,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <label>Comorbidities</label>
 <input id="dfuDxComorbid" placeholder="e.g. DM, HPT, CKD"/>
 </div>
+<div><label>Drug allergy</label><input id="dfuAllergy" value="NKDA"/></div>
 <div><label>Address</label><input id="dfuAddress"/></div>
 <div><label>Latest phone number</label><input id="dfuPhone"/></div>
 <div class="dfu-datetime-field">
@@ -6132,11 +6159,12 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="card">
 <h2>Generated clinical note</h2>
+<div class="helper" style="margin-bottom:8px">Editable after generation. Regenerating the note will replace manual edits.</div>
 <textarea class="output" id="dfuOutput" spellcheck="false"></textarea>
 </div>
 <div class="card hidden" id="dfuReferralWrap">
 <h2>Generated ED Referral Letter</h2>
-<div class="helper">Review clinically before copy-paste.</div>
+<div class="helper" style="margin-bottom:8px">Review clinically before copy-paste. Editable after generation; regenerating will replace manual edits.</div>
 <textarea class="output" id="dfuReferralOutput" spellcheck="false"></textarea>
 </div>
 <div class="actions clerking-back-top-wrap"><button class="btn secondary clerking-back-top" type="button">↑ Back to top</button></div></div>
@@ -7674,6 +7702,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="rme1-top-grid">
 <div><label>Assessment date</label><input id="rmeAssessmentDate" type="date"/></div>
 <div><label>Maternal age (years)</label><input id="rmeAge" min="10" max="60" type="number" placeholder="e.g. 31"/></div>
+<div><label>Foreigner</label><select id="rmeForeigner"><option value="no">No</option><option value="yes">Yes</option></select></div>
+<div class="hidden" id="rmeCitizenshipWrap"><label>Citizenship</label><input id="rmeCitizenship" placeholder="Free text, e.g. Indonesia"/></div>
 <div><label>Gravida</label><input id="rmeGravida" min="1" type="number" placeholder="e.g. 2"/></div>
 <div><label>Para</label><input id="rmePara" min="0" type="number" placeholder="e.g. 1"/></div>
 <div><label>LNMP</label><input id="rmeLnmp" type="date"/></div>
@@ -8046,6 +8076,12 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 <div class="rme1-vte-summary none" id="rmeVteResult"><strong>VTE score 0 — no risk factor selected</strong><small>Tick a risk factor and the score, alert and clinic management will update immediately.</small></div>
+</div>
+
+<div class="card" id="rme1ProblemListCard">
+<h2>Detected problems / working diagnoses</h2>
+<div class="helper">Auto-generated from positive clerking findings, structured risk factors and abnormal results. Screening findings are labelled as screening findings and are not converted into confirmed diagnoses.</div>
+<div class="rme1-plan-list" id="rmeProblemListLive"><div class="rme1-plan-empty">No problem / diagnosis detected from the current entries.</div></div>
 </div>
 
 <div class="card" id="rme1PlanCard">
@@ -9557,10 +9593,39 @@ function calcClerkingWeight(){
 }
 
 $("clWarningStatus").addEventListener("change",()=>{$("clWarningWrap").classList.toggle("hidden",value("clWarningStatus")!=="present");buildDiagnosis();});
-$("clDxComorbidStatus").addEventListener("change",()=>{$("clDxComorbidWrap").classList.toggle("hidden",value("clDxComorbidStatus")!=="present");buildDiagnosis();});
+let syncingClComorbid=false;
+function syncClComorbidFromTop(){
+  if(syncingClComorbid) return;
+  syncingClComorbid=true;
+  const detail=value("clComorbid");
+  const present=dengueMeaningfulText(detail);
+  $("clDxComorbidStatus").value=present?"present":"none";
+  $("clDxComorbid").value=present?detail:"";
+  $("clDxComorbidWrap").classList.toggle("hidden",!present);
+  syncingClComorbid=false;
+  buildDiagnosis();
+}
+function syncClComorbidFromDiagnosis(){
+  if(syncingClComorbid) return;
+  syncingClComorbid=true;
+  const present=value("clDxComorbidStatus")==="present";
+  $("clDxComorbidWrap").classList.toggle("hidden",!present);
+  if(!present){
+    $("clDxComorbid").value="";
+    $("clComorbid").value="no";
+  }else if(dengueMeaningfulText(value("clDxComorbid"))){
+    $("clComorbid").value=value("clDxComorbid");
+  }
+  syncingClComorbid=false;
+  buildDiagnosis();
+}
+$("clComorbid").addEventListener("input",syncClComorbidFromTop);
+$("clComorbid").addEventListener("change",syncClComorbidFromTop);
+$("clDxComorbidStatus").addEventListener("change",syncClComorbidFromDiagnosis);
+$("clDxComorbid").addEventListener("input",syncClComorbidFromDiagnosis);
 $("clDxType").addEventListener("change",syncDiagnosisBuilder);
 $("clDxOther")?.addEventListener("input",buildDiagnosis);
-["clDxDay","clPhase","clHaemo","clDxComorbid"].forEach(id=>{
+["clDxDay","clPhase","clHaemo"].forEach(id=>{
   $(id).addEventListener("input",buildDiagnosis);
   $(id).addEventListener("change",buildDiagnosis);
 });
@@ -9628,23 +9693,30 @@ function buildDiagnosis(){
   }
 
   const day=value("clDxDay")||"[ENTER]";
-  let warning="without warning signs";
+  const autoWarningSigns=[];
+  if(value("clVomiting")==="ge3") autoWarningSigns.push("persistent vomiting");
+  if(value("clAbdPain")==="yes") autoWarningSigns.push("abdominal pain or tenderness");
+  if(value("clBleeding")==="yes") autoWarningSigns.push("mucosal bleeding");
+  if(value("clLethargy")==="yes") autoWarningSigns.push("lethargy or restlessness");
+  const manualWarningSigns=checked("clWarningSigns");
+  const warningList=[...new Set([...autoWarningSigns,...manualWarningSigns])];
+  const warning=(warningList.length || value("clWarningStatus")==="present")
+    ? (warningList.length ? `with warning signs (${warningList.join(", ")})` : "with warning signs")
+    : "without warning signs";
 
-  if(value("clWarningStatus")==="present"){
-    const list=checked("clWarningSigns");
-    warning=list.length
-      ? `with warning signs (${list.join(", ")})`
-      : "with warning signs";
-  }
-
-  const comorbid=value("clDxComorbidStatus")==="present"
-    ? `with comorbid ${value("clDxComorbid")||"[ENTER COMORBID]"}`
+  const topComorbid=value("clComorbid");
+  const hasTopComorbid=dengueMeaningfulText(topComorbid);
+  const dxComorbid=dengueMeaningfulText(value("clDxComorbid")) ? value("clDxComorbid") : (hasTopComorbid ? topComorbid : "");
+  const hasComorbid=value("clDxComorbidStatus")==="present" || hasTopComorbid;
+  const comorbid=hasComorbid
+    ? `with comorbid ${dxComorbid||"[ENTER COMORBID]"}`
     : "with no comorbid";
 
   const dx=`Dengue fever, day ${day} of illness, in ${value("clPhase")}, ${warning}, ${value("clHaemo")}, ${comorbid}`;
   $("clGeneratedDx").value=dx;
   return dx;
 }
+syncClComorbidFromTop();
 buildDiagnosis();
 calcClerkingWeight();
 
@@ -10141,7 +10213,10 @@ function newCaseFrequencyDescription(type,valueCode,countInputId){
     }
   };
 
-  return labels[type]?.[valueCode] || "";
+  const line=labels[type]?.[valueCode] || "";
+  if(!line || valueCode==="none") return line;
+  const durationId=type==="vomiting"?"clVomitingDuration":"clDiarrhoeaDuration";
+  return line+(window.dengueDurationSuffix?.(durationId)||"");
 }
 
 function renderNewCaseFrequencyClassification(){
@@ -11053,8 +11128,9 @@ function syncDengueUrineDetails(){
 
 function dengueOralIntakeLine(){
   const status=value("clDrink");
-  if(status==="unable") return "unable to tolerate oral fluids";
-  if(status==="reduced") return "reduced oral intake";
+  const suffix=window.dengueDurationSuffix?.("clDrinkDuration")||"";
+  if(status==="unable") return "unable to tolerate oral fluids"+suffix;
+  if(status==="reduced") return "reduced oral intake"+suffix;
   return "able to tolerate oral fluids";
 }
 
@@ -11094,23 +11170,32 @@ function dengueUrineWarningLine(){
     if(lastPu) details.push(`last PU ${formatDateTimeDisplay(lastPu)}`);
   }
 
-  return details.length
+  const line=details.length
     ? `reduced PU: ${details.join("; ")}`
     : "reduced PU";
+  return line+(window.dengueDurationSuffix?.("clUrineDuration")||"");
 }
 
 function dengueActivityLine(){
   return value("clActivity")==="no"
-    ? "unable to perform daily activity"
+    ? "unable to perform daily activity"+(window.dengueDurationSuffix?.("clActivityDuration")||"")
     : "able to perform daily activity";
 }
 
 function dengueLethargyLine(){
-  return value("clLethargy")==="yes" ? "+ lethargy" : "no lethargy";
+  return value("clLethargy")==="yes"
+    ? "+ lethargy"+(window.dengueDurationSuffix?.("clLethargyDuration")||"")
+    : "no lethargy";
 }
 
 function dengueYesNoWarningLine(id,label){
-  return value(id)==="yes" ? `+ ${label}` : `no ${label}`;
+  if(value(id)!=="yes") return `no ${label}`;
+  const durationMap={
+    clAbdPain:"clAbdPainDuration",
+    clBleeding:"clBleedingDuration",
+    clSeizure:"clSeizureDuration"
+  };
+  return `+ ${label}`+(window.dengueDurationSuffix?.(durationMap[id])||"");
 }
 
 function buildDengueClinicalNote(planLines){
@@ -11191,6 +11276,9 @@ function buildDengueClinicalNote(planLines){
     value("clAddress")?`address: ${value("clAddress")}`:"",
     value("clPhone")?`latest phone number: ${value("clPhone")}`:"",
     dengueAgeDisplay("cl")?`age: ${dengueAgeDisplay("cl")}`:"",
+    value("clForeigner")==="yes"
+      ? `foreigner: yes${value("clCitizenship")?` — citizenship: ${value("clCitizenship")}`:""}`
+      : "foreigner: no",
     value("clSex")==="Female" && value("clLmp")
       ? `LMP: ${formatDateDisplay(value("clLmp"))}`
       : ""
@@ -11200,7 +11288,7 @@ function buildDengueClinicalNote(planLines){
     value("clChief")
       ? `Chief complaint: ${value("clChief")}${value("clDuration")?" for "+value("clDuration"):""}`
       : "",
-    typeof denguePcmHistoryLine === "function" ? denguePcmHistoryLine() : ""
+    typeof window.denguePcmHistoryLine === "function" ? window.denguePcmHistoryLine() : ""
   ].filter(Boolean);
 
   const associatedLines=[
@@ -11243,7 +11331,11 @@ function buildDengueClinicalNote(planLines){
   const isNegativeWarningLine=line=>/^(no\s|able to\s|PU normal\b)/i.test(String(line).trim());
   const warningPositiveLines=rawWarningLines.filter(line=>!isNegativeWarningLine(line));
   const warningNegativeLines=rawWarningLines.filter(isNegativeWarningLine);
-  const warningLines=["WARNING SIGNS",...warningPositiveLines,...warningNegativeLines];
+  const warningHistoryLines=[
+    ...(window.dengueDailyFrequencyLines?.("new","vomiting")||[]),
+    ...(window.dengueDailyFrequencyLines?.("new","stool")||[])
+  ];
+  const warningLines=["WARNING SIGNS",...warningPositiveLines,...warningHistoryLines,...warningNegativeLines];
 
   const examinationLines=[
     "o/e:",
@@ -14338,6 +14430,21 @@ $("obCalculate").addEventListener("click",()=>{const lmp=new Date(value("obLmp")
 ["clVomitingCount","clDiarrhoeaCount"].forEach(id=>{
   document.getElementById(id)?.addEventListener("input",renderNewCaseFrequencyClassification);
 });
+["clDrink","clUrine","clActivity","clLethargy","clVomiting","clDiarrhoea","clAbdPain","clBleeding","clSeizure"].forEach(id=>{
+  document.getElementById(id)?.addEventListener("change",buildDiagnosis);
+});
+$("dengueNewCaseTemplate")?.addEventListener("input",event=>{
+  if(/Duration/.test(event.target?.id||"")){
+    renderNewCaseFrequencyClassification();
+    buildDiagnosis();
+  }
+});
+$("dengueNewCaseTemplate")?.addEventListener("change",event=>{
+  if(/Duration/.test(event.target?.id||"")){
+    renderNewCaseFrequencyClassification();
+    buildDiagnosis();
+  }
+});
 renderNewCaseFrequencyClassification();
 document.querySelectorAll(".clerking-back-top").forEach(button=>{
   button.addEventListener("click",()=>{
@@ -14774,7 +14881,7 @@ function warningSignData(){
   ].map(item=>item.value);
 
   if(bleedingItems.length){
-    positive.push(`bleeding tendency: ${bleedingItems.join(", ")}`);
+    positive.push(`bleeding tendency: ${bleedingItems.join(", ")}`+(window.dengueDurationSuffix?.("dfuBleedingDuration")||""));
   }else{
     negative.push("bleeding tendency");
   }
@@ -14782,11 +14889,11 @@ function warningSignData(){
   const vomiting=fv("dfuVomitFrequency");
   if(vomiting==="ge3"){
     const exact=followUpExactFrequency("dfuVomitCount");
-    positive.push(`vomiting ${exact?`${exact} times/24 hours`:"3 times/24 hours or more"}`);
+    positive.push(`vomiting ${exact?`${exact} times/24 hours`:"3 times/24 hours or more"}`+(window.dengueDurationSuffix?.("dfuVomitDuration")||""));
   }else if(vomiting==="1x"){
-    belowThreshold.push("vomiting 1 time/24 hours");
+    belowThreshold.push("vomiting 1 time/24 hours"+(window.dengueDurationSuffix?.("dfuVomitDuration")||""));
   }else if(vomiting==="2x"){
-    belowThreshold.push("vomiting 2 times/24 hours");
+    belowThreshold.push("vomiting 2 times/24 hours"+(window.dengueDurationSuffix?.("dfuVomitDuration")||""));
   }else{
     negative.push("vomiting");
   }
@@ -14794,31 +14901,37 @@ function warningSignData(){
   const looseStool=fv("dfuLooseStoolFrequency");
   if(looseStool==="ge3"){
     const exact=followUpExactFrequency("dfuLooseStoolCount");
-    positive.push(`loose stool ${exact?`${exact} times/24 hours`:"3 times/24 hours or more"}`);
+    positive.push(`loose stool ${exact?`${exact} times/24 hours`:"3 times/24 hours or more"}`+(window.dengueDurationSuffix?.("dfuLooseStoolDuration")||""));
   }else if(looseStool==="1x"){
-    belowThreshold.push("loose stool 1 time/24 hours");
+    belowThreshold.push("loose stool 1 time/24 hours"+(window.dengueDurationSuffix?.("dfuLooseStoolDuration")||""));
   }else if(looseStool==="2x"){
-    belowThreshold.push("loose stool 2 times/24 hours");
+    belowThreshold.push("loose stool 2 times/24 hours"+(window.dengueDurationSuffix?.("dfuLooseStoolDuration")||""));
   }else{
     negative.push("loose stool");
   }
 
   if(fv("dfuAbdominalPain")==="yes"){
-    positive.push("abdominal pain");
+    positive.push("abdominal pain"+(window.dengueDurationSuffix?.("dfuAbdominalPainDuration")||""));
   }else{
     negative.push("abdominal pain");
   }
 
   if(fv("dfuSob")==="yes"){
-    positive.push("shortness of breath");
+    positive.push("shortness of breath"+(window.dengueDurationSuffix?.("dfuSobDuration")||""));
   }else{
     negative.push("shortness of breath");
   }
 
   if(fv("dfuLethargy")==="yes"){
-    positive.push("lethargy");
+    positive.push("lethargy"+(window.dengueDurationSuffix?.("dfuLethargyDuration")||""));
   }else{
     negative.push("lethargy");
+  }
+
+  if(fv("dfuSeizure")==="yes"){
+    positive.push("seizure"+(window.dengueDurationSuffix?.("dfuSeizureDuration")||""));
+  }else{
+    negative.push("seizure");
   }
 
   return {positive,negative,belowThreshold};
@@ -15399,6 +15512,9 @@ function buildDengueFollowUpClinicalNote(){
     fv("dfuAddress")?`address: ${fv("dfuAddress")}`:"",
     fv("dfuPhone")?`latest phone number: ${fv("dfuPhone")}`:"",
     window.dengueAgeDisplay("dfu")?`age: ${window.dengueAgeDisplay("dfu")}`:"",
+    fv("dfuForeigner")==="yes"
+      ? `foreigner: yes${fv("dfuCitizenship")?` — citizenship: ${fv("dfuCitizenship")}`:""}`
+      : "foreigner: no",
     fv("dfuDxComorbidStatus")==="present"
       ? `comorbidities: ${fv("dfuDxComorbid")||"present — details not entered"}`
       : "",
@@ -15424,24 +15540,25 @@ function buildDengueFollowUpClinicalNote(){
     fv("dfuAdjBW")?`Adjusted body weight: ${fv("dfuAdjBW")} kg`:""
   ].filter(Boolean);
 
-  const seizurePositive=fv("dfuSeizure")==="yes"?["+ seizure"]:[];
-  const seizureNegative=fv("dfuSeizure")==="yes"?[]:["no seizure"];
+  const warningHistoryLines=[
+    ...(window.dengueDailyFrequencyLines?.("followup","vomiting")||[]),
+    ...(window.dengueDailyFrequencyLines?.("followup","stool")||[])
+  ];
   const warningLines=[
     "DENGUE WARNING SIGNS",
     ...warning.positive.map(item=>`+ ${item}`),
-    ...seizurePositive,
     ...(warning.belowThreshold.length
       ? ["Symptoms present but not DF warning signs:",...warning.belowThreshold.map(item=>`+ ${item}`)]
       : []),
-    ...warning.negative.map(item=>`no ${item}`),
-    ...seizureNegative
+    ...warningHistoryLines,
+    ...warning.negative.map(item=>`no ${item}`)
   ].filter(Boolean);
 
   const salientLines=[
     "THREE SALIENT QUESTIONS",
-    fv("dfuOralIntake")?`Oral intake: ${fv("dfuOralIntake")}`:"",
-    fv("dfuActivity")?`Active as usual: ${fv("dfuActivity")}`:"",
-    fv("dfuUrine")?`Urine output: ${fv("dfuUrine")}`:"",
+    fv("dfuOralIntake")?`Oral intake: ${fv("dfuOralIntake")}${fv("dfuOralIntake")!=="good"?(window.dengueDurationSuffix?.("dfuOralIntakeDuration")||""):""}`:"",
+    fv("dfuActivity")?`Active as usual: ${fv("dfuActivity")}${fv("dfuActivity")==="no"?(window.dengueDurationSuffix?.("dfuActivityDuration")||""):""}`:"",
+    fv("dfuUrine")?`Urine output: ${fv("dfuUrine")}${fv("dfuUrine")!=="normal"?(window.dengueDurationSuffix?.("dfuUrineDuration")||""):""}`:"",
     fv("dfuOtherSymptoms")?`Other symptoms: ${fv("dfuOtherSymptoms")}`:""
   ].filter(Boolean);
 
@@ -15612,7 +15729,8 @@ f$("openDengueFollowUp").addEventListener("click",()=>setDengueTemplate("followu
   "dfuLooseStoolFrequency",
   "dfuAbdominalPain",
   "dfuSob",
-  "dfuLethargy"
+  "dfuLethargy",
+  "dfuSeizure"
 ].forEach(id=>{
   f$(id).addEventListener("change",()=>{
     renderDengueFollowUpWarningClassification();
@@ -15720,6 +15838,18 @@ f$("dfuMcGiven").addEventListener("change",()=>{
 f$("dfuMcDays").addEventListener("change",renderDengueFollowUpPlan);
 f$("dfuPlanExtra").addEventListener("input",debounce(renderDengueFollowUpPlan,180));
 window.initialiseDenguePlanAntibiotic(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG,renderDengueFollowUpPlan);
+f$("dengueFollowUpTemplate").addEventListener("input",event=>{
+  if(/Duration/.test(event.target?.id||"")){
+    renderDengueFollowUpWarningClassification();
+    buildDengueFollowUpDiagnosis();
+  }
+});
+f$("dengueFollowUpTemplate").addEventListener("change",event=>{
+  if(/Duration/.test(event.target?.id||"")){
+    renderDengueFollowUpWarningClassification();
+    buildDengueFollowUpDiagnosis();
+  }
+});
 f$("dengueFollowUpTemplate").addEventListener("input",invalidateFollowUpReferral);
 f$("dengueFollowUpTemplate").addEventListener("change",invalidateFollowUpReferral);
 f$("dfuGenerate").addEventListener("click",generateDengueFollowUp);
@@ -19750,8 +19880,8 @@ window.renderIucdClerking=()=>{renderEligibility();renderSound();};
     const parts=["PCM taken: yes"];
     if(when){
       let last=`last PCM taken ${labels[when] || when}`;
-      if(["today","yesterday","2days"].includes(when) && hour && minute){
-        last += ` at ${hour}:${minute}`;
+      if(["today","yesterday","2days"].includes(when) && hour){
+        last += minute ? ` at ${hour}:${minute} (24-hour)` : ` at ${hour}:-- (24-hour)`;
       }
       parts.push(last);
     }
@@ -19990,6 +20120,114 @@ function clinicalAlerts(){
   add(review,"Hb <11 g/dL",hb!==null&&hb<11);
   return{alerts,review};
 }
+function problemListData(){
+  const pe=peRisk(),vte=vteData(),tb=tbData(),mental=mentalData(),ogtt=ogttRisk(),preterm=pretermRisk(),clinical=clinicalAlerts(),b=bmiData();
+  const items=[];
+  const add=(key,text,kind="problem")=>{if(text&&!items.some(x=>x.key===key))items.push({key,text,kind});};
+
+  /* Immediate / active clinical problems detected from current entries. */
+  clinical.alerts.forEach((x,i)=>add(`clinical-alert-${i}`,x,"urgent"));
+  clinical.review.forEach((x,i)=>add(`clinical-review-${i}`,x,"review"));
+
+  /* Mental-health screening: keep this as a screening finding, not a psychiatric diagnosis. */
+  if(mental.selfHarm){
+    add("mental-selfharm","Self-harm / suicidal intent documented — urgent mental-health safety assessment required","urgent");
+  }else if(mental.positive){
+    const parts=[];
+    if(mental.whooley)parts.push("Whooley positive");
+    if(mental.gadScore>0)parts.push(`GAD-2 ${mental.gadScore}/6`);
+    add("mental-positive",`Positive antenatal mental-health screen${parts.length?` — ${parts.join(", ")}`:""}`,"screen");
+  }
+
+  /* TB / infection screening and established structured statuses. */
+  if(tb.status==="treatment")add("tb-treatment","Known TB on treatment","problem");
+  else if(tb.status==="suspected"||tb.positiveBooking)add("tb-positive","Positive TB screening / suspected TB","screen");
+  if(tb.positiveRepeat)add("tb-repeat","Positive repeat TB screen at 28–32 weeks","screen");
+  if(val("rmeHiv")==="positive")add("hiv","Positive HIV screening result / known HIV — needs condition-specific pathway","problem");
+  if(val("rmeHbs")==="positive")add("hbsag","HBsAg positive — hepatitis B pathway required","problem");
+  if(val("rmeVdrl")==="positive")add("syphilis","Reactive / positive syphilis screening result — confirm and manage per pathway","screen");
+  if(val("rmeOtherInfection")!=="none")add("maternal-infection",`Maternal infection: ${val("rmeOtherInfection")}`,"problem");
+
+  /* Known structured maternal conditions. */
+  if(val("rmeHeartDisease")!=="none")add("heart-disease",`Heart disease — ${val("rmeHeartDisease")==="symptomatic"?"symptomatic":"present, asymptomatic"}`,"problem");
+  if(val("rmeDiabetes")==="pregestational")add("pregestational-dm","Pre-existing diabetes in pregnancy","problem");
+  if(ogtt.status==="abnormal")add("gdm","Abnormal OGTT / known GDM","problem");
+  else if(ogtt.positive)add("gdm-risk",`Increased risk of GDM — ${ogtt.factors.join(", ")}`,"risk");
+
+  /* Anthropometry / laboratory abnormalities with explicit entered values. */
+  if(b.bmi!==null&&b.bmi>=30)add("obesity",`Obesity in pregnancy — BMI ${b.bmi.toFixed(1)} kg/m²`,"problem");
+  else if(b.bmi!==null&&b.bmi<18.5)add("underweight",`Underweight in pregnancy — BMI ${b.bmi.toFixed(1)} kg/m²`,"problem");
+  const hb=num("rmeHb"),mcv=num("rmeMcv"),plt=num("rmePlt");
+  if(hb!==null&&hb<11)add("anaemia",`${hb<=7?"Severe anaemia":"Anaemia"} in pregnancy — Hb ${fmt(hb)} g/dL`,hb<=7?"urgent":"problem");
+  if(mcv!==null&&mcv<80)add("microcytosis",`Microcytosis — MCV ${fmt(mcv)} fL`,"problem");
+  if(plt!==null&&plt<150)add("low-platelet",`Low platelet count — Plt ${fmt(plt)}`,"problem");
+  if(val("rmeThal")==="positive")add("thal-screen","Positive thalassaemia screen / needs review","screen");
+  if(val("rmeRh")==="negative")add("rh-negative","Rh-negative pregnancy","problem");
+  if(proteinRank()>=1)add("proteinuria",`Proteinuria — urine protein ${val("rmeUrineProtein")}+`,"problem");
+  if(["2","3","4"].includes(val("rmeUrineGlucose")))add("glucosuria",`Glucosuria — urine glucose ${val("rmeUrineGlucose")}+`,"problem");
+  if(ketoneRank()>=1)add("ketonuria",`Ketonuria — urine ketone ${val("rmeUrineKetone")}+`,"problem");
+
+  /* Obstetric / pregnancy-specific findings. */
+  if(val("rmeUsLocation")==="pul")add("pul","Pregnancy of unknown location","problem");
+  if(val("rmeUsLocation")==="ectopic")add("ectopic","Suspected ectopic pregnancy","urgent");
+  if(["twins","multiple"].includes(val("rmeMultiplicity")))add("multiple-pregnancy",val("rmeMultiplicity")==="twins"?"Twin pregnancy":"Higher-order multiple pregnancy","problem");
+  if(val("rmeFha")==="no")add("no-fha","No fetal heart activity seen on entered ultrasound","problem");
+  if(val("rmeSubchorionic")==="yes")add("subchorionic","Subchorionic collection / bleed on ultrasound","problem");
+  if(val("rmeAdnexa")==="abnormal")add("adnexa","Abnormal adnexal finding on ultrasound","problem");
+  if(val("rmeFreeFluid")==="yes")add("free-fluid","Free fluid seen on ultrasound","problem");
+
+  /* Previous obstetric problems entered as positive history. */
+  const obsProblems=[
+    ["rmePrevCs","Previous Caesarean section"],
+    ["rmePrevPe","History of pre-eclampsia / eclampsia"],
+    ["rmePrevGdm","History of diabetes / GDM in pregnancy"],
+    ["rmePrevPerinatalDeath","History of perinatal death / IUD"],
+    ["rmePrevBirthWeight","History of baby <2.5 kg or >4 kg"],
+    ["rmePrevTear","History of 3rd / 4th degree tear"],
+    ["rmePrevRetainedPlacenta","History of retained placenta"],
+    ["rmePrevPph","History of PPH"],
+    ["rmePrevInstrumental","History of instrumental delivery"],
+    ["rmeRecurrentMiscarriage","Recurrent miscarriage — ≥3 consecutive miscarriages"],
+    ["rmeGynaeProblem","Past gynaecological problem / surgery"]
+  ];
+  obsProblems.forEach(([id,label])=>{if(checked(id))add(`obs-${id}`,label,"history");});
+
+  /* Risk engines: include both the overall risk state and the exact contributing factor(s). */
+  if(pe.eligible)add("pe-risk",`Increased risk of pre-eclampsia — prophylaxis indicated${pe.factors.length?` (${pe.factors.join(", ")})`:""}`,"risk");
+  if(preterm.positive)add("preterm-risk",`Increased risk of preterm birth — ${preterm.factors.join(", ")}`,"risk");
+  if(vte.score>0||vte.previous){
+    const level=vte.previous?"very high":vte.level==="none"?"low":vte.level.replace("-"," ");
+    add("vte-overall",`VTE risk — ${level} risk, score ${vte.score}`,"risk");
+  }
+  vte.selected.forEach(x=>{
+    let label=String(x.label||"").replace(/\s+/g," ").trim();
+    if(x.id==="rmeVteIvf")label="IVF pregnancy — 1st trimester VTE risk factor";
+    else if(label)label=`VTE risk factor: ${label}`;
+    if(label)add(`vte-factor-${x.id}`,label,"risk-factor");
+  });
+  if(vte.bmiScore>0&&b.bmi!==null)add("vte-bmi",`VTE risk factor: obesity (BMI ${b.bmi.toFixed(1)} kg/m²)`,"risk-factor");
+
+  if(["smoking","multiple"].includes(val("rmeAddiction")))add("smoking","Smoking in pregnancy","problem");
+  if(["alcohol","multiple"].includes(val("rmeAddiction")))add("alcohol","Alcohol exposure in pregnancy","problem");
+  if(["drug","multiple"].includes(val("rmeAddiction")))add("substance","Drug / substance use in pregnancy","problem");
+
+  return items;
+}
+function renderProblemList(){
+  const box=q("rmeProblemListLive");
+  const items=problemListData();
+  if(!box)return items;
+  const signature=items.map(x=>`${x.key}\u001f${x.text}\u001f${x.kind}`).join("\u001e")||"__empty__";
+  if(box.dataset.problemSignature===signature)return items;
+  if(!items.length){
+    box.innerHTML='<div class="rme1-plan-empty">No problem / diagnosis detected from the current entries.</div>';
+  }else{
+    box.innerHTML=items.map((x,i)=>`<div class="rme1-plan-option"><span><strong>${i+1}. ${escapeHtml(x.text)}</strong></span></div>`).join("");
+  }
+  box.dataset.problemSignature=signature;
+  return items;
+}
+
 function suggestionSet(){
   const pe=peRisk(),g=gaData(),b=bmiData(),vte=vteData(),tb=tbData(),mental=mentalData(),ogtt=ogttRisk(),preterm=pretermRisk(),clinical=clinicalAlerts(),hb=num("rmeHb"),plans=[];const add=(key,text)=>{if(text&&!plans.some(p=>p.key===key))plans.push({key,text});};
   if(clinical.alerts.length)add("urgent-referral","Urgent hospital / PAC / O&G assessment for documented clinical warning sign(s); communicate relevant findings to the receiving team.");
@@ -20026,10 +20264,10 @@ function examFindingLines(){
 }
 function ultrasoundNoteLines(){const u=ultrasoundData();if(!u.parts.length&&!val("rmeUsDate"))return[];const out=[];if(val("rmeUsDate")||u.mode)out.push(`${u.mode||"USG"}${val("rmeUsDate")?` ${dateFmt(val("rmeUsDate"))}`:""}:`);u.parts.forEach(p=>out.push(p));return out;}
 
-function render(){syncDating();ultrasoundData();fagerData();mentalData();tbData();ogttRisk();pretermRisk();peRisk();vteData();renderSuggestions();}
+function render(){syncDating();ultrasoundData();fagerData();mentalData();tbData();ogttRisk();pretermRisk();peRisk();vteData();renderProblemList();renderSuggestions();}
 function noteText(){
   const g=gaData(),b=bmiData(),pe=peRisk(),vte=vteData(),fag=fagerData(),tb=tbData(),mental=mentalData(),ogtt=ogttRisk(),preterm=pretermRisk(),clinical=clinicalAlerts(),plans=selectedPlans(),lines=["RME 1"];
-  const intro=[];if(num("rmeAge")!==null)intro.push(`${num("rmeAge")} yo`);if(num("rmeGravida")!==null)intro.push(`G${num("rmeGravida")}P${num("rmePara")??0}`);if(g.weeks!==null)intro.push(`at POG ${g.weeks}+${g.days}/52`);if(intro.length)lines.push(intro.join(", "));if(val("rmeLnmp"))lines.push(`LNMP ${dateFmt(val("rmeLnmp"))}`);if(val("rmeEdd"))lines.push(`EDD ${dateFmt(val("rmeEdd"))}`);if(val("rmeLastDeliveryDate"))lines.push(`LCB ${val("rmeLastDeliveryDate")}`);if(val("rmeDatesReliable")==="no")lines.push("+ unsure / unreliable dates");
+  const intro=[];if(num("rmeAge")!==null)intro.push(`${num("rmeAge")} yo`);if(num("rmeGravida")!==null)intro.push(`G${num("rmeGravida")}P${num("rmePara")??0}`);if(g.weeks!==null)intro.push(`at POG ${g.weeks}+${g.days}/52`);if(intro.length)lines.push(intro.join(", "));lines.push(val("rmeForeigner")==="yes"?`foreigner: yes${val("rmeCitizenship")?` — citizenship: ${val("rmeCitizenship")}`:""}`:"foreigner: no");if(val("rmeLnmp"))lines.push(`LNMP ${dateFmt(val("rmeLnmp"))}`);if(val("rmeEdd"))lines.push(`EDD ${dateFmt(val("rmeEdd"))}`);if(val("rmeLastDeliveryDate"))lines.push(`LCB ${val("rmeLastDeliveryDate")}`);if(val("rmeDatesReliable")==="no")lines.push("+ unsure / unreliable dates");
   lines.push("","currently:",...currentSymptomLines());
   const obs=[];[["rmePrevCs","previous LSCS"],["rmePrevPe","previous pre-eclampsia / eclampsia"],["rmePrevGdm","previous diabetes / GDM"],["rmePrevPerinatalDeath","previous perinatal death / IUD"],["rmePrevBirthWeight","previous baby <2.5 kg or >4 kg"],["rmePrevTear","previous 3rd / 4th degree tear"],["rmePrevRetainedPlacenta","previous retained placenta"],["rmePrevPph","previous PPH"],["rmePrevInstrumental","previous instrumental delivery"],["rmeRecurrentMiscarriage","≥3 consecutive miscarriages"],["rmeGynaeProblem","past gynaecological problem / surgery"]].forEach(([id,l])=>{if(checked(id))obs.push(`+ ${l}`);});
   if(obs.length||checked("rmeNoPastObsProblem")||sentence(val("rmePastObsFreeText"))){lines.push("","relevant history:");if(obs.length)lines.push(...obs);if(checked("rmeNoPastObsProblem"))lines.push("no significant previous obstetric problem");if(sentence(val("rmePastObsFreeText")))lines.push(sentence(val("rmePastObsFreeText")));}
@@ -20038,12 +20276,13 @@ function noteText(){
   lines.push("","o/e:");const vit=[];if(num("rmeSbp")!==null&&num("rmeDbp")!==null)vit.push(`BP ${num("rmeSbp")}/${num("rmeDbp")} mmHg`);if(num("rmePulse")!==null)vit.push(`PR ${num("rmePulse")} bpm`);if(num("rmeRr")!==null)vit.push(`RR ${num("rmeRr")}/min`);if(num("rmeTemp")!==null)vit.push(`T ${fmt(num("rmeTemp"))}°C`);if(num("rmeSpo2")!==null)vit.push(`SpO2 ${num("rmeSpo2")}%`);if(vit.length)lines.push(vit.join(", "));const anth=[];if(num("rmeBookingWeight")!==null)anth.push(`weight ${fmt(num("rmeBookingWeight"))} kg`);if(num("rmeHeight")!==null)anth.push(`height ${fmt(num("rmeHeight"))} cm`);if(b.bmi!==null)anth.push(`BMI ${b.bmi.toFixed(1)} kg/m² (${b.category.toLowerCase()})`);if(anth.length)lines.push(anth.join(", "));lines.push(...examFindingLines());if(sentence(val("rmeCardioresp")))lines.push(`CVS/RS: ${sentence(val("rmeCardioresp"))}`);if(sentence(val("rmeOtherExam")))lines.push(`other: ${sentence(val("rmeOtherExam"))}`);
   lines.push("","ix:");const fbc=[];if(num("rmeHb")!==null)fbc.push(`Hb ${fmt(num("rmeHb"))}`);if(num("rmeHct")!==null)fbc.push(`Hct ${fmt(num("rmeHct"))}%`);if(num("rmeWbc")!==null)fbc.push(`WBC ${fmt(num("rmeWbc"))}`);if(num("rmePlt")!==null)fbc.push(`Plt ${fmt(num("rmePlt"))}`);if(num("rmeMcv")!==null)fbc.push(`MCV ${fmt(num("rmeMcv"))}`);if(num("rmeMch")!==null)fbc.push(`MCH ${fmt(num("rmeMch"))}`);if(fbc.length)lines.push(`FBC: ${fbc.join(" | ")}`);if(val("rmeBloodGroup"))lines.push(`Blood group ${val("rmeBloodGroup")}${val("rmeRh")?` Rh ${val("rmeRh")}`:""}`);if(val("rmeHiv"))lines.push(`HIV ${val("rmeHiv")==="negative"?"NR":val("rmeHiv")}`);if(val("rmeVdrl"))lines.push(`VDRL/RPR ${val("rmeVdrl")==="negative"?"NR":val("rmeVdrl")}`);if(val("rmeHbs"))lines.push(`HBsAg ${val("rmeHbs")}`);if(val("rmeThal")!=="not-indicated")lines.push(`Thal screen ${val("rmeThal")==="normal"?"negative":"positive / needs review"}`);const urine=[];if(val("rmeUrineProtein"))urine.push(`protein ${val("rmeUrineProtein")}`);if(val("rmeUrineGlucose"))urine.push(`glucose ${val("rmeUrineGlucose")}`);if(val("rmeUrineKetone"))urine.push(`ketone ${val("rmeUrineKetone")}`);if(urine.length)lines.push(`Urine: ${urine.join(", ")}`);if(num("rmeGlucose")!==null)lines.push(`Dextrostix ${fmt(num("rmeGlucose"))} mmol/L`);if(sentence(val("rmeOtherInvestigations")))lines.push(sentence(val("rmeOtherInvestigations")));
   const us=ultrasoundNoteLines();if(us.length)lines.push("","ultrasound:",...us);
+  const detectedProblems=problemListData();if(detectedProblems.length){lines.push("","problem list:");detectedProblems.forEach((p,i)=>lines.push(`${i+1}. ${p.text}`));}
   lines.push("","risk:");lines.push(pe.eligible?`pre-eclampsia prophylaxis indicated — major ${pe.majorCount}, minor ${pe.minorCount}${pe.factors.length?`: ${pe.factors.join(", ")}`:""}`:`pre-eclampsia prophylaxis trigger not met — major ${pe.majorCount}, minor ${pe.minorCount}`);lines.push(`VTE score ${vte.score} - ${vte.previous?"very high risk":vte.level==="none"?"low risk / no scored factor":vte.level.replace("-"," ")+" risk"}`);if(vte.score>0||vte.previous)lines.push(`VTE: ${vte.management}`);lines.push(ogtt.status==="abnormal"?"OGTT: abnormal / known GDM" : ogtt.positive?`OGTT risk positive: ${ogtt.factors.join(", ")}`:"OGTT risk not identified from listed criteria");if(preterm.positive) lines.push(`preterm birth screen positive: ${preterm.factors.join(", ")}`); else lines.push("preterm birth screen negative");
   const additional=sentence(val("rmeAdditionalPlan")),custom=sentence(val("rmeCustomPlan"));if(plans.length||additional||custom){lines.push("","plan:");plans.forEach(p=>lines.push(`- ${p}`));if(additional)lines.push(`- ${additional}`);if(custom)lines.push(`- ${custom}`);}return lines.join("\n");
 }
 function referralText(){
   const g=gaData(),pe=peRisk(),vte=vteData(),tb=tbData(),ogtt=ogttRisk(),preterm=pretermRisk(),clinical=clinicalAlerts(),destination=val("rmeReferralTo")==="Other"?(sentence(val("rmeReferralOther"))||"relevant service"):val("rmeReferralTo"),reasons=[];if(clinical.alerts.length)reasons.push(...clinical.alerts);if(vte.score>0||vte.previous)reasons.push(`VTE ${vte.previous?"very high":vte.level.replace("-"," ")} risk, score ${vte.score}`);if(pe.eligible)reasons.push(`pre-eclampsia prophylaxis indicated (${pe.factors.join(", ")})`);if(tb.positive)reasons.push("positive / active TB concern");if(ogtt.status==="abnormal")reasons.push("abnormal OGTT / known GDM");else if(ogtt.positive)reasons.push("positive OGTT risk screening");if(preterm.positive)reasons.push("positive preterm birth screening");if(!reasons.length)reasons.push("antenatal assessment requiring further review");
-  const intro=[];if(num("rmeAge")!==null)intro.push(`${num("rmeAge")} years old`);if(num("rmeGravida")!==null)intro.push(`G${num("rmeGravida")}P${num("rmePara")??0}`);if(g.weeks!==null)intro.push(`POG ${g.weeks}+${g.days}/52`);const us=ultrasoundNoteLines(),extraHx=[sentence(val("rmePastObsFreeText")),sentence(val("rmeMedicalHistory")),sentence(val("rmeSocialHistory"))].filter(Boolean);return["Dear colleague,","","Thank you for seeing this patient.",intro.length?intro.join(", ")+".":"",val("rmeEdd")?`EDD ${dateFmt(val("rmeEdd"))}.`:"","","Currently:",...currentSymptomLines(),extraHx.length?["","Relevant history:",...extraHx].join("\n"):"","","Reason for referral:",...reasons.map(x=>`- ${x}`),us.length?["","Ultrasound:",...us].join("\n"):"","","Kindly assess and advise regarding further antenatal management.","",`Referral to: ${destination}.`].filter(Boolean).join("\n");
+  const intro=[];if(num("rmeAge")!==null)intro.push(`${num("rmeAge")} years old`);intro.push(val("rmeForeigner")==="yes"?`foreigner${val("rmeCitizenship")?` (${val("rmeCitizenship")})`:""}`:"non-foreigner");if(num("rmeGravida")!==null)intro.push(`G${num("rmeGravida")}P${num("rmePara")??0}`);if(g.weeks!==null)intro.push(`POG ${g.weeks}+${g.days}/52`);const us=ultrasoundNoteLines(),extraHx=[sentence(val("rmePastObsFreeText")),sentence(val("rmeMedicalHistory")),sentence(val("rmeSocialHistory"))].filter(Boolean);return["Dear colleague,","","Thank you for seeing this patient.",intro.length?intro.join(", ")+".":"",val("rmeEdd")?`EDD ${dateFmt(val("rmeEdd"))}.`:"","","Currently:",...currentSymptomLines(),extraHx.length?["","Relevant history:",...extraHx].join("\n"):"","","Reason for referral:",...reasons.map(x=>`- ${x}`),us.length?["","Ultrasound:",...us].join("\n"):"","","Kindly assess and advise regarding further antenatal management.","",`Referral to: ${destination}.`].filter(Boolean).join("\n");
 }
 function generateNote(){render();q("rmeOutput").value=noteText();}
 function generateReferral(){render();q("rmeReferralOutput").value=referralText();}
@@ -20497,6 +20736,483 @@ initDate();render();window.renderRme1=render;window.generateRme1Note=generateNot
   refreshContext(true);
 })();
 </script>
+
+
+<script id="v18187-foreigner-citizenship">
+(function(){
+  const configs=[["clForeigner","clCitizenshipWrap","clCitizenship"],["dfuForeigner","dfuCitizenshipWrap","dfuCitizenship"],["rmeForeigner","rmeCitizenshipWrap","rmeCitizenship"]];
+  function syncOne(selectId,wrapId,inputId){const sel=document.getElementById(selectId),wrap=document.getElementById(wrapId),input=document.getElementById(inputId);if(!sel||!wrap||!input)return;const foreigner=sel.value==="yes";wrap.classList.toggle("hidden",!foreigner);if(!foreigner)input.value="";}
+  function syncAll(){configs.forEach(c=>syncOne(...c));}
+  document.addEventListener("change",e=>{const c=configs.find(c=>c[0]===e.target?.id);if(c)syncOne(...c);});
+  document.addEventListener("click",e=>{if(e.target?.closest?.("#dfuReset,#rmeClear,#clerkingFloatingReset"))setTimeout(syncAll,0);});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",syncAll);else syncAll();
+})();
+</script>
+
+<style id="v18188-dengue-duration-daily-style">
+#dengueNewCaseTemplate .dengue-duration-wrap,
+#dengueFollowUpTemplate .dengue-duration-wrap{margin-top:7px;display:flex;align-items:end;gap:6px;flex-wrap:wrap}
+#dengueNewCaseTemplate .dengue-duration-wrap.hidden,
+#dengueFollowUpTemplate .dengue-duration-wrap.hidden{display:none!important}
+#dengueNewCaseTemplate .dengue-duration-wrap label,
+#dengueFollowUpTemplate .dengue-duration-wrap label{margin:0;font-size:11px;font-weight:700;color:var(--muted)}
+#dengueNewCaseTemplate .dengue-duration-wrap input,
+#dengueFollowUpTemplate .dengue-duration-wrap input{width:86px;min-width:72px}
+#dengueNewCaseTemplate .dengue-duration-wrap select,
+#dengueFollowUpTemplate .dengue-duration-wrap select{width:92px;min-width:82px}
+#dengueNewCaseTemplate .dengue-daily-history,
+#dengueFollowUpTemplate .dengue-daily-history{margin-top:8px;padding:8px;border:1px solid #d7e6e2;border-radius:10px;background:#fbfdfc}
+#dengueNewCaseTemplate .dengue-daily-history-title,
+#dengueFollowUpTemplate .dengue-daily-history-title{font-size:11px;font-weight:800;color:#315f57;margin-bottom:5px}
+#dengueNewCaseTemplate .dengue-daily-history-helper,
+#dengueFollowUpTemplate .dengue-daily-history-helper{font-size:10px;color:var(--muted);line-height:1.35;margin-bottom:6px}
+#dengueNewCaseTemplate .dengue-daily-grid,
+#dengueFollowUpTemplate .dengue-daily-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(82px,1fr));gap:6px}
+#dengueNewCaseTemplate .dengue-day-row,
+#dengueFollowUpTemplate .dengue-day-row{display:flex;align-items:center;gap:4px}
+#dengueNewCaseTemplate .dengue-day-row.hidden,
+#dengueFollowUpTemplate .dengue-day-row.hidden{display:none!important}
+#dengueNewCaseTemplate .dengue-day-row label,
+#dengueFollowUpTemplate .dengue-day-row label{margin:0;min-width:23px;font-size:10px;font-weight:800;color:#466a64}
+#dengueNewCaseTemplate .dengue-day-row input,
+#dengueFollowUpTemplate .dengue-day-row input{min-width:0;width:100%;padding:6px 7px}
+</style>
+<script id="v18188-dengue-duration-daily-frequency">
+(function(){
+  'use strict';
+  const MAX_DAYS=30;
+  const byId=id=>document.getElementById(id);
+  const val=id=>(byId(id)?.value||'').trim();
+
+  function plural(amount,unit){
+    const n=Number(amount);
+    if(!amount) return '';
+    return `${amount} ${unit}${n===1?'':'s'}`;
+  }
+  window.dengueDurationSuffix=function(inputId){
+    if(!inputId) return '';
+    const amount=val(inputId);
+    if(!amount) return '';
+    const unit=val(`${inputId}Unit`)||'day';
+    return ` x ${plural(amount,unit)}`;
+  };
+
+  function durationWrap(inputId,label='Duration'){
+    const wrap=document.createElement('div');
+    wrap.className='dengue-duration-wrap';
+    wrap.id=`${inputId}Wrap`;
+    wrap.innerHTML=`<label for="${inputId}">${label}</label><input id="${inputId}" type="number" min="0" step="0.5" inputmode="decimal" placeholder="e.g. 2"><select id="${inputId}Unit"><option value="hour">Hour(s)</option><option value="day" selected>Day(s)</option></select>`;
+    return wrap;
+  }
+
+  function appendDuration(controlId,inputId,condition,options={}){
+    const control=byId(controlId);
+    if(!control || byId(`${inputId}Wrap`)) return;
+    const host=options.hostSelector?control.closest(options.hostSelector):(control.closest('.dfu-warning-field')||control.parentElement);
+    if(!host) return;
+    const wrap=durationWrap(inputId,options.label||'Duration');
+    host.appendChild(wrap);
+    const sync=()=>wrap.classList.toggle('hidden',condition? !condition() : false);
+    control.addEventListener('change',sync);
+    control.addEventListener('input',sync);
+    sync();
+  }
+
+  function appendBleedingDuration(){
+    const group=byId('dfuBleedingTendencies');
+    if(!group || byId('dfuBleedingDurationWrap')) return;
+    const host=group.closest('.dfu-bleeding-block')||group.parentElement;
+    const wrap=durationWrap('dfuBleedingDuration','Bleeding duration');
+    host.appendChild(wrap);
+    const sync=()=>wrap.classList.toggle('hidden',!group.querySelector('input[type="checkbox"]:checked'));
+    group.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.addEventListener('change',sync));
+    sync();
+  }
+
+  function makeHistoryPanel(mode,symptom,hostControlId){
+    const prefix=mode==='new'?'cl':'dfu';
+    const cap=symptom==='vomiting'?'Vomiting':'Loose stool';
+    const panelId=`${prefix}${symptom==='vomiting'?'Vomiting':'LooseStool'}DailyHistory`;
+    if(byId(panelId)) return;
+    const control=byId(hostControlId);
+    if(!control) return;
+    const host=control.closest('.dfu-warning-field')||control.parentElement;
+    const panel=document.createElement('div');
+    panel.className='dengue-daily-history';
+    panel.id=panelId;
+    panel.innerHTML=`<div class="dengue-daily-history-title">${cap} frequency by day of illness</div><div class="dengue-daily-history-helper">Enter the number of episodes for each illness day up to the day patient is assessed. 0 = none that day.</div><div class="dengue-daily-grid"></div>`;
+    const grid=panel.querySelector('.dengue-daily-grid');
+    for(let d=1;d<=MAX_DAYS;d++){
+      const row=document.createElement('div');
+      row.className='dengue-day-row hidden';
+      row.dataset.day=String(d);
+      const id=`${prefix}${symptom==='vomiting'?'Vomit':'Stool'}Day${d}`;
+      row.innerHTML=`<label for="${id}">D${d}</label><input id="${id}" type="number" min="0" step="1" inputmode="numeric" placeholder="times">`;
+      grid.appendChild(row);
+    }
+    host.appendChild(panel);
+  }
+
+  function dayOfIllness(mode){
+    const raw=val(mode==='new'?'clDxDay':'dfuDayIllness');
+    const n=Math.floor(Number(raw));
+    return Number.isFinite(n)&&n>0?Math.min(n,MAX_DAYS):0;
+  }
+  function syncHistory(mode){
+    const prefix=mode==='new'?'cl':'dfu';
+    const n=dayOfIllness(mode);
+    ['Vomiting','LooseStool'].forEach(name=>{
+      const panel=byId(`${prefix}${name}DailyHistory`);
+      if(!panel) return;
+      panel.querySelector('.dengue-daily-history-helper').textContent=n
+        ? `Day of illness ${n}: enter episodes for Day 1 to Day ${n}. 0 = none that day.`
+        : 'Enter Day of illness to display the daily frequency fields.';
+      panel.querySelectorAll('.dengue-day-row').forEach(row=>{
+        row.classList.toggle('hidden',!n || Number(row.dataset.day)>n);
+      });
+    });
+  }
+
+  window.dengueDailyFrequencyLines=function(mode,symptom){
+    const prefix=mode==='new'?'cl':'dfu';
+    const n=dayOfIllness(mode);
+    if(!n) return [];
+    const key=symptom==='vomiting'?'Vomit':'Stool';
+    const label=symptom==='vomiting'?'Vomiting':'Loose stool';
+    const parts=[];
+    for(let d=1;d<=n;d++){
+      const v=val(`${prefix}${key}Day${d}`);
+      if(v==='') continue;
+      parts.push(`Day ${d}: ${v} time${Number(v)===1?'':'s'}`);
+    }
+    return parts.length?[`${label} frequency by illness day: ${parts.join('; ')}`]:[];
+  };
+
+  function init(){
+    // New case: all abnormal/positive warning findings get a duration field.
+    appendDuration('clDrink','clDrinkDuration',()=>val('clDrink')!=='able');
+    appendDuration('clUrine','clUrineDuration',()=>val('clUrine')==='yes',{hostSelector:'.urine-inline-card'});
+    appendDuration('clActivity','clActivityDuration',()=>val('clActivity')==='no');
+    appendDuration('clLethargy','clLethargyDuration',()=>val('clLethargy')==='yes');
+    appendDuration('clVomiting','clVomitingDuration',null,{label:'Vomiting duration'});
+    appendDuration('clDiarrhoea','clDiarrhoeaDuration',null,{label:'Loose stool duration'});
+    appendDuration('clAbdPain','clAbdPainDuration',()=>val('clAbdPain')==='yes');
+    appendDuration('clBleeding','clBleedingDuration',()=>val('clBleeding')==='yes');
+    appendDuration('clSeizure','clSeizureDuration',()=>val('clSeizure')==='yes');
+
+    // Follow-up warning findings.
+    appendBleedingDuration();
+    appendDuration('dfuVomitFrequency','dfuVomitDuration',null,{label:'Vomiting duration'});
+    appendDuration('dfuLooseStoolFrequency','dfuLooseStoolDuration',null,{label:'Loose stool duration'});
+    appendDuration('dfuAbdominalPain','dfuAbdominalPainDuration',()=>val('dfuAbdominalPain')==='yes');
+    appendDuration('dfuSob','dfuSobDuration',()=>val('dfuSob')==='yes');
+    appendDuration('dfuLethargy','dfuLethargyDuration',()=>val('dfuLethargy')==='yes');
+    appendDuration('dfuSeizure','dfuSeizureDuration',()=>val('dfuSeizure')==='yes');
+    appendDuration('dfuOralIntake','dfuOralIntakeDuration',()=>val('dfuOralIntake')!=='good');
+    appendDuration('dfuActivity','dfuActivityDuration',()=>val('dfuActivity')==='no');
+    appendDuration('dfuUrine','dfuUrineDuration',()=>val('dfuUrine')!=='normal');
+
+    makeHistoryPanel('new','vomiting','clVomiting');
+    makeHistoryPanel('new','stool','clDiarrhoea');
+    makeHistoryPanel('followup','vomiting','dfuVomitFrequency');
+    makeHistoryPanel('followup','stool','dfuLooseStoolFrequency');
+
+    ['clDxDay','dfuDayIllness'].forEach(id=>{
+      const el=byId(id);
+      if(!el) return;
+      el.addEventListener('input',()=>syncHistory(id==='clDxDay'?'new':'followup'));
+      el.addEventListener('change',()=>syncHistory(id==='clDxDay'?'new':'followup'));
+    });
+    syncHistory('new');
+    syncHistory('followup');
+
+    // Duration/daily-frequency edits should refresh live dengue classification and diagnosis.
+    document.addEventListener('input',e=>{
+      const id=e.target?.id||'';
+      if(!/(Duration|Day\d+$)/.test(id)) return;
+      if(id.startsWith('cl')){
+        if(typeof window.renderNewCaseFrequencyClassification==='function') window.renderNewCaseFrequencyClassification();
+        if(typeof window.buildDiagnosis==='function') window.buildDiagnosis();
+      }else if(id.startsWith('dfu')){
+        if(typeof window.renderDengueFollowUpWarningClassification==='function') window.renderDengueFollowUpWarningClassification();
+        if(typeof window.buildDengueFollowUpDiagnosis==='function') window.buildDengueFollowUpDiagnosis();
+      }
+    });
+    document.addEventListener('change',e=>{
+      const id=e.target?.id||'';
+      if(!/(Duration|DurationUnit)$/.test(id)) return;
+      if(id.startsWith('cl')){
+        window.renderNewCaseFrequencyClassification?.();
+        window.buildDiagnosis?.();
+      }else if(id.startsWith('dfu')){
+        window.renderDengueFollowUpWarningClassification?.();
+        window.buildDengueFollowUpDiagnosis?.();
+      }
+    });
+
+    // After reset, restore visibility/history without changing defaults.
+    ['clReset','dfuReset'].forEach(id=>byId(id)?.addEventListener('click',()=>setTimeout(()=>{syncHistory('new');syncHistory('followup');},0)));
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+})();
+</script>
+
+
+<style id="v18189-dengue-frequency-ui-style">
+/* V18.189 — refine ONLY vomiting / loose-stool frequency entry UI. */
+#dengueNewCaseTemplate .dengue-frequency-shell,
+#dengueFollowUpTemplate .dengue-frequency-shell{
+  margin-top:0;padding:10px;border:1px solid #d7e6e2;border-radius:12px;background:#fbfdfc
+}
+#dengueNewCaseTemplate .dengue-frequency-shell-title,
+#dengueFollowUpTemplate .dengue-frequency-shell-title{
+  margin:0 0 8px;font-size:12.5px;font-weight:800;color:var(--text)
+}
+#dengueNewCaseTemplate .dengue-frequency-row,
+#dengueFollowUpTemplate .dengue-frequency-row{
+  display:grid;grid-template-columns:minmax(120px,.75fr) minmax(170px,1.25fr);gap:8px;align-items:end;margin-top:8px
+}
+#dengueNewCaseTemplate .dengue-frequency-row>div,
+#dengueFollowUpTemplate .dengue-frequency-row>div{min-width:0}
+#dengueNewCaseTemplate .dengue-frequency-row label,
+#dengueFollowUpTemplate .dengue-frequency-row label{
+  display:block;margin:0 0 4px;font-size:11px;font-weight:700;color:var(--muted)
+}
+#dengueNewCaseTemplate .dengue-frequency-mode,
+#dengueFollowUpTemplate .dengue-frequency-mode,
+#dengueNewCaseTemplate .dengue-last24-input,
+#dengueFollowUpTemplate .dengue-last24-input{width:100%;min-width:0}
+#dengueNewCaseTemplate .dengue-last24-wrap.hidden,
+#dengueFollowUpTemplate .dengue-last24-wrap.hidden,
+#dengueNewCaseTemplate .dengue-daily-history.hidden,
+#dengueFollowUpTemplate .dengue-daily-history.hidden{display:none!important}
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-duration-wrap,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-duration-wrap{
+  margin-top:0;display:grid;grid-template-columns:minmax(120px,.75fr) minmax(86px,.55fr) minmax(92px,.7fr);gap:8px;align-items:end
+}
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-duration-wrap>label,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-duration-wrap>label{align-self:center;font-size:11px;color:var(--muted)}
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-duration-wrap input,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-duration-wrap input,
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-duration-wrap select,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-duration-wrap select{width:100%;min-width:0}
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-daily-history,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-daily-history{
+  margin-top:8px;padding:8px 0 0;border:0;border-top:1px dashed #d7e6e2;border-radius:0;background:transparent
+}
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-daily-history-title,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-daily-history-title{font-size:11px;margin-bottom:3px}
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-daily-grid,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-daily-grid{grid-template-columns:repeat(auto-fit,minmax(105px,1fr))}
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-day-row label,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-day-row label{min-width:36px}
+#dengueNewCaseTemplate .dengue-frequency-threshold,
+#dengueFollowUpTemplate .dengue-frequency-threshold{margin-top:6px;font-size:9.5px;line-height:1.35;color:var(--muted)}
+#dengueNewCaseTemplate .v18189-legacy-frequency,
+#dengueFollowUpTemplate .v18189-legacy-frequency{display:none!important}
+@media(max-width:720px){
+  #dengueNewCaseTemplate .dengue-frequency-row,
+  #dengueFollowUpTemplate .dengue-frequency-row{grid-template-columns:1fr}
+  #dengueNewCaseTemplate .dengue-frequency-shell .dengue-duration-wrap,
+  #dengueFollowUpTemplate .dengue-frequency-shell .dengue-duration-wrap{grid-template-columns:1fr 1fr}
+  #dengueNewCaseTemplate .dengue-frequency-shell .dengue-duration-wrap>label,
+  #dengueFollowUpTemplate .dengue-frequency-shell .dengue-duration-wrap>label{grid-column:1/-1}
+}
+</style>
+<script id="v18189-dengue-frequency-ui-refined">
+(function(){
+  'use strict';
+  const byId=id=>document.getElementById(id);
+  const val=id=>(byId(id)?.value||'').trim();
+
+  const CONFIGS=[
+    {mode:'new',symptom:'vomiting',title:'Vomiting',control:'clVomiting',count:'clVomitingCount',duration:'clVomitingDuration',panel:'clVomitingDailyHistory',modeId:'clVomitFrequencyMode',last24:'clVomitLast24'},
+    {mode:'new',symptom:'stool',title:'Loose stool',control:'clDiarrhoea',count:'clDiarrhoeaCount',duration:'clDiarrhoeaDuration',panel:'clLooseStoolDailyHistory',modeId:'clStoolFrequencyMode',last24:'clStoolLast24'},
+    {mode:'followup',symptom:'vomiting',title:'Vomiting',control:'dfuVomitFrequency',count:'dfuVomitCount',duration:'dfuVomitDuration',panel:'dfuVomitingDailyHistory',modeId:'dfuVomitFrequencyMode',last24:'dfuVomitLast24'},
+    {mode:'followup',symptom:'stool',title:'Loose stool',control:'dfuLooseStoolFrequency',count:'dfuLooseStoolCount',duration:'dfuLooseStoolDuration',panel:'dfuLooseStoolDailyHistory',modeId:'dfuStoolFrequencyMode',last24:'dfuStoolLast24'}
+  ];
+
+  function currentIllnessDay(mode){
+    const n=Math.floor(Number(val(mode==='new'?'clDxDay':'dfuDayIllness')));
+    return Number.isFinite(n)&&n>0?Math.min(n,30):0;
+  }
+
+  function legacyCount(cfg){
+    const f=val(cfg.control);
+    if(f==='1x') return '1';
+    if(f==='2x') return '2';
+    if(f==='ge3') return val(cfg.count)||'3';
+    return '';
+  }
+
+  function setLegacyFromNumber(cfg,raw){
+    const control=byId(cfg.control),count=byId(cfg.count);
+    if(!control) return;
+    const n=raw===''?0:Math.max(0,Math.floor(Number(raw)||0));
+    const next=n<=0?'none':n===1?'1x':n===2?'2x':'ge3';
+    const changed=control.value!==next;
+    control.value=next;
+    if(count){
+      count.value=n>=3?String(n):'';
+      count.disabled=n<3;
+    }
+    if(changed) control.dispatchEvent(new Event('change',{bubbles:true}));
+    else control.dispatchEvent(new Event('input',{bubbles:true}));
+    count?.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+
+  function syncLegacy(cfg){
+    const mode=val(cfg.modeId)||'last24';
+    if(mode==='last24'){
+      setLegacyFromNumber(cfg,val(cfg.last24));
+      return;
+    }
+    const day=currentIllnessDay(cfg.mode);
+    const prefix=cfg.mode==='new'?'cl':'dfu';
+    const key=cfg.symptom==='vomiting'?'Vomit':'Stool';
+    setLegacyFromNumber(cfg,day?val(`${prefix}${key}Day${day}`):'');
+  }
+
+  function syncVisibility(cfg){
+    const mode=val(cfg.modeId)||'last24';
+    byId(`${cfg.last24}Wrap`)?.classList.toggle('hidden',mode!=='last24');
+    byId(cfg.panel)?.classList.toggle('hidden',mode!=='byday');
+    syncLegacy(cfg);
+  }
+
+  function refine(cfg){
+    const control=byId(cfg.control);
+    if(!control || byId(`${cfg.modeId}Shell`)) return;
+    const host=control.closest('.dfu-warning-field')||control.parentElement;
+    if(!host) return;
+
+    // Existing V18.188 controls stay in DOM for scoring/generation, but are hidden from the UI.
+    const legacyLabel=Array.from(host.children).find(el=>el.tagName==='LABEL' && (el.getAttribute('for')===cfg.control || !el.getAttribute('for')));
+    legacyLabel?.classList.add('v18189-legacy-frequency');
+    control.classList.add('v18189-legacy-frequency');
+    byId(`${cfg.count}Wrap`)?.classList.add('v18189-legacy-frequency');
+    Array.from(host.children).filter(el=>el.classList?.contains('helper') && /3 times\/24 hours or more/i.test(el.textContent||''))
+      .forEach(el=>el.classList.add('v18189-legacy-frequency'));
+
+    const shell=document.createElement('div');
+    shell.className='dengue-frequency-shell';
+    shell.id=`${cfg.modeId}Shell`;
+    shell.innerHTML=`
+      <div class="dengue-frequency-shell-title">${cfg.title}</div>
+      <div class="dengue-frequency-row">
+        <div><label for="${cfg.modeId}">Frequency</label><select class="dengue-frequency-mode" id="${cfg.modeId}"><option value="last24">Last 24 hours</option><option value="byday">By illness day</option></select></div>
+        <div class="dengue-last24-wrap" id="${cfg.last24}Wrap"><label for="${cfg.last24}">Episodes in last 24 hours</label><input class="dengue-last24-input" id="${cfg.last24}" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 4"></div>
+      </div>
+      <div class="dengue-frequency-threshold">≥3 episodes in 24 hours is classified as a dengue warning sign.</div>`;
+
+    host.insertBefore(shell,host.firstChild);
+    const durationWrap=byId(`${cfg.duration}Wrap`);
+    if(durationWrap){
+      durationWrap.querySelector('label')?.replaceChildren(document.createTextNode('Duration'));
+      shell.insertBefore(durationWrap,shell.querySelector('.dengue-frequency-row'));
+    }
+    const panel=byId(cfg.panel);
+    if(panel){
+      panel.querySelector('.dengue-daily-history-title')?.replaceChildren(document.createTextNode('Frequency by illness day'));
+      panel.querySelectorAll('.dengue-day-row').forEach(row=>{
+        const lab=row.querySelector('label');
+        if(lab) lab.textContent=`Day ${row.dataset.day}`;
+      });
+      shell.appendChild(panel);
+    }
+
+    // Carry over any pre-existing frequency if clerking was already entered before this enhancement ran.
+    const existing=legacyCount(cfg);
+    if(existing) byId(cfg.last24).value=existing;
+
+    byId(cfg.modeId)?.addEventListener('change',()=>syncVisibility(cfg));
+    byId(cfg.last24)?.addEventListener('input',()=>syncLegacy(cfg));
+    panel?.addEventListener('input',e=>{
+      if(e.target?.matches('input[id*="Day"]')) syncLegacy(cfg);
+    });
+    syncVisibility(cfg);
+  }
+
+  // Only daily mode should add the day-by-day line to generated notes.
+  const originalDailyLines=window.dengueDailyFrequencyLines;
+  if(typeof originalDailyLines==='function'){
+    window.dengueDailyFrequencyLines=function(mode,symptom){
+      const cfg=CONFIGS.find(c=>c.mode===mode&&c.symptom===symptom);
+      if(cfg && val(cfg.modeId)!=='byday') return [];
+      const lines=originalDailyLines(mode,symptom)||[];
+      return lines.map(line=>line.replace(/ frequency by illness day:/i,' frequency:'));
+    };
+  }
+
+  function refreshForIllnessDay(mode){
+    CONFIGS.filter(c=>c.mode===mode).forEach(cfg=>{
+      if(val(cfg.modeId)==='byday') syncLegacy(cfg);
+    });
+  }
+
+  function init(){
+    CONFIGS.forEach(refine);
+    ['clDxDay','dfuDayIllness'].forEach(id=>{
+      const el=byId(id); if(!el) return;
+      const mode=id==='clDxDay'?'new':'followup';
+      el.addEventListener('input',()=>setTimeout(()=>refreshForIllnessDay(mode),0));
+      el.addEventListener('change',()=>setTimeout(()=>refreshForIllnessDay(mode),0));
+    });
+    ['clReset','dfuReset'].forEach(id=>byId(id)?.addEventListener('click',()=>setTimeout(()=>{
+      CONFIGS.forEach(cfg=>{
+        if(byId(cfg.modeId)) byId(cfg.modeId).value='last24';
+        if(byId(cfg.last24)) byId(cfg.last24).value='';
+        syncVisibility(cfg);
+      });
+    },10)));
+  }
+
+  // V18.188 registers its DOMContentLoaded initialiser before this one, so its duration/day panels exist first.
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(init,0),{once:true});
+  else setTimeout(init,0);
+})();
+</script>
+
+
+<style id="v18190-dengue-frequency-layout-fix">
+/* V18.190 — layout-only fix for the V18.189 vomiting / loose-stool cards. */
+#dengueNewCaseTemplate .dengue-frequency-shell,
+#dengueFollowUpTemplate .dengue-frequency-shell{
+  width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow:hidden
+}
+#dengueNewCaseTemplate .dengue-frequency-shell *,
+#dengueFollowUpTemplate .dengue-frequency-shell *{box-sizing:border-box}
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-duration-wrap,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-duration-wrap{
+  width:100%;min-width:0;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px
+}
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-duration-wrap>label,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-duration-wrap>label{
+  grid-column:1/-1;display:block;margin:0 0 -1px;min-width:0
+}
+#dengueNewCaseTemplate .dengue-frequency-row,
+#dengueFollowUpTemplate .dengue-frequency-row{
+  width:100%;min-width:0;grid-template-columns:minmax(0,1fr);gap:7px
+}
+#dengueNewCaseTemplate .dengue-frequency-row>div,
+#dengueFollowUpTemplate .dengue-frequency-row>div,
+#dengueNewCaseTemplate .dengue-frequency-shell input,
+#dengueFollowUpTemplate .dengue-frequency-shell input,
+#dengueNewCaseTemplate .dengue-frequency-shell select,
+#dengueFollowUpTemplate .dengue-frequency-shell select{
+  width:100%;max-width:100%;min-width:0
+}
+#dengueNewCaseTemplate .dengue-frequency-row label,
+#dengueFollowUpTemplate .dengue-frequency-row label{
+  white-space:normal;overflow-wrap:anywhere
+}
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-daily-grid,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-daily-grid{
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,92px),1fr));gap:6px
+}
+</style>
 
 </body>
 </html>
