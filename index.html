@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.190 — Dengue Frequency Layout Fixed</title>
+<title>MedAssist KK Bangi V18.195 — Dengue Loose Stool Warning Sign Restored + Full Regression Audit</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -3859,7 +3859,7 @@ html,body{max-width:100%;overflow-x:hidden}
         <button class="btn secondary" type="button" data-generate-therapy="ot">Generate occupational therapy referral</button>
         <button class="btn secondary" type="button" data-copy-therapy>Copy therapy referral</button>
       </div>
-      <textarea class="output neuro-short-output" data-therapy-output readonly placeholder="Generated therapy referral will appear here."></textarea>
+      <textarea class="output neuro-short-output" data-therapy-output placeholder="Generated therapy referral will appear here."></textarea>
     `;
     outputCard.appendChild(therapy);
     qsa('[data-generate-therapy]', therapy).forEach(button => button.addEventListener('click', () => {
@@ -4513,6 +4513,63 @@ html,body{max-width:100%;overflow-x:hidden}
 :is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd) :is(.result,.result-box,.status-box,.alert,.warning,.info-box,.rme1-engine-result,.rme1-derived,.rme1-vte-summary){font-size:11.5px!important;line-height:1.4!important}
 @media(max-width:700px){:is(#page-clerking,#page-dm,#page-nnj,#page-neurodevelopment,#page-rme1,#page-iucd){--ck-font-body:12.75px;--ck-font-label:12.1px;--ck-font-helper:10.75px;--ck-font-h1:19px;--ck-font-h2:15px;--ck-font-h3:13px;--ck-font-h4:12.25px}}
 </style>
+
+<style id="v18191-layout-audit-fixes">
+/* V18.191 — layout-only regression fixes for the narrow desktop workspace.
+   Clinical settings/logic are unchanged. */
+@media (min-width:901px) and (max-width:1200px){
+  #dengueNewCaseTemplate .grid.three,
+  #dengueFollowUpTemplate .grid.three,
+  #dfuWarningSigns{grid-template-columns:1fr!important}
+  #dengueNewCaseTemplate .cl-comorbid-allergy-pair{grid-column:1/-1!important;grid-template-columns:1fr!important}
+  #clAgeWrap .age-input-row,
+  #dfuAgeWrap .age-input-row{grid-template-columns:1fr!important}
+  #dengueFollowUpTemplate .dfu-datetime-field{grid-column:1/-1!important}
+  #dengueFollowUpTemplate .dengue-datetime-24{grid-template-columns:1fr 1fr auto 1fr!important}
+  #dengueFollowUpTemplate .dengue-datetime-24>input[type="date"]{grid-column:1/-1!important}
+  #dfuBleedingTendencies{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+
+  #page-nnj .nnj-quick-top-row,
+  #page-nnj .nnj-tsb-simple-row{grid-template-columns:1fr!important}
+  #page-nnj .nnj-datetime-panel{grid-template-columns:1fr 1fr!important}
+  #page-nnj .nnj-datetime-panel>.nnj-datetime-label,
+  #page-nnj .nnj-datetime-panel>div:first-of-type,
+  #page-nnj .nnj-datetime-panel #nnjUseNow{grid-column:1/-1!important}
+  #page-nnj .nnj-datetime-panel .time-separator{display:none!important}
+  #page-nnj .nnj-tsb-advanced{grid-template-columns:1fr 1fr!important}
+  #page-nnj .nnj-tsb-advanced>div:first-child{grid-column:1/-1!important}
+  #page-nnj .nnj-previous-tsb-grid{grid-template-columns:1fr 1fr!important}
+  #page-nnj .nnj-previous-tsb-grid>div:first-child,
+  #page-nnj .nnj-previous-tsb-grid>div:nth-child(4),
+  #page-nnj .nnj-previous-tsb-grid>.btn{grid-column:1/-1!important}
+
+  #page-iucd .grid.two,
+  #page-iucd .grid.three,
+  #page-iucd .grid.four,
+  #page-iucd .iucd-mec-grid{grid-template-columns:1fr!important}
+  #page-iucd .iucd-mec-item{grid-template-columns:minmax(0,1fr) 120px}
+
+  #page-calculator .calc-menu{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #page-calculator .calc-option strong,
+  #page-calculator .calc-option small{overflow-wrap:anywhere}
+}
+@media (min-width:1201px) and (max-width:1399px){
+  #clAgeWrap .age-input-row,
+  #dfuAgeWrap .age-input-row{grid-template-columns:minmax(72px,96px) minmax(0,1fr)!important}
+  #dfuBleedingTendencies{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+</style>
+
+<style id="v18194-neuro-mobile-screening-fix">
+/* V18.194 — mobile-only layout fix found during full regression audit. No clinical logic changes. */
+@media(max-width:720px){
+  #page-neurodevelopment .neuro-screening-row{
+    grid-template-columns:minmax(0,1fr)!important;
+    width:100%;min-width:0
+  }
+  #page-neurodevelopment .neuro-screening-row>*{min-width:0;width:100%;max-width:100%}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -4676,7 +4733,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div><label>Sex</label><select id="clSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div id="clAgeWrap"><label>Age</label><div class="age-input-row"><input autocomplete="off" id="clAge" inputmode="numeric" maxlength="3" pattern="[0-9]*" placeholder="e.g. 4" type="text"/><select aria-label="Age unit" id="clAgeUnit"><option value="years">Years old</option><option value="months">Months old</option></select></div><div class="helper age-unit-help" id="clAgeHelp">Adult age is recorded in years.</div></div>
 <div><label>Foreigner</label><select id="clForeigner"><option value="no">No</option><option value="yes">Yes</option></select></div>
-<div class="hidden" id="clCitizenshipWrap"><label>Citizenship</label><input id="clCitizenship" placeholder="Free text, e.g. Indonesia"/></div>
+<div class="hidden" id="clCitizenshipWrap"><label>Nationality</label><input id="clCitizenship" placeholder="e.g. Burmese, Nepalese"/></div>
 <div class="hidden" id="clLmpWrap"><label>LMP</label><input id="clLmp" type="date"/></div>
 <div><label>Address</label><input id="clAddress"/></div>
 <div><label>Latest phone number</label><input id="clPhone"/></div>
@@ -5618,7 +5675,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div><label>Patient group</label><select id="dfuGroup"><option value="adult">Adult</option><option value="paeds">Paediatric</option></select></div>
 <div><label>Sex</label><select id="dfuSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div id="dfuAgeWrap"><label>Age</label><div class="age-input-row"><input autocomplete="off" id="dfuAge" inputmode="numeric" maxlength="3" pattern="[0-9]*" placeholder="e.g. 4" type="text"/><select aria-label="Age unit" id="dfuAgeUnit"><option value="years">Years old</option><option value="months">Months old</option></select></div><div class="helper age-unit-help" id="dfuAgeHelp">Adult age is recorded in years.</div></div>
 <div><label>Foreigner</label><select id="dfuForeigner"><option value="no">No</option><option value="yes">Yes</option></select></div>
-<div class="hidden" id="dfuCitizenshipWrap"><label>Citizenship</label><input id="dfuCitizenship" placeholder="Free text, e.g. Indonesia"/></div>
+<div class="hidden" id="dfuCitizenshipWrap"><label>Nationality</label><input id="dfuCitizenship" placeholder="e.g. Burmese, Nepalese"/></div>
 <div><label>Day of illness</label><input id="dfuDayIllness" min="1" placeholder="e.g. 5" step="1" type="number"/></div>
 <div>
 <label>Comorbidity status</label>
@@ -7031,11 +7088,11 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="card">
 <div class="nnj-card-title"><span class="nnj-step">7</span><h2>Generated NNJ Clinical Note</h2></div>
-<textarea class="output nnj-note-output" id="nnjOutput" readonly=""></textarea>
+<textarea class="output nnj-note-output" id="nnjOutput"></textarea>
 </div>
 <div class="card hidden" id="nnjReferralLetterWrap">
 <h2>Generated Referral Letter</h2>
-<textarea class="output nnj-referral-output" id="nnjReferralLetter" readonly=""></textarea>
+<textarea class="output nnj-referral-output" id="nnjReferralLetter"></textarea>
 </div>
 </div>
 <div class="actions clerking-back-top-wrap"><button class="btn secondary clerking-back-top" type="button">↑ Back to top</button></div></section><section class="page" id="page-neurodevelopment">
@@ -7351,8 +7408,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <button class="btn secondary" data-copy-neuro="adhdReferralOutput" type="button">Copy referral</button>
 <button class="btn danger" data-clear-neuro="adhdTemplate" type="button">Clear ADHD form</button>
 <button class="btn secondary" id="generateAdhdAll" type="button">Generate all</button></div>
-<div class="neuro-autosave-status" id="adhdGeneratedMeta">Not generated yet.</div><label>Clinical note</label><textarea class="output neuro-output" id="adhdNoteOutput" readonly=""></textarea>
-<label>Referral letter</label><textarea class="output neuro-short-output" id="adhdReferralOutput" readonly=""></textarea>
+<div class="neuro-autosave-status" id="adhdGeneratedMeta">Not generated yet.</div><label>Clinical note</label><textarea class="output neuro-output" id="adhdNoteOutput"></textarea>
+<label>Referral letter</label><textarea class="output neuro-short-output" id="adhdReferralOutput"></textarea>
 <div class="neuro-reference-row">
 <a class="ref" href="https://www.moh.gov.my/penerbitan-dan-laporan/dasar-akta-polisi-garis-panduan/penerbitan-klinikal/senarai-penerbitan-klinikal/panduan-amalan-klinikal-cpg" rel="noopener noreferrer" target="_blank">KKM ADHD CPG listing ↗</a>
 </div>
@@ -7675,8 +7732,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <button class="btn secondary" data-copy-neuro="autismReferralOutput" type="button">Copy referral</button>
 <button class="btn danger" data-clear-neuro="autismTemplate" type="button">Clear autism form</button>
 <button class="btn secondary" id="generateAutismAll" type="button">Generate all</button></div>
-<div class="neuro-autosave-status" id="autismGeneratedMeta">Not generated yet.</div><label>Clinical note</label><textarea class="output neuro-output" id="autismNoteOutput" readonly=""></textarea>
-<label>Referral letter</label><textarea class="output neuro-short-output" id="autismReferralOutput" readonly=""></textarea>
+<div class="neuro-autosave-status" id="autismGeneratedMeta">Not generated yet.</div><label>Clinical note</label><textarea class="output neuro-output" id="autismNoteOutput"></textarea>
+<label>Referral letter</label><textarea class="output neuro-short-output" id="autismReferralOutput"></textarea>
 <div class="neuro-reference-row">
 <a class="ref" href="https://www.moh.gov.my/penerbitan-dan-laporan/dasar-akta-polisi-garis-panduan/penerbitan-klinikal/senarai-penerbitan-klinikal/panduan-amalan-klinikal-cpg" rel="noopener noreferrer" target="_blank">KKM Autism CPG listing ↗</a>
 <a class="ref" href="https://www.mchatscreen.com/" rel="noopener noreferrer" target="_blank">Official M-CHAT-R/F site ↗</a>
@@ -7703,7 +7760,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div><label>Assessment date</label><input id="rmeAssessmentDate" type="date"/></div>
 <div><label>Maternal age (years)</label><input id="rmeAge" min="10" max="60" type="number" placeholder="e.g. 31"/></div>
 <div><label>Foreigner</label><select id="rmeForeigner"><option value="no">No</option><option value="yes">Yes</option></select></div>
-<div class="hidden" id="rmeCitizenshipWrap"><label>Citizenship</label><input id="rmeCitizenship" placeholder="Free text, e.g. Indonesia"/></div>
+<div class="hidden" id="rmeCitizenshipWrap"><label>Nationality</label><input id="rmeCitizenship" placeholder="e.g. Burmese, Nepalese"/></div>
 <div><label>Gravida</label><input id="rmeGravida" min="1" type="number" placeholder="e.g. 2"/></div>
 <div><label>Para</label><input id="rmePara" min="0" type="number" placeholder="e.g. 1"/></div>
 <div><label>LNMP</label><input id="rmeLnmp" type="date"/></div>
@@ -8104,8 +8161,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="actions">
 <button class="btn primary" id="rmeGenerateNote" type="button">Generate Clinical Note</button><button class="btn secondary" id="rmeGenerateReferral" type="button">Generate Referral Letter</button><button class="btn secondary" id="rmeGenerateAll" type="button">Generate All</button><button class="btn secondary" id="rmeCopyNote" type="button">Copy Note</button><button class="btn secondary" id="rmeCopyReferral" type="button">Copy Referral</button><button class="btn secondary" id="rmeClear" type="button">Clear RME 1</button>
 </div>
-<label>Clinical Note</label><textarea class="output rme1-output" id="rmeOutput" readonly=""></textarea>
-<label>Referral Letter</label><textarea class="output rme1-output rme1-referral-output" id="rmeReferralOutput" readonly=""></textarea>
+<label>Clinical Note</label><textarea class="output rme1-output" id="rmeOutput"></textarea>
+<label>Referral Letter</label><textarea class="output rme1-output rme1-referral-output" id="rmeReferralOutput"></textarea>
 <div class="rme1-section-note">Only selected Suggested Plan items plus entered additional/custom plans are added to the Clinical Note. Risk alerts remain visible even if you choose not to add their suggestions.</div>
 </div>
 <div class="actions clerking-back-top-wrap"><button class="btn secondary clerking-back-top" type="button">↑ Back to top</button></div>
@@ -8268,7 +8325,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <button class="btn secondary" id="iucdCopy" type="button">Copy clinical note</button>
 <button class="btn secondary" id="iucdReset" type="button">Clear form</button>
 </div>
-<textarea class="output iucd-output" id="iucdOutput" placeholder="Generated note will appear here" readonly=""></textarea>
+<textarea class="output iucd-output" id="iucdOutput" placeholder="Generated note will appear here"></textarea>
 <div class="neuro-reference-row"><span class="ref">Based on the uploaded KK Bandar Baru Bangi / PKD Hulu Langat IUCD clerking sheet.</span></div>
 </div>
 <div class="actions clerking-back-top-wrap"><button class="btn secondary clerking-back-top" type="button">↑ Back to top</button></div>
@@ -9695,6 +9752,7 @@ function buildDiagnosis(){
   const day=value("clDxDay")||"[ENTER]";
   const autoWarningSigns=[];
   if(value("clVomiting")==="ge3") autoWarningSigns.push("persistent vomiting");
+  if(value("clDiarrhoea")==="ge3") autoWarningSigns.push("loose stool 3 times/24 hours or more");
   if(value("clAbdPain")==="yes") autoWarningSigns.push("abdominal pain or tenderness");
   if(value("clBleeding")==="yes") autoWarningSigns.push("mucosal bleeding");
   if(value("clLethargy")==="yes") autoWarningSigns.push("lethargy or restlessness");
@@ -9710,7 +9768,7 @@ function buildDiagnosis(){
   const hasComorbid=value("clDxComorbidStatus")==="present" || hasTopComorbid;
   const comorbid=hasComorbid
     ? `with comorbid ${dxComorbid||"[ENTER COMORBID]"}`
-    : "with no comorbid";
+    : "no comorbid";
 
   const dx=`Dengue fever, day ${day} of illness, in ${value("clPhase")}, ${warning}, ${value("clHaemo")}, ${comorbid}`;
   $("clGeneratedDx").value=dx;
@@ -10343,6 +10401,27 @@ function dengueMeaningfulText(raw){
   const text=String(raw||"").trim().toLowerCase();
   return text && !["no","none","nil","-","n/a","na"].includes(text);
 }
+
+/* V18.193: one consistent comorbidity line for Dengue notes/referrals.
+   NKMI = no known medical illness / no documented comorbidity. */
+function dengueComorbidityNoteText(mode){
+  const followUp=mode==="followup";
+  if(followUp){
+    const detail=String(value("dfuDxComorbid")||"").trim();
+    const present=value("dfuDxComorbidStatus")==="present" || dengueMeaningfulText(detail);
+    if(!present) return "NKMI";
+    return dengueMeaningfulText(detail) ? detail : "present — details not entered";
+  }
+
+  const top=String(value("clComorbid")||"").trim();
+  const dx=String(value("clDxComorbid")||"").trim();
+  const present=value("clDxComorbidStatus")==="present" || dengueMeaningfulText(top) || dengueMeaningfulText(dx);
+  if(!present) return "NKMI";
+  if(dengueMeaningfulText(dx)) return dx;
+  if(dengueMeaningfulText(top)) return top;
+  return "present — details not entered";
+}
+window.dengueComorbidityNoteText=dengueComorbidityNoteText;
 
 function dengueParseVitalSigns(mode){
   const prefix=mode==="followup"?"dfu":"cl";
@@ -11273,12 +11352,13 @@ function buildDengueClinicalNote(planLines){
 
   const headerLines=[
     allergy?`allergy history to medications: ${allergy}`:"",
+    `comorbidities: ${dengueComorbidityNoteText("new")}`,
     value("clAddress")?`address: ${value("clAddress")}`:"",
     value("clPhone")?`latest phone number: ${value("clPhone")}`:"",
     dengueAgeDisplay("cl")?`age: ${dengueAgeDisplay("cl")}`:"",
     value("clForeigner")==="yes"
-      ? `foreigner: yes${value("clCitizenship")?` — citizenship: ${value("clCitizenship")}`:""}`
-      : "foreigner: no",
+      ? `nationality: ${value("clCitizenship")||"not specified"}`
+      : "",
     value("clSex")==="Female" && value("clLmp")
       ? `LMP: ${formatDateDisplay(value("clLmp"))}`
       : ""
@@ -11303,10 +11383,9 @@ function buildDengueClinicalNote(planLines){
     value("clAdjBW")?`3. Adjusted body weight: ${value("clAdjBW")} kg`:"",
     value("clSmoking")?`4. Smoking: ${value("clSmoking")}`:"",
     value("clPregnancy")?`5. Pregnancy: ${value("clPregnancy")}`:"",
-    value("clComorbid")?`6. Other comorbid: ${value("clComorbid")}`:"",
-    value("clBloodThinner")?`7. Antiplatelet / anticoagulant: ${value("clBloodThinner")}`:"",
+    value("clBloodThinner")?`6. Antiplatelet / anticoagulant: ${value("clBloodThinner")}`:"",
     value("clSocialLimit")
-      ? `8. Social factor limiting follow-up: ${value("clSocialLimit")}${value("clSocialLimitDetails")?` — ${value("clSocialLimitDetails")}`:""}`
+      ? `7. Social factor limiting follow-up: ${value("clSocialLimit")}${value("clSocialLimitDetails")?` — ${value("clSocialLimitDetails")}`:""}`
       : ""
   ].filter(Boolean);
 
@@ -11598,8 +11677,8 @@ function invalidateDengueReferral(event){
   }
 }
 
-$("page-clerking").addEventListener("input",invalidateDengueReferral);
-$("page-clerking").addEventListener("change",invalidateDengueReferral);
+$("dengueNewCaseTemplate").addEventListener("input",invalidateDengueReferral);
+$("dengueNewCaseTemplate").addEventListener("change",invalidateDengueReferral);
 
 const renderDenguePlanPreviewDebounced=debounce(renderDenguePlanPreview,180);
 
@@ -15177,7 +15256,7 @@ function buildDengueFollowUpDiagnosis(){
 
   const comorbid=fv("dfuDxComorbidStatus")==="present"
     ? `with comorbid ${fv("dfuDxComorbid")||"[ENTER COMORBID]"}`
-    : "with no comorbid";
+    : "no comorbid";
 
   const diagnosis=
     `Dengue fever, day ${day} of illness, in ${fv("dfuPhase")}, `+
@@ -15509,14 +15588,12 @@ function buildDengueFollowUpClinicalNote(){
 
   const headerLines=[
     fv("dfuAllergy")?`allergy history to medications: ${fv("dfuAllergy")}`:"",
+    `comorbidities: ${dengueComorbidityNoteText("followup")}`,
     fv("dfuAddress")?`address: ${fv("dfuAddress")}`:"",
     fv("dfuPhone")?`latest phone number: ${fv("dfuPhone")}`:"",
     window.dengueAgeDisplay("dfu")?`age: ${window.dengueAgeDisplay("dfu")}`:"",
     fv("dfuForeigner")==="yes"
-      ? `foreigner: yes${fv("dfuCitizenship")?` — citizenship: ${fv("dfuCitizenship")}`:""}`
-      : "foreigner: no",
-    fv("dfuDxComorbidStatus")==="present"
-      ? `comorbidities: ${fv("dfuDxComorbid")||"present — details not entered"}`
+      ? `nationality: ${fv("dfuCitizenship")||"not specified"}`
       : "",
     fv("dfuPregnancy")&&fv("dfuPregnancy")!=="-"?`pregnancy: ${fv("dfuPregnancy")}`:"",
     fv("dfuBloodThinner")?`antiplatelet / anticoagulant: ${fv("dfuBloodThinner")}`:"",
@@ -20228,12 +20305,29 @@ function renderProblemList(){
   return items;
 }
 
+function rmePeAspirinDoseText(){
+  const weight=num("rmeBookingWeight");
+  if(weight===null) return "aspirin 150 mg ON if maternal weight >40 kg / 100 mg ON if <40 kg";
+  if(weight>40) return "aspirin 150 mg ON";
+  if(weight<40) return "aspirin 100 mg ON";
+  return "aspirin dose at exactly 40 kg — verify with FMS/O&G or local protocol";
+}
 function suggestionSet(){
   const pe=peRisk(),g=gaData(),b=bmiData(),vte=vteData(),tb=tbData(),mental=mentalData(),ogtt=ogttRisk(),preterm=pretermRisk(),clinical=clinicalAlerts(),hb=num("rmeHb"),plans=[];const add=(key,text)=>{if(text&&!plans.some(p=>p.key===key))plans.push({key,text});};
   if(clinical.alerts.length)add("urgent-referral","Urgent hospital / PAC / O&G assessment for documented clinical warning sign(s); communicate relevant findings to the receiving team.");
   if(val("rmeDatesReliable")==="no"||yes("rmeRecentOcp"))add("dating","Arrange dating ultrasound as soon as possible because LNMP may be unreliable.");else if(!val("rmeUsMode"))add("dating-routine","KIV viability / dating ultrasound at booking if available.");
   add("routine-supplements","Continue folic acid and haematinics if tolerated; provide nutritional and antenatal health education.");
-  if(pe.eligible){if(g.weeks!==null&&g.weeks<=20)add("pe-aspirin",yes("rmeFha")?"Start aspirin prophylaxis and calcium carbonate; fetal heart activity documented.":"Confirm fetal heart activity on ultrasound, then start aspirin prophylaxis and calcium carbonate if no contraindication.");else add("pe-late","Meets NICE trigger for pre-eclampsia prophylaxis; consider aspirin according to local protocol / specialist advice if beyond the usual initiation window, and start calcium carbonate.");add("pe-calcium","Start calcium carbonate supplementation and continue until delivery.");}
+  if(pe.eligible){
+    const aspirinDose=rmePeAspirinDoseText();
+    if(g.weeks!==null&&g.weeks<=20){
+      add("pe-aspirin",yes("rmeFha")
+        ? `Start PE prophylaxis: ${aspirinDose}; fetal heart activity documented. Continue aspirin until 36 weeks or when pre-eclampsia develops.`
+        : `Confirm fetal heart activity on ultrasound, then start PE prophylaxis if no contraindication: ${aspirinDose}. Continue aspirin until 36 weeks or when pre-eclampsia develops.`);
+    }else{
+      add("pe-late",`Meets pre-eclampsia prophylaxis trigger; aspirin dose by maternal weight is ${aspirinDose}. Consider initiation according to local protocol / specialist advice if beyond the usual initiation window.`);
+    }
+    add("pe-calcium","Start calcium carbonate 1 g BD and continue until delivery.");
+  }
   if(vte.score>0||vte.previous)add("vte",`VTE ${vte.level.replace("-"," ")} risk: ${vte.management}`);
   if(ogtt.status==="abnormal")add("ogtt-abnormal","Abnormal OGTT / known GDM: follow the diabetes-in-pregnancy management pathway.");else if(ogtt.positive)add("ogtt",ogtt.text);
   if(preterm.positive)add("preterm","Positive preterm birth screen: refer O&G specialist clinic for preterm birth risk assessment and treat reversible factors.");
@@ -20267,7 +20361,7 @@ function ultrasoundNoteLines(){const u=ultrasoundData();if(!u.parts.length&&!val
 function render(){syncDating();ultrasoundData();fagerData();mentalData();tbData();ogttRisk();pretermRisk();peRisk();vteData();renderProblemList();renderSuggestions();}
 function noteText(){
   const g=gaData(),b=bmiData(),pe=peRisk(),vte=vteData(),fag=fagerData(),tb=tbData(),mental=mentalData(),ogtt=ogttRisk(),preterm=pretermRisk(),clinical=clinicalAlerts(),plans=selectedPlans(),lines=["RME 1"];
-  const intro=[];if(num("rmeAge")!==null)intro.push(`${num("rmeAge")} yo`);if(num("rmeGravida")!==null)intro.push(`G${num("rmeGravida")}P${num("rmePara")??0}`);if(g.weeks!==null)intro.push(`at POG ${g.weeks}+${g.days}/52`);if(intro.length)lines.push(intro.join(", "));lines.push(val("rmeForeigner")==="yes"?`foreigner: yes${val("rmeCitizenship")?` — citizenship: ${val("rmeCitizenship")}`:""}`:"foreigner: no");if(val("rmeLnmp"))lines.push(`LNMP ${dateFmt(val("rmeLnmp"))}`);if(val("rmeEdd"))lines.push(`EDD ${dateFmt(val("rmeEdd"))}`);if(val("rmeLastDeliveryDate"))lines.push(`LCB ${val("rmeLastDeliveryDate")}`);if(val("rmeDatesReliable")==="no")lines.push("+ unsure / unreliable dates");
+  const intro=[];if(num("rmeAge")!==null)intro.push(`${num("rmeAge")} yo`);if(num("rmeGravida")!==null)intro.push(`G${num("rmeGravida")}P${num("rmePara")??0}`);if(g.weeks!==null)intro.push(`at POG ${g.weeks}+${g.days}/52`);if(intro.length)lines.push(intro.join(", "));if(val("rmeForeigner")==="yes")lines.push(`nationality: ${val("rmeCitizenship")||"not specified"}`);if(val("rmeLnmp"))lines.push(`LNMP ${dateFmt(val("rmeLnmp"))}`);if(val("rmeEdd"))lines.push(`EDD ${dateFmt(val("rmeEdd"))}`);if(val("rmeLastDeliveryDate"))lines.push(`LCB ${val("rmeLastDeliveryDate")}`);if(val("rmeDatesReliable")==="no")lines.push("+ unsure / unreliable dates");
   lines.push("","currently:",...currentSymptomLines());
   const obs=[];[["rmePrevCs","previous LSCS"],["rmePrevPe","previous pre-eclampsia / eclampsia"],["rmePrevGdm","previous diabetes / GDM"],["rmePrevPerinatalDeath","previous perinatal death / IUD"],["rmePrevBirthWeight","previous baby <2.5 kg or >4 kg"],["rmePrevTear","previous 3rd / 4th degree tear"],["rmePrevRetainedPlacenta","previous retained placenta"],["rmePrevPph","previous PPH"],["rmePrevInstrumental","previous instrumental delivery"],["rmeRecurrentMiscarriage","≥3 consecutive miscarriages"],["rmeGynaeProblem","past gynaecological problem / surgery"]].forEach(([id,l])=>{if(checked(id))obs.push(`+ ${l}`);});
   if(obs.length||checked("rmeNoPastObsProblem")||sentence(val("rmePastObsFreeText"))){lines.push("","relevant history:");if(obs.length)lines.push(...obs);if(checked("rmeNoPastObsProblem"))lines.push("no significant previous obstetric problem");if(sentence(val("rmePastObsFreeText")))lines.push(sentence(val("rmePastObsFreeText")));}
@@ -20282,7 +20376,7 @@ function noteText(){
 }
 function referralText(){
   const g=gaData(),pe=peRisk(),vte=vteData(),tb=tbData(),ogtt=ogttRisk(),preterm=pretermRisk(),clinical=clinicalAlerts(),destination=val("rmeReferralTo")==="Other"?(sentence(val("rmeReferralOther"))||"relevant service"):val("rmeReferralTo"),reasons=[];if(clinical.alerts.length)reasons.push(...clinical.alerts);if(vte.score>0||vte.previous)reasons.push(`VTE ${vte.previous?"very high":vte.level.replace("-"," ")} risk, score ${vte.score}`);if(pe.eligible)reasons.push(`pre-eclampsia prophylaxis indicated (${pe.factors.join(", ")})`);if(tb.positive)reasons.push("positive / active TB concern");if(ogtt.status==="abnormal")reasons.push("abnormal OGTT / known GDM");else if(ogtt.positive)reasons.push("positive OGTT risk screening");if(preterm.positive)reasons.push("positive preterm birth screening");if(!reasons.length)reasons.push("antenatal assessment requiring further review");
-  const intro=[];if(num("rmeAge")!==null)intro.push(`${num("rmeAge")} years old`);intro.push(val("rmeForeigner")==="yes"?`foreigner${val("rmeCitizenship")?` (${val("rmeCitizenship")})`:""}`:"non-foreigner");if(num("rmeGravida")!==null)intro.push(`G${num("rmeGravida")}P${num("rmePara")??0}`);if(g.weeks!==null)intro.push(`POG ${g.weeks}+${g.days}/52`);const us=ultrasoundNoteLines(),extraHx=[sentence(val("rmePastObsFreeText")),sentence(val("rmeMedicalHistory")),sentence(val("rmeSocialHistory"))].filter(Boolean);return["Dear colleague,","","Thank you for seeing this patient.",intro.length?intro.join(", ")+".":"",val("rmeEdd")?`EDD ${dateFmt(val("rmeEdd"))}.`:"","","Currently:",...currentSymptomLines(),extraHx.length?["","Relevant history:",...extraHx].join("\n"):"","","Reason for referral:",...reasons.map(x=>`- ${x}`),us.length?["","Ultrasound:",...us].join("\n"):"","","Kindly assess and advise regarding further antenatal management.","",`Referral to: ${destination}.`].filter(Boolean).join("\n");
+  const intro=[];if(num("rmeAge")!==null)intro.push(`${num("rmeAge")} years old`);if(val("rmeForeigner")==="yes")intro.push(`nationality ${val("rmeCitizenship")||"not specified"}`);if(num("rmeGravida")!==null)intro.push(`G${num("rmeGravida")}P${num("rmePara")??0}`);if(g.weeks!==null)intro.push(`POG ${g.weeks}+${g.days}/52`);const us=ultrasoundNoteLines(),extraHx=[sentence(val("rmePastObsFreeText")),sentence(val("rmeMedicalHistory")),sentence(val("rmeSocialHistory"))].filter(Boolean);return["Dear colleague,","","Thank you for seeing this patient.",intro.length?intro.join(", ")+".":"",val("rmeEdd")?`EDD ${dateFmt(val("rmeEdd"))}.`:"","","Currently:",...currentSymptomLines(),extraHx.length?["","Relevant history:",...extraHx].join("\n"):"","","Reason for referral:",...reasons.map(x=>`- ${x}`),us.length?["","Ultrasound:",...us].join("\n"):"","","Kindly assess and advise regarding further antenatal management.","",`Referral to: ${destination}.`].filter(Boolean).join("\n");
 }
 function generateNote(){render();q("rmeOutput").value=noteText();}
 function generateReferral(){render();q("rmeReferralOutput").value=referralText();}
@@ -20738,7 +20832,7 @@ initDate();render();window.renderRme1=render;window.generateRme1Note=generateNot
 </script>
 
 
-<script id="v18187-foreigner-citizenship">
+<script id="v18191-foreigner-nationality">
 (function(){
   const configs=[["clForeigner","clCitizenshipWrap","clCitizenship"],["dfuForeigner","dfuCitizenshipWrap","dfuCitizenship"],["rmeForeigner","rmeCitizenshipWrap","rmeCitizenship"]];
   function syncOne(selectId,wrapId,inputId){const sel=document.getElementById(selectId),wrap=document.getElementById(wrapId),input=document.getElementById(inputId);if(!sel||!wrap||!input)return;const foreigner=sel.value==="yes";wrap.classList.toggle("hidden",!foreigner);if(!foreigner)input.value="";}
@@ -21211,6 +21305,122 @@ initDate();render();window.renderRme1=render;window.generateRme1Note=generateNot
 #dengueNewCaseTemplate .dengue-frequency-shell .dengue-daily-grid,
 #dengueFollowUpTemplate .dengue-frequency-shell .dengue-daily-grid{
   grid-template-columns:repeat(auto-fit,minmax(min(100%,92px),1fr));gap:6px
+}
+</style>
+
+
+
+<style id="v18192-dengue-last24-only-style">
+/* V18.192 — user-requested simplification: vomiting / loose stool keep only Duration + Frequency in last 24 hours. */
+/* V18.193 — Dengue notes always show comorbidities (NKMI when none); generated note/referral textareas are editable. */
+/* V18.194 — Dengue diagnosis alone uses “no comorbid” when absent; other comorbidity line remains NKMI. RME1 plan options show PE prophylaxis doses. */
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-frequency-mode-wrap,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-frequency-mode-wrap,
+#dengueNewCaseTemplate .dengue-frequency-shell .dengue-daily-history,
+#dengueFollowUpTemplate .dengue-frequency-shell .dengue-daily-history{display:none!important}
+#dengueNewCaseTemplate .dengue-frequency-row,
+#dengueFollowUpTemplate .dengue-frequency-row{grid-template-columns:minmax(0,1fr)!important}
+#dengueNewCaseTemplate .dengue-last24-wrap,
+#dengueFollowUpTemplate .dengue-last24-wrap{display:block!important;width:100%;min-width:0}
+</style>
+<script id="v18192-dengue-last24-only">
+(function(){
+  'use strict';
+  const byId=id=>document.getElementById(id);
+  const val=id=>(byId(id)?.value||'').trim();
+  const CONFIGS=[
+    {control:'clVomiting',count:'clVomitingCount',panel:'clVomitingDailyHistory',modeId:'clVomitFrequencyMode',last24:'clVomitLast24'},
+    {control:'clDiarrhoea',count:'clDiarrhoeaCount',panel:'clLooseStoolDailyHistory',modeId:'clStoolFrequencyMode',last24:'clStoolLast24'},
+    {control:'dfuVomitFrequency',count:'dfuVomitCount',panel:'dfuVomitingDailyHistory',modeId:'dfuVomitFrequencyMode',last24:'dfuVomitLast24'},
+    {control:'dfuLooseStoolFrequency',count:'dfuLooseStoolCount',panel:'dfuLooseStoolDailyHistory',modeId:'dfuStoolFrequencyMode',last24:'dfuStoolLast24'}
+  ];
+
+  function setLegacyFromLast24(cfg){
+    const control=byId(cfg.control), count=byId(cfg.count);
+    if(!control) return;
+    const raw=val(cfg.last24);
+    const parsed=raw===''?0:Number(raw);
+    const n=Number.isFinite(parsed)?Math.max(0,Math.floor(parsed)):0;
+    control.value=n<=0?'none':n===1?'1x':n===2?'2x':'ge3';
+    if(count){
+      count.value=n>=3?String(n):'';
+      count.disabled=n<3;
+    }
+    control.dispatchEvent(new Event('change',{bubbles:true}));
+    count?.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+
+  function simplify(cfg){
+    const mode=byId(cfg.modeId);
+    if(mode){
+      mode.value='last24';
+      const field=mode.closest('.dengue-frequency-row > div') || mode.parentElement;
+      if(field){
+        field.classList.add('dengue-frequency-mode-wrap');
+        field.remove();
+      }else{
+        mode.remove();
+      }
+    }
+
+    const panel=byId(cfg.panel);
+    if(panel) panel.remove();
+
+    const wrap=byId(`${cfg.last24}Wrap`);
+    if(wrap){
+      wrap.classList.remove('hidden');
+      const label=wrap.querySelector('label');
+      if(label) label.textContent='Frequency in last 24 hours';
+    }
+
+    const input=byId(cfg.last24);
+    if(input){
+      input.placeholder='e.g. 4';
+      input.min='0';
+      input.step='1';
+      input.addEventListener('input',()=>setLegacyFromLast24(cfg));
+      input.addEventListener('change',()=>setLegacyFromLast24(cfg));
+      setLegacyFromLast24(cfg);
+    }
+  }
+
+  function init(){
+    // Day-by-day vomiting/loose-stool frequency is intentionally disabled in generated notes.
+    window.dengueDailyFrequencyLines=function(){ return []; };
+    CONFIGS.forEach(simplify);
+
+    // Keep New Case referral invalidation scoped to the New Case form only.
+    // Previously it listened on #page-clerking, so editing another clerking could clear an already-generated referral.
+    const clerkingPage=byId('page-clerking');
+    const newCaseTemplate=byId('dengueNewCaseTemplate');
+    if(clerkingPage && newCaseTemplate && typeof window.invalidateDengueReferral==='function'){
+      clerkingPage.removeEventListener('input',window.invalidateDengueReferral);
+      clerkingPage.removeEventListener('change',window.invalidateDengueReferral);
+      newCaseTemplate.addEventListener('input',window.invalidateDengueReferral);
+      newCaseTemplate.addEventListener('change',window.invalidateDengueReferral);
+    }
+
+    ['clReset','dfuReset'].forEach(id=>byId(id)?.addEventListener('click',()=>setTimeout(()=>{
+      CONFIGS.forEach(cfg=>{
+        const input=byId(cfg.last24);
+        if(input) input.value='';
+        setLegacyFromLast24(cfg);
+      });
+    },20)));
+  }
+
+  // Run after the V18.188/V18.189 enhancers have created their dynamic controls.
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(init,30),{once:true});
+  else setTimeout(init,30);
+})();
+</script>
+
+<style id="v18193-lablist-narrow-desktop-fix">
+/* V18.193 regression fix: prevent Lab Schedule badge overflow in narrow desktop content area. */
+@media (min-width:901px) and (max-width:1100px){
+  #page-lablist .lab-schedule-head{flex-wrap:wrap;min-width:0}
+  #page-lablist .lab-schedule-head>div{flex:1 1 180px;min-width:0}
+  #page-lablist .lab-badge{max-width:100%;white-space:normal;text-align:center;overflow-wrap:anywhere}
 }
 </style>
 
