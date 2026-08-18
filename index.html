@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.194 — RME1 PE Dose + Dengue Diagnosis No Comorbid + Full Regression Audit</title>
+<title>MedAssist KK Bangi V18.209 — Plan & Result Date Update</title>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -4614,6 +4614,26 @@ html,body{max-width:100%;overflow-x:hidden}
 #page-dm .ncd-import-help,#page-htn .ncd-import-help{font-size:10.5px;color:#657b78;margin-top:4px}
 @media(max-width:700px){#page-dm .ncd-import-grid,#page-htn .ncd-import-grid{grid-template-columns:1fr}#page-dm .ncd-import-span-2,#page-htn .ncd-import-span-2{grid-column:auto}}
 </style>
+
+<style id="v18209-result-date-plan-tidy">
+/* V18.209 — DM/HPT result date calendar + unnumbered generated plans. */
+#page-dm .ncd-result-date-row,
+#page-htn .ncd-result-date-row{
+  display:grid;
+  grid-template-columns:minmax(120px,180px) minmax(180px,260px);
+  align-items:end;
+  gap:10px;
+  margin:8px 0 10px;
+}
+#page-dm .ncd-result-date-row label,
+#page-htn .ncd-result-date-row label{margin:0;font-size:12px;font-weight:750;color:#35544d}
+#page-dm .ncd-result-date-row input[type="date"],
+#page-htn .ncd-result-date-row input[type="date"]{margin:0;min-height:38px}
+@media(max-width:620px){
+  #page-dm .ncd-result-date-row,
+  #page-htn .ncd-result-date-row{grid-template-columns:1fr;gap:5px}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -4631,7 +4651,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div aria-label="Search results" class="site-search-results hidden" id="siteSearchResults" role="listbox"></div>
 </div>
-<button class="nav-btn active" data-page="dashboard">🏠 Dashboard</button>
+<button type="button" class="nav-btn active" data-page="dashboard">🏠 Dashboard</button>
 <div class="module-sidebar" id="moduleSidebar">
   <button aria-expanded="true" class="module-group-btn expanded" data-module-group="opd" type="button">
     <span class="module-group-title"><span aria-hidden="true">🩺</span><strong>OPD</strong></span><span class="module-group-chevron">⌄</span>
@@ -4819,7 +4839,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div aria-label="Last PCM time in 24-hour format" class="cl-pcm-time-row">
 <select aria-label="PCM hour (00 to 23)" id="clPcmLastHour"><option value="">HH</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
 <span class="cl-pcm-time-colon">:</span>
-<select aria-label="PCM minute" id="clPcmLastMinute"><option value="">MM</option><option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option></select>
+<select aria-label="PCM minute" id="clPcmLastMinute"><option value="">MM</option><option value="00">00</option><option value="30">30</option></select>
 </div>
 <div class="helper">24-hour format, e.g. 14:30.</div>
 </div>
@@ -4985,13 +5005,35 @@ html,body{max-width:100%;overflow-x:hidden}
 <h3>TB screening</h3>
 <div class="tb-screening-trigger">Cough ≥ 2 weeks detected. Complete this section; it will be generated directly under the cough history.</div>
 <div class="helper">Tick positive symptoms only. Unticked items will be generated as negative.</div>
-<div class="check-grid" id="clTbSymptoms">
+<div class="tb-v208-grid" id="clTbSymptoms">
+<div class="tb-v208-item" data-tb-check="clTbHemoptysis">
 <label class="check-item"><input id="clTbHemoptysis" type="checkbox" value="hemoptysis"/>Hemoptysis</label>
+<div class="tb-v208-details hidden" id="clTbHemoptysisDetails">
+<div><label>Character</label><select id="clTbHemoptysisCharacter"><option value="sputum mixed with blood">Sputum mixed with blood</option><option value="fresh blood">Fresh blood</option></select></div>
+<div><label>Duration</label><div class="tb-v208-duration"><input id="clTbHemoptysisDuration" inputmode="decimal" min="0" step="0.5" type="number" placeholder="e.g. 2"/><select id="clTbHemoptysisDurationUnit"><option value="day">Day(s)</option><option value="week">Week(s)</option><option value="month">Month(s)</option></select></div></div>
+</div></div>
+<div class="tb-v208-item" data-tb-check="clTbLOA">
 <label class="check-item"><input id="clTbLOA" type="checkbox" value="LOA"/>LOA</label>
+<div class="tb-v208-details hidden" id="clTbLOADetails"><div><label>Duration</label><div class="tb-v208-duration"><input id="clTbLOADuration" inputmode="decimal" min="0" step="0.5" type="number" placeholder="e.g. 2"/><select id="clTbLOADurationUnit"><option value="day">Day(s)</option><option value="week">Week(s)</option><option value="month">Month(s)</option></select></div></div></div>
+</div>
+<div class="tb-v208-item" data-tb-check="clTbLOW">
 <label class="check-item"><input id="clTbLOW" type="checkbox" value="LOW"/>LOW</label>
+<div class="tb-v208-details hidden" id="clTbLOWDetails">
+<div><label>Weight lost</label><div class="tb-v208-unit-input"><input id="clTbLowKg" inputmode="decimal" min="0" step="0.1" type="number" placeholder="e.g. 5"/><span>kg</span></div></div>
+<div><label>Over duration</label><div class="tb-v208-duration"><input id="clTbLOWDuration" inputmode="decimal" min="0" step="0.5" type="number" placeholder="e.g. 2"/><select id="clTbLOWDurationUnit"><option value="week">Week(s)</option><option value="month" selected>Month(s)</option><option value="day">Day(s)</option></select></div></div>
+</div></div>
+<div class="tb-v208-item" data-tb-check="clTbNightSweats">
 <label class="check-item"><input id="clTbNightSweats" type="checkbox" value="night sweats"/>Night sweats</label>
+<div class="tb-v208-details hidden" id="clTbNightSweatsDetails"><div><label>Duration</label><div class="tb-v208-duration"><input id="clTbNightSweatsDuration" inputmode="decimal" min="0" step="0.5" type="number" placeholder="e.g. 2"/><select id="clTbNightSweatsDurationUnit"><option value="day">Day(s)</option><option value="week">Week(s)</option><option value="month">Month(s)</option></select></div></div></div>
+</div>
+<div class="tb-v208-item" data-tb-check="clTbContact">
 <label class="check-item"><input id="clTbContact" type="checkbox" value="TB contact"/>TB contact</label>
+<div class="tb-v208-details hidden" id="clTbContactSummary"><div class="helper">Contact duration and exposure details will open below.</div></div>
+</div>
+<div class="tb-v208-item" data-tb-check="clTbPleuriticPain">
 <label class="check-item"><input id="clTbPleuriticPain" type="checkbox" value="pleuritic chest pain"/>Pleuritic chest pain</label>
+<div class="tb-v208-details hidden" id="clTbPleuriticPainDetails"><div><label>Duration</label><div class="tb-v208-duration"><input id="clTbPleuriticPainDuration" inputmode="decimal" min="0" step="0.5" type="number" placeholder="e.g. 2"/><select id="clTbPleuriticPainDurationUnit"><option value="day">Day(s)</option><option value="week">Week(s)</option><option value="month">Month(s)</option></select></div></div></div>
+</div>
 </div>
 <div class="tb-contact-details hidden" id="clTbContactDetails">
 <h4>TB contact details</h4>
@@ -5030,8 +5072,8 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div><div class="card">
 <h2>Warning signs</h2>
-<div class="grid three warning-sign-grid">
-<div><label>Oral fluid tolerance</label><select id="clDrink"><option selected="" value="able">Able to tolerate oral fluids</option><option value="reduced">Reduced oral intake</option><option value="unable">Unable to tolerate oral fluids</option></select></div>
+<div class="warning-sign-grid warning-sign-grid-v208">
+<div class="warning-v208-card warning-v208-oral"><label>Oral fluid tolerance</label><select id="clDrink"><option selected="" value="able">Able to tolerate oral fluids</option><option value="reduced">Reduced oral intake</option><option value="unable">Unable to tolerate oral fluids</option></select><div class="warning-v208-inline"><label for="clDrinkMl24">Approx. oral intake</label><div class="warning-v208-unit"><input id="clDrinkMl24" inputmode="numeric" min="0" step="50" type="number" placeholder="e.g. 1500"/><span>mL / 24 h</span></div></div></div>
 <div class="urine-inline-card" id="clUrineInlineCard">
 <div class="urine-inline-head">
 <div>
@@ -5066,9 +5108,9 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 </div>
-<div><label>Can perform daily activities</label><select id="clActivity"><option>yes</option><option>no</option></select></div>
-<div><label>Lethargy</label><select id="clLethargy"><option>no</option><option>yes</option></select></div>
-<div>
+<div class="warning-v208-card"><label>Can perform daily activities</label><select id="clActivity"><option>yes</option><option>no</option></select></div>
+<div class="warning-v208-card"><label>Lethargy</label><select id="clLethargy"><option>no</option><option>yes</option></select></div>
+<div class="warning-v208-card warning-v208-frequency">
 <label>Vomiting — times/24 hours</label>
 <select id="clVomiting">
 <option value="none">None</option>
@@ -5083,7 +5125,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="helper">3 times/24 hours or more is classified as a DF warning sign.</div>
 </div>
-<div>
+<div class="warning-v208-card warning-v208-frequency">
 <label>Loose stool — times/24 hours</label>
 <select id="clDiarrhoea">
 <option value="none">None</option>
@@ -5098,9 +5140,9 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="helper">3 times/24 hours or more is classified as a DF warning sign.</div>
 </div>
-<div><label>Abdominal pain</label><select id="clAbdPain"><option>no</option><option>yes</option></select></div>
-<div><label>Bleeding / bruising</label><select id="clBleeding"><option>no</option><option>yes</option></select></div>
-<div><label>Seizure</label><select id="clSeizure"><option selected="" value="no">No</option><option value="yes">Yes</option></select></div></div>
+<div class="warning-v208-card"><label>Abdominal pain</label><select id="clAbdPain"><option>no</option><option>yes</option></select><div class="warning-v208-sites hidden" id="clAbdPainSitesWrap"><label>Site(s)</label><div class="warning-v208-site-grid" id="clAbdPainSites"><label class="check-item"><input type="checkbox" value="RUQ"/>RUQ</label><label class="check-item"><input type="checkbox" value="epigastric"/>Epigastric</label><label class="check-item"><input type="checkbox" value="LUQ"/>LUQ</label><label class="check-item"><input type="checkbox" value="right lumbar"/>Right lumbar</label><label class="check-item"><input type="checkbox" value="umbilical"/>Umbilical</label><label class="check-item"><input type="checkbox" value="left lumbar"/>Left lumbar</label><label class="check-item"><input type="checkbox" value="RIF"/>RIF</label><label class="check-item"><input type="checkbox" value="suprapubic"/>Suprapubic</label><label class="check-item"><input type="checkbox" value="LIF"/>LIF</label><label class="check-item"><input type="checkbox" value="generalised"/>Generalised</label></div></div></div>
+<div class="warning-v208-card"><label>Bleeding / bruising</label><select id="clBleeding"><option>no</option><option>yes</option></select></div>
+<div class="warning-v208-card"><label>Seizure</label><select id="clSeizure"><option selected="" value="no">No</option><option value="yes">Yes</option></select></div></div>
 <div class="result-box" id="clWarningFrequencyClassification">
   Vomiting and loose stool classification will appear here.
 </div>
@@ -5616,7 +5658,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="refer">Option 1 — ED referral pathway</option>
 <option selected="" value="outpatient">Option 2 — Outpatient follow-up pathway</option>
 <option value="antibiotic">Option 3 — Concurrent infection / antimicrobial pathway</option>
-<option value="others">Option 4 — Others / custom plan</option>
+<option value="supportive">Option 4 — Supportive fever / symptomatic plan</option>
+<option value="others">Option 5 — Others / custom plan</option>
 </select>
 </div>
 <div class="cl-ivd-time-wrap hidden" id="clIvdStartWrap">
@@ -5652,6 +5695,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <label class="plan-subplan-item"><input checked class="cl-plan-subitem" id="clPlanSubAntibioticReview" type="checkbox"/><span>TCA back if symptoms do not resolve or worsen</span></label>
 </div>
 </div>
+<div class="plan-subplan-panel hidden" data-cl-plan-group="supportive"><div class="plan-subplan-title">Choose sub-plan(s) to include</div><div class="plan-subplan-list"><label class="plan-subplan-item"><input checked class="cl-plan-subitem" id="clPlanSubSupportMeds" type="checkbox"/><span>Meds as per charted</span></label><label class="plan-subplan-item"><input checked class="cl-plan-subitem" id="clPlanSubSupportFbc" type="checkbox"/><span>TCA back if fever persists for 3 days for FBC</span></label><label class="plan-subplan-item"><input checked class="cl-plan-subitem" id="clPlanSubSupportSafety" type="checkbox"/><span>Safe-netting advice</span></label><label class="plan-subplan-item"><input checked class="cl-plan-subitem" id="clPlanSubSupportFluid" type="checkbox"/><span>Encourage fluid intake</span></label></div></div>
 <div class="plan-subplan-panel hidden" data-cl-plan-group="others"><div class="plan-subplan-empty">Use the free-text box below for the custom plan.</div></div>
 <div class="plan-mc-box">
 <label class="check-item"><input id="clMcGiven" type="checkbox"/> MC given</label>
@@ -5678,7 +5722,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="section-subtitle">Additional plan — free text (optional)</div>
 <label>Additional plan details</label>
 <textarea id="clPlanExtra" placeholder="Enter any additional plan. Use a new line for each plan item."></textarea>
-<div class="helper">These lines will be appended to the selected plan. If Option 4 is selected, they will be used as the main custom plan.</div>
+<div class="helper">These lines will be appended to the selected plan. If Option 5 is selected, they will be used as the main custom plan.</div>
 </div>
 <div class="result-box" id="clPlanPreview"></div><div class="helper" id="clReferralStatus"></div><div class="actions">
 <button class="btn primary" id="clGenerate" type="button">Generate clinical note</button>
@@ -6303,12 +6347,12 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="dm-cx-panel" style="grid-column:span 3">
 <label>Macrovascular complication</label>
 <input id="dmMacroCx" type="hidden" value="none"/>
-<div class="check-grid dm-cx-grid" id="dmMacroCxOptions">
+<div class="check-grid dm-cx-grid dm-cx-grid-v208" id="dmMacroCxOptions">
 <label class="check-item"><input id="dmMacroNone" type="checkbox" value="none" checked/> None</label>
-<label class="check-item"><input type="checkbox" value="IHD / CAD / previous MI"/> IHD / CAD / previous MI</label>
-<label class="check-item"><input type="checkbox" value="CVA / TIA / stroke"/> CVA / TIA / stroke</label>
-<label class="check-item"><input type="checkbox" value="peripheral arterial disease"/> Peripheral arterial disease</label>
-<label class="check-item"><input type="checkbox" value="heart failure"/> Heart failure</label>
+<div class="dm-cx-detail-item"><label class="check-item"><input id="dmMacroIhd" type="checkbox" value="IHD / CAD / previous MI"/> IHD / CAD / previous MI</label><input class="dm-cx-detail hidden" id="dmMacroIhdDetail" placeholder="Details / free text"/></div>
+<div class="dm-cx-detail-item"><label class="check-item"><input id="dmMacroCva" type="checkbox" value="CVA / TIA / stroke"/> CVA / TIA / stroke</label><input class="dm-cx-detail hidden" id="dmMacroCvaDetail" placeholder="Details / free text"/></div>
+<div class="dm-cx-detail-item"><label class="check-item"><input id="dmMacroPad" type="checkbox" value="peripheral arterial disease"/> Peripheral arterial disease</label><input class="dm-cx-detail hidden" id="dmMacroPadDetail" placeholder="Details / free text"/></div>
+<div class="dm-cx-detail-item"><label class="check-item"><input id="dmMacroHf" type="checkbox" value="heart failure"/> Heart failure</label><input class="dm-cx-detail hidden" id="dmMacroHfDetail" placeholder="Details / free text"/></div>
 <label class="check-item"><input id="dmMacroOtherCheck" type="checkbox" value="other"/> Others</label>
 </div>
 <input class="hidden" id="dmMacroOther" placeholder="Specify other macrovascular complication" style="margin-top:8px"/>
@@ -6316,11 +6360,11 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="dm-cx-panel" style="grid-column:span 3">
 <label>Microvascular complication</label>
 <input id="dmMicroCx" type="hidden" value="none"/>
-<div class="check-grid dm-cx-grid" id="dmMicroCxOptions">
+<div class="check-grid dm-cx-grid dm-cx-grid-v208" id="dmMicroCxOptions">
 <label class="check-item"><input id="dmMicroNone" type="checkbox" value="none" checked/> None</label>
-<label class="check-item"><input type="checkbox" value="diabetic retinopathy"/> Diabetic retinopathy</label>
-<label class="check-item"><input id="dmMicroDkd" type="checkbox" value="DKD / diabetic nephropathy"/> DKD / diabetic nephropathy</label>
-<label class="check-item"><input type="checkbox" value="diabetic neuropathy"/> Diabetic neuropathy</label>
+<div class="dm-cx-detail-item"><label class="check-item"><input id="dmMicroRetina" type="checkbox" value="diabetic retinopathy"/> Diabetic retinopathy</label><input class="dm-cx-detail hidden" id="dmMicroRetinaDetail" placeholder="Details / free text"/></div>
+<div class="dm-cx-detail-item"><label class="check-item"><input id="dmMicroDkd" type="checkbox" value="DKD / diabetic nephropathy"/> DKD / diabetic nephropathy</label><input class="dm-cx-detail hidden" id="dmMicroDkdDetail" placeholder="Details / free text"/></div>
+<div class="dm-cx-detail-item"><label class="check-item"><input id="dmMicroNeuropathy" type="checkbox" value="diabetic neuropathy"/> Diabetic neuropathy</label><input class="dm-cx-detail hidden" id="dmMicroNeuropathyDetail" placeholder="Details / free text"/></div>
 <label class="check-item"><input id="dmMicroOtherCheck" type="checkbox" value="other"/> Others</label>
 </div>
 <input class="hidden" id="dmMicroOther" placeholder="Specify other microvascular complication" style="margin-top:8px"/>
@@ -6336,7 +6380,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="G3a">G3a</option>
 <option value="G3b">G3b</option>
 <option value="G4">G4</option>
-<option value="G5">G5</option>
+<option value="G5">G5 — ESRF</option>
 </select>
 </div>
 <div>
@@ -6376,7 +6420,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 <div class="grid two" style="margin-top:12px">
-<div>
+<div class="dm-compliance-field">
 <label>Medication compliance</label>
 <select id="dmCompliance">
 <option value="good">good</option>
@@ -6384,6 +6428,18 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="poor">poor</option>
 <option value="defaulted treatment">defaulted treatment</option>
 </select>
+<div class="hidden dm-missed-frequency" id="dmMissedFrequencyWrap">
+<label>How often missed?</label>
+<select id="dmMissedFrequency">
+<option value="">Select frequency</option>
+<option value="less than once a week">less than once a week</option>
+<option value="about once a week">about once a week</option>
+<option value="2–3 days a week">2–3 days a week</option>
+<option value="4 or more days a week">4 or more days a week</option>
+<option value="other">other</option>
+</select>
+<input class="hidden" id="dmMissedFrequencyOther" placeholder="Specify frequency"/>
+</div>
 </div>
 <div>
 <label>Medication side effects</label>
@@ -6555,7 +6611,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="ncd-import-grid">
 <div class="ncd-import-box"><label>Vital signs — paste from TPC-OHCIS</label><textarea id="dmVitalPaste" rows="4" placeholder="Paste BP / pulse / RR / temperature / SpO2 block here"></textarea><div class="ncd-import-status" id="dmVitalImportStatus">Paste vital signs to auto-fill recognised values.</div></div>
 <div class="ncd-import-box"><label>Anthropometry — paste from TPC-OHCIS</label><textarea id="dmAnthroPaste" rows="4" placeholder="Paste height / weight / waist circumference here"></textarea><div class="ncd-import-status" id="dmAnthroImportStatus">Paste anthropometry to auto-fill height, weight and waist.</div></div>
-<div class="ncd-import-box ncd-import-span-2"><label>Blood / urine results — paste one or multiple result blocks</label><textarea id="dmBloodPaste" rows="7" placeholder="Paste HbA1c, RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME results here"></textarea><div class="ncd-import-status" id="dmBloodImportStatus">Recognises HbA1c, RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME.</div><div class="ncd-import-help">Auto-capture only fills recognised values. All result boxes remain editable.</div></div>
+<div class="ncd-import-box ncd-import-span-2"><label>Blood / urine results — paste one or multiple result blocks</label><div class="ncd-result-date-row"><label for="dmResultDate">Date of results</label><input id="dmResultDate" type="date"/></div><textarea id="dmBloodPaste" rows="7" placeholder="Paste HbA1c, RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME results here"></textarea><div class="ncd-import-status" id="dmBloodImportStatus">Recognises HbA1c, RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME.</div><div class="ncd-import-help">Auto-capture only fills recognised values. Choose the result date above if available. All result boxes remain editable.</div></div>
 </div></div>
 <div class="grid four">
 <div><label>BP SBP</label><input id="dmSbp" type="number"/></div><div><label>DBP</label><input id="dmDbp" type="number"/></div>
@@ -6690,28 +6746,21 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="htn-active-complaint" style="margin-top:10px">
 <label>Active complaint</label><textarea id="htnActiveComplaint" rows="2" placeholder="Leave blank if no active complaint"></textarea>
 </div>
-<div class="grid two" style="margin-top:10px">
-<div><label>Suspected secondary hypertension?</label><select id="htnSecondarySuspected"><option value="no">no</option><option value="yes">yes</option></select></div>
-<div><label>BP uncontrolled on ≥3 drugs including a diuretic?</label><select id="htnResistant"><option value="no">no</option><option value="yes">yes</option></select></div>
-</div>
+<div class="grid two" style="margin-top:10px"><div><label>On antihypertensive treatment?</label><select id="htnBpTreated"><option value="yes" selected>yes</option><option value="no">no</option></select><div class="ncd-import-help">Required for Framingham General CVD risk calculation.</div></div></div>
 </div>
 
 <div class="card">
 <h2>BP &amp; anthropometry</h2>
 <div class="ncd-quick-import">
 <div class="ncd-quick-import-title">Quick paste — auto-capture</div>
-<div class="ncd-import-grid">
-<div class="ncd-import-box"><label>Vital signs — paste from TPC-OHCIS</label><textarea id="htnVitalPaste" rows="4" placeholder="Paste BP / pulse / RR / temperature / SpO2 block here"></textarea><div class="ncd-import-status" id="htnVitalImportStatus">Paste vital signs to auto-fill recognised values.</div></div>
-<div class="ncd-import-box"><label>Anthropometry — paste from TPC-OHCIS</label><textarea id="htnAnthroPaste" rows="4" placeholder="Paste height / weight / waist circumference here"></textarea><div class="ncd-import-status" id="htnAnthroImportStatus">Paste anthropometry to auto-fill height, weight and waist.</div></div>
-</div></div>
+<div class="ncd-import-grid"><div class="ncd-import-box ncd-import-span-2"><label>BP &amp; anthropometry — paste from TPC-OHCIS</label><textarea id="htnCombinedPaste" rows="6" placeholder="Paste BP / pulse / height / weight / waist circumference block here"></textarea><div class="ncd-import-status" id="htnCombinedImportStatus">Paste BP and anthropometry together; recognised values will auto-fill below and BMI will calculate automatically.</div><textarea class="hidden" id="htnVitalPaste" aria-hidden="true"></textarea><div class="hidden" id="htnVitalImportStatus"></div><textarea class="hidden" id="htnAnthroPaste" aria-hidden="true"></textarea><div class="hidden" id="htnAnthroImportStatus"></div></div></div></div>
 <div class="grid four htn-single-bp-grid">
 <div><label>BP — SBP</label><input id="htnSbp1" type="number" min="60" max="300"/></div><div><label>DBP</label><input id="htnDbp1" type="number" min="30" max="200"/></div>
 <div><label>BP category</label><input class="ncd-readonly" id="htnBpCategory" readonly/></div>
 <div><label>Height (cm)</label><input id="htnHeight" type="number" min="80" max="250" step="0.1"/></div><div><label>Weight (kg)</label><input id="htnWeight" type="number" min="20" max="350" step="0.1"/></div>
 <div><label>BMI</label><input class="ncd-readonly" id="htnBmi" readonly/></div><div><label>BMI category</label><input class="ncd-readonly" id="htnBmiCat" readonly/></div>
 <div><label>Waist circumference (cm)</label><input id="htnWaist" type="number" min="30" max="220" step="0.1"/></div><div><label>Pulse (bpm)</label><input id="htnPulse" type="number" min="20" max="220"/></div>
-<div><label>Temperature (°C)</label><input id="htnTemp" type="number" step="0.1" min="30" max="45"/></div><div><label>RR (/min)</label><input id="htnRr" type="number" min="5" max="80"/></div>
-<div><label>SpO₂ (%)</label><input id="htnSpo2" type="number" min="50" max="100"/></div>
+
 <div><label>HBPM</label><select id="htnHbpm"><option value="not done">not done</option><option value="done">done</option></select></div><div id="htnHbpmValueWrap" class="hidden"><label>HBPM average</label><div class="grid two"><input id="htnHbpmSbp" type="number" placeholder="SBP"/><input id="htnHbpmDbp" type="number" placeholder="DBP"/></div></div>
 </div>
 </div>
@@ -6759,18 +6808,18 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="card">
 <h2>Blood / urine results</h2>
 <div class="ncd-quick-import">
-<div class="ncd-import-box"><label>Blood / urine results — paste one or multiple result blocks</label><textarea id="htnBloodPaste" rows="7" placeholder="Paste RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME results here"></textarea><div class="ncd-import-status" id="htnBloodImportStatus">Recognises RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME.</div><div class="ncd-import-help">Auto-capture only fills recognised values. FRS and eGFR update automatically when required values are detected.</div></div>
+<div class="ncd-import-box"><label>Blood / urine results — paste one or multiple result blocks</label><div class="ncd-result-date-row"><label for="htnResultDate">Date of results</label><input id="htnResultDate" type="date"/></div><textarea id="htnBloodPaste" rows="7" placeholder="Paste RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME results here"></textarea><div class="ncd-import-status" id="htnBloodImportStatus">Recognises RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME.</div><div class="ncd-import-help">Auto-capture only fills recognised values. Choose the result date above if available. FRS and eGFR update automatically when required values are detected.</div></div>
 </div>
 <div class="ncd-lab-block"><h3>RP</h3><div class="ncd-mini-grid"><div><label>Creatinine (µmol/L)</label><input id="htnRpCreat" type="number" step="0.1"/></div><div><label>Urea</label><input id="htnRpUrea" type="number" step="0.1"/></div><div><label>K</label><input id="htnRpK" type="number" step="0.1"/></div><div><label>Na</label><input id="htnRpNa" type="number" step="0.1"/></div><div><label>Cl</label><input id="htnRpCl" type="number" step="0.1"/></div><div><label>eGFR (CKD-EPI 2021)</label><input class="ncd-readonly" id="htnEgfr" readonly/><div class="ncd-import-help">Auto-calculated from age, sex and serum creatinine using the race-free CKD-EPI 2021 creatinine equation.</div></div></div></div>
 <div class="ncd-lab-block"><h3>LFT</h3><div class="ncd-mini-grid"><div><label>Total protein</label><input id="htnLftTp" type="number" step="0.1"/></div><div><label>Total bilirubin</label><input id="htnLftTbili" type="number" step="0.1"/></div><div><label>ALT</label><input id="htnLftAlt" type="number" step="0.1"/></div><div><label>ALP</label><input id="htnLftAlp" type="number" step="0.1"/></div></div></div>
 <div class="ncd-lab-block"><h3>FBC</h3><div class="ncd-mini-grid"><div><label>Hb</label><input id="htnFbcHb" type="number" step="0.1"/></div><div><label>Hct</label><input id="htnFbcHct" type="number" step="0.1"/></div><div><label>WC</label><input id="htnFbcWc" type="number" step="0.1"/></div><div><label>Platelet</label><input id="htnFbcPlt" type="number" step="1"/></div><div><label>MCV</label><input id="htnFbcMcv" type="number" step="0.1"/></div><div><label>MCH</label><input id="htnFbcMch" type="number" step="0.1"/></div></div></div>
-<div class="ncd-lab-block"><h3>Glucose &amp; lipid</h3><div class="ncd-mini-grid"><div><label>FBS</label><input id="htnFbs" type="number" step="0.1"/></div><div><label>TC</label><input id="htnFlpTc" type="number" step="0.1"/></div><div><label>LDL</label><input id="htnFlpLdl" type="number" step="0.1"/></div><div><label>TG</label><input id="htnFlpTg" type="number" step="0.1"/></div><div><label>HDL</label><input id="htnFlpHdl" type="number" step="0.1"/></div></div></div>
+<div class="ncd-lab-block"><h3>Glucose &amp; lipid</h3><div class="ncd-mini-grid"><div><label>FBS</label><input id="htnFbs" type="number" step="0.1"/></div><div><label>TC (mmol/L)</label><input id="htnFlpTc" type="number" step="0.1"/></div><div><label>LDL (mmol/L)</label><input id="htnFlpLdl" type="number" step="0.1"/></div><div><label>TG (mmol/L)</label><input id="htnFlpTg" type="number" step="0.1"/></div><div><label>HDL (mmol/L)</label><input id="htnFlpHdl" type="number" step="0.1"/></div></div></div>
 <div class="ncd-lab-block"><h3>Urine</h3><div class="ncd-mini-grid"><div><label>Microalbumin / ACR</label><input id="htnUrineAlbumin" placeholder="e.g. ACR 2.1 mg/mmol"/></div><div><label>Urine protein</label><input id="htnUrineProtein" placeholder="negative / + / value"/></div><div><label>UFEME protein</label><select id="htnUfProtein"><option value="">-</option><option>negative</option><option>trace</option><option>+</option><option>++</option><option>+++</option></select></div><div><label>UFEME blood</label><select id="htnUfBlood"><option value="">-</option><option>negative</option><option>trace</option><option>+</option><option>++</option><option>+++</option></select></div><div><label>UFEME nitrite</label><select id="htnUfNitrite"><option value="">-</option><option>negative</option><option>positive</option></select></div><div><label>UFEME glucose</label><select id="htnUfGlucose"><option value="">-</option><option>negative</option><option>trace</option><option>+</option><option>++</option><option>+++</option></select></div></div></div>
 
 <div class="ncd-auto-grid">
 <div class="ncd-auto-box"><strong>Target BP</strong><div class="ncd-auto-value" id="htnTargetBp">Enter age / risk data</div></div>
 <div class="ncd-auto-box"><strong>eGFR — CKD-EPI 2021</strong><div class="ncd-auto-value" id="htnEgfrStatus">Enter age, sex &amp; creatinine</div></div>
-<div class="ncd-auto-box"><strong>Framingham</strong><div class="ncd-auto-value" id="htnFrsResult">Enter age, TC, HDL &amp; BP</div></div>
+<div class="ncd-auto-box"><strong>Framingham General CVD — 10-year risk</strong><div class="ncd-auto-value" id="htnFrsResult">Enter age, TC, HDL, BP &amp; treatment status</div><div class="ncd-import-help">FHS 2008 lipid model: age 30–74, sex, TC/HDL (mmol/L; converted internally), SBP, BP treatment, smoking and diabetes. Not used when established CVD is already present.</div></div>
 </div>
 <div class="ncd-referral-alert hidden" id="htnReferralAlert"></div>
 </div>
@@ -8578,18 +8627,18 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="card" id="calcMenu">
 <h2>Choose calculator</h2>
 <div class="calc-menu">
-<button class="calc-option" data-calc="antibiotic"><span>💊</span><strong>AMS / NAG Primary Care</strong><small>Adult + paediatric outpatient guidance</small></button>
-<button class="calc-option" data-calc="scores"><span>🧫</span><strong>Centor score</strong><small>Modified Centor for GAS pharyngitis</small></button>
-<button class="calc-option" data-calc="renal"><span aria-hidden="true" class="svg-icon"><svg viewbox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M24 8C13 8 7 18 9 32c2 12 8 21 17 20 7-1 9-7 8-15-1-6-4-9-8-10 6-2 9-8 8-13-1-4-4-6-10-6Z" fill="#c98765" stroke="#173f38" stroke-linejoin="round" stroke-width="3"></path><path d="M40 8c11 0 17 10 15 24-2 12-8 21-17 20-7-1-9-7-8-15 1-6 4-9 8-10-6-2-9-8-8-13 1-4 4-6 10-6Z" fill="#c98765" stroke="#173f38" stroke-linejoin="round" stroke-width="3"></path><path d="M29 29c-5 2-7 7-6 13" fill="none" stroke="#fff3ec" stroke-linecap="round" stroke-width="3"></path><path d="M35 29c5 2 7 7 6 13" fill="none" stroke="#fff3ec" stroke-linecap="round" stroke-width="3"></path></svg></span><strong>eGFR — CKD-EPI</strong><small>2021 adult creatinine equation</small></button>
-<button class="calc-option" data-calc="gdm"><span>🧪</span><strong>GDM risk &amp; MGTT</strong><small>Risk factors and screening timing</small></button>
-<button class="calc-option" data-calc="mental"><span>🧠</span><strong>Mental health</strong><small>PHQ-9 and GAD-7</small></button>
-<button class="calc-option" data-calc="pack"><span>🚬</span><strong>Pack-year</strong><small>Smoking exposure</small></button>
-<button class="calc-option" data-calc="maintenance"><span>💧</span><strong>Paeds maintenance</strong><small>100/50/20 and 4/2/1</small></button>
-<button class="calc-option" data-calc="vitals"><span>🩺</span><strong>Paeds vital signs</strong><small>Age-based interpretation</small></button>
-<button class="calc-option" data-calc="preeclampsia"><span>🤰</span><strong>PE prophylaxis</strong><small>MOH Handbook 2024</small></button>
-<button class="calc-option" data-calc="pregnancy"><span>📅</span><strong>Pregnancy dates</strong><small>EDD and gestational age</small></button>
-<button class="calc-option" data-calc="stopbang"><span>😴</span><strong>STOP-BANG</strong><small>OSA risk screening</small></button>
-<button class="calc-option" data-calc="endocrine"><span>🌡️</span><strong>Thyroid storm</strong><small>Burch-Wartofsky score</small></button>
+<button type="button" class="calc-option" data-calc="antibiotic"><span>💊</span><strong>AMS / NAG Primary Care</strong><small>Adult + paediatric outpatient guidance</small></button>
+<button type="button" class="calc-option" data-calc="scores"><span>🧫</span><strong>Centor score</strong><small>Modified Centor for GAS pharyngitis</small></button>
+<button type="button" class="calc-option" data-calc="renal"><span aria-hidden="true" class="svg-icon"><svg viewbox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M24 8C13 8 7 18 9 32c2 12 8 21 17 20 7-1 9-7 8-15-1-6-4-9-8-10 6-2 9-8 8-13-1-4-4-6-10-6Z" fill="#c98765" stroke="#173f38" stroke-linejoin="round" stroke-width="3"></path><path d="M40 8c11 0 17 10 15 24-2 12-8 21-17 20-7-1-9-7-8-15 1-6 4-9 8-10-6-2-9-8-8-13 1-4 4-6 10-6Z" fill="#c98765" stroke="#173f38" stroke-linejoin="round" stroke-width="3"></path><path d="M29 29c-5 2-7 7-6 13" fill="none" stroke="#fff3ec" stroke-linecap="round" stroke-width="3"></path><path d="M35 29c5 2 7 7 6 13" fill="none" stroke="#fff3ec" stroke-linecap="round" stroke-width="3"></path></svg></span><strong>eGFR — CKD-EPI</strong><small>2021 adult creatinine equation</small></button>
+<button type="button" class="calc-option" data-calc="gdm"><span>🧪</span><strong>GDM risk &amp; MGTT</strong><small>Risk factors and screening timing</small></button>
+<button type="button" class="calc-option" data-calc="mental"><span>🧠</span><strong>Mental health</strong><small>PHQ-9 and GAD-7</small></button>
+<button type="button" class="calc-option" data-calc="pack"><span>🚬</span><strong>Pack-year</strong><small>Smoking exposure</small></button>
+<button type="button" class="calc-option" data-calc="maintenance"><span>💧</span><strong>Paeds maintenance</strong><small>100/50/20 and 4/2/1</small></button>
+<button type="button" class="calc-option" data-calc="vitals"><span>🩺</span><strong>Paeds vital signs</strong><small>Age-based interpretation</small></button>
+<button type="button" class="calc-option" data-calc="preeclampsia"><span>🤰</span><strong>PE prophylaxis</strong><small>MOH Handbook 2024</small></button>
+<button type="button" class="calc-option" data-calc="pregnancy"><span>📅</span><strong>Pregnancy dates</strong><small>EDD and gestational age</small></button>
+<button type="button" class="calc-option" data-calc="stopbang"><span>😴</span><strong>STOP-BANG</strong><small>OSA risk screening</small></button>
+<button type="button" class="calc-option" data-calc="endocrine"><span>🌡️</span><strong>Thyroid storm</strong><small>Burch-Wartofsky score</small></button>
 </div>
 </div>
 <div class="calc-panel" id="calc-maintenance">
@@ -9685,13 +9734,21 @@ window.serialFbcTextLines=serialFbcTextLines;
 window.renderSerialFbc=renderSerialFbc;
 
 
+function focusMedAssistWorkspace(){
+  if(window.matchMedia?.("(max-width: 900px)")?.matches){
+    requestAnimationFrame(()=>document.querySelector(".main")?.scrollIntoView({block:"start",behavior:"auto"}));
+  }else{
+    window.scrollTo(0,0);
+  }
+}
+
 function showPage(name){
   document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+name));
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===name));
 
   if(name==="calculator") showCalcMenu();
 
-  window.scrollTo(0,0);
+  focusMedAssistWorkspace();
 
   requestAnimationFrame(()=>{
     if(name==="clerking"){
@@ -9718,7 +9775,7 @@ function showCalcMenu(){
 function openCalc(name){
   $("calcMenu").classList.add("hidden");
   document.querySelectorAll(".calc-panel").forEach(p=>p.classList.toggle("active",p.id==="calc-"+name));
-  window.scrollTo(0,0);
+  focusMedAssistWorkspace();
 }
 
 // Expose selected helpers to later lightweight modules such as Quick Search
@@ -10304,6 +10361,11 @@ function getDenguePlanLines(){
     if(on("clPlanSubAntibioticRx")&&on("clPlanSubAntibioticCompliance")&&!noDrug) lines.push("Advise on medication compliance and to complete the prescribed treatment course.");
     if(on("clPlanSubAntibioticRx")&&on("clPlanSubAntibioticReaction")&&!noDrug) lines.push("If medication is started, TCA STAT for any allergic reaction or significant medication side effect.");
     if(on("clPlanSubAntibioticReview")) lines.push("TCA back if symptoms are not resolving or worsen for reassessment.");
+  }else if(option==="supportive"){
+    if(on("clPlanSubSupportMeds")) lines.push("Meds as per charted.");
+    if(on("clPlanSubSupportFbc")) lines.push("TCA back if fever persists for 3 days for FBC.");
+    if(on("clPlanSubSupportSafety")) lines.push("Safe-netting advice given.");
+    if(on("clPlanSubSupportFluid")) lines.push("Encourage fluid intake.");
   }else if(option==="others"){
     lines.push(...extraLines);
   }
@@ -10328,7 +10390,8 @@ function renderDenguePlanPreview(){
     refer:"Option 1 — ED referral",
     outpatient:"Option 2 — Outpatient follow-up",
     antibiotic:"Option 3 — Concurrent infection / antimicrobial plan",
-    others:"Option 4 — Others / custom plan"
+    supportive:"Option 4 — Supportive fever / symptomatic plan",
+    others:"Option 5 — Others / custom plan"
   };
 
   syncDenguePlanSubplans();
@@ -10356,9 +10419,13 @@ function renderDenguePlanPreview(){
     $("clReferralStatus").textContent=
       "Option 3 selected. Complete the antimicrobial prescription before generating the note.";
     $("clReferralOutput").value="";
+  }else if(option==="supportive"){
+    $("clReferralStatus").textContent=
+      "Option 4 selected. Supportive fever / symptomatic plan; adjust the ticked items as needed.";
+    $("clReferralOutput").value="";
   }else if(option==="others"){
     $("clReferralStatus").textContent=
-      "Option 4 selected. Enter your own plan in the free-text field.";
+      "Option 5 selected. Enter your own plan in the free-text field.";
     $("clReferralOutput").value="";
   }else{
     $("clReferralStatus").textContent=
@@ -10415,27 +10482,37 @@ function getTbContactPositiveLine(){
     : "TB contact present";
 }
 
+function tbDurationText(inputId){
+  const amount=value(inputId).trim();
+  if(!amount) return "";
+  const unit=value(`${inputId}Unit`)||"day";
+  const unitText=amount==="1"?unit:`${unit}s`;
+  return `${amount} ${unitText}`;
+}
 function getTbScreeningLines(){
   if(!isCoughTbScreeningTriggered()) return [];
-
   const items=[...document.querySelectorAll("#clTbSymptoms input[type=checkbox]")];
-
-  const positives=items
-    .filter(item=>item.checked)
-    .map(item=>item.id==="clTbContact"
-      ? `    - ${getTbContactPositiveLine()}`
-      : `    - ${item.value} present`
-    );
-
-  const negatives=items
-    .filter(item=>!item.checked)
-    .map(item=>`    - no ${item.value}`);
-
-  return [
-    "  TB screening:",
-    ...positives,
-    ...negatives
-  ];
+  const durationMap={clTbHemoptysis:"clTbHemoptysisDuration",clTbLOA:"clTbLOADuration",clTbLOW:"clTbLOWDuration",clTbNightSweats:"clTbNightSweatsDuration",clTbPleuriticPain:"clTbPleuriticPainDuration"};
+  const positives=items.filter(item=>item.checked).map(item=>{
+    if(item.id==="clTbContact") return `    - ${getTbContactPositiveLine()}`;
+    if(item.id==="clTbHemoptysis"){
+      const character=value("clTbHemoptysisCharacter");
+      const duration=tbDurationText("clTbHemoptysisDuration");
+      return `    - hemoptysis present${character?` — ${character}`:""}${duration?` x ${duration}`:""}`;
+    }
+    if(item.id==="clTbLOW"){
+      const kg=value("clTbLowKg").trim();
+      const duration=tbDurationText("clTbLOWDuration");
+      if(kg&&duration) return `    - LOW present — weight loss ${kg} kg over ${duration}`;
+      if(kg) return `    - LOW present — weight loss ${kg} kg`;
+      return `    - LOW present${duration?` x ${duration}`:""}`;
+    }
+    const durationId=durationMap[item.id];
+    const duration=durationId?tbDurationText(durationId):"";
+    return `    - ${item.value} present${duration?` x ${duration}`:""}`;
+  });
+  const negatives=items.filter(item=>!item.checked).map(item=>`    - no ${item.value}`);
+  return ["  TB screening:",...positives,...negatives];
 }
 
 function syncTbContactDetails(){
@@ -11477,9 +11554,11 @@ function syncDengueUrineDetails(){
 function dengueOralIntakeLine(){
   const status=value("clDrink");
   const suffix=window.dengueDurationSuffix?.("clDrinkDuration")||"";
-  if(status==="unable") return "unable to tolerate oral fluids"+suffix;
-  if(status==="reduced") return "reduced oral intake"+suffix;
-  return "able to tolerate oral fluids";
+  const ml=value("clDrinkMl24").trim();
+  const intake=ml?` — approx. ${ml} mL/24h`:"";
+  if(status==="unable") return "unable to tolerate oral fluids"+suffix+intake;
+  if(status==="reduced") return "reduced oral intake"+suffix+intake;
+  return "able to tolerate oral fluids"+intake;
 }
 
 function dengueUrineWarningLine(){
@@ -11538,12 +11617,13 @@ function dengueLethargyLine(){
 
 function dengueYesNoWarningLine(id,label){
   if(value(id)!=="yes") return `no ${label}`;
-  const durationMap={
-    clAbdPain:"clAbdPainDuration",
-    clBleeding:"clBleedingDuration",
-    clSeizure:"clSeizureDuration"
-  };
-  return `+ ${label}`+(window.dengueDurationSuffix?.(durationMap[id])||"");
+  const durationMap={clAbdPain:"clAbdPainDuration",clBleeding:"clBleedingDuration",clSeizure:"clSeizureDuration"};
+  let detail="";
+  if(id==="clAbdPain"){
+    const sites=[...document.querySelectorAll("#clAbdPainSites input[type=checkbox]:checked")].map(x=>x.value);
+    if(sites.length) detail=` — site: ${sites.join(", ")}`;
+  }
+  return `+ ${label}${detail}`+(window.dengueDurationSuffix?.(durationMap[id])||"");
 }
 
 function buildDengueClinicalNote(planLines){
@@ -11963,7 +12043,42 @@ $("clMcDays").addEventListener("change",renderDenguePlanPreview);
 syncDengueMcUi();
 renderDenguePlanPreview();
 
-$("clReset").addEventListener("click",()=>location.reload());
+function resetDengueNewCase(){
+  const root=$("dengueNewCaseTemplate");
+  root.querySelectorAll("input").forEach(input=>{
+    if(input.type==="checkbox"||input.type==="radio") input.checked=input.defaultChecked;
+    else input.value=input.defaultValue||"";
+  });
+  root.querySelectorAll("select").forEach(select=>{
+    const defaultIndex=[...select.options].findIndex(option=>option.defaultSelected);
+    select.selectedIndex=defaultIndex>=0?defaultIndex:0;
+  });
+  root.querySelectorAll("textarea").forEach(area=>area.value=area.defaultValue||"");
+  $("clOutput").value="";
+  $("clReferralOutput").value="";
+  $("clReferralWrap")?.classList.add("hidden");
+  $("clCopyReferral")?.classList.add("hidden");
+  root.querySelectorAll("input,select,textarea").forEach(el=>{
+    if(["clOutput","clReferralOutput"].includes(el.id)) return;
+    const type=(el.tagName==="SELECT"||el.type==="checkbox"||el.type==="radio")?"change":"input";
+    el.dispatchEvent(new Event(type,{bubbles:true}));
+  });
+  if(typeof syncDengueSex==="function") syncDengueSex();
+  if(typeof calcClerkingWeight==="function") calcClerkingWeight();
+  if(typeof buildDiagnosis==="function") buildDiagnosis();
+  if(typeof syncDengueInterventions==="function") syncDengueInterventions();
+  if(typeof syncDengueMcUi==="function") syncDengueMcUi();
+  if(typeof syncDenguePlanSubplans==="function") syncDenguePlanSubplans();
+  if(typeof renderDenguePlanPreview==="function") renderDenguePlanPreview();
+  if(typeof syncDengueTbScreening==="function") syncDengueTbScreening();
+  if(typeof syncDengueComboTest==="function") syncDengueComboTest();
+  if(typeof syncDengueUrineDetails==="function") syncDengueUrineDetails();
+  if(typeof updateDengueRateOptions==="function") updateDengueRateOptions();
+  if(typeof calcBodyWeight==="function") calcBodyWeight();
+  if(typeof renderDengueReferralAlert==="function") renderDengueReferralAlert("new");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+$("clReset").addEventListener("click",resetDengueNewCase);
 initialisePreviousLabInvestigations();
 initialiseQuickFbcDetection();
 
@@ -14826,7 +14941,7 @@ const dm$=id=>document.getElementById(id);const dmValue=id=>(dm$(id)?.value||"")
 function dmFormatDate(raw){if(!raw)return "-";const p=raw.split("-");return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:raw}
 function dmSplitFreeText(raw){return String(raw||"").split(/[\n,;]+/).map(x=>x.trim()).filter(Boolean)}
 function dmCompactLines(lines){return lines.filter((x,i,a)=>!(x===""&&a[i-1]==="")).join("\n").trim()}
-function dmSymptomSection(title,containerId,otherId){const items=[...dm$(containerId).querySelectorAll('input[type="checkbox"]')],pos=[...items.filter(x=>x.checked).map(x=>x.value),...dmSplitFreeText(dmValue(otherId))],neg=items.filter(x=>!x.checked).map(x=>x.value);return [title,"","Positive symptoms:",...(pos.length?pos.map(x=>`+ ${x}`):["none"]),"","Negative symptoms:",...(neg.length?neg.map(x=>`no ${x}`):["none"])]}
+function dmSymptomSection(title,containerId,otherId){const items=[...dm$(containerId).querySelectorAll('input[type="checkbox"]')],pos=[...items.filter(x=>x.checked).map(x=>x.value),...dmSplitFreeText(dmValue(otherId))],neg=items.filter(x=>!x.checked).map(x=>x.value);return [title,"",...pos.map(x=>`+ ${x}`),...neg.map(x=>`no ${x}`)]}
 function dmVisitReason(){return dmValue("dmVisitType")==="other"?(dmValue("dmVisitOther")||"other review"):dmValue("dmVisitType")}
 function dmPackYears(){const c=num("dmCigDay"),y=num("dmSmokeYears");return Number.isFinite(c)&&Number.isFinite(y)?((c/20)*y).toFixed(1):""}
 function calcBmi(){const h=num("dmHeight"),w=num("dmWeight");return Number.isFinite(h)&&Number.isFinite(w)&&h>0?w/((h/100)**2):NaN}
@@ -14858,31 +14973,46 @@ function dmDkdSelected(){return !!dm$("dmMicroDkd")?.checked}
 function syncDmDkdDetails(){
   const selected=dmDkdSelected(),wrap=dm$("dmDkdDetailsWrap");
   if(wrap)wrap.classList.toggle("hidden",!selected);
-  const esrf=selected&&dmValue("dmDkdEsrf")==="yes",hdWrap=dm$("dmDkdHdWrap");
+  const stage=dmValue("dmDkdStage");
+  const stage5=selected&&stage==="G5";
+  if(dm$("dmDkdEsrf")){
+    const esrfField=dm$("dmDkdEsrf");
+    if(stage5&&esrfField.value!=="yes"){esrfField.value="yes";esrfField.dataset.autoFromG5="1";}
+    if(!stage5&&esrfField.dataset.autoFromG5==="1"){esrfField.value="no";delete esrfField.dataset.autoFromG5;}
+    esrfField.disabled=stage5;
+  }
+  const esrf=selected&&(stage5||dmValue("dmDkdEsrf")==="yes"),hdWrap=dm$("dmDkdHdWrap");
   if(hdWrap)hdWrap.classList.toggle("hidden",!esrf);
   if(!esrf){if(dm$("dmDkdHd"))dm$("dmDkdHd").value="no";if(dm$("dmDkdHdSchedule"))dm$("dmDkdHdSchedule").value=""}
   const hd=esrf&&dmValue("dmDkdHd")==="yes",scheduleWrap=dm$("dmDkdHdScheduleWrap");
   if(scheduleWrap)scheduleWrap.classList.toggle("hidden",!hd);
   if(!hd&&dm$("dmDkdHdSchedule"))dm$("dmDkdHdSchedule").value="";
 }
+function dmCxDetailSummary(containerId,detailMap){
+  const selected=[...dm$(containerId).querySelectorAll('input[type="checkbox"]:checked')].filter(x=>x.value!=="none"&&x.value!=="other");
+  return selected.map(x=>{const detailId=detailMap[x.id],detail=detailId?dmValue(detailId):"";return `${x.value}${detail?` — ${detail}`:""}`;});
+}
+function dmMacrovascularSummary(){
+  const parts=dmCxDetailSummary("dmMacroCxOptions",{dmMacroIhd:"dmMacroIhdDetail",dmMacroCva:"dmMacroCvaDetail",dmMacroPad:"dmMacroPadDetail",dmMacroHf:"dmMacroHfDetail"});
+  if(dmChecked("dmMacroOtherCheck")&&dmValue("dmMacroOther"))parts.push(dmValue("dmMacroOther"));
+  return parts.length?parts.join(", "):"none";
+}
 function dmMicrovascularSummary(){
-  const base=dmValue("dmMicroCx")||"none";
-  if(!dmDkdSelected())return base;
-  const details=[],stage=dmValue("dmDkdStage");
-  if(stage)details.push(`stage ${stage}`);
-  if(dmValue("dmDkdEsrf")==="yes"){
-    details.push("ESRF");
-    if(dmValue("dmDkdHd")==="yes"){
-      const schedule=dmValue("dmDkdHdSchedule");
-      details.push(`on HD${schedule?` (${schedule})`:""}`);
-    }else details.push("not on HD");
+  const parts=dmCxDetailSummary("dmMicroCxOptions",{dmMicroRetina:"dmMicroRetinaDetail",dmMicroDkd:"dmMicroDkdDetail",dmMicroNeuropathy:"dmMicroNeuropathyDetail"});
+  const dkdIndex=parts.findIndex(x=>x.startsWith("DKD / diabetic nephropathy"));
+  if(dkdIndex>=0){
+    const detailBits=[],stage=dmValue("dmDkdStage"),esrf=(stage==="G5"||dmValue("dmDkdEsrf")==="yes");
+    if(stage&&stage!=="G5")detailBits.push(`stage ${stage}`);
+    if(esrf){detailBits.push("ESRF");if(dmValue("dmDkdHd")==="yes"){const schedule=dmValue("dmDkdHdSchedule");detailBits.push(`on HD${schedule?` (${schedule})`:""}`)}else detailBits.push("not on HD")}
+    if(detailBits.length)parts[dkdIndex]+=` — ${detailBits.join(", ")}`;
   }
-  return base.replace("DKD / diabetic nephropathy",`DKD / diabetic nephropathy${details.length?" — "+details.join(", "):""}`);
+  if(dmChecked("dmMicroOtherCheck")&&dmValue("dmMicroOther"))parts.push(dmValue("dmMicroOther"));
+  return parts.length?parts.join(", "):"none";
 }
 function syncDmComplications(changed){syncDmCxGroup("dmMacroCxOptions","dmMacroCx","dmMacroNone","dmMacroOtherCheck","dmMacroOther",changed);syncDmCxGroup("dmMicroCxOptions","dmMicroCx","dmMicroNone","dmMicroOtherCheck","dmMicroOther",changed);syncDmDkdDetails()}
 function dmLifestyleLines(){const l=["LIFESTYLE","",`Diet compliance: ${dmValue("dmDiet")}`,`Suku-suku-separuh: ${dmValue("dmSuku")}`,`Sugary drinks: ${dmValue("dmSugary")}`,`Exercise: ${dmValue("dmExercise")==="yes"?(dmValue("dmExerciseDetails")||"yes"):"none"}`,`Smoking: ${dmValue("dmSmoking")}`];if(dmValue("dmSmoking")!=="non-smoker"){const p=dmPackYears();if(dmValue("dmCigDay"))l.push(`Cigarettes/day: ${dmValue("dmCigDay")}`);if(dmValue("dmSmokeYears"))l.push(`Smoking duration: ${dmValue("dmSmokeYears")} years`);if(p)l.push(`Pack-years: ${p}`)}l.push(`Alcohol: ${dmValue("dmAlcohol")}`);return l}
 function dmInvestigationPlan(){const s=[...dm$("dmInvestigations").querySelectorAll('input[type="checkbox"]:checked')].map(x=>x.value);return s.includes("none")||!s.length?"No investigation arranged.":`Arrange / update: ${s.join(", ")}.`}
-function dmPlanLines(){const p=[...[...dm$("dmPlanItems").querySelectorAll('input[type="checkbox"]:checked')].map(x=>x.value),...dmSplitFreeText(dmValue("dmOtherPlan"))];p.push(dmInvestigationPlan());const a=dmValue("dmTcaAmount");if(a){const u=dmValue("dmTcaUnit")||"month";p.push(`TCA in ${a} ${a==="1"?u:u+"s"}.`)}return p.map((x,i)=>`${i+1}. ${x}`)}
+function dmPlanLines(){const p=[...[...dm$("dmPlanItems").querySelectorAll('input[type="checkbox"]:checked')].map(x=>x.value),...dmSplitFreeText(dmValue("dmOtherPlan"))];p.push(dmInvestigationPlan());const a=dmValue("dmTcaAmount");if(a){const u=dmValue("dmTcaUnit")||"month";p.push(`TCA in ${a} ${a==="1"?u:u+"s"}.`)}return p}
 function labLine(label,parts){const x=parts.map(([k,id])=>dmValue(id)?`${k} ${dmValue(id)}`:"").filter(Boolean);return x.length?`${label}: ${x.join(", ")}`:""}
 function dmReferral(e){
   const r=[],ret=dmValue("dmRetinaStatus"),tod=[...dm$("dmTodSymptoms").querySelectorAll('input:checked')].map(x=>x.value);
@@ -14900,12 +15030,13 @@ function dmReferral(e){
 }
 function updateDm(){syncDmComplications();const b=calcBmi(),e=calcEgfr(),profile=dmHbA1cProfile(e),target=profile.target;dm$("dmBmi").value=Number.isFinite(b)?fmt(b):"";dm$("dmBmiCat").value=bmiCat(b);dm$("dmBmiStatus").textContent=Number.isFinite(b)?`${fmt(b)} kg/m² (${bmiCat(b)})`:"Enter height & weight";dm$("dmEgfr").value=Number.isFinite(e)?fmt(e):"";dm$("dmEgfrStatus").textContent=Number.isFinite(e)?`${fmt(e)} mL/min/1.73m² (${gCat(e)})${e<60?" — abnormal; chronicity requires confirmation":""}`:"Enter age, sex & creatinine";dm$("dmTargetHbA1c").value=target;dm$("dmHbA1cTargetStatus").textContent=target;dm$("dmHbA1cBasis").textContent=profile.basis;const rr=dmReferral(e);dm$("dmReferralAlert").classList.toggle("hidden",!rr.length);dm$("dmReferralAlert").textContent=rr.length?"CPG referral / clinical safety alerts:\n• "+rr.join("\n• "):"";syncDmConditionalFields()}
 function dmGenerateNote(){updateDm();const e=calcEgfr(),b=calcBmi(),smbg=dmValue("dmSmbg")==="done"?["SMBG: done",`Fasting: ${dmValue("dmSmbgFasting")?dmValue("dmSmbgFasting")+" mmol/L":"-"}`,`Postprandial: ${dmValue("dmSmbgPost")?dmValue("dmSmbgPost")+" mmol/L":"-"}`]:["SMBG: not done"];
-const note=["UNDERLYING ILLNESS","",`1. T2DM since ${dmValue("dmSince")||"-"}`,`   Macrovascular complication: ${dmValue("dmMacroCx")||"none"}`,`   Microvascular complication: ${dmMicrovascularSummary()}`,`   Target HbA1c: ${dmValue("dmTargetHbA1c")}`,`2. Hypertension: ${dmValue("dmHpt")}`,`3. Dyslipidaemia: ${dmValue("dmHpl")}`,`Other comorbidities: ${dmValue("dmOtherComorbid")||"none"}`,"",`Drug allergy: ${dmValue("dmAllergy")||"NKDA"}`,"",`Came today for ${dmVisitReason()}.`,`Medication compliance: ${dmValue("dmCompliance")}`,`Medication side effects: ${dmValue("dmSideEffects")||"none"}`,"","GLYCAEMIC CONTROL",...smbg,"",...dmSymptomSection("HYPERGLYCAEMIC SYMPTOMS","dmHyperSymptoms","dmHyperOther"),"",...dmSymptomSection("HYPOGLYCAEMIC SYMPTOMS","dmHypoSymptoms","dmHypoOther"),`Frequency: ${dmValue("dmHypoFrequency")}`,`Able to recognise hypoglycaemia: ${dmValue("dmHypoAwareness")}`,`Requires assistance: ${dmValue("dmHypoAssistance")}`,"",...dmSymptomSection("TARGET-ORGAN DAMAGE / COMPLICATION SYMPTOMS","dmTodSymptoms","dmTodOther"),"",...dmLifestyleLines()];
+const dmOtherComorbidRaw=dmValue("dmOtherComorbid"),dmOtherComorbidText=!dmOtherComorbidRaw||/^(?:none|nil|no|nkmi)$/i.test(dmOtherComorbidRaw)?"NKMI":dmOtherComorbidRaw;let dmComplianceText=dmValue("dmCompliance");if(dmComplianceText==="occasionally missed"){const freq=dmValue("dmMissedFrequency")==="other"?(dmValue("dmMissedFrequencyOther")||"frequency not specified"):dmValue("dmMissedFrequency");if(freq)dmComplianceText+=` (${freq})`;}
+const note=["UNDERLYING ILLNESS","",`1. T2DM since ${dmValue("dmSince")||"-"}`,`   Macrovascular complication: ${dmMacrovascularSummary()}`,`   Microvascular complication: ${dmMicrovascularSummary()}`,`   Target HbA1c: ${dmValue("dmTargetHbA1c")}`,`2. Hypertension: ${dmValue("dmHpt")}`,`3. Dyslipidaemia: ${dmValue("dmHpl")}`,`Other comorbidities: ${dmOtherComorbidText}`,"",`Drug allergy: ${dmValue("dmAllergy")||"NKDA"}`,"",`Came today for ${dmVisitReason()}.`,`Medication compliance: ${dmComplianceText}`,`Medication side effects: ${dmValue("dmSideEffects")||"none"}`,"","GLYCAEMIC CONTROL",...smbg,"",...dmSymptomSection("HYPERGLYCAEMIC SYMPTOMS","dmHyperSymptoms","dmHyperOther"),"",...dmSymptomSection("HYPOGLYCAEMIC SYMPTOMS","dmHypoSymptoms","dmHypoOther"),`Frequency: ${dmValue("dmHypoFrequency")}`,`Able to recognise hypoglycaemia: ${dmValue("dmHypoAwareness")}`,`Requires assistance: ${dmValue("dmHypoAssistance")}`,"",...dmSymptomSection("TARGET-ORGAN DAMAGE / COMPLICATION SYMPTOMS","dmTodSymptoms","dmTodOther"),"",...dmLifestyleLines()];
 if(Number.isFinite(b)||dmValue("dmSbp")||dmValue("dmWaist")||dmValue("dmPulse")||dmValue("dmTemp")||dmValue("dmRr")||dmValue("dmSpo2")){note.push("","VITALS / ANTHROPOMETRY");if(dmValue("dmSbp")&&dmValue("dmDbp"))note.push(`BP: ${dmValue("dmSbp")}/${dmValue("dmDbp")} mmHg`);const vv=[];if(dmValue("dmPulse"))vv.push(`PR ${dmValue("dmPulse")} bpm`);if(dmValue("dmTemp"))vv.push(`T ${dmValue("dmTemp")}°C`);if(dmValue("dmRr"))vv.push(`RR ${dmValue("dmRr")}/min`);if(dmValue("dmSpo2"))vv.push(`SpO2 ${dmValue("dmSpo2")}%`);if(vv.length)note.push(vv.join(", "));if(Number.isFinite(b))note.push(`BMI: ${fmt(b)} kg/m² (${bmiCat(b)})`);if(dmValue("dmWaist"))note.push(`Waist circumference: ${dmValue("dmWaist")} cm`)}
-const labs=[labLine("RP",[["Cr","dmRpCreat"],["urea","dmRpUrea"],["K","dmRpK"],["Na","dmRpNa"],["Cl","dmRpCl"]]),labLine("LFT",[["TP","dmLftTp"],["TBili","dmLftTbili"],["ALT","dmLftAlt"],["ALP","dmLftAlp"]]),labLine("FBC",[["Hb","dmFbcHb"],["Hct","dmFbcHct"],["WC","dmFbcWc"],["Plt","dmFbcPlt"],["MCV","dmFbcMcv"],["MCH","dmFbcMch"]]),dmValue("dmLatestHbA1c")?`HbA1c: ${dmValue("dmLatestHbA1c")}%`:"",dmValue("dmFbs")?`FBS: ${dmValue("dmFbs")} mmol/L`:"",labLine("FLP",[["TC","dmFlpTc"],["LDL","dmFlpLdl"],["TG","dmFlpTg"],["HDL","dmFlpHdl"]]),(dmValue("dmUrineAlbumin")||dmValue("dmUrineProtein"))?`Urine microalbumin/protein: ${[dmValue("dmUrineAlbumin"),dmValue("dmUrineProtein")].filter(Boolean).join(", ")}`:"",labLine("UFEME",[["protein","dmUfProtein"],["blood","dmUfBlood"],["nitrite","dmUfNitrite"],["glucose","dmUfGlucose"]]),Number.isFinite(e)?`eGFR (CKD-EPI 2021): ${fmt(e)} mL/min/1.73m² (${gCat(e)})`:"",dmValue("dmRetinaStatus")!=="not documented"?`Fundus/retinopathy: ${dmValue("dmRetinaStatus")}`:"",dmValue("dmEcgStatus")!=="not documented"?`Resting ECG: ${dmValue("dmEcgStatus")}`:""].filter(Boolean);if(labs.length)note.push("","RESULTS",...labs);const rr=dmReferral(e);if(rr.length)note.push("","REFERRAL ALERT",...rr.map(x=>`- ${x}`));note.push("","O/E:",dmValue("dmGeneralExam")||"-",`CVS: ${dmValue("dmCVS")||"DRNM"}`,`Lungs: ${dmValue("dmLungs")||"clear"}`,`PA: ${dmValue("dmPA")||"SNT"}`,`Peripheral oedema: ${dmValue("dmOedema")}`,"","PLAN",...dmPlanLines());dm$("dmOutput").value=dmCompactLines(note);dm$("dmOutput").scrollIntoView({behavior:"smooth",block:"start"})}
+const labs=[labLine("RP",[["Cr","dmRpCreat"],["urea","dmRpUrea"],["K","dmRpK"],["Na","dmRpNa"],["Cl","dmRpCl"]]),labLine("LFT",[["TP","dmLftTp"],["TBili","dmLftTbili"],["ALT","dmLftAlt"],["ALP","dmLftAlp"]]),labLine("FBC",[["Hb","dmFbcHb"],["Hct","dmFbcHct"],["WC","dmFbcWc"],["Plt","dmFbcPlt"],["MCV","dmFbcMcv"],["MCH","dmFbcMch"]]),dmValue("dmLatestHbA1c")?`HbA1c: ${dmValue("dmLatestHbA1c")}%`:"",dmValue("dmFbs")?`FBS: ${dmValue("dmFbs")} mmol/L`:"",labLine("FLP",[["TC","dmFlpTc"],["LDL","dmFlpLdl"],["TG","dmFlpTg"],["HDL","dmFlpHdl"]]),(dmValue("dmUrineAlbumin")||dmValue("dmUrineProtein"))?`Urine microalbumin/protein: ${[dmValue("dmUrineAlbumin"),dmValue("dmUrineProtein")].filter(Boolean).join(", ")}`:"",labLine("UFEME",[["protein","dmUfProtein"],["blood","dmUfBlood"],["nitrite","dmUfNitrite"],["glucose","dmUfGlucose"]]),Number.isFinite(e)?`eGFR (CKD-EPI 2021): ${fmt(e)} mL/min/1.73m² (${gCat(e)})`:"",dmValue("dmRetinaStatus")!=="not documented"?`Fundus/retinopathy: ${dmValue("dmRetinaStatus")}`:"",dmValue("dmEcgStatus")!=="not documented"?`Resting ECG: ${dmValue("dmEcgStatus")}`:""].filter(Boolean);if(labs.length){const resultDate=dmValue("dmResultDate");note.push("",resultDate?`RESULTS (${dmFormatDate(resultDate)})`:"RESULTS",...labs)}const rr=dmReferral(e);if(rr.length)note.push("","REFERRAL ALERT",...rr.map(x=>`- ${x}`));note.push("","O/E:",dmValue("dmGeneralExam")||"-",`CVS: ${dmValue("dmCVS")||"DRNM"}`,`Lungs: ${dmValue("dmLungs")||"clear"}`,`PA: ${dmValue("dmPA")||"SNT"}`,`Peripheral oedema: ${dmValue("dmOedema")}`,"","PLAN",...dmPlanLines());dm$("dmOutput").value=dmCompactLines(note);dm$("dmOutput").scrollIntoView({behavior:"smooth",block:"start"})}
 async function dmCopyNote(){if(!dmValue("dmOutput"))dmGenerateNote();try{await navigator.clipboard.writeText(dmValue("dmOutput"));const b=dm$("dmCopy"),t=b.textContent;b.textContent="Copied";setTimeout(()=>b.textContent=t,1200)}catch(e){dm$("dmOutput").focus();dm$("dmOutput").select();document.execCommand("copy")}}
 function dmReset(){document.querySelectorAll("#page-dm input").forEach(x=>{if(x.type==="checkbox")x.checked=x.defaultChecked;else x.value=x.defaultValue||""});document.querySelectorAll("#page-dm select").forEach(x=>x.selectedIndex=0);document.querySelectorAll("#page-dm textarea").forEach(x=>x.value=x.defaultValue||"");dm$("dmOutput").value="";syncDmConditionalFields();syncDmInvestigationNone();syncDmComplications();updateDm();window.scrollTo({top:0,behavior:"smooth"})}
-function syncDmConditionalFields(){dm$("dmVisitOther").classList.toggle("hidden",dmValue("dmVisitType")!=="other");const sm=dmValue("dmSmbg")==="done";dm$("dmSmbgFasting").disabled=!sm;dm$("dmSmbgPost").disabled=!sm;const ex=dmValue("dmExercise")==="yes";dm$("dmExerciseDetails").disabled=!ex;const smoking=dmValue("dmSmoking")!=="non-smoker";dm$("dmSmokingDetails").classList.toggle("hidden",!smoking);dm$("dmSmokingDetails").querySelectorAll("input").forEach(x=>x.disabled=!smoking);syncDmDkdDetails()}
+function syncDmConditionalFields(){dm$("dmVisitOther").classList.toggle("hidden",dmValue("dmVisitType")!=="other");const sm=dmValue("dmSmbg")==="done";dm$("dmSmbgFasting").disabled=!sm;dm$("dmSmbgPost").disabled=!sm;const ex=dmValue("dmExercise")==="yes";dm$("dmExerciseDetails").disabled=!ex;const smoking=dmValue("dmSmoking")!=="non-smoker";dm$("dmSmokingDetails").classList.toggle("hidden",!smoking);dm$("dmSmokingDetails").querySelectorAll("input").forEach(x=>x.disabled=!smoking);const missed=dmValue("dmCompliance")==="occasionally missed";dm$("dmMissedFrequencyWrap")?.classList.toggle("hidden",!missed);if(!missed){if(dm$("dmMissedFrequency"))dm$("dmMissedFrequency").value="";if(dm$("dmMissedFrequencyOther"))dm$("dmMissedFrequencyOther").value=""}const missedOther=missed&&dmValue("dmMissedFrequency")==="other";dm$("dmMissedFrequencyOther")?.classList.toggle("hidden",!missedOther);syncDmDkdDetails()}
 function syncDmInvestigationNone(changed){const none=dm$("dmInvNone"),others=[...dm$("dmInvestigations").querySelectorAll('input[type="checkbox"]')].filter(x=>x!==none);if(changed===none&&none.checked)others.forEach(x=>x.checked=false);else if(changed&&changed!==none&&changed.checked)none.checked=false;if(!none.checked&&!others.some(x=>x.checked))none.checked=true}
 ["dmMacroCxOptions","dmMicroCxOptions"].forEach(id=>dm$(id)?.querySelectorAll('input[type="checkbox"]').forEach(x=>x.addEventListener("change",()=>{syncDmComplications(x);updateDm()})));["dmMacroOther","dmMicroOther"].forEach(id=>dm$(id)?.addEventListener("input",()=>{syncDmComplications();updateDm()}));["dmDkdStage","dmDkdEsrf","dmDkdHd","dmDkdHdSchedule"].forEach(id=>dm$(id)?.addEventListener("change",()=>{syncDmDkdDetails();updateDm()}));syncDmComplications();
 dm$("page-dm").addEventListener("input",updateDm);dm$("page-dm").addEventListener("change",updateDm);dm$("dmInvestigations").querySelectorAll('input[type="checkbox"]').forEach(x=>x.addEventListener("change",()=>syncDmInvestigationNone(x)));dm$("dmGenerate").addEventListener("click",dmGenerateNote);dm$("dmCopy").addEventListener("click",dmCopyNote);dm$("dmReset").addEventListener("click",dmReset);syncDmInvestigationNone();updateDm();
@@ -20496,6 +20627,7 @@ initDate();render();window.renderRme1=render;window.generateRme1Note=generateNot
 #page-clerking #clReset,
 #page-clerking #dfuReset,
 #page-dm #dmReset,
+#page-htn #htnReset,
 #page-nnj #nnjClear,
 #page-neurodevelopment [data-clear-neuro],
 #page-rme1 #rmeClear,
@@ -21537,6 +21669,7 @@ const $=id=>document.getElementById(id);
 const val=id=>($(id)?.value||"").trim();
 const n=id=>{const x=parseFloat(val(id));return Number.isFinite(x)?x:NaN};
 const fmt=x=>Number.isFinite(x)?(Math.round(x*10)/10).toString():"";
+const formatDate=raw=>{if(!raw)return "";const p=raw.split("-");return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:raw};
 const split=s=>String(s||"").split(/[\n,;]+/).map(x=>x.trim()).filter(Boolean);
 const positive=id=>Boolean($(id)?.checked);
 
@@ -21548,25 +21681,35 @@ function bmiCategory(x){if(!Number.isFinite(x))return "";if(x<18.5)return "Under
 function egfr(age,sex,cr){if(!Number.isFinite(age)||age<18||!Number.isFinite(cr)||cr<=0)return NaN;const scr=cr/88.4,f=sex==="female",k=f?0.7:0.9,a=f?-0.241:-0.302;return 142*Math.pow(Math.min(scr/k,1),a)*Math.pow(Math.max(scr/k,1),-1.2)*Math.pow(0.9938,age)*(f?1.012:1)}
 function gCat(e){if(!Number.isFinite(e))return "";if(e>=90)return "G1";if(e>=60)return "G2";if(e>=45)return "G3a";if(e>=30)return "G3b";if(e>=15)return "G4";return "G5"}
 function highRisk(e){return val("htnDm")==="yes"||val("htnCkd")==="yes"||val("htnIhd")==="yes"||val("htnCva")==="yes"||val("htnHf")==="yes"||(Number.isFinite(e)&&e<60)}
-function targetBp(e){const age=n("htnAge");if(Number.isFinite(age)&&age>=80)return "<150/90 mmHg";return highRisk(e)?"<130/80 mmHg":"<140/90 mmHg"}
+function targetBp(e){const age=n("htnAge");if(!Number.isFinite(age))return "Enter age / risk data";if(age>=80)return "Individualise (≥80 years)";return "<130/80 mmHg"}
 
-const MR={"-3":"<1","-2":"1.1","-1":"1.4","0":"1.6","1":"1.9","2":"2.3","3":"2.8","4":"3.3","5":"3.9","6":"4.7","7":"5.6","8":"6.7","9":"7.9","10":"9.4","11":"11.2","12":"13.2","13":"15.6","14":"18.4","15":"21.6","16":"25.3","17":"29.4","18":">30"};
-const WR={"-2":"<1","-1":"1.0","0":"1.2","1":"1.5","2":"1.7","3":"2.0","4":"2.4","5":"2.8","6":"3.3","7":"3.9","8":"4.5","9":"5.3","10":"6.3","11":"7.3","12":"8.6","13":"10.0","14":"11.7","15":"13.7","16":"15.9","17":"18.5","18":"21.5","19":"24.8","20":"28.5","21":">30"};
-function agePts(a,s){if(s==="male"){if(a<35)return 0;if(a<40)return 2;if(a<45)return 5;if(a<50)return 6;if(a<55)return 8;if(a<60)return 10;if(a<65)return 11;if(a<70)return 12;if(a<75)return 14;return 15}if(a<35)return 0;if(a<40)return 2;if(a<45)return 4;if(a<50)return 5;if(a<55)return 7;if(a<60)return 8;if(a<65)return 9;if(a<70)return 10;if(a<75)return 11;return 12}
-function hdlPts(x){if(x>=1.6)return -2;if(x>=1.3)return -1;if(x>=1.2)return 0;if(x>=0.9)return 1;return 2}
-function tcPts(x,s){if(s==="male"){if(x<4.2)return 0;if(x<5.2)return 1;if(x<6.3)return 2;if(x<7.4)return 3;return 4}if(x<4.2)return 0;if(x<5.2)return 1;if(x<6.3)return 3;if(x<7.4)return 4;return 5}
-function sbpPts(x,treated,s){if(s==="male"){if(treated){if(x<120)return 0;if(x<130)return 2;if(x<140)return 3;if(x<160)return 4;return 5}if(x<120)return -2;if(x<130)return 0;if(x<140)return 1;if(x<160)return 2;return 3}if(treated){if(x<120)return -1;if(x<130)return 2;if(x<140)return 3;if(x<150)return 5;if(x<160)return 6;return 7}if(x<120)return -3;if(x<130)return 0;if(x<140)return 1;if(x<150)return 2;if(x<160)return 4;return 5}
-function directRisk(e,s,d){const ldl=n("htnFlpLdl");if(val("htnIhd")==="yes"||val("htnCva")==="yes")return "Very high CV risk — FRS not required";if(Number.isFinite(e)&&e<30)return "Very high CV risk — FRS not required";if(val("htnDm")==="yes"||val("htnCkd")==="yes"||(Number.isFinite(e)&&e<60)||ldl>4.9||s>=180||d>=110)return "High CV risk — FRS not required";return ""}
-function frs(e){const {s,d}=bp(),direct=directRisk(e,s,d);if(direct)return direct;const age=n("htnAge"),tc=n("htnFlpTc"),hdl=n("htnFlpHdl"),sex=val("htnSex")||"female";if(!Number.isFinite(age)||!Number.isFinite(tc)||!Number.isFinite(hdl)||!Number.isFinite(s))return "Enter age, TC, HDL & BP";if(age<30||age>74)return "FRS not calculated (age outside 30–74)";const treated=val("htnVisitType")!=="new hypertension assessment";const smoker=val("htnSmoking")==="current smoker";const dm=val("htnDm")==="yes";let p=agePts(age,sex)+hdlPts(hdl)+tcPts(tc,sex)+sbpPts(s,treated,sex)+(smoker?(sex==="male"?4:3):0)+(dm?(sex==="male"?3:4):0);let r;if(sex==="male")r=p<=-3?"<1":p>=18?">30":MR[String(p)];else r=p<=-2?"<1":p>=21?">30":WR[String(p)];const rr=r.startsWith("<")?.9:r.startsWith(">")?30.1:parseFloat(r),cat=rr>=20?"High":rr>=10?"Intermediate":"Low";return `${r}% (${cat}; ${p} points)`}
+function directRisk(){if(val("htnIhd")==="yes"||val("htnCva")==="yes"||val("htnHf")==="yes")return "Established CVD — Framingham General CVD model not applicable";return ""}
+function frs(e){
+  const {s}=bp(),direct=directRisk();if(direct)return direct;
+  const age=n("htnAge"),tc=n("htnFlpTc"),hdl=n("htnFlpHdl"),sex=val("htnSex")||"female";
+  if(!Number.isFinite(age)||!Number.isFinite(tc)||!Number.isFinite(hdl)||!Number.isFinite(s))return "Enter age, TC, HDL & BP";
+  if(age<30||age>74)return "FRS not calculated (validated age 30–74)";
+  if(tc<=0||hdl<=0||s<=0)return "Check TC, HDL & BP values";
+  const treated=val("htnBpTreated")==="yes",smoker=val("htnSmoking")==="current smoker",dm=val("htnDm")==="yes";
+  const tcMg=tc*38.67,hdlMg=hdl*38.67,male=sex==="male";
+  const beta=male
+    ? {age:3.06117,tc:1.12370,hdl:-0.93263,sbpU:1.93303,sbpT:1.99881,smoke:0.65451,dm:0.57367,mean:23.9802,s0:0.88936}
+    : {age:2.32888,tc:1.20904,hdl:-0.70833,sbpU:2.76157,sbpT:2.82263,smoke:0.52873,dm:0.69154,mean:26.1931,s0:0.95012};
+  const sum=beta.age*Math.log(age)+beta.tc*Math.log(tcMg)+beta.hdl*Math.log(hdlMg)+(treated?beta.sbpT:beta.sbpU)*Math.log(s)+(smoker?beta.smoke:0)+(dm?beta.dm:0);
+  const risk=100*(1-Math.pow(beta.s0,Math.exp(sum-beta.mean)));
+  if(!Number.isFinite(risk))return "Unable to calculate — check inputs";
+  const rounded=Math.max(0,Math.min(100,risk));
+  return `${rounded.toFixed(1)}% (10-year General CVD; ${treated?"treated":"untreated"} SBP)`;
+}
 function anyPositive(ids){return ids.some(positive)}
 function referrals(e,s,d){const r=[];const neuro=positive("htnSxLimb"),cardiac=anyPositive(["htnSxChest","htnSxSob","htnSxPalp","htnSxOrtho","htnSxPnd","htnSxLeg"]),visual=positive("htnSxBov");if((Number.isFinite(s)&&s>=180)||(Number.isFinite(d)&&d>=110)){r.push("MOPD / ED: severe-range BP — repeat correctly and assess for acute end-organ damage")}
-if(neuro)r.push("ED / medical: focal neurological symptom — urgent stroke assessment");if(cardiac)r.push("Cardiology / ED: active cardiac or heart-failure symptom — assess urgency clinically");if(visual)r.push("Ophthalmology / acute medical assessment: active visual symptom");if(Number.isFinite(e)&&e<30)r.push("Nephrology: eGFR <30 mL/min/1.73m²");const prot=(val("htnUrineProtein")+" "+val("htnUfProtein")).toLowerCase(),blood=val("htnUfBlood").toLowerCase();if(/\+|positive|[1-9]/.test(prot)&&/\+|positive/.test(blood))r.push("Nephrology: proteinuria with haematuria if persistent / confirmed");if(val("htnSecondarySuspected")==="yes")r.push("MOPD / FMS: suspected secondary hypertension");if(val("htnResistant")==="yes")r.push("MOPD / FMS / Nephrology: resistant hypertension");return [...new Set(r)]}
+if(neuro)r.push("ED / medical: focal neurological symptom — urgent stroke assessment");if(cardiac)r.push("Cardiology / ED: active cardiac or heart-failure symptom — assess urgency clinically");if(visual)r.push("Ophthalmology / acute medical assessment: active visual symptom");if(Number.isFinite(e)&&e<30)r.push("Nephrology: eGFR <30 mL/min/1.73m²");const prot=(val("htnUrineProtein")+" "+val("htnUfProtein")).toLowerCase(),blood=val("htnUfBlood").toLowerCase();if(/\+|positive|[1-9]/.test(prot)&&/\+|positive/.test(blood))r.push("Nephrology: proteinuria with haematuria if persistent / confirmed");return [...new Set(r)]}
 function lineGroup(label,ids){const x=ids.map(([k,id])=>val(id)?`${k} ${val(id)}`:"").filter(Boolean);return x.length?`${label}: ${x.join(", ")}`:""}
 function update(){const {s,d}=bp(),b=calcBmi(n("htnHeight"),n("htnWeight")),e=egfr(n("htnAge"),val("htnSex"),n("htnRpCreat"));$("htnBpCategory").value=bpCategory(s,d);$("htnBmi").value=Number.isFinite(b)?fmt(b):"";$("htnBmiCat").value=bmiCategory(b);$("htnEgfr").value=Number.isFinite(e)?fmt(e):"";$("htnTargetBp").textContent=targetBp(e);$("htnEgfrStatus").textContent=Number.isFinite(e)?`${fmt(e)} mL/min/1.73m² (${gCat(e)})`:"Enter age, sex & creatinine";$("htnFrsResult").textContent=frs(e);const rr=referrals(e,s,d);$("htnReferralAlert").classList.toggle("hidden",!rr.length);$("htnReferralAlert").textContent=rr.length?"Referral alert:\n• "+rr.join("\n• "):"";$("htnVisitOther").classList.toggle("hidden",val("htnVisitType")!=="other");$("htnHbpmValueWrap").classList.toggle("hidden",val("htnHbpm")!=="done");$("htnSupplementWrap").classList.toggle("hidden",val("htnSupplement")!=="yes");const missed=val("htnCompliance")==="occasionally missed";$("htnMissedFrequencyWrap")?.classList.toggle("hidden",!missed);if(!missed){if($("htnMissedFrequency"))$("htnMissedFrequency").value="";if($("htnMissedFrequencyOther"))$("htnMissedFrequencyOther").value=""}const missedOther=missed&&val("htnMissedFrequency")==="other";$("htnMissedFrequencyOther")?.classList.toggle("hidden",!missedOther)}
 function negativeLines(){const lines=[];if(!anyPositive(["htnSxSob","htnSxChest","htnSxPalp"]))lines.push("no SOB/chest pain/palpitation");else{const a=[];if(!positive("htnSxSob"))a.push("SOB");if(!positive("htnSxChest"))a.push("chest pain");if(!positive("htnSxPalp"))a.push("palpitation");if(a.length)lines.push("no "+a.join("/"))}if(!anyPositive(["htnSxHeadache","htnSxBov","htnSxNausea","htnSxVomit"]))lines.push("no headache/BOV/nausea/vomiting");else{const a=[];[["headache","htnSxHeadache"],["BOV","htnSxBov"],["nausea","htnSxNausea"],["vomiting","htnSxVomit"]].forEach(([x,id])=>{if(!positive(id))a.push(x)});if(a.length)lines.push("no "+a.join("/"))}if(!positive("htnSxLimb"))lines.push("no limb weakness");if(!anyPositive(["htnSxLeg","htnSxOrtho","htnSxPnd"]))lines.push("no leg swelling/orthopnea/PND");else{const a=[];[["leg swelling","htnSxLeg"],["orthopnea","htnSxOrtho"],["PND","htnSxPnd"]].forEach(([x,id])=>{if(!positive(id))a.push(x)});if(a.length)lines.push("no "+a.join("/"))}return lines}
 function generate(){update();const {s,d}=bp(),e=parseFloat(val("htnEgfr")),b=val("htnBmi"),pos=[...document.querySelectorAll('#htnSymptoms input:checked')].map(x=>x.value),visit=val("htnVisitType")==="other"?(val("htnVisitOther")||"review"):val("htnVisitType"),ul=[];ul.push("HPT"+(val("htnHpl")==="yes"?"/HPL":""));const no=[];if(val("htnIhd")==="no")no.push("IHD");if(val("htnCkd")==="no")no.push("CKD");if(val("htnCva")==="no")no.push("CVA");const yesc=[];if(val("htnDm")==="yes")yesc.push("DM");if(val("htnIhd")==="yes")yesc.push("IHD");if(val("htnCkd")==="yes")yesc.push("CKD");if(val("htnCva")==="yes")yesc.push("CVA/TIA");if(val("htnHf")==="yes")yesc.push("HF");
-const lines=["UL:",...ul];if(yesc.length)lines.push(yesc.join(" / "));if(no.length)lines.push("no "+no.join("/"));if(b)lines.push(`BMI: ${b} kg/m² (${val("htnBmiCat")})`);lines.push(`target BP: ${$("htnTargetBp").textContent}`);lines.push("");lines.push(`come today for ${visit}`);lines.push("");lines.push(val("htnActiveComplaint")?`active complaint: ${val("htnActiveComplaint")}`:"no active complaint");{let compliance=val("htnCompliance");if(compliance==="occasionally missed"){const freq=val("htnMissedFrequency")==="other"?(val("htnMissedFrequencyOther")||"frequency not specified"):val("htnMissedFrequency");if(freq)compliance+=` (${freq})`;}lines.push(`compliance: ${compliance}`);}lines.push(`diet control: ${val("htnDiet")}${val("htnDietNote")?`. ${val("htnDietNote")}`:""}`);lines.push("");lines.push("TOD/TOC sx:");if(pos.length)lines.push("positive: "+pos.join(", "));lines.push(...negativeLines());lines.push("");if(val("htnHbpm")==="done")lines.push(`HBPM: ${val("htnHbpmSbp")&&val("htnHbpmDbp")?val("htnHbpmSbp")+"/"+val("htnHbpmDbp")+" mmHg":"done"}`);else lines.push("no HBPM done");lines.push(`${val("htnSmoking")}${val("htnAlcohol")==="yes"?" / alcohol intake":" / non-alcoholic"}`);lines.push(val("htnExercise")==="yes"?"regular exercise done":"no regular exercise done");lines.push(val("htnSupplement")==="yes"?`supplement/traditional meds: ${val("htnSupplementDetails")||"yes"}`:"no supplement/traditional meds intake");lines.push("");lines.push(`O/E: ${val("htnGeneralExam")}`);const vitalBits=[];if(Number.isFinite(s)&&Number.isFinite(d))vitalBits.push(`BP ${fmt(s)}/${fmt(d)} mmHg`);if(val("htnPulse"))vitalBits.push(`PR ${val("htnPulse")} bpm`);if(val("htnTemp"))vitalBits.push(`T ${val("htnTemp")}°C`);if(val("htnRr"))vitalBits.push(`RR ${val("htnRr")}/min`);if(val("htnSpo2"))vitalBits.push(`SpO2 ${val("htnSpo2")}%`);if(vitalBits.length)lines.push(vitalBits.join(", "));lines.push(`lungs ${val("htnLungs")||"clear"}`);lines.push(`CVS ${val("htnCvs")||"DRNM"}`);lines.push(val("htnJvp")==="yes"?"raised JVP":"no raised JVP");lines.push(val("htnOedema")==="yes"?"pedal edema present":"no pedal edema");if(val("htnOtherExam"))lines.push(val("htnOtherExam"));
-const lab=[];[lineGroup("RP",[["Cr","htnRpCreat"],["urea","htnRpUrea"],["K","htnRpK"],["Na","htnRpNa"],["Cl","htnRpCl"]]),lineGroup("LFT",[["TP","htnLftTp"],["TBili","htnLftTbili"],["ALT","htnLftAlt"],["ALP","htnLftAlp"]]),lineGroup("FBC",[["Hb","htnFbcHb"],["Hct","htnFbcHct"],["WC","htnFbcWc"],["Plt","htnFbcPlt"],["MCV","htnFbcMcv"],["MCH","htnFbcMch"]]),val("htnFbs")?`FBS: ${val("htnFbs")} mmol/L`:"",lineGroup("FLP",[["TC","htnFlpTc"],["LDL","htnFlpLdl"],["TG","htnFlpTg"],["HDL","htnFlpHdl"]]),(val("htnUrineAlbumin")||val("htnUrineProtein"))?`Urine microalbumin/protein: ${[val("htnUrineAlbumin"),val("htnUrineProtein")].filter(Boolean).join(", ")}`:"",lineGroup("UFEME",[["protein","htnUfProtein"],["blood","htnUfBlood"],["nitrite","htnUfNitrite"],["glucose","htnUfGlucose"]]),Number.isFinite(e)?`eGFR (CKD-EPI 2021): ${fmt(e)} mL/min/1.73m² (${gCat(e)})`:""].filter(Boolean).forEach(x=>lab.push(x));if(lab.length){lines.push("");lines.push("RESULTS:",...lab)}lines.push("");lines.push(`FRS: ${$("htnFrsResult").textContent}`);const rr=referrals(Number.isFinite(e)?e:NaN,s,d);if(rr.length){lines.push("", "REFERRAL ALERT:",...rr.map(x=>`- ${x}`))}lines.push("","PLAN:");const plans=[...document.querySelectorAll('#htnPlanItems input:checked')].map(x=>x.value).concat(split(val("htnOtherPlan")));const amount=val("htnTcaAmount");if(amount){const u=val("htnTcaUnit")||"month";plans.push(`TCA in ${amount} ${amount==="1"?u:u+"s"}.`)}else plans.push("TCA.");plans.forEach((x,i)=>lines.push(`${i+1}. ${x}`));$("htnOutput").value=lines.join("\n").replace(/\n{3,}/g,"\n\n").trim();$("htnOutput").scrollIntoView({behavior:"smooth",block:"start"})}
+const lines=["UL:",...ul];if(yesc.length)lines.push(yesc.join(" / "));if(no.length)lines.push("no "+no.join("/"));if(b)lines.push(`BMI: ${b} kg/m² (${val("htnBmiCat")})`);lines.push(`target BP: ${$("htnTargetBp").textContent}`);lines.push("");lines.push(`come today for ${visit}`);lines.push("");lines.push(val("htnActiveComplaint")?`active complaint: ${val("htnActiveComplaint")}`:"no active complaint");{let compliance=val("htnCompliance");if(compliance==="occasionally missed"){const freq=val("htnMissedFrequency")==="other"?(val("htnMissedFrequencyOther")||"frequency not specified"):val("htnMissedFrequency");if(freq)compliance+=` (${freq})`;}lines.push(`compliance: ${compliance}`);}lines.push(`diet control: ${val("htnDiet")}${val("htnDietNote")?`. ${val("htnDietNote")}`:""}`);lines.push("");lines.push("TOD/TOC sx:");if(pos.length)lines.push("positive: "+pos.join(", "));lines.push(...negativeLines());lines.push("");if(val("htnHbpm")==="done")lines.push(`HBPM: ${val("htnHbpmSbp")&&val("htnHbpmDbp")?val("htnHbpmSbp")+"/"+val("htnHbpmDbp")+" mmHg":"done"}`);else lines.push("no HBPM done");lines.push(`${val("htnSmoking")}${val("htnAlcohol")==="yes"?" / alcohol intake":" / non-alcoholic"}`);lines.push(val("htnExercise")==="yes"?"regular exercise done":"no regular exercise done");lines.push(val("htnSupplement")==="yes"?`supplement/traditional meds: ${val("htnSupplementDetails")||"yes"}`:"no supplement/traditional meds intake");lines.push("");lines.push(`O/E: ${val("htnGeneralExam")}`);const vitalBits=[];if(Number.isFinite(s)&&Number.isFinite(d))vitalBits.push(`BP ${fmt(s)}/${fmt(d)} mmHg`);if(val("htnPulse"))vitalBits.push(`PR ${val("htnPulse")} bpm`);if(vitalBits.length)lines.push(vitalBits.join(", "));const anthro=[];if(val("htnWeight"))anthro.push(`weight ${val("htnWeight")} kg`);if(val("htnHeight"))anthro.push(`height ${val("htnHeight")} cm`);if(val("htnBmi"))anthro.push(`BMI ${val("htnBmi")} kg/m² (${val("htnBmiCat")})`);if(val("htnWaist"))anthro.push(`waist ${val("htnWaist")} cm`);if(anthro.length)lines.push(`Anthropometry: ${anthro.join(", ")}`);lines.push(`lungs ${val("htnLungs")||"clear"}`);lines.push(`CVS ${val("htnCvs")||"DRNM"}`);lines.push(val("htnJvp")==="yes"?"raised JVP":"no raised JVP");lines.push(val("htnOedema")==="yes"?"pedal edema present":"no pedal edema");if(val("htnOtherExam"))lines.push(val("htnOtherExam"));
+const lab=[];[lineGroup("RP",[["Cr","htnRpCreat"],["urea","htnRpUrea"],["K","htnRpK"],["Na","htnRpNa"],["Cl","htnRpCl"]]),lineGroup("LFT",[["TP","htnLftTp"],["TBili","htnLftTbili"],["ALT","htnLftAlt"],["ALP","htnLftAlp"]]),lineGroup("FBC",[["Hb","htnFbcHb"],["Hct","htnFbcHct"],["WC","htnFbcWc"],["Plt","htnFbcPlt"],["MCV","htnFbcMcv"],["MCH","htnFbcMch"]]),val("htnFbs")?`FBS: ${val("htnFbs")} mmol/L`:"",lineGroup("FLP",[["TC","htnFlpTc"],["LDL","htnFlpLdl"],["TG","htnFlpTg"],["HDL","htnFlpHdl"]]),(val("htnUrineAlbumin")||val("htnUrineProtein"))?`Urine microalbumin/protein: ${[val("htnUrineAlbumin"),val("htnUrineProtein")].filter(Boolean).join(", ")}`:"",lineGroup("UFEME",[["protein","htnUfProtein"],["blood","htnUfBlood"],["nitrite","htnUfNitrite"],["glucose","htnUfGlucose"]]),Number.isFinite(e)?`eGFR (CKD-EPI 2021): ${fmt(e)} mL/min/1.73m² (${gCat(e)})`:""].filter(Boolean).forEach(x=>lab.push(x));if(lab.length){const resultDate=val("htnResultDate");lines.push("");lines.push(resultDate?`RESULTS (${formatDate(resultDate)}):`:"RESULTS:",...lab)}lines.push("");lines.push(`FRS: ${$("htnFrsResult").textContent}`);const rr=referrals(Number.isFinite(e)?e:NaN,s,d);if(rr.length){lines.push("", "REFERRAL ALERT:",...rr.map(x=>`- ${x}`))}lines.push("","PLAN:");const plans=[...document.querySelectorAll('#htnPlanItems input:checked')].map(x=>x.value).concat(split(val("htnOtherPlan")));const amount=val("htnTcaAmount");if(amount){const u=val("htnTcaUnit")||"month";plans.push(`TCA in ${amount} ${amount==="1"?u:u+"s"}.`)}else plans.push("TCA.");plans.forEach(x=>lines.push(x));$("htnOutput").value=lines.join("\n").replace(/\n{3,}/g,"\n\n").trim();$("htnOutput").scrollIntoView({behavior:"smooth",block:"start"})}
 async function copy(){if(!val("htnOutput"))generate();try{await navigator.clipboard.writeText(val("htnOutput"));const b=$("htnCopy"),t=b.textContent;b.textContent="Copied";setTimeout(()=>b.textContent=t,1000)}catch(e){$("htnOutput").focus();$("htnOutput").select();document.execCommand("copy")}}
 function reset(){document.querySelectorAll('#page-htn input').forEach(x=>{if(x.type==='checkbox')x.checked=x.defaultChecked;else x.value=x.defaultValue||''});document.querySelectorAll('#page-htn select').forEach(x=>x.selectedIndex=0);document.querySelectorAll('#page-htn textarea').forEach(x=>x.value=x.defaultValue||'');$("htnOutput").value="";update();window.scrollTo({top:0,behavior:"smooth"})}
 $("page-htn").addEventListener("input",update);$("page-htn").addEventListener("change",update);$("htnGenerate").addEventListener("click",generate);$("htnCopy").addEventListener("click",copy);$("htnReset").addEventListener("click",reset);update();
@@ -21682,7 +21825,7 @@ function parseBlood(raw){
   r.alt=numOnly(firstNum(t,["alanine\\s*transaminase","alanine\\s*aminotransferase","\\bALT\\b"]));
   r.alp=numOnly(firstNum(t,["alkaline\\s*phosphatase","\\bALP\\b"]));
 
-  r.hb=numOnly(firstNum(t,["ha?emoglobin","\\bHb\\b"]));
+  r.hb=numOnly(firstNum(t,["ha?emoglobin(?!\\s*A1c)","\\bHb\\b"]));
   r.hct=numOnly(firstNum(t,["ha?ematocrit","\\bHct\\b","\\bPCV\\b"]));
   r.wc=numOnly(firstNum(t,["white\\s*blood\\s*cell(?:\\s*count)?","white\\s*cell(?:\\s*count)?","\\bWBC\\b","\\bWC\\b"]));
   r.plt=numOnly(firstNum(t,["platelet(?:\\s*count)?","\\bPLT\\b"]));
@@ -21728,8 +21871,10 @@ function importAnthro(prefix){
 }
 function importBlood(prefix){
   const raw=byId(prefix+"BloodPaste")?.value||"",r=parseBlood(raw),items=[];
+  for(const id of Object.values(labMap[prefix])){const el=byId(id);if(el&&el.value!==""){el.value="";el.dispatchEvent(new Event("input",{bubbles:true}));el.dispatchEvent(new Event("change",{bubbles:true}));}}
   for(const [k,id] of Object.entries(labMap[prefix])) if(r[k]&&setField(id,r[k])) items.push(labels[k]||k);
   status(prefix+"BloodImportStatus",items,raw.trim()?"No recognised result labels yet. Check the pasted TPC-OHCIS format or enter manually.":(prefix==="dm"?"Recognises HbA1c, RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME.":"Recognises RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME."));
+  window.syncNcdVisibleLabs?.(prefix);
 }
 function debounce(fn,ms=120){let t;return()=>{clearTimeout(t);t=setTimeout(fn,ms);};}
 ["dm","htn"].forEach(prefix=>{
@@ -21800,15 +21945,17 @@ window.MedAssistNcdPaste={parseVitals,parseAnthro,parseBlood,importVitals,import
   gap:8px !important;
   margin-top:10px !important;
 }
-.htn-compliance-field .htn-missed-frequency{
+.htn-compliance-field .htn-missed-frequency,
+.dm-compliance-field .dm-missed-frequency{
   margin-top:8px;
   padding:9px 10px;
   border:1px solid #d7e6e3;
   border-radius:10px;
   background:#f8fbfa;
 }
-.htn-compliance-field .htn-missed-frequency label{margin-bottom:5px;font-size:.86em}
-.htn-missed-frequency input{margin-top:7px}
+.htn-compliance-field .htn-missed-frequency label,
+.dm-compliance-field .dm-missed-frequency label{margin-bottom:5px;font-size:.86em}
+.htn-missed-frequency input,.dm-missed-frequency input{margin-top:7px}
 .htn-active-complaint textarea{min-height:62px}
 @media(max-width:900px){
   .dengue-pa-region-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
@@ -21869,5 +22016,89 @@ window.denguePaFinding=prefix=>{
 })();
 </script>
 
+
+<!-- V18.206 regression audit 2026-08-18: latest V18.205 baseline; duplicate HPT reset removed; Dengue new-case reset made local (no full-page reload); DM missed-dose frequency + NKMI consistency; HbA1c/Hb paste collision fixed; HPT <80 target updated from verified 2026 MOH source. -->
+
+<!-- V18.207 triple audit 2026-08-18: V18.206 regression suite re-run across static DOM/JS, mobile layouts, module navigation, generated-note/reset isolation, Dengue simplified frequency workflow, RME1 foreigner logic, IUCD safety gates, NNJ age/note generation, neurodevelopment outputs and all 12 calculators. Mobile module/calculator navigation now focuses the active workspace instead of jumping users back to the full navigation sidebar. -->
+
+<style id="v18208-user-request-fixes-style">
+/* V18.208 — targeted user-requested UI cleanup; no global redesign. */
+.tb-v208-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.tb-v208-item{min-width:0;border:1px solid #d8e6e3;border-radius:12px;background:#fff;overflow:hidden}
+.tb-v208-item>.check-item{border:0!important;border-radius:0!important;margin:0!important;min-height:46px;padding:10px 12px!important}
+.tb-v208-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:10px 12px;border-top:1px dashed #d8e6e3;background:#f9fcfb}
+.tb-v208-details.hidden{display:none!important}.tb-v208-details label{font-size:11px;color:var(--muted);margin-bottom:4px}
+.tb-v208-duration{display:grid;grid-template-columns:minmax(70px,.8fr) minmax(100px,1fr);gap:6px}.tb-v208-unit-input{display:grid;grid-template-columns:minmax(70px,1fr) auto;gap:7px;align-items:center}.tb-v208-unit-input span{font-size:12px;color:var(--muted)}
+.warning-sign-grid-v208{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;align-items:start!important}
+.warning-sign-grid-v208>div{min-width:0}.warning-v208-card,.warning-sign-grid-v208>.urine-inline-card{padding:12px!important;border:1px solid #d7e6e2!important;border-radius:14px!important;background:#fbfdfc!important;margin:0!important}
+.warning-sign-grid-v208>.urine-inline-card{grid-column:auto!important}
+.warning-v208-card>label:first-child{font-weight:800}.warning-v208-inline{margin-top:9px}.warning-v208-inline label,.warning-v208-sites>label{font-size:11px;color:var(--muted);font-weight:700}
+.warning-v208-unit{display:grid;grid-template-columns:minmax(90px,1fr) auto;gap:7px;align-items:center}.warning-v208-unit span{font-size:11px;color:var(--muted);white-space:nowrap}
+.warning-v208-sites{margin-top:9px;padding-top:9px;border-top:1px dashed #d7e6e2}.warning-v208-site-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:6px}.warning-v208-site-grid .check-item{min-width:0;margin:0!important;padding:7px 8px!important;font-size:11px}
+.warning-sign-grid-v208 .dengue-frequency-shell{margin:0!important;border:0!important;background:transparent!important;padding:0!important}
+.warning-sign-grid-v208 .dengue-frequency-shell .dengue-duration-wrap{margin-top:0!important}
+.dm-cx-grid-v208{align-items:start}.dm-cx-detail-item{min-width:0}.dm-cx-detail-item>.check-item{margin:0!important}.dm-cx-detail{margin-top:6px;width:100%;font-size:12px}.dm-cx-detail.hidden{display:none!important}
+.ncd-lab-block.v208-dynamic-lab.hidden{display:none!important}.ncd-lab-cell-v208.hidden{display:none!important}.ncd-lab-block.v208-dynamic-lab{animation:v208LabIn .14s ease-out}@keyframes v208LabIn{from{opacity:.4;transform:translateY(-3px)}to{opacity:1;transform:none}}
+#htnCombinedPaste{min-height:118px}
+@media(max-width:760px){.tb-v208-grid,.warning-sign-grid-v208{grid-template-columns:1fr!important}.tb-v208-details{grid-template-columns:1fr}.warning-v208-site-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.warning-v208-site-grid{grid-template-columns:1fr}}
+</style>
+<script id="v18208-user-request-fixes-script">
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);const val=id=>($(id)?.value||'').trim();
+
+function syncTbDetails(){
+  document.querySelectorAll('#clTbSymptoms .tb-v208-item[data-tb-check]').forEach(item=>{
+    const cb=$(item.dataset.tbCheck);if(!cb)return;
+    const details=item.querySelector('.tb-v208-details');if(!details)return;
+    const on=cb.checked&&!$('clTbScreening')?.classList.contains('hidden');
+    details.classList.toggle('hidden',!on);
+    details.querySelectorAll('input,select,textarea').forEach(field=>{field.disabled=!on;if(!on&&cb.id!=='clTbContact'){if(field.tagName==='SELECT'){const i=[...field.options].findIndex(o=>o.defaultSelected);field.selectedIndex=i>=0?i:0;}else if(field.type==='checkbox'||field.type==='radio')field.checked=field.defaultChecked;else field.value=field.defaultValue||'';}});
+  });
+}
+document.querySelectorAll('#clTbSymptoms input[type="checkbox"]').forEach(cb=>cb.addEventListener('change',()=>{syncTbDetails();window.syncTbContactDetails?.();}));
+const originalTbSync=window.syncDengueTbScreening;
+if(typeof originalTbSync==='function')window.syncDengueTbScreening=function(){originalTbSync();syncTbDetails();};
+
+function syncAbdominalPainSites(){const yes=val('clAbdPain')==='yes',wrap=$('clAbdPainSitesWrap');wrap?.classList.toggle('hidden',!yes);if(!yes)wrap?.querySelectorAll('input[type="checkbox"]').forEach(x=>x.checked=false);}
+$('clAbdPain')?.addEventListener('change',syncAbdominalPainSites);
+
+const detailMap={dmMacroIhd:'dmMacroIhdDetail',dmMacroCva:'dmMacroCvaDetail',dmMacroPad:'dmMacroPadDetail',dmMacroHf:'dmMacroHfDetail',dmMicroRetina:'dmMicroRetinaDetail',dmMicroDkd:'dmMicroDkdDetail',dmMicroNeuropathy:'dmMicroNeuropathyDetail'};
+function syncDmCxDetails(){for(const [checkId,inputId] of Object.entries(detailMap)){const cb=$(checkId),input=$(inputId);if(!cb||!input)continue;input.classList.toggle('hidden',!cb.checked);input.disabled=!cb.checked;if(!cb.checked)input.value='';}}
+Object.keys(detailMap).forEach(id=>$(id)?.addEventListener('change',syncDmCxDetails));
+
+function hasMeaningfulValue(control){if(!control)return false;if(control.type==='checkbox'||control.type==='radio')return control.checked;return String(control.value||'').trim()!=='';}
+window.syncNcdVisibleLabs=function(prefix){
+  const root=prefix==='dm'?$('dmNcdResultsCard'):$('page-htn');if(!root)return;
+  root.querySelectorAll('.ncd-lab-block').forEach(block=>{
+    const grid=block.querySelector(':scope > .ncd-mini-grid');if(!grid)return;
+    block.classList.add('v208-dynamic-lab');let any=false;
+    [...grid.children].forEach(cell=>{cell.classList.add('ncd-lab-cell-v208');const derivedEgfr=!!cell.querySelector('#dmEgfr,#htnEgfr');const show=!derivedEgfr&&[...cell.querySelectorAll('input,select,textarea')].some(hasMeaningfulValue);cell.classList.toggle('hidden',!show);any=any||show;});
+    block.classList.toggle('hidden',!any);
+  });
+};
+['dm','htn'].forEach(prefix=>{const root=prefix==='dm'?$('dmNcdResultsCard'):$('page-htn');root?.addEventListener('input',()=>window.syncNcdVisibleLabs(prefix));root?.addEventListener('change',()=>window.syncNcdVisibleLabs(prefix));});
+
+function syncHtnCombined(){
+  const box=$('htnCombinedPaste'),raw=box?.value||'';if(!box||!window.MedAssistNcdPaste)return;
+  if($('htnVitalPaste'))$('htnVitalPaste').value=raw;if($('htnAnthroPaste'))$('htnAnthroPaste').value=raw;
+  const v=window.MedAssistNcdPaste.parseVitals(raw),a=window.MedAssistNcdPaste.parseAnthro(raw);
+  window.MedAssistNcdPaste.importVitals('htn');window.MedAssistNcdPaste.importAnthro('htn');
+  const items=[];if(v.sbp&&v.dbp)items.push(`BP ${v.sbp}/${v.dbp}`);if(v.pulse)items.push(`PR ${v.pulse}`);if(a.height)items.push(`height ${a.height}`);if(a.weight)items.push(`weight ${a.weight}`);if(a.waist)items.push(`waist ${a.waist}`);
+  const st=$('htnCombinedImportStatus');if(st){st.className='ncd-import-status'+(items.length?' success':'');st.textContent=items.length?`Detected: ${items.join(', ')}. BMI auto-calculated when height + weight are available.`:(raw.trim()?'No recognised BP / anthropometry values yet.':'Paste BP and anthropometry together; recognised values will auto-fill below and BMI will calculate automatically.');}
+}
+let htnPasteTimer;$('htnCombinedPaste')?.addEventListener('input',()=>{clearTimeout(htnPasteTimer);htnPasteTimer=setTimeout(syncHtnCombined,80)});
+
+function resetV208(){setTimeout(()=>{syncTbDetails();syncAbdominalPainSites();syncDmCxDetails();window.syncNcdVisibleLabs('dm');window.syncNcdVisibleLabs('htn');const st=$('htnCombinedImportStatus');if(st)st.textContent='Paste BP and anthropometry together; recognised values will auto-fill below and BMI will calculate automatically.';},30)}
+['clReset','dmReset','htnReset','clerkingFloatingReset'].forEach(id=>$(id)?.addEventListener('click',resetV208));
+
+syncTbDetails();syncAbdominalPainSites();syncDmCxDetails();window.syncNcdVisibleLabs('dm');window.syncNcdVisibleLabs('htn');
+})();
+</script>
+<!-- V18.208 2026-08-18: TB duration/detail fields; Dengue warning-sign layout + abdominal site + oral intake mL/24h; plan option 4 preset / custom option 5; PCM minute 00/30; DM complication details + G5=>ESRF + compact symptom note; dynamic pasted lab fields; HPT combined BP/anthropometry paste, no Temp/RR/SpO2, removed secondary/resistant fields, FRS corrected to official FHS 2008 General CVD continuous equation with explicit treatment status and no non-FRS clinical-risk substitution; derived eGFR remains in its auto-summary rather than the pasted-result component grid. -->
+
 </body>
+
+<!-- V18.209 2026-08-18: DM/HPT generated PLAN lines are unnumbered; added calendar date picker for blood/urine results and date-aware RESULTS heading in generated notes. -->
 </html>
