@@ -59,6 +59,8 @@ Enhance the existing HPT clerking CKD field.
 
 Do not use the supplied raster calendar image as the webpage itself and do not directly edit that image. Recreate the schedule as a native HTML/CSS/JS calendar so the resulting website page has no `siti.co` watermark and remains editable/interactive.
 
+A native `calendar-2027.html` page has already been added to this branch as a starting point. Preserve/improve it as needed and integrate it into the main MedAssist dashboard/navigation so users can open it naturally from the website.
+
 ### Visual direction
 - Soft watercolor / pastel / garden aesthetic inspired by the supplied design.
 - Header: `CALENDAR 2027` or `Calendar 2027`.
@@ -76,7 +78,7 @@ Do not use the supplied raster calendar image as the webpage itself and do not d
 - May: Public Holiday 17,20; Blocked NCD 13,14,18,19. Notes: 17 Raya Haji; 20 Vesak.
 - June: Public Holiday 7,8; Blocked NCD 9. Notes: 7 Birthday Agong; 8 Awal Muharram.
 - July: no marked dates shown.
-- August: Public Holiday 31; Blocked NCD 16,17. Notes: 16 Maulidurrasul; 31 Merdeka!.
+- August: Public Holiday 16,31; Blocked NCD 17. Notes: 16 Maulidurrasul; 31 Merdeka!.
 - September: Public Holiday 16. Note: 16 Hari Malaysia.
 - October: Public Holiday 28. Note: 28 Deepavali.
 - November: no marked dates shown.
