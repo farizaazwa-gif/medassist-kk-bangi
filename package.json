@@ -1,0 +1,12 @@
+{
+  "name": "medassist-kk-bangi",
+  "version": "18.210.0",
+  "private": true,
+  "description": "Dependency-free regression checks for the MedAssist KK Bangi GitHub Pages site.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

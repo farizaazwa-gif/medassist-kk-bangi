@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en-MY">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MedAssist KK Bangi V18.209 — Plan & Result Date Update</title>
+<meta content="MedAssist KK Bangi: structured clinical clerking, Malaysian primary-care decision support and clinical calculators." name="description"/>
+<meta content="#123f39" name="theme-color"/>
+<meta content="MedAssist KK Bangi — Clinical Clerking &amp; Calculators" property="og:title"/>
+<meta content="Structured clinical clerking and primary-care calculators for point-of-care decision support." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://farizaazwa-gif.github.io/medassist-kk-bangi/" property="og:url"/>
+<link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
+<title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
+<script src="assets/clinical-safety.js"></script>
+<script defer src="assets/accessibility-hardening.js"></script>
 <style>
 :root{
   --bg:#f4f7f6;--card:#fff;--text:#18302d;--muted:#6d7c78;
@@ -13,6 +22,10 @@
 }
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+:where(a,button,input,select,textarea,[tabindex]):focus-visible{
+  outline:3px solid #0e7d6c;
+  outline-offset:2px
+}
 .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
 .sidebar{background:#123f39;color:#fff;padding:24px 18px;position:sticky;top:0;height:100vh;z-index:1000;overflow:visible;isolation:isolate}
 .brand{font-size:23px;font-weight:800;margin-bottom:4px}
@@ -995,6 +1008,28 @@ textarea{min-height:90px;resize:vertical}
   text-align:center;
   font-size:12px
 }
+.unified-draft-privacy{
+  margin-top:10px;
+  padding:10px;
+  border:1px solid #e8d7a8;
+  border-radius:10px;
+  background:#fff9e9;
+  color:#67562a;
+  font-size:11px;
+  line-height:1.45
+}
+.unified-draft-clear-all{
+  width:100%;
+  margin-top:8px;
+  border:1px solid #e5aaa5;
+  border-radius:9px;
+  padding:8px 10px;
+  background:#fff1ef;
+  color:#9d302a;
+  font-weight:800;
+  cursor:pointer
+}
+.unified-draft-clear-all:hover{background:#fde4e1}
 .unified-draft-mobile-toggle{display:none}
 @media(min-width:1000px){
   .main{padding-right:306px}
@@ -3358,9 +3393,26 @@ html,body{max-width:100%;overflow-x:hidden}
 
   const runtimeState = { adhd: defaultState(), autism: defaultState() };
 
+  function readEnhancementState(prefix) {
+    const key = ENHANCEMENT_KEY(prefix);
+    try {
+      let raw = window.sessionStorage.getItem(key);
+      if (!raw) {
+        raw = window.localStorage.getItem(key);
+        if (raw) {
+          window.sessionStorage.setItem(key, raw);
+          window.localStorage.removeItem(key);
+        }
+      }
+      return raw;
+    } catch (_) {
+      return null;
+    }
+  }
+
   function loadState(prefix) {
     try {
-      const raw = window.localStorage.getItem(ENHANCEMENT_KEY(prefix));
+      const raw = readEnhancementState(prefix);
       const saved = raw ? JSON.parse(raw) : null;
       runtimeState[prefix] = saved && typeof saved === 'object'
         ? { ...defaultState(), ...saved }
@@ -3375,11 +3427,28 @@ html,body{max-width:100%;overflow-x:hidden}
     try {
       const key = ENHANCEMENT_KEY(prefix);
       const serialized = JSON.stringify(runtimeState[prefix]);
-      window.localStorage.setItem(key, serialized);
-      return window.localStorage.getItem(key) === serialized;
+      window.sessionStorage.setItem(key, serialized);
+      window.localStorage.removeItem(key);
+      return window.sessionStorage.getItem(key) === serialized;
     } catch (_) {
       return false;
     }
+  }
+
+  function clearLocalNeuroData(prefix = '') {
+    const prefixes = ['adhd', 'autism'].includes(prefix)
+      ? [prefix]
+      : ['adhd', 'autism'];
+    let cleared = true;
+
+    prefixes.forEach(item => {
+      runtimeState[item] = defaultState();
+      const key = ENHANCEMENT_KEY(item);
+      try { window.sessionStorage.removeItem(key); } catch (_) { cleared = false; }
+      try { window.localStorage.removeItem(key); } catch (_) { cleared = false; }
+    });
+
+    return cleared;
   }
 
   function dispatchFieldChange(field) {
@@ -9101,9 +9170,9 @@ html,body{max-width:100%;overflow-x:hidden}
 </div><div class="calc-panel" id="calc-stopbang">
 <button class="btn secondary calc-back" type="button">← Back</button>
 <div class="card"><h2>STOP-BANG</h2><div class="check-grid" id="sbInputs">
-<label class="check-item"><input type="checkbox"/>Snoring loudly</label><label class="check-item"><input type="checkbox"/>Tired / sleepy daytime</label><label class="check-item"><input type="checkbox"/>Observed apnoea</label><label class="check-item"><input type="checkbox"/>High blood pressure</label>
-<label class="check-item"><input type="checkbox"/>BMI &gt;35 kg/m²</label><label class="check-item"><input type="checkbox"/>Age &gt;50 years</label><label class="check-item"><input type="checkbox"/>Neck circumference &gt;40 cm</label><label class="check-item"><input type="checkbox"/>Male</label>
-</div><div class="actions"><button class="btn primary" id="sbCalc" type="button">Calculate</button></div><div class="result-box" id="sbResult">Select applicable items.</div></div>
+<label class="check-item"><input data-stopbang="snoring" type="checkbox"/>Snoring loudly</label><label class="check-item"><input data-stopbang="tired" type="checkbox"/>Tired / sleepy daytime</label><label class="check-item"><input data-stopbang="observedApnoea" type="checkbox"/>Observed apnoea</label><label class="check-item"><input data-stopbang="highBloodPressure" type="checkbox"/>High blood pressure</label>
+<label class="check-item"><input data-stopbang="bmiOver35" type="checkbox"/>BMI &gt;35 kg/m²</label><label class="check-item"><input data-stopbang="ageOver50" type="checkbox"/>Age &gt;50 years</label><label class="check-item"><input data-stopbang="neckOver40" type="checkbox"/>Neck circumference &gt;40 cm</label><label class="check-item"><input data-stopbang="male" type="checkbox"/>Male</label>
+</div><div class="actions"><button class="btn primary" id="sbCalc" type="button">Calculate</button></div><div aria-live="polite" class="result-box" id="sbResult" role="status">Select applicable items.</div><div class="helper">High risk: score 5–8, or at least two positive STOP questions together with male sex, BMI &gt;35 kg/m² or neck circumference &gt;40 cm.</div><a class="ref" href="https://www.stopbang.ca/osa/screening.php" rel="noopener noreferrer" target="_blank">Official STOP-Bang risk stratification</a></div>
 </div>
 <div class="calc-panel" id="calc-pregnancy">
 <button class="btn secondary calc-back" type="button">← Back</button>
@@ -14978,7 +15047,29 @@ document.querySelectorAll("#gdmRiskFactors input").forEach(input=>{
 });
 
 // STOP-BANG
-$("sbCalc").addEventListener("click",()=>{const s=$("sbInputs").querySelectorAll("input:checked").length;$("sbResult").innerHTML=`STOP-BANG: <strong>${s}/8</strong> — ${s<=2?"low":s<=4?"intermediate":"high"} risk of obstructive sleep apnoea.`;});
+$("sbCalc").addEventListener("click",()=>{
+  const classifier=window.MedAssistClinicalSafety?.classifyStopBang;
+  if(typeof classifier!=="function"){
+    $("sbResult").textContent="STOP-BANG calculator safety module could not be loaded. Please refresh before use.";
+    return;
+  }
+
+  const answers=Object.fromEntries(
+    [...$("sbInputs").querySelectorAll("input[data-stopbang]")]
+      .map(input=>[input.dataset.stopbang,input.checked])
+  );
+  const assessment=classifier(answers);
+  const combinationLabels={
+    bmiOver35:"BMI >35 kg/m²",
+    neckOver40:"neck circumference >40 cm",
+    male:"male sex"
+  };
+  const explanation=assessment.highByCombination
+    ? ` High-risk combination detected: ${assessment.stopCount} positive STOP questions plus ${assessment.combinationFactors.map(key=>combinationLabels[key]).join(" / ")}.`
+    : "";
+
+  $("sbResult").innerHTML=`STOP-BANG: <strong>${assessment.score}/8</strong> — <strong>${assessment.risk}</strong> risk of obstructive sleep apnoea.${explanation}`;
+});
 
 // Pregnancy
 const pregnancyDates=window.MedAssistDateOnly;
@@ -16285,6 +16376,7 @@ renderDengueFollowUpPlan();
     autosave: `medassist_neuro_${prefix}_autosave_v1882`,
     drafts: `medassist_neuro_${prefix}_drafts_v1882`
   });
+  const neuroIdentifierIds = new Set(["adhdName", "autismName"]);
 
 
   const DEVELOPMENTAL_MILESTONES_5E = [{"key":"6w","label":"6 weeks","months":1.5,"domains":{"gross":["Pull-to-sit shows head lag with rounded back","Head briefly aligns with body in ventral suspension","In prone, chin lifts intermittently and head turns to one side"],"fine":["Fixates on an object","Tracks from side to midline"],"speech":["Quietens to sound by about 4 weeks","Vocalises when spoken to by about 8 weeks"],"social":["Social smile"]}},{"key":"3m","label":"3 months","months":3,"domains":{"gross":["Only slight head lag on pull-to-sit","Head held above body plane in ventral suspension","Prone: lifts head 45-90 degrees on forearms"],"fine":["Regards own hands","Tracks a toy through 180 degrees","Hands are loosely open","Briefly holds a rattle placed in hand"],"speech":["Squeals with pleasure","Coos when spoken to","Turns head toward sound at the same level"],"social":["Sustains social contact","Responds positively to friendly handling"]}},{"key":"6m","label":"6 months","months":6,"domains":{"gross":["Lifts head during pull-to-sit","Sits with support","Bears full weight when held standing","Prone: supports on hands with upper trunk lifted","Rolls from prone to supine"],"fine":["Uses palmar grasp for a cube","Drops one cube when another is offered","Visually follows activity across the room"],"speech":["Vocalises tunefully","Laughs, chuckles or squeals in play","Uses a distinct cry/scream for annoyance","Turns to the source of sound at ear level"],"social":["Mouths objects","Begins smooth semi-solids","Enjoys active social play","Transfers objects between hands"]}},{"key":"9m","label":"9 months","months":9,"domains":{"gross":["Sits without support","Leans to pick up a toy without losing balance","Moves across floor by rolling, wriggling or crawling","Pulls to stand at support"],"fine":["Uses inferior pincer grasp","Releases an object deliberately","Looks for a dropped object","Uses simple cause-and-effect toys"],"speech":["Babbles repetitive syllables","Responds to own name","Understands 'no' and 'bye-bye'","Imitates playful sounds"],"social":["Bites and chews finger food","Explores and bangs a rattle","Enjoys peek-a-boo and imitates clapping","Finds a partly hidden toy"]}},{"key":"12m","label":"12 months","months":12,"domains":{"gross":["Crawls, shuffles or bear-walks","Cruises while holding furniture","Stands alone briefly","Walks with one hand held"],"fine":["Uses neat pincer grasp","Points with index finger","Bangs two cubes together"],"speech":["Knows and responds to name","Babbles with varied vowels and consonants","Uses 2-3 meaningful words","Imitates playful vocalisations","Understands simple instructions"],"social":["Follows another person's gaze","Points and checks the adult's response","Drinks from cup with help","Helps with dressing","Waves and joins simple action games","Alternates attention between adult and object","Finds a fully hidden toy"]}},{"key":"15m","label":"15 months","months":15,"domains":{"gross":["Walks independently","Creeps up stairs"],"fine":["Builds a tower of 2 cubes","Makes to-and-fro scribbles with palmar grasp"],"speech":["Uses 2-6 recognisable words","Understands and follows simple instructions","Points to familiar people or toys when asked"],"social":["Holds and drinks from a cup","Attempts to use a spoon","Uses objects functionally in play","Drops objects and watches where they fall"]}},{"key":"18m","label":"18 months","months":18,"domains":{"gross":["Walks well and starts/stops safely","Runs with a still-maturing gait","Uses stairs with help","Squats to pick up a toy"],"fine":["Builds a tower of 3 cubes","Scribbles spontaneously","Looks at picture books and turns several pages","Begins showing hand preference"],"speech":["Uses about 6-20 recognisable words","Echoes a prominent or final word","Follows simple instructions","Points to 2-3 body parts"],"social":["Feeds self with a spoon","Drinks from a cup with little spilling","Helps with dressing and undressing","Imitates everyday activities","Plays alone contentedly near a familiar adult"]}},{"key":"2y","label":"2 years","months":24,"domains":{"gross":["Runs safely around obstacles","Uses stairs holding a rail, two feet per step"],"fine":["Builds a tower of 6-7 cubes","Makes circular scribbles","Turns book pages one at a time","Matches simple square, circle and triangle shapes"],"speech":["Uses at least about 50 words","Uses 2-3 word phrases","Names familiar objects or pictures","Follows two related simple commands"],"social":["Feeds self competently with a spoon","Drinks from and replaces a cup without spilling","Puts on shoes","Engages in pretend play","Shows parallel play"]}},{"key":"2_5y","label":"2.5 years","months":30,"domains":{"gross":["Jumps with both feet from a low step","Stands on tiptoe after demonstration","Kicks a large ball gently"],"fine":["Builds a tower of 7 or more cubes","Imitates horizontal and vertical lines"],"speech":["Uses about 200 or more words","States full name","Identifies pictures showing actions","Frequently asks 'what' or 'who'","Uses I/me/you correctly"],"social":["Uses a spoon skilfully","Sustains role play such as putting a doll to bed","May tantrum when frustrated and is less easily distracted"]}},{"key":"3y","label":"3 years","months":36,"domains":{"gross":["Walks upstairs one foot per step and downstairs two feet per step","Stands briefly on one foot","Pedals a tricycle","Throws overarm and catches a large ball","Kicks a ball forcefully"],"fine":["Builds a tower of 9-10 cubes","Builds a three-block bridge from a model","Threads large beads","Copies a circle and imitates a cross","Draws a person with head and additional features","Matches 2-3 primary colours","Uses toy scissors"],"speech":["States full name and gender, sometimes age","Uses pronouns and most prepositions correctly","Asks what/where/who questions","Identifies objects by their function","Counts by rote to about 10"],"social":["Uses fork and spoon","Washes hands with some supervision","Pulls pants down and up","May be dry at night","Joins pretend play with other children","Understands sharing"]}},{"key":"4y","label":"4 years","months":48,"domains":{"gross":["Uses stairs one foot per step","Walks or runs on tiptoe","Stands on one foot for 3-5 seconds","Hops on preferred foot"],"fine":["Builds a tower of 10 or more cubes","Builds three steps with 6 cubes after demonstration","Uses a dynamic tripod pencil grasp","Copies a cross","Draws a person with head, trunk and limbs","Names 4 primary colours"],"speech":["Speech is grammatically correct and fully intelligible","States full name, address and age","Listens to and tells longer stories","Counts by rote to about 20","Asks why/when/how questions","Knows several nursery rhymes"],"social":["Uses spoon and fork skilfully","Washes and dries hands","Brushes teeth","Dresses except for complex fastenings","Uses imaginative role play","Takes turns and shares"]}},{"key":"5y","label":"5 years","months":60,"domains":{"gross":["Walks along a narrow line","Skips on alternate feet","Stands on one foot for 8-10 seconds with arms folded","Hops forward on each foot","Touches toes without bending knees","Throws and catches a ball well"],"fine":["Copies a square; triangle emerges by about 5.5 years","Writes some letters spontaneously","Draws a detailed person","Draws a recognisable house","Cuts a paper strip neatly","Colours within outlines"],"speech":["States full name, age, birthday and home address","Defines familiar nouns by their use","Understands sequence terms such as first, then and last"],"social":["Washes and dries face and hands","Dresses independently","Creates imaginative scenes with small toys","Chooses friends","Cooperates with peers and understands rules/fair play"]}}];
@@ -16694,7 +16786,14 @@ renderDengueFollowUpPlan();
 
   function safeJsonRead(key, fallback) {
     try {
-      const raw = localStorage.getItem(key);
+      let raw = sessionStorage.getItem(key);
+      if (!raw) {
+        raw = localStorage.getItem(key);
+        if (raw) {
+          sessionStorage.setItem(key, raw);
+          localStorage.removeItem(key);
+        }
+      }
       return raw ? JSON.parse(raw) : fallback;
     } catch (_) {
       return fallback;
@@ -16704,8 +16803,9 @@ renderDengueFollowUpPlan();
   function safeJsonWrite(key, value) {
     try {
       const serialized = JSON.stringify(value);
-      localStorage.setItem(key, serialized);
-      return localStorage.getItem(key) === serialized;
+      sessionStorage.setItem(key, serialized);
+      localStorage.removeItem(key);
+      return sessionStorage.getItem(key) === serialized;
     } catch (_) {
       return false;
     }
@@ -17616,7 +17716,7 @@ renderDengueFollowUpPlan();
     const template = neuroEl(`${prefix}Template`);
     const fields = {};
     template?.querySelectorAll("input[id],select[id],textarea[id]").forEach(field => {
-      if (field.readOnly || /(?:Output|DraftName|DraftSelect)$/.test(field.id)) return;
+      if (field.readOnly || neuroIdentifierIds.has(field.id) || /(?:Output|DraftName|DraftSelect)$/.test(field.id)) return;
       fields[field.id] = field.type === "checkbox" ? field.checked : field.value;
     });
     const checks = [];
@@ -17649,6 +17749,7 @@ renderDengueFollowUpPlan();
     if (!data || typeof data !== "object") return false;
     setMode(prefix, data.mode === "followup" ? "followup" : "initial", { quiet: true });
     Object.entries(data.fields || {}).forEach(([id, value]) => {
+      if (neuroIdentifierIds.has(id)) return;
       const field = neuroEl(id);
       if (!field) return;
       if (field.type === "checkbox") field.checked = Boolean(value);
@@ -17679,7 +17780,7 @@ renderDengueFollowUpPlan();
   function autosave(prefix) {
     const ok = safeJsonWrite(storageKeys(prefix).autosave, serializeTemplate(prefix));
     const status = neuroEl(`${prefix}AutosaveStatus`);
-    if (status) status.textContent = ok ? `Autosaved locally at ${timeStampText()}.` : "Autosave unavailable in this browser context.";
+    if (status) status.textContent = ok ? `Autosaved for this browser tab at ${timeStampText()}.` : "Autosave unavailable in this browser context.";
   }
 
   const autoSavers = {
@@ -17735,7 +17836,7 @@ renderDengueFollowUpPlan();
     refreshDraftSelect(prefix, id);
     if (nameField) nameField.value = name;
     const status = neuroEl(`${prefix}AutosaveStatus`);
-    if (status) status.textContent = `Draft “${name}” saved locally.`;
+    if (status) status.textContent = `Draft “${name}” saved for this browser tab.`;
   }
 
   function loadDraft(prefix) {
@@ -18827,7 +18928,14 @@ document.addEventListener("keydown",event=>{
   "use strict";
 
   const STORAGE_KEY = "medassistUnifiedClerkingDraftsV2";
+  const LEGACY_STORAGE_KEY = "medassistUnifiedClerkingDraftsV1";
   const MAX_DRAFTS = 60;
+  const DRAFT_TTL_MS = 24 * 60 * 60 * 1000;
+  const SENSITIVE_DRAFT_IDS = new Set([
+    "clAddress", "clPhone", "dfuAddress", "dfuPhone",
+    "nnjName", "nnjId", "adhdName", "autismName",
+    "iucdName", "iucdId"
+  ]);
 
   const CONFIGS = {
     "dengue-new": {
@@ -18902,30 +19010,62 @@ document.addEventListener("keydown",event=>{
   let currentDraftId = null;
   let popoverOpen = false;
 
+  function isSensitiveDraftId(id) {
+    const value = String(id || "");
+    return SENSITIVE_DRAFT_IDS.has(value) ||
+      /(?:patientName|patientId|nric|passport|phone|mobile|address|email|mrn)$/i.test(value);
+  }
+
+  function isSensitiveDraftField(field) {
+    return Boolean(
+      field && (
+        isSensitiveDraftId(field.id) ||
+        field.autocomplete === "name" ||
+        ["email", "tel"].includes(field.type)
+      )
+    );
+  }
+
+  function containsBlockedIdentifier(value) {
+    const text = String(value || "").trim();
+    return /\b\d{6}-?\d{2}-?\d{4}\b/.test(text) ||
+      /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i.test(text);
+  }
+
+  function normaliseDraft(raw, now) {
+    if (!raw || !raw.id || !raw.type || !CONFIGS[raw.type]) return null;
+    const expiresAt = Number(raw.expiresAt) > 0
+      ? Number(raw.expiresAt)
+      : now + DRAFT_TTL_MS;
+    if (expiresAt <= now) return null;
+
+    return {
+      ...raw,
+      name: String(raw.name || "Untitled draft").slice(0, 60),
+      fields: Array.isArray(raw.fields)
+        ? raw.fields.filter(field => !isSensitiveDraftId(field?.id))
+        : [],
+      expiresAt
+    };
+  }
+
   function loadDrafts() {
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      if (Array.isArray(parsed) && parsed.length) return parsed;
+      const current = Array.isArray(parsed) ? parsed : [];
+      const legacy = current.length
+        ? []
+        : JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY) || "[]");
+      const source = current.length || !Array.isArray(legacy) ? current : legacy;
+      const now = Date.now();
+      const drafts = source.map(item => normaliseDraft(item, now)).filter(Boolean);
+      const normalised = JSON.stringify(drafts);
 
-      const migrated = [];
-
-      const legacyUnified = JSON.parse(
-        localStorage.getItem("medassistUnifiedClerkingDraftsV1") || "[]"
-      );
-      if (Array.isArray(legacyUnified)) {
-        legacyUnified.forEach(item => {
-          if (item && item.id && item.type && Array.isArray(item.fields)) {
-            migrated.push(item);
-          }
-        });
+      if (localStorage.getItem(STORAGE_KEY) !== normalised) {
+        localStorage.setItem(STORAGE_KEY, normalised);
       }
-
-      if (migrated.length) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-        return migrated;
-      }
-
-      return Array.isArray(parsed) ? parsed : [];
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+      return drafts;
     } catch (_) {
       return [];
     }
@@ -18933,7 +19073,13 @@ document.addEventListener("keydown",event=>{
 
   function saveDrafts(drafts) {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+      const now = Date.now();
+      const safeDrafts = (Array.isArray(drafts) ? drafts : [])
+        .map(item => normaliseDraft(item, now))
+        .filter(Boolean)
+        .slice(0, MAX_DRAFTS);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(safeDrafts));
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
       return true;
     } catch (_) {
       alert("Draft could not be saved in this browser.");
@@ -18967,7 +19113,7 @@ document.addEventListener("keydown",event=>{
     return config ? document.getElementById(config.containerId) : null;
   }
 
-  function eligibleFields(container) {
+  function allDraftFields(container) {
     if (!container) return [];
 
     return [...container.querySelectorAll("input, select, textarea")].filter(field => {
@@ -18978,22 +19124,30 @@ document.addEventListener("keydown",event=>{
     });
   }
 
+  function eligibleFields(container) {
+    return allDraftFields(container).filter(field => !isSensitiveDraftField(field));
+  }
+
   function captureFields(type) {
     const container = containerFor(type);
-    return eligibleFields(container).map((field, index) => ({
-      index,
-      id: field.id || "",
-      type: field.type || "",
-      value: field.value,
-      checked: Boolean(field.checked)
-    }));
+    return allDraftFields(container).flatMap((field, index) =>
+      isSensitiveDraftField(field)
+        ? []
+        : [{
+            index,
+            id: field.id || "",
+            type: field.type || "",
+            value: field.value,
+            checked: Boolean(field.checked)
+          }]
+    );
   }
 
   function resetContainer(type) {
     const container = containerFor(type);
     if (!container) return;
 
-    eligibleFields(container).forEach(field => {
+    allDraftFields(container).forEach(field => {
       if (field.type === "checkbox" || field.type === "radio") {
         field.checked = field.defaultChecked;
       } else if (field.tagName === "SELECT") {
@@ -19013,16 +19167,17 @@ document.addEventListener("keydown",event=>{
     const container = containerFor(type);
     if (!container) return;
 
-    const fields = eligibleFields(container);
+    const fields = allDraftFields(container);
 
     savedFields.forEach(saved => {
+      if (isSensitiveDraftId(saved?.id)) return;
       let field = saved.id ? document.getElementById(saved.id) : null;
 
       if (!field || !container.contains(field)) {
         field = fields[saved.index] || null;
       }
 
-      if (!field) return;
+      if (!field || isSensitiveDraftField(field)) return;
 
       if (field.type === "checkbox" || field.type === "radio") {
         field.checked = Boolean(saved.checked);
@@ -19071,23 +19226,35 @@ document.addEventListener("keydown",event=>{
     }
   }
 
+  function expiryText(timestamp) {
+    const remaining = Number(timestamp) - Date.now();
+    if (remaining <= 0) return "expired";
+    const hours = Math.max(1, Math.ceil(remaining / (60 * 60 * 1000)));
+    return `expires in ${hours} h`;
+  }
+
   function makeUi() {
     const saveButton = document.createElement("button");
     saveButton.id = "unifiedDraftSaveButton";
     saveButton.className = "unified-draft-save";
     saveButton.type = "button";
+    saveButton.setAttribute("aria-haspopup", "dialog");
+    saveButton.setAttribute("aria-controls", "unifiedDraftPopover");
     saveButton.innerHTML = `💾 Save as draft <small id="unifiedDraftCountOnButton">0</small>`;
 
     const popover = document.createElement("div");
     popover.id = "unifiedDraftPopover";
     popover.className = "unified-draft-popover hidden";
+    popover.setAttribute("role", "dialog");
+    popover.setAttribute("aria-modal", "false");
+    popover.setAttribute("aria-labelledby", "unifiedDraftPopoverTitle");
     popover.innerHTML = `
-      <h3>Save clerking as draft</h3>
+      <h3 id="unifiedDraftPopoverTitle">Save clerking as draft</h3>
       <div class="helper" id="unifiedDraftTypeText"></div>
-      <label>Patient name / initials / queue number</label>
-      <input id="unifiedDraftName" maxlength="60" autocomplete="off"
-             placeholder="e.g. Ahmad / AB / Q105">
-      <div class="helper">Avoid entering the IC number.</div>
+      <label for="unifiedDraftName">Draft label — initials / queue number only</label>
+      <input id="unifiedDraftName" maxlength="30" autocomplete="off"
+             placeholder="e.g. AB / Q105">
+      <div class="helper">Do not enter a full name, IC, phone number or email. Patient identifiers are not stored in the draft fields.</div>
       <div class="actions">
         <button class="btn primary" id="unifiedDraftConfirm" type="button">Save draft</button>
         <button class="btn secondary" id="unifiedDraftCancel" type="button">Cancel</button>
@@ -19103,18 +19270,21 @@ document.addEventListener("keydown",event=>{
           <h2>Saved patient drafts</h2>
           <span class="draft-sidebar-count" id="unifiedDraftCount">0</span>
         </div>
-        <div class="helper">Click a patient name to reopen the saved clerking.</div>
+        <div class="helper">Click a draft label to reopen the saved clerking.</div>
       </div>
       <div class="unified-draft-list" id="unifiedDraftList"></div>
-      <div class="helper" id="unifiedDraftStorageNote" style="margin-top:10px">
-        Drafts are stored in this browser.
+      <div class="unified-draft-privacy" id="unifiedDraftStorageNote">
+        <strong>Device-only temporary storage.</strong> Drafts expire 24 hours after the last save. Use initials / queue number only and do not treat this as the official patient record.
       </div>
+      <button class="unified-draft-clear-all" id="unifiedDraftClearAll" type="button">Delete all drafts on this device</button>
     `;
 
     const mobileToggle = document.createElement("button");
     mobileToggle.id = "unifiedDraftMobileToggle";
     mobileToggle.className = "unified-draft-mobile-toggle";
     mobileToggle.type = "button";
+    mobileToggle.setAttribute("aria-controls", "unifiedDraftSidebar");
+    mobileToggle.setAttribute("aria-expanded", "false");
     mobileToggle.innerHTML = `Drafts <span class="draft-sidebar-count" id="unifiedDraftMobileCount">0</span>`;
 
     document.body.append(sidebar, popover, saveButton, mobileToggle);
@@ -19122,8 +19292,10 @@ document.addEventListener("keydown",event=>{
     saveButton.addEventListener("click", openSavePopover);
     document.getElementById("unifiedDraftCancel").addEventListener("click", closeSavePopover);
     document.getElementById("unifiedDraftConfirm").addEventListener("click", saveCurrent);
+    document.getElementById("unifiedDraftClearAll").addEventListener("click", clearAllDrafts);
     mobileToggle.addEventListener("click", () => {
       sidebar.classList.toggle("mobile-open");
+      mobileToggle.setAttribute("aria-expanded", String(sidebar.classList.contains("mobile-open")));
     });
 
     document.addEventListener("click", event => {
@@ -19177,7 +19349,11 @@ document.addEventListener("keydown",event=>{
 
     const name = document.getElementById("unifiedDraftName").value.trim();
     if (!name) {
-      alert("Enter patient name, initials or queue number.");
+      alert("Enter initials or a queue number for the draft label.");
+      return;
+    }
+    if (containsBlockedIdentifier(name)) {
+      alert("Do not use an IC number or email address as the draft label. Use initials or a queue number only.");
       return;
     }
 
@@ -19192,6 +19368,7 @@ document.addEventListener("keydown",event=>{
       draft.name = name;
       draft.fields = captureFields(type);
       draft.updatedAt = now;
+      draft.expiresAt = now + DRAFT_TTL_MS;
     } else {
       if (drafts.length >= MAX_DRAFTS) {
         alert(`Maximum ${MAX_DRAFTS} drafts reached.`);
@@ -19204,7 +19381,8 @@ document.addEventListener("keydown",event=>{
         type,
         fields: captureFields(type),
         createdAt: now,
-        updatedAt: now
+        updatedAt: now,
+        expiresAt: now + DRAFT_TTL_MS
       };
 
       drafts.push(draft);
@@ -19251,6 +19429,24 @@ document.addEventListener("keydown",event=>{
     updateVisibility();
   }
 
+  function clearAllDrafts() {
+    const drafts = loadDrafts();
+    if (!drafts.length) return;
+    if (!window.confirm(`Delete all ${drafts.length} saved draft(s) from this device? This cannot be undone.`)) return;
+
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+    } catch (_) {
+      alert("Drafts could not be cleared in this browser.");
+      return;
+    }
+
+    currentDraftId = null;
+    renderList();
+    updateVisibility();
+  }
+
   function renderList() {
     const drafts = loadDrafts().sort((a, b) => b.updatedAt - a.updatedAt);
     const list = document.getElementById("unifiedDraftList");
@@ -19279,7 +19475,7 @@ document.addEventListener("keydown",event=>{
       name.textContent = draft.name || "Untitled draft";
 
       const meta = document.createElement("small");
-      meta.textContent = `Updated ${formatTime(draft.updatedAt)}`;
+      meta.textContent = `Updated ${formatTime(draft.updatedAt)} · ${expiryText(draft.expiresAt)}`;
 
       const type = document.createElement("span");
       type.className = "unified-draft-type";
@@ -22356,4 +22552,5 @@ textarea.medassist-output-stale{border-color:#d6a65f!important;background:#fffaf
 </body>
 
 <!-- V18.209 2026-08-18: DM/HPT generated PLAN lines are unnumbered; added calendar date picker for blood/urine results and date-aware RESULTS heading in generated notes. -->
+<!-- V18.210 2026-08-20: audit hardening — official STOP-Bang combination pathways; neuro init fix; temporary privacy-safe drafts; accessibility labels/live regions/focus; production metadata; dependency-free regression CI. -->
 </html>
