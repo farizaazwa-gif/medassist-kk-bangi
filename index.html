@@ -3266,38 +3266,6 @@ html,body{max-width:100%;overflow-x:hidden}
   'use strict';
 
   const VERSION = '2026.08.09-neuro-v5-no-parent-form';
-  const ENHANCEMENT_KEY = prefix => `medassist_neuro_enhancement_${prefix}_v3`;
-  const isBlockedNeuroStorageKey = key => {
-    const textKey = String(key || '');
-    return textKey.startsWith('medassist_neuro_enhancement_') || textKey.includes('_autosave_');
-  };
-
-  let localStorageRef = null;
-  try { localStorageRef = window.localStorage; } catch (_) { }
-
-  const originalStorageSetItem = Storage.prototype.setItem;
-  Storage.prototype.setItem = function patchedSetItem(key, value) {
-    const textKey = String(key || '');
-    if (localStorageRef && this === localStorageRef && isBlockedNeuroStorageKey(textKey)) return;
-    return originalStorageSetItem.call(this, key, value);
-  };
-
-  function clearLocalNeuroData() {
-    try {
-      const storage = window.localStorage;
-      const keys = [];
-      for (let index = 0; index < storage.length; index += 1) {
-        const key = storage.key(index);
-        if (key && isBlockedNeuroStorageKey(key)) keys.push(key);
-      }
-      keys.forEach(key => storage.removeItem(key));
-    } catch (_) {
-      // Some embedded/private browser contexts disable storage completely.
-    }
-  }
-
-  clearLocalNeuroData();
-
   const $ = id => document.getElementById(id);
   const qs = (selector, root = document) => root.querySelector(selector);
   const qsa = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -9065,6 +9033,34 @@ function runWhenIdle(fn){
     window.setTimeout(fn,0);
   }
 }
+
+// Calendar-date arithmetic is deliberately UTC-based. Date-only clinical values
+// must not move a day when the browser or host uses a different time zone.
+window.MedAssistPregnancyDates=window.MedAssistPregnancyDates||(()=>{
+  const DAY_MS=86400000;
+  const parse=raw=>{
+    const match=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(raw||""));
+    if(!match)return null;
+    const year=Number(match[1]),month=Number(match[2]),day=Number(match[3]);
+    const ms=Date.UTC(year,month-1,day),date=new Date(ms);
+    return date.getUTCFullYear()===year&&date.getUTCMonth()===month-1&&date.getUTCDate()===day?ms:null;
+  };
+  const iso=ms=>new Date(ms).toISOString().slice(0,10);
+  const calculate=(lmpRaw,assessmentRaw)=>{
+    const lmp=parse(lmpRaw),assessment=parse(assessmentRaw);
+    if(lmp===null)return{ok:false,error:"Enter a valid LMP date."};
+    if(assessment===null)return{ok:false,error:"Enter a valid assessment date."};
+    const totalDays=Math.round((assessment-lmp)/DAY_MS);
+    if(totalDays<0)return{ok:false,error:"Assessment date cannot be before LMP / LNMP."};
+    return{ok:true,edd:iso(lmp+280*DAY_MS),totalDays,weeks:Math.floor(totalDays/7),days:totalDays%7};
+  };
+  const todayMalaysia=()=>{
+    const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Kuala_Lumpur",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+    const get=type=>parts.find(part=>part.type===type)?.value;
+    return `${get("year")}-${get("month")}-${get("day")}`;
+  };
+  return{parse,calculate,todayMalaysia};
+})();
 function getCheckedValues(containerId){
   const node=$(containerId);
   return node ? [...node.querySelectorAll('input[type="checkbox"]:checked')].map(input=>input.value) : [];
@@ -14885,7 +14881,7 @@ document.querySelectorAll("#gdmRiskFactors input").forEach(input=>{
 $("sbCalc").addEventListener("click",()=>{const s=$("sbInputs").querySelectorAll("input:checked").length;$("sbResult").innerHTML=`STOP-BANG: <strong>${s}/8</strong> — ${s<=2?"low":s<=4?"intermediate":"high"} risk of obstructive sleep apnoea.`;});
 
 // Pregnancy
-$("obCalculate").addEventListener("click",()=>{const lmp=new Date(value("obLmp")+"T00:00:00"),ass=value("obAssess")?new Date(value("obAssess")+"T00:00:00"):new Date();if(Number.isNaN(lmp.getTime())){$("obResult").textContent="Enter LMP.";return}const edd=new Date(lmp);edd.setDate(edd.getDate()+280);const days=Math.floor((ass-lmp)/86400000);$("obResult").innerHTML=`EDD: <strong>${edd.toLocaleDateString("en-GB")}</strong><br>Gestational age: <strong>${Math.floor(days/7)} weeks ${((days%7)+7)%7} days</strong>`;});
+$("obCalculate").addEventListener("click",()=>{const dates=window.MedAssistPregnancyDates,assessment=value("obAssess")||dates.todayMalaysia(),result=dates.calculate(value("obLmp"),assessment);if(!result.ok){$("obResult").textContent=result.error;return}const [year,month,day]=result.edd.split("-");$("obResult").innerHTML=`EDD: <strong>${day}/${month}/${year}</strong><br>Gestational age: <strong>${result.weeks} weeks ${result.days} days</strong>`;});
 
 ["clVomiting","clDiarrhoea"].forEach(id=>{
   document.getElementById(id)?.addEventListener("change",renderNewCaseFrequencyClassification);
@@ -16587,8 +16583,9 @@ renderDengueFollowUpPlan();
 
   function safeJsonWrite(key, value) {
     try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
+      const serialized = JSON.stringify(value);
+      localStorage.setItem(key, serialized);
+      return localStorage.getItem(key) === serialized;
     } catch (_) {
       return false;
     }
@@ -17614,7 +17611,11 @@ renderDengueFollowUpPlan();
       id = `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       drafts.unshift({ id, name, createdAt: now, updatedAt: now, data: payload });
     }
-    setDrafts(prefix, drafts);
+    if (!setDrafts(prefix, drafts)) {
+      const status = neuroEl(`${prefix}AutosaveStatus`);
+      if (status) status.textContent = `Draft “${name}” could not be saved locally.`;
+      return;
+    }
     refreshDraftSelect(prefix, id);
     if (nameField) nameField.value = name;
     const status = neuroEl(`${prefix}AutosaveStatus`);
@@ -17639,7 +17640,10 @@ renderDengueFollowUpPlan();
     if (!draft) return;
     draft.name = name;
     draft.updatedAt = new Date().toISOString();
-    setDrafts(prefix, drafts);
+    if (!setDrafts(prefix, drafts)) {
+      neuroEl(`${prefix}AutosaveStatus`).textContent = "Draft could not be renamed because local storage is unavailable.";
+      return;
+    }
     refreshDraftSelect(prefix, id);
     neuroEl(`${prefix}AutosaveStatus`).textContent = `Draft renamed to “${name}”.`;
   }
@@ -17649,7 +17653,10 @@ renderDengueFollowUpPlan();
     if (!id) return;
     const draft = getDrafts(prefix).find(item => item.id === id);
     if (!draft || !confirm(`Delete draft “${draft.name}”?`)) return;
-    setDrafts(prefix, getDrafts(prefix).filter(item => item.id !== id));
+    if (!setDrafts(prefix, getDrafts(prefix).filter(item => item.id !== id))) {
+      neuroEl(`${prefix}AutosaveStatus`).textContent = "Draft could not be deleted because local storage is unavailable.";
+      return;
+    }
     refreshDraftSelect(prefix);
     neuroEl(`${prefix}DraftName`).value = "";
     neuroEl(`${prefix}AutosaveStatus`).textContent = "Draft deleted.";
@@ -20210,13 +20217,15 @@ const fmt=n=>Number.isFinite(n)?String(Math.round(n*10)/10):"";
 const sentence=s=>String(s||"").trim().replace(/[.;]+$/g,"");
 const escapeHtml=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
 const dateFmt=raw=>{if(!raw)return"";const d=new Date(raw+"T00:00:00");return Number.isNaN(d.getTime())?raw:d.toLocaleDateString("en-GB",{day:"2-digit",month:"2-digit",year:"numeric"});};
-const addDays=(raw,days)=>{if(!raw)return"";const d=new Date(raw+"T00:00:00");if(Number.isNaN(d.getTime()))return"";d.setDate(d.getDate()+days);return d.toISOString().slice(0,10);};
-const daysBetween=(a,b)=>{if(!a||!b)return null;const x=new Date(a+"T00:00:00"),y=new Date(b+"T00:00:00");if(Number.isNaN(x.getTime())||Number.isNaN(y.getTime()))return null;return Math.floor((y-x)/86400000);};
+const pregnancyDates=window.MedAssistPregnancyDates;
+const addDays=(raw,days)=>{const start=pregnancyDates.parse(raw);return start===null?"":new Date(start+days*86400000).toISOString().slice(0,10);};
+const daysBetween=(a,b)=>{const start=pregnancyDates.parse(a),end=pregnancyDates.parse(b);return start===null||end===null?null:Math.round((end-start)/86400000);};
 const cleanPaste=s=>String(s||"").normalize("NFKC").replace(/\u00a0|\u2007|\u202f/g," ").replace(/\r\n?/g,"\n").replace(/[：]/g,":");
 const setIf=(id,v)=>{if(v!==null&&v!==undefined&&String(v)!==""&&q(id))q(id).value=String(v);};
 
 function gaData(){
   const d=daysBetween(val("rmeLnmp"),val("rmeAssessmentDate"));
+  if(d!==null&&d<0)return{weeks:null,days:null,totalDays:null,source:"invalid"};
   if(d!==null&&d>=0)return{weeks:Math.floor(d/7),days:d%7,totalDays:d,source:"LNMP"};
   const w=num("rmeGaWeeks"),dd=num("rmeGaDays")||0;if(w!==null)return{weeks:w,days:dd,totalDays:w*7+dd,source:"entered"};
   return{weeks:null,days:null,totalDays:null,source:""};
@@ -20224,6 +20233,7 @@ function gaData(){
 function syncDating(){
   const lnmp=val("rmeLnmp"),assessment=val("rmeAssessmentDate"),d=daysBetween(lnmp,assessment);
   if(d!==null&&d>=0){q("rmeGaWeeks").value=Math.floor(d/7);q("rmeGaDays").value=d%7;if(!val("rmeEdd")||q("rmeEdd").dataset.auto==="1"){q("rmeEdd").value=addDays(lnmp,280);q("rmeEdd").dataset.auto="1";}}
+  if(d!==null&&d<0){q("rmeGaWeeks").value="";q("rmeGaDays").value="";q("rmeDatingSummary").textContent="Assessment date cannot be before LNMP.";return;}
   const g=gaData(),parts=[];if(g.weeks!==null)parts.push(`POG ${g.weeks}+${g.days} weeks`);if(val("rmeEdd"))parts.push(`EDD ${dateFmt(val("rmeEdd"))}`);if(val("rmeDatesReliable")==="no"||yes("rmeRecentOcp"))parts.push("dating scan indicated — dates may be unreliable");
   q("rmeDatingSummary").textContent=parts.length?parts.join(" · "):"Enter assessment date and LNMP to auto-calculate gestation and EDD.";
 }
@@ -20575,7 +20585,7 @@ function examFindingLines(){
   const neg1=groups.slice(0,3).filter(([id])=>!checked(id)).map(([,l])=>l),neg2=groups.slice(3,6).filter(([id])=>!checked(id)).map(([,l])=>l),neg3=groups.slice(6).filter(([id])=>!checked(id)).map(([,l])=>l);if(neg1.length)out.push(`no ${neg1.join(" / ")}`);if(neg2.length)out.push(`no ${neg2.join(" / ")}`);if(neg3.length)out.push(`no ${neg3.join(" / ")}`);return out;
 }
 function ultrasoundNoteLines(){const u=ultrasoundData();if(!u.parts.length&&!val("rmeUsDate"))return[];const out=[];if(val("rmeUsDate")||u.mode)out.push(`${u.mode||"USG"}${val("rmeUsDate")?` ${dateFmt(val("rmeUsDate"))}`:""}:`);u.parts.forEach(p=>out.push(p));return out;}
-
+function initDate(){if(!val("rmeAssessmentDate"))q("rmeAssessmentDate").value=pregnancyDates.todayMalaysia();}
 function render(){syncDating();ultrasoundData();fagerData();mentalData();tbData();ogttRisk();pretermRisk();peRisk();vteData();renderProblemList();renderSuggestions();}
 function noteText(){
   const g=gaData(),b=bmiData(),pe=peRisk(),vte=vteData(),fag=fagerData(),tb=tbData(),mental=mentalData(),ogtt=ogttRisk(),preterm=pretermRisk(),clinical=clinicalAlerts(),plans=selectedPlans(),lines=["RME 1"];
@@ -22070,6 +22080,57 @@ Object.keys(detailMap).forEach(id=>$(id)?.addEventListener('change',syncDmCxDeta
 
 function hasMeaningfulValue(control){if(!control)return false;if(control.type==='checkbox'||control.type==='radio')return control.checked;return String(control.value||'').trim()!=='';}
 window.syncNcdVisibleLabs=function(prefix){
+<script id="generated-output-dirty-safety">
+(()=>{
+"use strict";
+const byId=id=>document.getElementById(id);
+const modules=[
+  {page:"page-dm",outputs:[{id:"dmOutput",generate:"dmGenerate",copy:"dmCopy"}]},
+  {page:"page-htn",outputs:[{id:"htnOutput",generate:"htnGenerate",copy:"htnCopy"}]},
+  {page:"page-rme1",outputs:[{id:"rmeOutput",generate:"rmeGenerateNote",copy:"rmeCopyNote"},{id:"rmeReferralOutput",generate:"rmeGenerateReferral",copy:"rmeCopyReferral"}]},
+  {page:"page-nnj",outputs:[{id:"nnjOutput",generate:"nnjCalc",copy:"nnjCopy"},{id:"nnjReferralLetter",generate:"nnjCalc",copy:"nnjCopyReferral"}]},
+  {page:"page-iucd",outputs:[{id:"iucdOutput",generate:"iucdGenerate",copy:"iucdCopy"}]},
+  {page:"adhdTemplate",meta:"adhdGeneratedMeta",outputs:[{id:"adhdNoteOutput",generate:"generateAdhdNote",copySelector:'[data-copy-neuro="adhdNoteOutput"]'},{id:"adhdReferralOutput",generate:"generateAdhdReferral",copySelector:'[data-copy-neuro="adhdReferralOutput"]'}]},
+  {page:"autismTemplate",meta:"autismGeneratedMeta",outputs:[{id:"autismNoteOutput",generate:"generateAutismNote",copySelector:'[data-copy-neuro="autismNoteOutput"]'},{id:"autismReferralOutput",generate:"generateAutismReferral",copySelector:'[data-copy-neuro="autismReferralOutput"]'}]}
+];
+function copyButton(config){return config.copy?byId(config.copy):document.querySelector(config.copySelector);}
+function setStale(module,config,stale){
+  const output=byId(config.id),button=copyButton(config);
+  if(!output)return;
+  output.dataset.formStale=stale?"1":"0";
+  output.title=stale?"This generated output is stale. Copy will regenerate it from the current form.":"";
+  if(button){
+    button.dataset.cleanLabel=button.dataset.cleanLabel||button.textContent.replace(/ \(stale\)$/," ").trim();
+    button.textContent=stale?`${button.dataset.cleanLabel} (stale)`:button.dataset.cleanLabel;
+  }
+  if(module.meta&&stale){const meta=byId(module.meta);if(meta)meta.textContent="Generated output is stale because the form has changed. Copy or regenerate to update it.";}
+}
+modules.forEach(module=>{
+  const page=byId(module.page);if(!page)return;
+  const markAll=()=>module.outputs.forEach(config=>{if(byId(config.id)?.value)setStale(module,config,true);});
+  const markDirty=event=>{
+    const target=event.target;
+    if(!(target instanceof HTMLInputElement||target instanceof HTMLSelectElement||target instanceof HTMLTextAreaElement))return;
+    if(module.outputs.some(config=>config.id===target.id)||/DraftName|DraftSelect/.test(target.id))return;
+    markAll();
+  };
+  page.addEventListener("input",markDirty);
+  page.addEventListener("change",markDirty);
+  page.addEventListener("click",event=>{
+    if(event.target.closest("#rmeSelectAllPlans,#rmeClearPlans,#nnjSerialSaveResult,.nnj-serial-delete"))markAll();
+  });
+  module.outputs.forEach(config=>{
+    byId(config.generate)?.addEventListener("click",()=>setStale(module,config,false));
+    const button=copyButton(config);
+    button?.addEventListener("click",()=>{
+      if(byId(config.id)?.dataset.formStale==="1")byId(config.generate)?.click();
+    },true);
+  });
+  const allButton=byId(module.page==="adhdTemplate"?"generateAdhdAll":module.page==="autismTemplate"?"generateAutismAll":module.page==="page-rme1"?"rmeGenerateAll":"");
+  allButton?.addEventListener("click",()=>module.outputs.forEach(config=>setStale(module,config,false)));
+});
+})();
+</script>
   const root=prefix==='dm'?$('dmNcdResultsCard'):$('page-htn');if(!root)return;
   root.querySelectorAll('.ncd-lab-block').forEach(block=>{
     const grid=block.querySelector(':scope > .ncd-mini-grid');if(!grid)return;
