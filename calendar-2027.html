@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calendar 2027 — MedAssist KK Bangi</title>
+<style>
+:root{
+  --ink:#273835;--muted:#70817d;--paper:#fbfaf6;--card:#fffefa;--line:#e3e7e2;
+  --holiday:#9b69ad;--holiday-soft:#f2eaf5;--blocked:#e983aa;--blocked-soft:#fceaf1;
+  --green:#2f6c63;--green-soft:#edf5f2;--red:#a9473f;--shadow:0 10px 28px rgba(54,77,70,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--paper);min-height:100vh}
+body::before,body::after{content:"";position:fixed;pointer-events:none;z-index:-1;filter:blur(1px);opacity:.6}
+body::before{width:420px;height:250px;top:-80px;right:-90px;background:radial-gradient(ellipse at 42% 46%,rgba(154,191,173,.38) 0 18%,transparent 19%),radial-gradient(ellipse at 68% 36%,rgba(233,176,190,.28) 0 16%,transparent 17%),radial-gradient(ellipse at 77% 70%,rgba(215,194,145,.25) 0 15%,transparent 16%)}
+body::after{width:360px;height:220px;left:-90px;bottom:-70px;background:radial-gradient(ellipse at 35% 42%,rgba(143,198,196,.25) 0 18%,transparent 19%),radial-gradient(ellipse at 68% 58%,rgba(186,160,204,.20) 0 17%,transparent 18%)}
+.page{width:min(1320px,94vw);margin:0 auto;padding:24px 0 48px}
+.top{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;margin-bottom:8px}
+.back{display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:var(--green);font-size:13px;font-weight:800;padding:8px 10px;border-radius:10px}.back:hover{background:var(--green-soft)}
+.title{margin:0;text-align:center;font-size:clamp(28px,4vw,48px);letter-spacing:.12em;color:#7f2724;font-family:Georgia,"Times New Roman",serif;font-weight:700}
+.year-tag{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.08em}
+.sub{margin:4px 0 22px;text-align:center;color:var(--muted);font-size:13px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:10px 12px;margin-bottom:12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.7)}
+.legend{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.legend-label{font-size:12px;color:var(--muted);font-weight:800;margin-right:2px}
+.filter{border:0;background:transparent;display:inline-flex;align-items:center;gap:7px;padding:6px 8px;border-radius:9px;color:var(--ink);font-size:12px;font-weight:800;cursor:pointer}.filter:hover{background:#f4f5f2}.filter[aria-pressed="false"]{opacity:.42}.dot{width:10px;height:10px;border-radius:50%;display:inline-block}.dot.holiday{background:var(--holiday)}.dot.blocked{background:var(--blocked)}
+.hint{font-size:12px;color:var(--muted)}
+.ramadan{margin:0 0 18px;padding:10px 13px;border-left:3px solid #c58da0;background:#fff8fa;color:#614650;border-radius:0 10px 10px 0;font-size:12px;font-weight:750}
+.event-panel{display:none;align-items:center;justify-content:space-between;gap:12px;margin:-4px 0 18px;padding:10px 12px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 6px 18px rgba(48,69,63,.05)}
+.event-panel.show{display:flex}.event-copy{min-width:0}.event-date{font-size:12px;color:var(--muted);font-weight:800}.event-name{font-size:14px;font-weight:900;margin-top:2px}.event-kind{font-size:11px;margin-top:2px;color:var(--muted)}.event-close{border:0;background:transparent;font-size:20px;color:var(--muted);cursor:pointer;padding:2px 6px;border-radius:8px}.event-close:hover{background:#f4f5f2}
+.month-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.month{background:rgba(255,254,250,.94);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow)}
+.month-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}.month-name{margin:0;color:var(--red);font-family:Georgia,"Times New Roman",serif;font-size:18px;font-weight:700}.month-open{border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:800;cursor:pointer;padding:5px 6px;border-radius:7px}.month-open:hover{background:#f3f5f2;color:var(--green)}
+.weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}.weekdays{margin-bottom:3px}.weekday{height:23px;display:flex;align-items:center;justify-content:center;font-size:9px;letter-spacing:.04em;color:#899792;font-weight:900}.weekday.weekend{color:#ae8583}
+.day{appearance:none;border:0;background:transparent;min-height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:650;color:#40504d;padding:0}.day.empty{visibility:hidden}.day.weekend{color:#987d79}.day.marked{cursor:pointer;font-weight:900;position:relative}.day.marked::after{content:"";position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%}.day.holiday{background:var(--holiday-soft);color:#70457f}.day.holiday::after{background:var(--holiday)}.day.blocked{background:var(--blocked-soft);color:#8f4462}.day.blocked::after{background:var(--blocked)}.day.hidden-mark{background:transparent!important;color:#40504d!important}.day.hidden-mark::after{display:none}.day:focus-visible,.month-open:focus-visible,.filter:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.footer-note{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:18px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+.event-summary{margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:14px;background:rgba(255,254,250,.94);box-shadow:var(--shadow)}
+.event-summary h2{margin:0 0 4px;color:var(--red);font-family:Georgia,"Times New Roman",serif;font-size:20px}.event-summary>p{margin:0 0 12px;color:var(--muted);font-size:11px}
+.event-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.event-summary-item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:start;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff}.event-summary-item time{font-size:11px;font-weight:900;color:#526963;white-space:nowrap}.event-summary-item strong{display:block;font-size:11px;line-height:1.35}.event-summary-item small{display:block;margin-top:2px;color:var(--muted);font-size:9.5px}.event-summary-empty{grid-column:1/-1;padding:12px;text-align:center;color:var(--muted);font-size:12px}
+.dialog-backdrop{position:fixed;inset:0;background:rgba(28,43,39,.36);display:flex;align-items:center;justify-content:center;padding:18px;z-index:4000}.dialog-backdrop.hidden{display:none}.dialog{width:min(560px,94vw);background:#fffefa;border-radius:16px;border:1px solid var(--line);padding:16px;box-shadow:0 28px 70px rgba(0,0,0,.20)}.dialog-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.dialog-title{margin:0;color:var(--red);font-family:Georgia,"Times New Roman",serif;font-size:24px}.dialog-close{border:0;background:#f2f4f1;border-radius:9px;width:34px;height:34px;font-size:18px;cursor:pointer}.dialog-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.dialog-grid .day{min-height:46px;font-size:14px}.dialog-grid .weekday{height:28px;font-size:10px}.dialog-detail{margin-top:12px;min-height:46px;padding:10px 11px;border-radius:10px;background:#f6f8f5;border:1px solid var(--line);font-size:13px}.dialog-detail small{color:var(--muted)}
+@media(max-width:1050px){.month-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:900px){.event-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.page{width:min(94vw,650px);padding-top:16px}.top{grid-template-columns:auto 1fr}.year-tag{display:none}.title{text-align:right;font-size:28px;letter-spacing:.08em}.sub{text-align:right;margin-top:-2px}.month-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar{align-items:flex-start}.hint{width:100%}}
+@media(max-width:500px){.month-grid,.event-summary-grid{grid-template-columns:1fr}.month{padding:14px}.day{min-height:34px;font-size:12px}.weekday{font-size:10px}.title{font-size:25px}.event-panel{align-items:flex-start}}
+@media print{body{background:#fff}body::before,body::after,.toolbar,.back,.month-open,.event-panel,.dialog-backdrop{display:none!important}.page{width:100%;padding:0}.month-grid{grid-template-columns:repeat(4,1fr);gap:7px}.month{box-shadow:none;break-inside:avoid;padding:8px}.title{font-size:30px}.sub{margin-bottom:10px}.ramadan{font-size:10px}.event-summary{box-shadow:none;padding:8px;break-before:page}.event-summary-grid{grid-template-columns:repeat(4,1fr);gap:5px}.footer-note{font-size:9px}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="top">
+      <a class="back" href="index.html" aria-label="Back to MedAssist">← MedAssist</a>
+      <h1 class="title">CALENDAR 2027</h1>
+      <span class="year-tag">KK BANGI</span>
+    </div>
+    <p class="sub">Clinic planning calendar</p>
+  </header>
+
+  <div class="toolbar" aria-label="Calendar controls">
+    <div class="legend">
+      <span class="legend-label">Show</span>
+      <button class="filter" id="filterHoliday" type="button" aria-pressed="true"><span class="dot holiday"></span>Public Holiday</button>
+      <button class="filter" id="filterBlocked" type="button" aria-pressed="true"><span class="dot blocked"></span>Blocked NCD / FMS Appt</button>
+    </div>
+    <span class="hint">Tap a coloured date for details · tap a month name to enlarge</span>
+  </div>
+
+  <div class="ramadan">Ramadhan — no fasting blood ix: <strong>8/2/27 – 9/3/27</strong></div>
+
+  <section id="eventPanel" class="event-panel" aria-live="polite">
+    <div class="event-copy"><div id="eventDate" class="event-date"></div><div id="eventName" class="event-name"></div><div id="eventKind" class="event-kind"></div></div>
+    <button id="eventClose" class="event-close" type="button" aria-label="Close event details">×</button>
+  </section>
+
+  <main id="monthGrid" class="month-grid" aria-label="2027 calendar"></main>
+
+  <section class="event-summary" aria-labelledby="eventSummaryTitle">
+    <h2 id="eventSummaryTitle">Event summary</h2>
+    <p>Summary follows the active Public Holiday and Blocked NCD / FMS Appt filters.</p>
+    <div class="event-summary-grid" id="eventSummary"></div>
+  </section>
+
+  <footer class="footer-note"><span><span class="dot holiday"></span> Public Holiday &nbsp;&nbsp; <span class="dot blocked"></span> Blocked NCD / FMS Appt</span><span>MedAssist KK Bangi</span></footer>
+</div>
+
+<div id="dialogBackdrop" class="dialog-backdrop hidden" role="presentation">
+  <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+    <div class="dialog-head"><h2 id="dialogTitle" class="dialog-title"></h2><button id="dialogClose" class="dialog-close" type="button" aria-label="Close">×</button></div>
+    <div id="dialogGrid" class="dialog-grid"></div>
+    <div id="dialogDetail" class="dialog-detail"><small>Tap a coloured date for details.</small></div>
+  </section>
+</div>
+
+<script>
+(()=>{
+  'use strict';
+  const YEAR=2027;
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const weekdays=['MO','TU','WE','TH','FR','SA','SU'];
+  const data={
+    '2027-01-01':{type:'holiday',label:'New Year'},'2027-01-22':{type:'holiday',label:'Thaipusam'},'2027-01-04':{type:'blocked',label:'Blocked NCD'},'2027-01-25':{type:'blocked',label:'Blocked NCD'},
+    '2027-02-08':{type:'holiday',label:'Cuti peristiwa CNY'},'2027-02-24':{type:'holiday',label:'Nuzul Al-Quran'},'2027-02-09':{type:'blocked',label:'Blocked NCD'},
+    '2027-03-10':{type:'holiday',label:'Raya Eid'},'2027-03-11':{type:'holiday',label:'Raya Eid'},'2027-03-05':{type:'blocked',label:'Blocked NCD'},'2027-03-08':{type:'blocked',label:'Blocked NCD'},'2027-03-09':{type:'blocked',label:'Blocked NCD'},'2027-03-12':{type:'blocked',label:'Blocked NCD'},'2027-03-15':{type:'blocked',label:'Blocked NCD'},'2027-03-16':{type:'blocked',label:'Blocked NCD'},
+    '2027-05-17':{type:'holiday',label:'Raya Haji'},'2027-05-20':{type:'holiday',label:'Vesak'},'2027-05-13':{type:'blocked',label:'Blocked NCD'},'2027-05-14':{type:'blocked',label:'Blocked NCD'},'2027-05-18':{type:'blocked',label:'Blocked NCD'},'2027-05-19':{type:'blocked',label:'Blocked NCD'},
+    '2027-06-07':{type:'holiday',label:'Birthday Agong'},'2027-06-08':{type:'holiday',label:'Awal Muharram'},'2027-06-09':{type:'blocked',label:'Blocked NCD'},
+    '2027-08-16':{type:'holiday',label:'Maulidurrasul'},'2027-08-31':{type:'holiday',label:'Merdeka!'},'2027-08-17':{type:'blocked',label:'Blocked NCD'},
+    '2027-09-16':{type:'holiday',label:'Hari Malaysia'},
+    '2027-10-28':{type:'holiday',label:'Deepavali'}
+  };
+  const grid=document.getElementById('monthGrid');
+  const filterHoliday=document.getElementById('filterHoliday');
+  const filterBlocked=document.getElementById('filterBlocked');
+  const eventPanel=document.getElementById('eventPanel');
+  const eventDate=document.getElementById('eventDate');
+  const eventName=document.getElementById('eventName');
+  const eventKind=document.getElementById('eventKind');
+  const eventClose=document.getElementById('eventClose');
+  const backdrop=document.getElementById('dialogBackdrop');
+  const dialogTitle=document.getElementById('dialogTitle');
+  const dialogGrid=document.getElementById('dialogGrid');
+  const dialogDetail=document.getElementById('dialogDetail');
+  const dialogClose=document.getElementById('dialogClose');
+  const eventSummary=document.getElementById('eventSummary');
+  const pad=n=>String(n).padStart(2,'0');
+  const keyFor=(m,d)=>`${YEAR}-${pad(m+1)}-${pad(d)}`;
+  const daysInMonth=m=>new Date(Date.UTC(YEAR,m+1,0)).getUTCDate();
+  const mondayOffset=m=>(new Date(Date.UTC(YEAR,m,1)).getUTCDay()+6)%7;
+  const isWeekend=(m,d)=>{const w=new Date(Date.UTC(YEAR,m,d)).getUTCDay();return w===0||w===6};
+  const enabled=type=>(type==='holiday'?filterHoliday:filterBlocked).getAttribute('aria-pressed')==='true';
+  const kind=ev=>ev.type==='holiday'?'Public Holiday':'Blocked NCD / FMS Appt';
+
+  function showEvent(m,d,ev,inDialog=false){
+    const dateText=`${d} ${months[m]} ${YEAR}`;
+    if(inDialog){dialogDetail.innerHTML=`<strong>${dateText}</strong><br>${ev.label}<br><small>${kind(ev)}</small>`;return}
+    eventDate.textContent=dateText;eventName.textContent=ev.label;eventKind.textContent=kind(ev);eventPanel.classList.add('show');eventPanel.scrollIntoView({block:'nearest',behavior:'smooth'});
+  }
+
+  function makeDay(m,d,inDialog=false){
+    const ev=data[keyFor(m,d)];
+    const b=document.createElement('button');b.type='button';b.className='day'+(isWeekend(m,d)?' weekend':'');b.textContent=d;
+    if(!ev){b.disabled=true;b.tabIndex=-1;return b}
+    b.classList.add('marked',ev.type);
+    if(!enabled(ev.type)){b.classList.add('hidden-mark');b.disabled=true;b.tabIndex=-1;return b}
+    b.title=`${ev.label} — ${kind(ev)}`;b.setAttribute('aria-label',`${d} ${months[m]} ${YEAR}: ${ev.label}, ${kind(ev)}`);
+    b.addEventListener('click',e=>{e.stopPropagation();showEvent(m,d,ev,inDialog)});return b
+  }
+
+  function addCalendarCells(container,m,inDialog=false){
+    weekdays.forEach((w,i)=>{const x=document.createElement('div');x.className='weekday'+(i>4?' weekend':'');x.textContent=w;container.appendChild(x)});
+    for(let i=0;i<mondayOffset(m);i++){const x=document.createElement('div');x.className='day empty';container.appendChild(x)}
+    for(let d=1;d<=daysInMonth(m);d++)container.appendChild(makeDay(m,d,inDialog));
+  }
+
+  function monthCard(m){
+    const card=document.createElement('section');card.className='month';
+    const head=document.createElement('div');head.className='month-head';
+    const name=document.createElement('h2');name.className='month-name';name.textContent=months[m];
+    const open=document.createElement('button');open.type='button';open.className='month-open';open.textContent='Enlarge';open.setAttribute('aria-label',`Enlarge ${months[m]}`);open.addEventListener('click',()=>openMonth(m));
+    const w=document.createElement('div');w.className='weekdays';weekdays.forEach((label,i)=>{const x=document.createElement('div');x.className='weekday'+(i>4?' weekend':'');x.textContent=label;w.appendChild(x)});
+    const days=document.createElement('div');days.className='days';for(let i=0;i<mondayOffset(m);i++){const x=document.createElement('div');x.className='day empty';days.appendChild(x)}for(let d=1;d<=daysInMonth(m);d++)days.appendChild(makeDay(m,d));
+    head.append(name,open);card.append(head,w,days);name.style.cursor='pointer';name.addEventListener('click',()=>openMonth(m));return card
+  }
+
+  function renderSummary(){
+    eventSummary.innerHTML='';
+    Object.entries(data).sort(([a],[b])=>a.localeCompare(b)).filter(([,ev])=>enabled(ev.type)).forEach(([date,ev])=>{
+      const item=document.createElement('div');item.className='event-summary-item';
+      const time=document.createElement('time');time.dateTime=date;time.textContent=date.split('-').reverse().join('/');
+      const copy=document.createElement('div'),name=document.createElement('strong'),type=document.createElement('small');
+      name.textContent=ev.label;type.textContent=kind(ev);copy.append(name,type);item.append(time,copy);eventSummary.appendChild(item);
+    });
+    if(!eventSummary.children.length){const empty=document.createElement('div');empty.className='event-summary-empty';empty.textContent='Both event categories are hidden.';eventSummary.appendChild(empty)}
+  }
+  function render(){grid.innerHTML='';for(let m=0;m<12;m++)grid.appendChild(monthCard(m));renderSummary()}
+  function toggleFilter(btn){btn.setAttribute('aria-pressed',btn.getAttribute('aria-pressed')==='true'?'false':'true');eventPanel.classList.remove('show');render()}
+  function openMonth(m){dialogTitle.textContent=`${months[m]} ${YEAR}`;dialogGrid.innerHTML='';addCalendarCells(dialogGrid,m,true);dialogDetail.innerHTML='<small>Tap a coloured date for details.</small>';backdrop.classList.remove('hidden');dialogClose.focus()}
+  function closeMonth(){backdrop.classList.add('hidden')}
+
+  filterHoliday.addEventListener('click',()=>toggleFilter(filterHoliday));
+  filterBlocked.addEventListener('click',()=>toggleFilter(filterBlocked));
+  eventClose.addEventListener('click',()=>eventPanel.classList.remove('show'));
+  dialogClose.addEventListener('click',closeMonth);
+  backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeMonth()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!backdrop.classList.contains('hidden'))closeMonth()});
+  render();
+})();
+</script>
+</body>
+</html>

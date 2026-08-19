@@ -3261,42 +3261,84 @@ html,body{max-width:100%;overflow-x:hidden}
 }
 
 </style>
+<script id="medassist-date-only-script">
+(() => {
+  "use strict";
+
+  const DAY_MS = 86400000;
+  const pad = value => String(value).padStart(2, "0");
+
+  function parse(raw) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(raw || ""));
+    if (!match) return null;
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    const epochMs = Date.UTC(year, month - 1, day);
+    const check = new Date(epochMs);
+    if (
+      check.getUTCFullYear() !== year ||
+      check.getUTCMonth() !== month - 1 ||
+      check.getUTCDate() !== day
+    ) return null;
+    return { year, month, day, epochDay: Math.trunc(epochMs / DAY_MS) };
+  }
+
+  function fromEpochDay(epochDay) {
+    if (!Number.isFinite(epochDay)) return "";
+    const date = new Date(Math.trunc(epochDay) * DAY_MS);
+    return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
+  }
+
+  function addDays(raw, days) {
+    const value = parse(raw);
+    return value && Number.isFinite(Number(days))
+      ? fromEpochDay(value.epochDay + Number(days))
+      : "";
+  }
+
+  function diffDays(startRaw, endRaw) {
+    const start = parse(startRaw);
+    const end = parse(endRaw);
+    return start && end ? end.epochDay - start.epochDay : null;
+  }
+
+  function display(raw) {
+    const value = parse(raw);
+    return value ? `${pad(value.day)}/${pad(value.month)}/${value.year}` : String(raw || "");
+  }
+
+  function malaysiaToday(now = new Date()) {
+    try {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Kuala_Lumpur",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(now);
+      const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+      const result = `${values.year}-${values.month}-${values.day}`;
+      if (parse(result)) return result;
+    } catch (_) { }
+    return fromEpochDay(Math.floor((now.getTime() + 8 * 60 * 60 * 1000) / DAY_MS));
+  }
+
+  window.MedAssistDateOnly = Object.freeze({
+    DAY_MS,
+    parse,
+    addDays,
+    diffDays,
+    display,
+    malaysiaToday
+  });
+})();
+</script>
 <script id="medassist-neuro-enhancements-v2-script">
 (() => {
   'use strict';
 
   const VERSION = '2026.08.09-neuro-v5-no-parent-form';
   const ENHANCEMENT_KEY = prefix => `medassist_neuro_enhancement_${prefix}_v3`;
-  const isBlockedNeuroStorageKey = key => {
-    const textKey = String(key || '');
-    return textKey.startsWith('medassist_neuro_enhancement_') || textKey.includes('_autosave_');
-  };
-
-  let localStorageRef = null;
-  try { localStorageRef = window.localStorage; } catch (_) { }
-
-  const originalStorageSetItem = Storage.prototype.setItem;
-  Storage.prototype.setItem = function patchedSetItem(key, value) {
-    const textKey = String(key || '');
-    if (localStorageRef && this === localStorageRef && isBlockedNeuroStorageKey(textKey)) return;
-    return originalStorageSetItem.call(this, key, value);
-  };
-
-  function clearLocalNeuroData() {
-    try {
-      const storage = window.localStorage;
-      const keys = [];
-      for (let index = 0; index < storage.length; index += 1) {
-        const key = storage.key(index);
-        if (key && isBlockedNeuroStorageKey(key)) keys.push(key);
-      }
-      keys.forEach(key => storage.removeItem(key));
-    } catch (_) {
-      // Some embedded/private browser contexts disable storage completely.
-    }
-  }
-
-  clearLocalNeuroData();
 
   const $ = id => document.getElementById(id);
   const qs = (selector, root = document) => root.querySelector(selector);
@@ -3317,11 +3359,27 @@ html,body{max-width:100%;overflow-x:hidden}
   const runtimeState = { adhd: defaultState(), autism: defaultState() };
 
   function loadState(prefix) {
-    runtimeState[prefix] = defaultState();
+    try {
+      const raw = window.localStorage.getItem(ENHANCEMENT_KEY(prefix));
+      const saved = raw ? JSON.parse(raw) : null;
+      runtimeState[prefix] = saved && typeof saved === 'object'
+        ? { ...defaultState(), ...saved }
+        : defaultState();
+    } catch (_) {
+      runtimeState[prefix] = defaultState();
+    }
   }
 
   function saveState(prefix) {
     runtimeState[prefix] = { ...defaultState(), ...runtimeState[prefix] };
+    try {
+      const key = ENHANCEMENT_KEY(prefix);
+      const serialized = JSON.stringify(runtimeState[prefix]);
+      window.localStorage.setItem(key, serialized);
+      return window.localStorage.getItem(key) === serialized;
+    } catch (_) {
+      return false;
+    }
   }
 
   function dispatchFieldChange(field) {
@@ -4587,6 +4645,10 @@ html,body{max-width:100%;overflow-x:hidden}
 #page-htn .htn-sx-grid .check-item{min-height:36px}
 #page-htn .htn-plan-preview{margin-top:10px;white-space:pre-line}
 #page-htn .ncd-readonly,#page-dm .ncd-readonly{background:#f4f8f7!important;font-weight:600}
+#page-htn .htn-ckd-workflow{margin-top:12px;padding:12px;border:1px solid #cfe2dd;border-radius:12px;background:#f7fbfa}
+#page-htn .htn-ckd-workflow.hidden,#page-htn .htn-ckd-field.hidden{display:none!important}
+#page-htn .htn-ckd-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:start}
+#page-htn .htn-ckd-hint{margin-top:8px;font-size:10.5px;line-height:1.4;color:#5f7671}
 #page-dm .dm-cx-panel{border:1px solid #dce9e6;border-radius:12px;padding:10px;background:#fbfefd}
 #page-dm .dm-cx-panel>label{margin-bottom:7px}
 #page-dm .dm-cx-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
@@ -4595,8 +4657,8 @@ html,body{max-width:100%;overflow-x:hidden}
 .dengue-pe-picker .check-item{margin:0!important;min-height:34px;padding:7px 10px}
 .dengue-pe-picker-title{width:100%;font-size:11px;color:#60736f;margin-bottom:1px}
 .dengue-pe-optional-hidden{display:none!important}
-@media(max-width:900px){#page-htn .ncd-mini-grid,#page-dm .ncd-mini-grid,#page-htn .ncd-auto-grid,#page-dm .ncd-auto-grid,#page-htn .htn-sx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#page-dm .dm-cx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){#page-htn .ncd-mini-grid,#page-dm .ncd-mini-grid,#page-htn .ncd-auto-grid,#page-dm .ncd-auto-grid,#page-htn .htn-sx-grid,#page-dm .dm-cx-grid{grid-template-columns:1fr}#page-dm .dm-cx-panel{grid-column:span 1!important}}
+@media(max-width:900px){#page-htn .ncd-mini-grid,#page-dm .ncd-mini-grid,#page-htn .ncd-auto-grid,#page-dm .ncd-auto-grid,#page-htn .htn-sx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#page-dm .dm-cx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#page-htn .htn-ckd-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){#page-htn .ncd-mini-grid,#page-dm .ncd-mini-grid,#page-htn .ncd-auto-grid,#page-dm .ncd-auto-grid,#page-htn .htn-sx-grid,#page-dm .dm-cx-grid,#page-htn .htn-ckd-grid{grid-template-columns:1fr}#page-dm .dm-cx-panel{grid-column:span 1!important}}
 </style>
 
 
@@ -4690,6 +4752,10 @@ html,body{max-width:100%;overflow-x:hidden}
   <button class="nav-btn module-direct-link calculator-module-link" data-page="calculator" type="button">
     <span class="module-direct-icon" aria-hidden="true">🧮</span><span><strong>Calculators</strong><small>Clinical calculators</small></span>
   </button>
+
+  <a aria-label="Open Calendar 2027 in a new tab" class="module-direct-link calendar-module-link" href="calendar-2027.html" rel="noopener noreferrer" target="_blank">
+    <span class="module-direct-icon" aria-hidden="true">🗓️</span><span><strong>Calendar 2027</strong><small>Clinic planning calendar ↗</small></span>
+  </a>
 </div>
 </aside>
 <nav aria-label="Quick component navigation" class="section-quickbar hidden" id="sectionQuickBar">
@@ -4724,6 +4790,7 @@ html,body{max-width:100%;overflow-x:hidden}
     <button class="module-category-btn utility external" data-dashboard-utility="lhi" type="button"><span class="lhi-lung-icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 32 32"><path d="M15 4v11"/><path d="M17 4v11"/><path d="M15 10c-2.2 1.1-3.7 2.7-4.8 4.4"/><path d="M17 10c2.2 1.1 3.7 2.7 4.8 4.4"/><path d="M13.8 12.3C9.3 11 6.4 14.1 5.2 18.5 3.7 24 5.8 28 9.8 28c3.7 0 5.2-3 5.2-7.4V15"/><path d="M18.2 12.3c4.5-1.3 7.4 1.8 8.6 6.2C28.3 24 26.2 28 22.2 28c-3.7 0-5.2-3-5.2-7.4V15"/></svg></span><strong>LHI / NALURY</strong><small>Open external portal</small></button>
     <button class="module-category-btn utility" data-dashboard-utility="lab" type="button"><span>🧪</span><strong>Makmal</strong><small>Ujian &amp; jadual pengambilan</small></button>
     <button class="module-category-btn utility" data-dashboard-utility="calculator" type="button"><span>🧮</span><strong>Clinical calculator</strong><small>Open clinical tools</small></button>
+    <button class="module-category-btn utility" data-dashboard-utility="calendar" type="button"><span>🗓️</span><strong>Calendar 2027</strong><small>Clinic planning calendar</small></button>
   </div>
 </div>
 <div class="dashboard-module-intro" id="dashboardModuleIntro">
@@ -6742,6 +6809,35 @@ html,body{max-width:100%;overflow-x:hidden}
 <div><label>Heart failure</label><select id="htnHf"><option value="no">no</option><option value="yes">yes</option></select></div>
 <div><label>Drug allergy</label><input id="htnAllergy" value="NKDA"/></div>
 <div class="htn-compliance-field"><label>Compliance</label><select id="htnCompliance"><option value="good">good</option><option value="occasionally missed">occasionally missed</option><option value="poor">poor</option><option value="defaulted">defaulted</option></select><div class="hidden htn-missed-frequency" id="htnMissedFrequencyWrap"><label>How often missed?</label><select id="htnMissedFrequency"><option value="">Select frequency</option><option value="less than once a week">less than once a week</option><option value="about once a week">about once a week</option><option value="2–3 days a week">2–3 days a week</option><option value="4 or more days a week">4 or more days a week</option><option value="other">other</option></select><input class="hidden" id="htnMissedFrequencyOther" placeholder="Specify frequency"/></div></div>
+</div>
+<div class="htn-ckd-workflow hidden" id="htnCkdWorkflow" aria-live="polite">
+  <div class="htn-ckd-grid">
+    <div class="htn-ckd-field" id="htnCkdStageWrap">
+      <label>CKD stage</label>
+      <select id="htnCkdStage">
+        <option value="">Select / confirm stage</option>
+        <option value="G1">G1</option>
+        <option value="G2">G2</option>
+        <option value="G3a">G3a</option>
+        <option value="G3b">G3b</option>
+        <option value="G4">G4</option>
+        <option value="G5">G5 — ESRF</option>
+      </select>
+    </div>
+    <div class="htn-ckd-field hidden" id="htnEsrfWrap">
+      <label>On haemodialysis</label>
+      <select id="htnHd"><option value="no">No</option><option value="yes">Yes</option></select>
+    </div>
+    <div class="htn-ckd-field hidden" id="htnHdScheduleWrap">
+      <label>Haemodialysis schedule</label>
+      <select id="htnHdSchedule">
+        <option value="">Select schedule</option>
+        <option value="1,3,5">1,3,5 (Mon/Wed/Fri)</option>
+        <option value="2,4,6">2,4,6 (Tue/Thu/Sat)</option>
+      </select>
+    </div>
+  </div>
+  <div class="htn-ckd-hint" id="htnCkdHint">Enter age, sex and creatinine for an eGFR stage suggestion. The clinician may confirm or override it.</div>
 </div>
 <div class="htn-active-complaint" style="margin-top:10px">
 <label>Active complaint</label><textarea id="htnActiveComplaint" rows="2" placeholder="Leave blank if no active complaint"></textarea>
@@ -14885,7 +14981,27 @@ document.querySelectorAll("#gdmRiskFactors input").forEach(input=>{
 $("sbCalc").addEventListener("click",()=>{const s=$("sbInputs").querySelectorAll("input:checked").length;$("sbResult").innerHTML=`STOP-BANG: <strong>${s}/8</strong> — ${s<=2?"low":s<=4?"intermediate":"high"} risk of obstructive sleep apnoea.`;});
 
 // Pregnancy
-$("obCalculate").addEventListener("click",()=>{const lmp=new Date(value("obLmp")+"T00:00:00"),ass=value("obAssess")?new Date(value("obAssess")+"T00:00:00"):new Date();if(Number.isNaN(lmp.getTime())){$("obResult").textContent="Enter LMP.";return}const edd=new Date(lmp);edd.setDate(edd.getDate()+280);const days=Math.floor((ass-lmp)/86400000);$("obResult").innerHTML=`EDD: <strong>${edd.toLocaleDateString("en-GB")}</strong><br>Gestational age: <strong>${Math.floor(days/7)} weeks ${((days%7)+7)%7} days</strong>`;});
+const pregnancyDates=window.MedAssistDateOnly;
+if($("obAssess") && !value("obAssess")) $("obAssess").value=pregnancyDates.malaysiaToday();
+$("obCalculate").addEventListener("click",()=>{
+  const lmp=value("obLmp");
+  const assessment=value("obAssess")||pregnancyDates.malaysiaToday();
+  if(!pregnancyDates.parse(lmp)){
+    $("obResult").textContent="Enter a valid LMP date.";
+    return;
+  }
+  if(!pregnancyDates.parse(assessment)){
+    $("obResult").textContent="Enter a valid assessment date.";
+    return;
+  }
+  const days=pregnancyDates.diffDays(lmp,assessment);
+  if(days<0){
+    $("obResult").textContent="Assessment date cannot be before LMP. Gestational age has been cleared.";
+    return;
+  }
+  const edd=pregnancyDates.addDays(lmp,280);
+  $("obResult").innerHTML=`EDD: <strong>${pregnancyDates.display(edd)}</strong><br>Gestational age: <strong>${Math.floor(days/7)} weeks ${days%7} days</strong>`;
+});
 
 ["clVomiting","clDiarrhoea"].forEach(id=>{
   document.getElementById(id)?.addEventListener("change",renderNewCaseFrequencyClassification);
@@ -16587,8 +16703,9 @@ renderDengueFollowUpPlan();
 
   function safeJsonWrite(key, value) {
     try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
+      const serialized = JSON.stringify(value);
+      localStorage.setItem(key, serialized);
+      return localStorage.getItem(key) === serialized;
     } catch (_) {
       return false;
     }
@@ -18511,6 +18628,7 @@ const SEARCH_ITEMS=[
   {title:"RME 1 Antenatal",subtitle:"Booking review, VTE and risk alerts",keywords:"rme1 rme antenatal booking pregnancy preeclampsia vte thrombosis tb tuberculosis screening",action:()=>searchShowPage("rme1")},
   {title:"IUCD Insertion Clerking",subtitle:"Eligibility, procedure and follow-up",keywords:"iucd iud copper intrauterine device contraception insertion family planning mec",action:()=>searchShowPage("iucd")},
   {title:"Senarai ujian makmal",subtitle:"Ujian darah & jadual hari pengambilan",keywords:"makmal lab laboratory test blood ujian darah tft ferritin hba1c hiv elisa fasting non fasting hsis jadual",action:()=>searchShowPage("lablist")},
+  {title:"Calendar 2027",subtitle:"Clinic planning calendar",keywords:"calendar kalendar 2027 public holiday cuti blocked ncd fms appointment ramadhan",action:()=>window.open("calendar-2027.html","_blank","noopener,noreferrer")},
   {title:"AMS / NAG Paediatric",subtitle:"Outpatient antimicrobial doses",keywords:"antibiotic antimicrobial paeds dose nag ams",calc:"antibiotic"},
   {title:"Centor score",subtitle:"Modified Centor for GAS pharyngitis",keywords:"centor modified centor strep streptococcal pharyngitis tonsillitis sore throat",calc:"scores"},
   {title:"eGFR — CKD-EPI",subtitle:"2021 adult creatinine equation",keywords:"egfr renal kidney creatinine ckdepi ckd",calc:"renal"},
@@ -20091,6 +20209,7 @@ window.renderIucdClerking=()=>{renderEligibility();renderSound();};
     }
     if(utility==="lab") window.showPage?.("lablist");
     if(utility==="calculator") window.showPage?.("calculator");
+    if(utility==="calendar") window.open("calendar-2027.html","_blank","noopener,noreferrer");
   }));
 
   function setNeuroSidebarActive(target){
@@ -20209,9 +20328,10 @@ const checked=id=>Boolean(q(id)?.checked);
 const fmt=n=>Number.isFinite(n)?String(Math.round(n*10)/10):"";
 const sentence=s=>String(s||"").trim().replace(/[.;]+$/g,"");
 const escapeHtml=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
-const dateFmt=raw=>{if(!raw)return"";const d=new Date(raw+"T00:00:00");return Number.isNaN(d.getTime())?raw:d.toLocaleDateString("en-GB",{day:"2-digit",month:"2-digit",year:"numeric"});};
-const addDays=(raw,days)=>{if(!raw)return"";const d=new Date(raw+"T00:00:00");if(Number.isNaN(d.getTime()))return"";d.setDate(d.getDate()+days);return d.toISOString().slice(0,10);};
-const daysBetween=(a,b)=>{if(!a||!b)return null;const x=new Date(a+"T00:00:00"),y=new Date(b+"T00:00:00");if(Number.isNaN(x.getTime())||Number.isNaN(y.getTime()))return null;return Math.floor((y-x)/86400000);};
+const dateOnly=window.MedAssistDateOnly;
+const dateFmt=raw=>dateOnly.display(raw);
+const addDays=(raw,days)=>dateOnly.addDays(raw,days);
+const daysBetween=(a,b)=>dateOnly.diffDays(a,b);
 const cleanPaste=s=>String(s||"").normalize("NFKC").replace(/\u00a0|\u2007|\u202f/g," ").replace(/\r\n?/g,"\n").replace(/[：]/g,":");
 const setIf=(id,v)=>{if(v!==null&&v!==undefined&&String(v)!==""&&q(id))q(id).value=String(v);};
 
@@ -20223,9 +20343,19 @@ function gaData(){
 }
 function syncDating(){
   const lnmp=val("rmeLnmp"),assessment=val("rmeAssessmentDate"),d=daysBetween(lnmp,assessment);
+  const summary=q("rmeDatingSummary");
+  if(d!==null&&d<0){
+    q("rmeGaWeeks").value="";
+    q("rmeGaDays").value="";
+    if(q("rmeEdd").dataset.auto==="1")q("rmeEdd").value="";
+    summary.classList.add("alert");
+    summary.textContent="Assessment date cannot be before LNMP. Gestation outputs have been cleared.";
+    return;
+  }
+  summary.classList.remove("alert");
   if(d!==null&&d>=0){q("rmeGaWeeks").value=Math.floor(d/7);q("rmeGaDays").value=d%7;if(!val("rmeEdd")||q("rmeEdd").dataset.auto==="1"){q("rmeEdd").value=addDays(lnmp,280);q("rmeEdd").dataset.auto="1";}}
   const g=gaData(),parts=[];if(g.weeks!==null)parts.push(`POG ${g.weeks}+${g.days} weeks`);if(val("rmeEdd"))parts.push(`EDD ${dateFmt(val("rmeEdd"))}`);if(val("rmeDatesReliable")==="no"||yes("rmeRecentOcp"))parts.push("dating scan indicated — dates may be unreliable");
-  q("rmeDatingSummary").textContent=parts.length?parts.join(" · "):"Enter assessment date and LNMP to auto-calculate gestation and EDD.";
+  summary.textContent=parts.length?parts.join(" · "):"Enter assessment date and LNMP to auto-calculate gestation and EDD.";
 }
 function bmiData(){
   const h=num("rmeHeight"),prep=num("rmePrepregWeight"),booking=num("rmeBookingWeight"),g=gaData();let weight=null,basis="";
@@ -20601,7 +20731,7 @@ function generateReferral(){render();q("rmeReferralOutput").value=referralText()
 function generateAll(){generateNote();generateReferral();}
 async function copy(id,button){const text=val(id);if(!text)return;try{await navigator.clipboard.writeText(text);const old=button.textContent;button.textContent="Copied";setTimeout(()=>button.textContent=old,1000);}catch(_){q(id)?.select();document.execCommand("copy");}}
 function clearRme(){if(!confirm("Clear the RME 1 form? Saved drafts will not be deleted."))return;document.querySelectorAll("#page-rme1 input,#page-rme1 select,#page-rme1 textarea").forEach(f=>{if(f.type==="checkbox"||f.type==="radio")f.checked=f.defaultChecked;else if(f.tagName==="SELECT"){const i=[...f.options].findIndex(o=>o.defaultSelected);f.selectedIndex=i>=0?i:0;}else f.value=f.defaultValue||"";});q("rmeOutput").value="";q("rmeReferralOutput").value="";initDate();render();window.scrollTo({top:0,behavior:"smooth"});}
-function initDate(){if(!val("rmeAssessmentDate")){const d=new Date(),pad=n=>String(n).padStart(2,"0");q("rmeAssessmentDate").value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}}
+function initDate(){if(!val("rmeAssessmentDate"))q("rmeAssessmentDate").value=dateOnly.malaysiaToday();}
 let vitalTimer=null,labTimer=null;q("rmeVitalPaste")?.addEventListener("input",()=>{clearTimeout(vitalTimer);vitalTimer=setTimeout(()=>{extractVitals();render();},180);});q("rmeLabPaste")?.addEventListener("input",()=>{clearTimeout(labTimer);labTimer=setTimeout(()=>{extractLabs();render();},180);});q("rmeExtractVitals")?.addEventListener("click",()=>{extractVitals();render();});q("rmeExtractLabs")?.addEventListener("click",()=>{extractLabs();render();});
 let rmeRenderTimer=0,rmeRenderFrame=0;
 function scheduleRmeRender(delay=90){
@@ -21680,6 +21810,40 @@ function calcBmi(h,w){return Number.isFinite(h)&&Number.isFinite(w)&&h>0?w/((h/1
 function bmiCategory(x){if(!Number.isFinite(x))return "";if(x<18.5)return "Underweight";if(x<25)return "Normal";if(x<30)return "Overweight";return "Obese"}
 function egfr(age,sex,cr){if(!Number.isFinite(age)||age<18||!Number.isFinite(cr)||cr<=0)return NaN;const scr=cr/88.4,f=sex==="female",k=f?0.7:0.9,a=f?-0.241:-0.302;return 142*Math.pow(Math.min(scr/k,1),a)*Math.pow(Math.max(scr/k,1),-1.2)*Math.pow(0.9938,age)*(f?1.012:1)}
 function gCat(e){if(!Number.isFinite(e))return "";if(e>=90)return "G1";if(e>=60)return "G2";if(e>=45)return "G3a";if(e>=30)return "G3b";if(e>=15)return "G4";return "G5"}
+function ckdSummary(){
+  if(val("htnCkd")!=="yes")return "";
+  const stage=val("htnCkdStage");
+  if(!stage)return "CKD";
+  if(stage!=="G5")return `CKD ${stage}`;
+  if(val("htnHd")!=="yes")return "CKD G5 (ESRF), not on HD";
+  const schedule=val("htnHdSchedule");
+  return `CKD G5 (ESRF), on HD${schedule?` (${schedule})`:""}`;
+}
+function syncCkdWorkflow(e){
+  const workflow=$("htnCkdWorkflow"),stage=$("htnCkdStage"),esrf=$("htnEsrfWrap"),scheduleWrap=$("htnHdScheduleWrap"),hint=$("htnCkdHint");
+  const hasCkd=val("htnCkd")==="yes";
+  workflow?.classList.toggle("hidden",!hasCkd);
+  if(!hasCkd){
+    if(stage){stage.value="";delete stage.dataset.manual;}
+    if($("htnHd"))$("htnHd").value="no";
+    if($("htnHdSchedule"))$("htnHdSchedule").value="";
+    esrf?.classList.add("hidden");scheduleWrap?.classList.add("hidden");
+    return;
+  }
+  const suggested=gCat(e);
+  if(stage&&suggested&&!stage.dataset.manual)stage.value=suggested;
+  const stageValue=val("htnCkdStage"),isEsrf=stageValue==="G5";
+  esrf?.classList.toggle("hidden",!isEsrf);
+  if(!isEsrf){if($("htnHd"))$("htnHd").value="no";if($("htnHdSchedule"))$("htnHdSchedule").value="";}
+  const onHd=isEsrf&&val("htnHd")==="yes";
+  scheduleWrap?.classList.toggle("hidden",!onHd);
+  if(!onHd&&$("htnHdSchedule"))$("htnHdSchedule").value="";
+  if(hint){
+    if(!suggested)hint.textContent="Enter age, sex and creatinine for an eGFR stage suggestion. The clinician may confirm or override it.";
+    else if(stage?.dataset.manual)hint.textContent=`eGFR suggests ${suggested}; clinician-confirmed stage ${stageValue||"not selected"} is retained.`;
+    else hint.textContent=`Suggested from current eGFR: ${suggested}. Confirm or override if clinically appropriate.`;
+  }
+}
 function highRisk(e){return val("htnDm")==="yes"||val("htnCkd")==="yes"||val("htnIhd")==="yes"||val("htnCva")==="yes"||val("htnHf")==="yes"||(Number.isFinite(e)&&e<60)}
 function targetBp(e){const age=n("htnAge");if(!Number.isFinite(age))return "Enter age / risk data";if(age>=80)return "Individualise (≥80 years)";return "<130/80 mmHg"}
 
@@ -21705,13 +21869,35 @@ function anyPositive(ids){return ids.some(positive)}
 function referrals(e,s,d){const r=[];const neuro=positive("htnSxLimb"),cardiac=anyPositive(["htnSxChest","htnSxSob","htnSxPalp","htnSxOrtho","htnSxPnd","htnSxLeg"]),visual=positive("htnSxBov");if((Number.isFinite(s)&&s>=180)||(Number.isFinite(d)&&d>=110)){r.push("MOPD / ED: severe-range BP — repeat correctly and assess for acute end-organ damage")}
 if(neuro)r.push("ED / medical: focal neurological symptom — urgent stroke assessment");if(cardiac)r.push("Cardiology / ED: active cardiac or heart-failure symptom — assess urgency clinically");if(visual)r.push("Ophthalmology / acute medical assessment: active visual symptom");if(Number.isFinite(e)&&e<30)r.push("Nephrology: eGFR <30 mL/min/1.73m²");const prot=(val("htnUrineProtein")+" "+val("htnUfProtein")).toLowerCase(),blood=val("htnUfBlood").toLowerCase();if(/\+|positive|[1-9]/.test(prot)&&/\+|positive/.test(blood))r.push("Nephrology: proteinuria with haematuria if persistent / confirmed");return [...new Set(r)]}
 function lineGroup(label,ids){const x=ids.map(([k,id])=>val(id)?`${k} ${val(id)}`:"").filter(Boolean);return x.length?`${label}: ${x.join(", ")}`:""}
-function update(){const {s,d}=bp(),b=calcBmi(n("htnHeight"),n("htnWeight")),e=egfr(n("htnAge"),val("htnSex"),n("htnRpCreat"));$("htnBpCategory").value=bpCategory(s,d);$("htnBmi").value=Number.isFinite(b)?fmt(b):"";$("htnBmiCat").value=bmiCategory(b);$("htnEgfr").value=Number.isFinite(e)?fmt(e):"";$("htnTargetBp").textContent=targetBp(e);$("htnEgfrStatus").textContent=Number.isFinite(e)?`${fmt(e)} mL/min/1.73m² (${gCat(e)})`:"Enter age, sex & creatinine";$("htnFrsResult").textContent=frs(e);const rr=referrals(e,s,d);$("htnReferralAlert").classList.toggle("hidden",!rr.length);$("htnReferralAlert").textContent=rr.length?"Referral alert:\n• "+rr.join("\n• "):"";$("htnVisitOther").classList.toggle("hidden",val("htnVisitType")!=="other");$("htnHbpmValueWrap").classList.toggle("hidden",val("htnHbpm")!=="done");$("htnSupplementWrap").classList.toggle("hidden",val("htnSupplement")!=="yes");const missed=val("htnCompliance")==="occasionally missed";$("htnMissedFrequencyWrap")?.classList.toggle("hidden",!missed);if(!missed){if($("htnMissedFrequency"))$("htnMissedFrequency").value="";if($("htnMissedFrequencyOther"))$("htnMissedFrequencyOther").value=""}const missedOther=missed&&val("htnMissedFrequency")==="other";$("htnMissedFrequencyOther")?.classList.toggle("hidden",!missedOther)}
+function update(){
+  const {s,d}=bp(),b=calcBmi(n("htnHeight"),n("htnWeight")),e=egfr(n("htnAge"),val("htnSex"),n("htnRpCreat"));
+  $("htnBpCategory").value=bpCategory(s,d);
+  $("htnBmi").value=Number.isFinite(b)?fmt(b):"";
+  $("htnBmiCat").value=bmiCategory(b);
+  $("htnEgfr").value=Number.isFinite(e)?fmt(e):"";
+  $("htnTargetBp").textContent=targetBp(e);
+  $("htnEgfrStatus").textContent=Number.isFinite(e)?`${fmt(e)} mL/min/1.73m² (${gCat(e)})`:"Enter age, sex & creatinine";
+  syncCkdWorkflow(e);
+  $("htnFrsResult").textContent=frs(e);
+  const rr=referrals(e,s,d);
+  $("htnReferralAlert").classList.toggle("hidden",!rr.length);
+  $("htnReferralAlert").textContent=rr.length?"Referral alert:\n• "+rr.join("\n• "):"";
+  $("htnVisitOther").classList.toggle("hidden",val("htnVisitType")!=="other");
+  $("htnHbpmValueWrap").classList.toggle("hidden",val("htnHbpm")!=="done");
+  $("htnSupplementWrap").classList.toggle("hidden",val("htnSupplement")!=="yes");
+  const missed=val("htnCompliance")==="occasionally missed";
+  $("htnMissedFrequencyWrap")?.classList.toggle("hidden",!missed);
+  if(!missed){if($("htnMissedFrequency"))$("htnMissedFrequency").value="";if($("htnMissedFrequencyOther"))$("htnMissedFrequencyOther").value=""}
+  const missedOther=missed&&val("htnMissedFrequency")==="other";
+  $("htnMissedFrequencyOther")?.classList.toggle("hidden",!missedOther);
+}
 function negativeLines(){const lines=[];if(!anyPositive(["htnSxSob","htnSxChest","htnSxPalp"]))lines.push("no SOB/chest pain/palpitation");else{const a=[];if(!positive("htnSxSob"))a.push("SOB");if(!positive("htnSxChest"))a.push("chest pain");if(!positive("htnSxPalp"))a.push("palpitation");if(a.length)lines.push("no "+a.join("/"))}if(!anyPositive(["htnSxHeadache","htnSxBov","htnSxNausea","htnSxVomit"]))lines.push("no headache/BOV/nausea/vomiting");else{const a=[];[["headache","htnSxHeadache"],["BOV","htnSxBov"],["nausea","htnSxNausea"],["vomiting","htnSxVomit"]].forEach(([x,id])=>{if(!positive(id))a.push(x)});if(a.length)lines.push("no "+a.join("/"))}if(!positive("htnSxLimb"))lines.push("no limb weakness");if(!anyPositive(["htnSxLeg","htnSxOrtho","htnSxPnd"]))lines.push("no leg swelling/orthopnea/PND");else{const a=[];[["leg swelling","htnSxLeg"],["orthopnea","htnSxOrtho"],["PND","htnSxPnd"]].forEach(([x,id])=>{if(!positive(id))a.push(x)});if(a.length)lines.push("no "+a.join("/"))}return lines}
-function generate(){update();const {s,d}=bp(),e=parseFloat(val("htnEgfr")),b=val("htnBmi"),pos=[...document.querySelectorAll('#htnSymptoms input:checked')].map(x=>x.value),visit=val("htnVisitType")==="other"?(val("htnVisitOther")||"review"):val("htnVisitType"),ul=[];ul.push("HPT"+(val("htnHpl")==="yes"?"/HPL":""));const no=[];if(val("htnIhd")==="no")no.push("IHD");if(val("htnCkd")==="no")no.push("CKD");if(val("htnCva")==="no")no.push("CVA");const yesc=[];if(val("htnDm")==="yes")yesc.push("DM");if(val("htnIhd")==="yes")yesc.push("IHD");if(val("htnCkd")==="yes")yesc.push("CKD");if(val("htnCva")==="yes")yesc.push("CVA/TIA");if(val("htnHf")==="yes")yesc.push("HF");
+function generate(){update();const {s,d}=bp(),e=parseFloat(val("htnEgfr")),b=val("htnBmi"),pos=[...document.querySelectorAll('#htnSymptoms input:checked')].map(x=>x.value),visit=val("htnVisitType")==="other"?(val("htnVisitOther")||"review"):val("htnVisitType"),ul=[];ul.push("HPT"+(val("htnHpl")==="yes"?"/HPL":""));const no=[];if(val("htnIhd")==="no")no.push("IHD");if(val("htnCkd")==="no")no.push("CKD");if(val("htnCva")==="no")no.push("CVA");const yesc=[];if(val("htnDm")==="yes")yesc.push("DM");if(val("htnIhd")==="yes")yesc.push("IHD");if(val("htnCkd")==="yes")yesc.push(ckdSummary());if(val("htnCva")==="yes")yesc.push("CVA/TIA");if(val("htnHf")==="yes")yesc.push("HF");
 const lines=["UL:",...ul];if(yesc.length)lines.push(yesc.join(" / "));if(no.length)lines.push("no "+no.join("/"));if(b)lines.push(`BMI: ${b} kg/m² (${val("htnBmiCat")})`);lines.push(`target BP: ${$("htnTargetBp").textContent}`);lines.push("");lines.push(`come today for ${visit}`);lines.push("");lines.push(val("htnActiveComplaint")?`active complaint: ${val("htnActiveComplaint")}`:"no active complaint");{let compliance=val("htnCompliance");if(compliance==="occasionally missed"){const freq=val("htnMissedFrequency")==="other"?(val("htnMissedFrequencyOther")||"frequency not specified"):val("htnMissedFrequency");if(freq)compliance+=` (${freq})`;}lines.push(`compliance: ${compliance}`);}lines.push(`diet control: ${val("htnDiet")}${val("htnDietNote")?`. ${val("htnDietNote")}`:""}`);lines.push("");lines.push("TOD/TOC sx:");if(pos.length)lines.push("positive: "+pos.join(", "));lines.push(...negativeLines());lines.push("");if(val("htnHbpm")==="done")lines.push(`HBPM: ${val("htnHbpmSbp")&&val("htnHbpmDbp")?val("htnHbpmSbp")+"/"+val("htnHbpmDbp")+" mmHg":"done"}`);else lines.push("no HBPM done");lines.push(`${val("htnSmoking")}${val("htnAlcohol")==="yes"?" / alcohol intake":" / non-alcoholic"}`);lines.push(val("htnExercise")==="yes"?"regular exercise done":"no regular exercise done");lines.push(val("htnSupplement")==="yes"?`supplement/traditional meds: ${val("htnSupplementDetails")||"yes"}`:"no supplement/traditional meds intake");lines.push("");lines.push(`O/E: ${val("htnGeneralExam")}`);const vitalBits=[];if(Number.isFinite(s)&&Number.isFinite(d))vitalBits.push(`BP ${fmt(s)}/${fmt(d)} mmHg`);if(val("htnPulse"))vitalBits.push(`PR ${val("htnPulse")} bpm`);if(vitalBits.length)lines.push(vitalBits.join(", "));const anthro=[];if(val("htnWeight"))anthro.push(`weight ${val("htnWeight")} kg`);if(val("htnHeight"))anthro.push(`height ${val("htnHeight")} cm`);if(val("htnBmi"))anthro.push(`BMI ${val("htnBmi")} kg/m² (${val("htnBmiCat")})`);if(val("htnWaist"))anthro.push(`waist ${val("htnWaist")} cm`);if(anthro.length)lines.push(`Anthropometry: ${anthro.join(", ")}`);lines.push(`lungs ${val("htnLungs")||"clear"}`);lines.push(`CVS ${val("htnCvs")||"DRNM"}`);lines.push(val("htnJvp")==="yes"?"raised JVP":"no raised JVP");lines.push(val("htnOedema")==="yes"?"pedal edema present":"no pedal edema");if(val("htnOtherExam"))lines.push(val("htnOtherExam"));
 const lab=[];[lineGroup("RP",[["Cr","htnRpCreat"],["urea","htnRpUrea"],["K","htnRpK"],["Na","htnRpNa"],["Cl","htnRpCl"]]),lineGroup("LFT",[["TP","htnLftTp"],["TBili","htnLftTbili"],["ALT","htnLftAlt"],["ALP","htnLftAlp"]]),lineGroup("FBC",[["Hb","htnFbcHb"],["Hct","htnFbcHct"],["WC","htnFbcWc"],["Plt","htnFbcPlt"],["MCV","htnFbcMcv"],["MCH","htnFbcMch"]]),val("htnFbs")?`FBS: ${val("htnFbs")} mmol/L`:"",lineGroup("FLP",[["TC","htnFlpTc"],["LDL","htnFlpLdl"],["TG","htnFlpTg"],["HDL","htnFlpHdl"]]),(val("htnUrineAlbumin")||val("htnUrineProtein"))?`Urine microalbumin/protein: ${[val("htnUrineAlbumin"),val("htnUrineProtein")].filter(Boolean).join(", ")}`:"",lineGroup("UFEME",[["protein","htnUfProtein"],["blood","htnUfBlood"],["nitrite","htnUfNitrite"],["glucose","htnUfGlucose"]]),Number.isFinite(e)?`eGFR (CKD-EPI 2021): ${fmt(e)} mL/min/1.73m² (${gCat(e)})`:""].filter(Boolean).forEach(x=>lab.push(x));if(lab.length){const resultDate=val("htnResultDate");lines.push("");lines.push(resultDate?`RESULTS (${formatDate(resultDate)}):`:"RESULTS:",...lab)}lines.push("");lines.push(`FRS: ${$("htnFrsResult").textContent}`);const rr=referrals(Number.isFinite(e)?e:NaN,s,d);if(rr.length){lines.push("", "REFERRAL ALERT:",...rr.map(x=>`- ${x}`))}lines.push("","PLAN:");const plans=[...document.querySelectorAll('#htnPlanItems input:checked')].map(x=>x.value).concat(split(val("htnOtherPlan")));const amount=val("htnTcaAmount");if(amount){const u=val("htnTcaUnit")||"month";plans.push(`TCA in ${amount} ${amount==="1"?u:u+"s"}.`)}else plans.push("TCA.");plans.forEach(x=>lines.push(x));$("htnOutput").value=lines.join("\n").replace(/\n{3,}/g,"\n\n").trim();$("htnOutput").scrollIntoView({behavior:"smooth",block:"start"})}
 async function copy(){if(!val("htnOutput"))generate();try{await navigator.clipboard.writeText(val("htnOutput"));const b=$("htnCopy"),t=b.textContent;b.textContent="Copied";setTimeout(()=>b.textContent=t,1000)}catch(e){$("htnOutput").focus();$("htnOutput").select();document.execCommand("copy")}}
-function reset(){document.querySelectorAll('#page-htn input').forEach(x=>{if(x.type==='checkbox')x.checked=x.defaultChecked;else x.value=x.defaultValue||''});document.querySelectorAll('#page-htn select').forEach(x=>x.selectedIndex=0);document.querySelectorAll('#page-htn textarea').forEach(x=>x.value=x.defaultValue||'');$("htnOutput").value="";update();window.scrollTo({top:0,behavior:"smooth"})}
+function reset(){document.querySelectorAll('#page-htn input').forEach(x=>{if(x.type==='checkbox')x.checked=x.defaultChecked;else x.value=x.defaultValue||''});document.querySelectorAll('#page-htn select').forEach(x=>x.selectedIndex=0);document.querySelectorAll('#page-htn textarea').forEach(x=>x.value=x.defaultValue||'');if($("htnCkdStage"))delete $("htnCkdStage").dataset.manual;$("htnOutput").value="";update();window.scrollTo({top:0,behavior:"smooth"})}
+$("htnCkdStage")?.addEventListener("change",()=>{const stage=$("htnCkdStage");if(stage.value)stage.dataset.manual="1";else delete stage.dataset.manual;});
 $("page-htn").addEventListener("input",update);$("page-htn").addEventListener("change",update);$("htnGenerate").addEventListener("click",generate);$("htnCopy").addEventListener("click",copy);$("htnReset").addEventListener("click",reset);update();
 })();
 </script>
@@ -22097,6 +22283,75 @@ syncTbDetails();syncAbdominalPainSites();syncDmCxDetails();window.syncNcdVisible
 })();
 </script>
 <!-- V18.208 2026-08-18: TB duration/detail fields; Dengue warning-sign layout + abdominal site + oral intake mL/24h; plan option 4 preset / custom option 5; PCM minute 00/30; DM complication details + G5=>ESRF + compact symptom note; dynamic pasted lab fields; HPT combined BP/anthropometry paste, no Temp/RR/SpO2, removed secondary/resistant fields, FRS corrected to official FHS 2008 General CVD continuous equation with explicit treatment status and no non-FRS clinical-risk substitution; derived eGFR remains in its auto-summary rather than the pasted-result component grid. -->
+
+<style id="medassist-output-freshness-style">
+textarea.medassist-output-stale{border-color:#d6a65f!important;background:#fffaf0!important;box-shadow:0 0 0 2px rgba(214,166,95,.12)!important}
+</style>
+<script id="medassist-output-freshness-script">
+(() => {
+  "use strict";
+
+  const byId = id => document.getElementById(id);
+  const state = new Map();
+  const workflows = [
+    { root:"page-dm", outputs:["dmOutput"], generators:{dmGenerate:["dmOutput"]}, copies:[{selector:"#dmCopy",output:"dmOutput",generator:"dmGenerate"}], resets:["dmReset"] },
+    { root:"page-htn", outputs:["htnOutput"], generators:{htnGenerate:["htnOutput"]}, copies:[{selector:"#htnCopy",output:"htnOutput",generator:"htnGenerate"}], resets:["htnReset"] },
+    { root:"page-rme1", outputs:["rmeOutput","rmeReferralOutput"], generators:{rmeGenerateNote:["rmeOutput"],rmeGenerateReferral:["rmeReferralOutput"],rmeGenerateAll:["rmeOutput","rmeReferralOutput"]}, copies:[{selector:"#rmeCopyNote",output:"rmeOutput",generator:"rmeGenerateNote"},{selector:"#rmeCopyReferral",output:"rmeReferralOutput",generator:"rmeGenerateReferral"}], resets:["rmeClear"] },
+    { root:"page-nnj", outputs:["nnjOutput","nnjReferralLetter"], generators:{nnjCalc:["nnjOutput","nnjReferralLetter"]}, copies:[{selector:"#nnjCopy",output:"nnjOutput",generator:"nnjCalc"},{selector:"#nnjCopyReferral",output:"nnjReferralLetter",generator:"nnjCalc"}], resets:["nnjClear"] },
+    { root:"page-iucd", outputs:["iucdOutput"], generators:{iucdGenerate:["iucdOutput"]}, copies:[{selector:"#iucdCopy",output:"iucdOutput",generator:"iucdGenerate"}], resets:["iucdReset"] },
+    { root:"adhdTemplate", outputs:["adhdNoteOutput","adhdReferralOutput"], generators:{generateAdhdNote:["adhdNoteOutput"],generateAdhdReferral:["adhdReferralOutput"],generateAdhdAll:["adhdNoteOutput","adhdReferralOutput"]}, copies:[{selector:'[data-copy-neuro="adhdNoteOutput"]',output:"adhdNoteOutput",generator:"generateAdhdNote"},{selector:'[data-copy-neuro="adhdReferralOutput"]',output:"adhdReferralOutput",generator:"generateAdhdReferral"}], resets:[] },
+    { root:"autismTemplate", outputs:["autismNoteOutput","autismReferralOutput"], generators:{generateAutismNote:["autismNoteOutput"],generateAutismReferral:["autismReferralOutput"],generateAutismAll:["autismNoteOutput","autismReferralOutput"]}, copies:[{selector:'[data-copy-neuro="autismNoteOutput"]',output:"autismNoteOutput",generator:"generateAutismNote"},{selector:'[data-copy-neuro="autismReferralOutput"]',output:"autismReferralOutput",generator:"generateAutismReferral"}], resets:[] }
+  ];
+
+  function setOutputState(id, stale) {
+    state.set(id, Boolean(stale));
+    const output = byId(id);
+    if (!output) return;
+    output.dataset.outputState = stale ? "stale" : "fresh";
+    output.classList.toggle("medassist-output-stale",Boolean(stale && output.value.trim()));
+    output.title = stale
+      ? "Form data changed. Copy will regenerate this output first."
+      : "Editable generated output. Manual edits are preserved until form data changes.";
+  }
+
+  function markWorkflowDirty(workflow, target) {
+    if (workflow.outputs.includes(target?.id)) return;
+    if (target?.closest?.(".actions") && target.matches("button")) return;
+    workflow.outputs.forEach(id => setOutputState(id, true));
+  }
+
+  workflows.forEach(workflow => {
+    workflow.outputs.forEach(id => setOutputState(id, false));
+    const root = byId(workflow.root);
+    ["input","change"].forEach(type => root?.addEventListener(type,event => markWorkflowDirty(workflow,event.target)));
+
+    Object.entries(workflow.generators).forEach(([buttonId,outputs]) => {
+      byId(buttonId)?.addEventListener("click",() => outputs.forEach(id => setOutputState(id,false)));
+    });
+
+    workflow.copies.forEach(copy => {
+      document.querySelector(copy.selector)?.addEventListener("click",() => {
+        if (!state.get(copy.output)) return;
+        byId(copy.generator)?.click();
+      },true);
+    });
+
+    workflow.resets.forEach(buttonId => byId(buttonId)?.addEventListener("click",() => {
+      workflow.outputs.forEach(id => setOutputState(id,false));
+    }));
+  });
+
+  document.querySelectorAll("[data-clear-neuro]").forEach(button => button.addEventListener("click",() => {
+    const prefix=button.dataset.clearNeuro==="adhdTemplate"?"adhd":"autism";
+    [`${prefix}NoteOutput`,`${prefix}ReferralOutput`].forEach(id=>setOutputState(id,false));
+  }));
+
+  window.MedAssistOutputFreshness = Object.freeze({
+    isStale: id => Boolean(state.get(id)),
+    markFresh: id => setOutputState(id,false)
+  });
+})();
+</script>
 
 </body>
 
