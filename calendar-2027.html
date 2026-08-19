@@ -35,11 +35,15 @@ body::after{width:360px;height:220px;left:-90px;bottom:-70px;background:radial-g
 .weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}.weekdays{margin-bottom:3px}.weekday{height:23px;display:flex;align-items:center;justify-content:center;font-size:9px;letter-spacing:.04em;color:#899792;font-weight:900}.weekday.weekend{color:#ae8583}
 .day{appearance:none;border:0;background:transparent;min-height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:650;color:#40504d;padding:0}.day.empty{visibility:hidden}.day.weekend{color:#987d79}.day.marked{cursor:pointer;font-weight:900;position:relative}.day.marked::after{content:"";position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%}.day.holiday{background:var(--holiday-soft);color:#70457f}.day.holiday::after{background:var(--holiday)}.day.blocked{background:var(--blocked-soft);color:#8f4462}.day.blocked::after{background:var(--blocked)}.day.hidden-mark{background:transparent!important;color:#40504d!important}.day.hidden-mark::after{display:none}.day:focus-visible,.month-open:focus-visible,.filter:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .footer-note{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:18px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+.event-summary{margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:14px;background:rgba(255,254,250,.94);box-shadow:var(--shadow)}
+.event-summary h2{margin:0 0 4px;color:var(--red);font-family:Georgia,"Times New Roman",serif;font-size:20px}.event-summary>p{margin:0 0 12px;color:var(--muted);font-size:11px}
+.event-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.event-summary-item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:start;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff}.event-summary-item time{font-size:11px;font-weight:900;color:#526963;white-space:nowrap}.event-summary-item strong{display:block;font-size:11px;line-height:1.35}.event-summary-item small{display:block;margin-top:2px;color:var(--muted);font-size:9.5px}.event-summary-empty{grid-column:1/-1;padding:12px;text-align:center;color:var(--muted);font-size:12px}
 .dialog-backdrop{position:fixed;inset:0;background:rgba(28,43,39,.36);display:flex;align-items:center;justify-content:center;padding:18px;z-index:4000}.dialog-backdrop.hidden{display:none}.dialog{width:min(560px,94vw);background:#fffefa;border-radius:16px;border:1px solid var(--line);padding:16px;box-shadow:0 28px 70px rgba(0,0,0,.20)}.dialog-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.dialog-title{margin:0;color:var(--red);font-family:Georgia,"Times New Roman",serif;font-size:24px}.dialog-close{border:0;background:#f2f4f1;border-radius:9px;width:34px;height:34px;font-size:18px;cursor:pointer}.dialog-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.dialog-grid .day{min-height:46px;font-size:14px}.dialog-grid .weekday{height:28px;font-size:10px}.dialog-detail{margin-top:12px;min-height:46px;padding:10px 11px;border-radius:10px;background:#f6f8f5;border:1px solid var(--line);font-size:13px}.dialog-detail small{color:var(--muted)}
 @media(max-width:1050px){.month-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:900px){.event-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.page{width:min(94vw,650px);padding-top:16px}.top{grid-template-columns:auto 1fr}.year-tag{display:none}.title{text-align:right;font-size:28px;letter-spacing:.08em}.sub{text-align:right;margin-top:-2px}.month-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar{align-items:flex-start}.hint{width:100%}}
-@media(max-width:500px){.month-grid{grid-template-columns:1fr}.month{padding:14px}.day{min-height:34px;font-size:12px}.weekday{font-size:10px}.title{font-size:25px}.event-panel{align-items:flex-start}}
-@media print{body{background:#fff}body::before,body::after,.toolbar,.back,.month-open,.event-panel,.dialog-backdrop{display:none!important}.page{width:100%;padding:0}.month-grid{grid-template-columns:repeat(4,1fr);gap:7px}.month{box-shadow:none;break-inside:avoid;padding:8px}.title{font-size:30px}.sub{margin-bottom:10px}.ramadan{font-size:10px}.footer-note{font-size:9px}}
+@media(max-width:500px){.month-grid,.event-summary-grid{grid-template-columns:1fr}.month{padding:14px}.day{min-height:34px;font-size:12px}.weekday{font-size:10px}.title{font-size:25px}.event-panel{align-items:flex-start}}
+@media print{body{background:#fff}body::before,body::after,.toolbar,.back,.month-open,.event-panel,.dialog-backdrop{display:none!important}.page{width:100%;padding:0}.month-grid{grid-template-columns:repeat(4,1fr);gap:7px}.month{box-shadow:none;break-inside:avoid;padding:8px}.title{font-size:30px}.sub{margin-bottom:10px}.ramadan{font-size:10px}.event-summary{box-shadow:none;padding:8px;break-before:page}.event-summary-grid{grid-template-columns:repeat(4,1fr);gap:5px}.footer-note{font-size:9px}}
 </style>
 </head>
 <body>
@@ -57,7 +61,7 @@ body::after{width:360px;height:220px;left:-90px;bottom:-70px;background:radial-g
     <div class="legend">
       <span class="legend-label">Show</span>
       <button class="filter" id="filterHoliday" type="button" aria-pressed="true"><span class="dot holiday"></span>Public Holiday</button>
-      <button class="filter" id="filterBlocked" type="button" aria-pressed="true"><span class="dot blocked"></span>Blocked NCD</button>
+      <button class="filter" id="filterBlocked" type="button" aria-pressed="true"><span class="dot blocked"></span>Blocked NCD / FMS Appt</button>
     </div>
     <span class="hint">Tap a coloured date for details · tap a month name to enlarge</span>
   </div>
@@ -71,7 +75,13 @@ body::after{width:360px;height:220px;left:-90px;bottom:-70px;background:radial-g
 
   <main id="monthGrid" class="month-grid" aria-label="2027 calendar"></main>
 
-  <footer class="footer-note"><span><span class="dot holiday"></span> Public Holiday &nbsp;&nbsp; <span class="dot blocked"></span> Blocked NCD</span><span>MedAssist KK Bangi</span></footer>
+  <section class="event-summary" aria-labelledby="eventSummaryTitle">
+    <h2 id="eventSummaryTitle">Event summary</h2>
+    <p>Summary follows the active Public Holiday and Blocked NCD / FMS Appt filters.</p>
+    <div class="event-summary-grid" id="eventSummary"></div>
+  </section>
+
+  <footer class="footer-note"><span><span class="dot holiday"></span> Public Holiday &nbsp;&nbsp; <span class="dot blocked"></span> Blocked NCD / FMS Appt</span><span>MedAssist KK Bangi</span></footer>
 </div>
 
 <div id="dialogBackdrop" class="dialog-backdrop hidden" role="presentation">
@@ -111,13 +121,14 @@ body::after{width:360px;height:220px;left:-90px;bottom:-70px;background:radial-g
   const dialogGrid=document.getElementById('dialogGrid');
   const dialogDetail=document.getElementById('dialogDetail');
   const dialogClose=document.getElementById('dialogClose');
+  const eventSummary=document.getElementById('eventSummary');
   const pad=n=>String(n).padStart(2,'0');
   const keyFor=(m,d)=>`${YEAR}-${pad(m+1)}-${pad(d)}`;
   const daysInMonth=m=>new Date(Date.UTC(YEAR,m+1,0)).getUTCDate();
   const mondayOffset=m=>(new Date(Date.UTC(YEAR,m,1)).getUTCDay()+6)%7;
   const isWeekend=(m,d)=>{const w=new Date(Date.UTC(YEAR,m,d)).getUTCDay();return w===0||w===6};
   const enabled=type=>(type==='holiday'?filterHoliday:filterBlocked).getAttribute('aria-pressed')==='true';
-  const kind=ev=>ev.type==='holiday'?'Public Holiday':'Blocked NCD';
+  const kind=ev=>ev.type==='holiday'?'Public Holiday':'Blocked NCD / FMS Appt';
 
   function showEvent(m,d,ev,inDialog=false){
     const dateText=`${d} ${months[m]} ${YEAR}`;
@@ -129,7 +140,8 @@ body::after{width:360px;height:220px;left:-90px;bottom:-70px;background:radial-g
     const ev=data[keyFor(m,d)];
     const b=document.createElement('button');b.type='button';b.className='day'+(isWeekend(m,d)?' weekend':'');b.textContent=d;
     if(!ev){b.disabled=true;b.tabIndex=-1;return b}
-    b.classList.add('marked',ev.type);if(!enabled(ev.type))b.classList.add('hidden-mark');
+    b.classList.add('marked',ev.type);
+    if(!enabled(ev.type)){b.classList.add('hidden-mark');b.disabled=true;b.tabIndex=-1;return b}
     b.title=`${ev.label} — ${kind(ev)}`;b.setAttribute('aria-label',`${d} ${months[m]} ${YEAR}: ${ev.label}, ${kind(ev)}`);
     b.addEventListener('click',e=>{e.stopPropagation();showEvent(m,d,ev,inDialog)});return b
   }
@@ -150,8 +162,18 @@ body::after{width:360px;height:220px;left:-90px;bottom:-70px;background:radial-g
     head.append(name,open);card.append(head,w,days);name.style.cursor='pointer';name.addEventListener('click',()=>openMonth(m));return card
   }
 
-  function render(){grid.innerHTML='';for(let m=0;m<12;m++)grid.appendChild(monthCard(m))}
-  function toggleFilter(btn){btn.setAttribute('aria-pressed',btn.getAttribute('aria-pressed')==='true'?'false':'true');render()}
+  function renderSummary(){
+    eventSummary.innerHTML='';
+    Object.entries(data).sort(([a],[b])=>a.localeCompare(b)).filter(([,ev])=>enabled(ev.type)).forEach(([date,ev])=>{
+      const item=document.createElement('div');item.className='event-summary-item';
+      const time=document.createElement('time');time.dateTime=date;time.textContent=date.split('-').reverse().join('/');
+      const copy=document.createElement('div'),name=document.createElement('strong'),type=document.createElement('small');
+      name.textContent=ev.label;type.textContent=kind(ev);copy.append(name,type);item.append(time,copy);eventSummary.appendChild(item);
+    });
+    if(!eventSummary.children.length){const empty=document.createElement('div');empty.className='event-summary-empty';empty.textContent='Both event categories are hidden.';eventSummary.appendChild(empty)}
+  }
+  function render(){grid.innerHTML='';for(let m=0;m<12;m++)grid.appendChild(monthCard(m));renderSummary()}
+  function toggleFilter(btn){btn.setAttribute('aria-pressed',btn.getAttribute('aria-pressed')==='true'?'false':'true');eventPanel.classList.remove('show');render()}
   function openMonth(m){dialogTitle.textContent=`${months[m]} ${YEAR}`;dialogGrid.innerHTML='';addCalendarCells(dialogGrid,m,true);dialogDetail.innerHTML='<small>Tap a coloured date for details.</small>';backdrop.classList.remove('hidden');dialogClose.focus()}
   function closeMonth(){backdrop.classList.add('hidden')}
 
