@@ -37,7 +37,12 @@ body::after{width:360px;height:220px;left:-90px;bottom:-70px;background:radial-g
 .footer-note{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:18px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
 .event-summary{margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:14px;background:rgba(255,254,250,.94);box-shadow:var(--shadow)}
 .event-summary h2{margin:0 0 4px;color:var(--red);font-family:Georgia,"Times New Roman",serif;font-size:20px}.event-summary>p{margin:0 0 12px;color:var(--muted);font-size:11px}
-.event-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.event-summary-item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:start;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff}.event-summary-item time{font-size:11px;font-weight:900;color:#526963;white-space:nowrap}.event-summary-item strong{display:block;font-size:11px;line-height:1.35}.event-summary-item small{display:block;margin-top:2px;color:var(--muted);font-size:9.5px}.event-summary-empty{grid-column:1/-1;padding:12px;text-align:center;color:var(--muted);font-size:12px}
+.event-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.month-summary{display:flex;flex-direction:column;gap:9px;min-width:0;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.month-summary-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.month-summary-name{margin:0;color:var(--red);font-family:Georgia,"Times New Roman",serif;font-size:16px}.month-summary-count{font-size:9px;color:var(--muted);font-weight:900;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.month-quote{position:relative;margin:0;padding:9px 10px 9px 25px;border-radius:9px;background:#faf6ef;color:#675f55;font-family:Georgia,"Times New Roman",serif;font-size:11px;font-style:italic;line-height:1.45}.month-quote::before{content:"\201C";position:absolute;left:8px;top:1px;color:#c19d72;font-size:25px;font-style:normal;line-height:1}
+.month-events{display:grid;gap:8px}.event-group{display:grid;gap:4px}.event-group-title{display:flex;align-items:center;gap:6px;margin:0;font-size:9px;color:var(--muted);font-weight:900;letter-spacing:.045em;text-transform:uppercase}.event-group-title .dot{width:7px;height:7px}
+.event-summary-item{display:grid;grid-template-columns:46px minmax(0,1fr);gap:7px;align-items:start;padding:5px 0;border-bottom:1px solid #edf0ec}.event-summary-item:last-child{border-bottom:0}.event-summary-item time{font-size:10px;font-weight:900;color:#526963;white-space:nowrap}.event-summary-item strong{display:block;font-size:10.5px;line-height:1.35}.event-summary-empty{padding:6px 0 2px;color:var(--muted);font-size:10.5px}
 .dialog-backdrop{position:fixed;inset:0;background:rgba(28,43,39,.36);display:flex;align-items:center;justify-content:center;padding:18px;z-index:4000}.dialog-backdrop.hidden{display:none}.dialog{width:min(560px,94vw);background:#fffefa;border-radius:16px;border:1px solid var(--line);padding:16px;box-shadow:0 28px 70px rgba(0,0,0,.20)}.dialog-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.dialog-title{margin:0;color:var(--red);font-family:Georgia,"Times New Roman",serif;font-size:24px}.dialog-close{border:0;background:#f2f4f1;border-radius:9px;width:34px;height:34px;font-size:18px;cursor:pointer}.dialog-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.dialog-grid .day{min-height:46px;font-size:14px}.dialog-grid .weekday{height:28px;font-size:10px}.dialog-detail{margin-top:12px;min-height:46px;padding:10px 11px;border-radius:10px;background:#f6f8f5;border:1px solid var(--line);font-size:13px}.dialog-detail small{color:var(--muted)}
 @media(max-width:1050px){.month-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:900px){.event-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -76,8 +81,8 @@ body::after{width:360px;height:220px;left:-90px;bottom:-70px;background:radial-g
   <main id="monthGrid" class="month-grid" aria-label="2027 calendar"></main>
 
   <section class="event-summary" aria-labelledby="eventSummaryTitle">
-    <h2 id="eventSummaryTitle">Event summary</h2>
-    <p>Summary follows the active Public Holiday and Blocked NCD / FMS Appt filters.</p>
+    <h2 id="eventSummaryTitle">Monthly schedule &amp; motivation</h2>
+    <p>Public holidays and blocked appointments are grouped by month. The list follows the active filters above.</p>
     <div class="event-summary-grid" id="eventSummary"></div>
   </section>
 
@@ -97,6 +102,20 @@ body::after{width:360px;height:220px;left:-90px;bottom:-70px;background:radial-g
   'use strict';
   const YEAR=2027;
   const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const monthlyQuotes=[
+    'Start small. Start now. Start with grace.',
+    'Your February blooms from the seeds you plant today.',
+    'Slow progress is still progress. Keep going softly.',
+    'Turn your quiet moments into healing.',
+    'One calm step at a time leads you far.',
+    'Good things grow in silence.',
+    'Where your heart is softened, your barakah grows.',
+    'Find one thing to be thankful for every day.',
+    'A gentle reset is still a reset.',
+    'Show up for yourself even when it’s quiet.',
+    'What is written for you will never miss you.',
+    'You made it through the year. Be proud of your softness and strength.'
+  ];
   const weekdays=['MO','TU','WE','TH','FR','SA','SU'];
   const data={
     '2027-01-01':{type:'holiday',label:'New Year'},'2027-01-22':{type:'holiday',label:'Thaipusam'},'2027-01-04':{type:'blocked',label:'Blocked NCD'},'2027-01-25':{type:'blocked',label:'Blocked NCD'},
@@ -162,15 +181,44 @@ body::after{width:360px;height:220px;left:-90px;bottom:-70px;background:radial-g
     head.append(name,open);card.append(head,w,days);name.style.cursor='pointer';name.addEventListener('click',()=>openMonth(m));return card
   }
 
+  function summaryGroup(type,entries){
+    const group=document.createElement('section');group.className='event-group';
+    const title=document.createElement('h4');title.className='event-group-title';
+    const dot=document.createElement('span');dot.className=`dot ${type}`;dot.setAttribute('aria-hidden','true');
+    const titleText=document.createElement('span');titleText.textContent=type==='holiday'?'Public Holiday':'Blocked NCD / FMS Appt';
+    title.append(dot,titleText);group.appendChild(title);
+    entries.forEach(([date,ev])=>{
+      const item=document.createElement('div');item.className='event-summary-item';
+      const time=document.createElement('time');time.dateTime=date;time.textContent=new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'short',timeZone:'UTC'}).format(new Date(`${date}T00:00:00Z`));
+      const name=document.createElement('strong');name.textContent=ev.label;item.append(time,name);group.appendChild(item);
+    });
+    return group;
+  }
+
   function renderSummary(){
     eventSummary.innerHTML='';
-    Object.entries(data).sort(([a],[b])=>a.localeCompare(b)).filter(([,ev])=>enabled(ev.type)).forEach(([date,ev])=>{
-      const item=document.createElement('div');item.className='event-summary-item';
-      const time=document.createElement('time');time.dateTime=date;time.textContent=date.split('-').reverse().join('/');
-      const copy=document.createElement('div'),name=document.createElement('strong'),type=document.createElement('small');
-      name.textContent=ev.label;type.textContent=kind(ev);copy.append(name,type);item.append(time,copy);eventSummary.appendChild(item);
+    const allEntries=Object.entries(data).sort(([a],[b])=>a.localeCompare(b));
+    const bothHidden=!enabled('holiday')&&!enabled('blocked');
+    months.forEach((month,m)=>{
+      const card=document.createElement('article');card.className='month-summary';
+      const head=document.createElement('div');head.className='month-summary-head';
+      const name=document.createElement('h3');name.className='month-summary-name';name.textContent=month;
+      const monthEntries=allEntries.filter(([date])=>Number(date.slice(5,7))===m+1);
+      const visibleEntries=monthEntries.filter(([,ev])=>enabled(ev.type));
+      const count=document.createElement('span');count.className='month-summary-count';count.textContent=`${visibleEntries.length} marked ${visibleEntries.length===1?'date':'dates'}`;
+      head.append(name,count);
+      const quote=document.createElement('blockquote');quote.className='month-quote';quote.textContent=monthlyQuotes[m];
+      const events=document.createElement('div');events.className='month-events';
+      ['holiday','blocked'].forEach(type=>{
+        if(!enabled(type))return;
+        const entries=monthEntries.filter(([,ev])=>ev.type===type);
+        if(entries.length)events.appendChild(summaryGroup(type,entries));
+      });
+      if(!events.children.length){
+        const empty=document.createElement('div');empty.className='event-summary-empty';empty.textContent=bothHidden?'Event categories are hidden.':'No marked dates this month.';events.appendChild(empty);
+      }
+      card.append(head,quote,events);eventSummary.appendChild(card);
     });
-    if(!eventSummary.children.length){const empty=document.createElement('div');empty.className='event-summary-empty';empty.textContent='Both event categories are hidden.';eventSummary.appendChild(empty)}
   }
   function render(){grid.innerHTML='';for(let m=0;m<12;m++)grid.appendChild(monthCard(m));renderSummary()}
   function toggleFilter(btn){btn.setAttribute('aria-pressed',btn.getAttribute('aria-pressed')==='true'?'false':'true');eventPanel.classList.remove('show');render()}
