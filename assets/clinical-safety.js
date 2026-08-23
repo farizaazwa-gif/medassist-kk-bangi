@@ -169,3 +169,21 @@
   script.dataset.medassistDengueHaemoCpg = "true";
   document.head.appendChild(script);
 })();
+
+// Progressive clerking enhancement: add loose stool >=3/day as a manual diagnosis-builder option only.
+(function loadDengueDiagnosisLooseStoolOption() {
+  "use strict";
+  if (typeof document === "undefined") return;
+  if (document.querySelector('script[data-medassist-dengue-dx-loose-stool="true"]')) return;
+
+  const current = document.currentScript;
+  const src = current?.src
+    ? new URL("dengue-diagnosis-loose-stool.js", current.src).href
+    : new URL("assets/dengue-diagnosis-loose-stool.js", document.baseURI).href;
+
+  const script = document.createElement("script");
+  script.src = src;
+  script.async = true;
+  script.dataset.medassistDengueDxLooseStool = "true";
+  document.head.appendChild(script);
+})();
