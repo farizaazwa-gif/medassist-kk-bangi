@@ -5,17 +5,24 @@
 
   const $ = id => document.getElementById(id);
   const PREFIXES = ["cl", "dfu", "dm", "htn"];
+  const DENGUE_PREFIXES = ["cl", "dfu"];
+
+  function pad(value) {
+    return String(value).padStart(2, "0");
+  }
 
   function localIsoToday() {
     const now = new Date();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, "0");
-    const d = String(now.getDate()).padStart(2, "0");
-    return `${y}-${m}-${d}`;
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  }
+
+  function localDateTimeNow() {
+    const now = new Date();
+    return `${localIsoToday()}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
   }
 
   function formatDmy(iso) {
-    const match = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const match = String(iso || "").slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
     return match ? `${match[3]}/${match[2]}/${match[1]}` : "";
   }
 
@@ -32,27 +39,31 @@
     return input;
   }
 
-  function stamp(prefix, kind) {
-    const field = ensureHiddenDate(prefix, kind);
-    if (!field.value) field.value = localIsoToday();
-
-    if (kind === "fbc") {
-      const resultDate = $(`${prefix}ResultDate`);
-      if (resultDate && !resultDate.value) {
-        resultDate.value = field.value;
-        resultDate.dispatchEvent(new Event("input", { bubbles: true }));
-        resultDate.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-    }
-    return field.value;
+  function dispatchDateChange(input) {
+    if (!input) return;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
-  function clearStamp(prefix, kind) {
-    const field = ensureHiddenDate(prefix, kind);
-    field.value = "";
-    if (kind === "fbc") {
-      const resultDate = $(`${prefix}ResultDate`);
-      if (resultDate) resultDate.value = "";
+  function setDengueDefaults(prefix, force = false) {
+    if (!DENGUE_PREFIXES.includes(prefix)) return;
+
+    const vital = $(`${prefix}VitalDateTime`);
+    if (vital && (force || !vital.value)) {
+      vital.value = localDateTimeNow();
+      ensureHiddenDate(prefix, "vital").value = vital.value.slice(0, 10);
+      dispatchDateChange(vital);
+    } else if (vital?.value) {
+      ensureHiddenDate(prefix, "vital").value = vital.value.slice(0, 10);
+    }
+
+    const fbc = $(`${prefix}QuickFbcDate`);
+    if (fbc && (force || !fbc.value)) {
+      fbc.value = localIsoToday();
+      ensureHiddenDate(prefix, "fbc").value = fbc.value;
+      dispatchDateChange(fbc);
+    } else if (fbc?.value) {
+      ensureHiddenDate(prefix, "fbc").value = fbc.value;
     }
   }
 
@@ -63,7 +74,7 @@
 
   function directContextText(control) {
     const container = control?.closest?.(
-      ".ncd-result-date-row,.ncd-import-box,.ncd-lab-block,.card,.result-card,.lab-card,.investigation-card"
+      ".ncd-result-date-row,.ncd-import-box,.ncd-lab-block,.card,.result-card,.lab-card,.investigation-card,.quick-fbc-card"
     );
     const heading = container?.querySelector?.("h2,h3,h4,.section-subtitle,label")?.textContent || "";
     return `${heading} ${container?.getAttribute?.("data-label") || ""}`.replace(/\s+/g, " ").trim();
@@ -72,8 +83,7 @@
   function isFbcControl(control, prefix) {
     if (!control || !prefix) return false;
     const id = control.id || "";
-    if (new RegExp(`^${prefix}Fbc`, "i").test(id)) return true;
-    if (/Fbc(?:Paste|Import)?$/i.test(id)) return true;
+    if (new RegExp(`^${prefix}(?:Quick)?Fbc`, "i").test(id)) return true;
     if (/BloodPaste$/i.test(id)) {
       const text = String(control.value || "");
       return /\bFBC\b|\bHb\b|\bHct\b|\bWCC?\b|\bplatelet\b|\bPlt\b/i.test(text);
@@ -84,13 +94,59 @@
   function isVitalControl(control, prefix) {
     if (!control || !prefix) return false;
     const id = control.id || "";
-    if (/VitalPaste$/i.test(id)) return true;
+    if (new RegExp(`^${prefix}Vital(?:Text|Paste|DateTime)$`, "i").test(id)) return true;
     const suffix = id.slice(prefix.length);
     return /^(?:Sbp|Dbp|Bp|BpSys|BpDia|Pulse|Pr|Temp|Temperature|Rr|Spo2|Weight|Height)$/i.test(suffix) ||
       /\bvital signs?\b/i.test(directContextText(control));
   }
 
-  function hideManualDatePickers() {
+  function stamp(prefix, kind) {
+    const field = ensureHiddenDate(prefix, kind);
+
+    if (DENGUE_PREFIXES.includes(prefix)) {
+      if (kind === "vital") {
+        const actual = $(`${prefix}VitalDateTime`);
+        if (actual && !actual.value) {
+          actual.value = localDateTimeNow();
+          dispatchDateChange(actual);
+        }
+        field.value = actual?.value ? actual.value.slice(0, 10) : localIsoToday();
+      } else {
+        const actual = $(`${prefix}QuickFbcDate`);
+        if (actual && !actual.value) {
+          actual.value = localIsoToday();
+          dispatchDateChange(actual);
+        }
+        field.value = actual?.value || localIsoToday();
+      }
+      return field.value;
+    }
+
+    if (!field.value) field.value = localIsoToday();
+    if (kind === "fbc") {
+      const resultDate = $(`${prefix}ResultDate`);
+      if (resultDate && !resultDate.value) {
+        resultDate.value = field.value;
+        dispatchDateChange(resultDate);
+      }
+    }
+    return field.value;
+  }
+
+  function syncSelectedDate(control, prefix) {
+    if (!DENGUE_PREFIXES.includes(prefix)) return false;
+    if (control.id === `${prefix}VitalDateTime`) {
+      ensureHiddenDate(prefix, "vital").value = control.value ? control.value.slice(0, 10) : "";
+      return true;
+    }
+    if (control.id === `${prefix}QuickFbcDate`) {
+      ensureHiddenDate(prefix, "fbc").value = control.value || "";
+      return true;
+    }
+    return false;
+  }
+
+  function hideOnlyNcdManualResultDates() {
     ["dm", "htn"].forEach(prefix => {
       const input = $(`${prefix}ResultDate`);
       if (!input) return;
@@ -100,51 +156,27 @@
       input.setAttribute("aria-hidden", "true");
     });
 
-    document.querySelectorAll('input[type="date"]').forEach(input => {
-      if (["dmResultDate", "htnResultDate"].includes(input.id)) return;
-      const prefix = prefixOf(input);
-      if (!prefix || !["cl", "dfu"].includes(prefix)) return;
-      const context = directContextText(input);
-      const label = input.labels?.[0]?.textContent || "";
-      if (!/\b(?:FBC|vital signs?)\b/i.test(`${context} ${label}`)) return;
-      const wrapper = input.closest(".ncd-result-date-row") || input.parentElement;
-      if (wrapper) wrapper.style.display = "none";
-      input.tabIndex = -1;
-      input.setAttribute("aria-hidden", "true");
+    DENGUE_PREFIXES.forEach(prefix => {
+      const vital = $(`${prefix}VitalDateTime`);
+      const fbc = $(`${prefix}QuickFbcDate`);
+      [vital, fbc].filter(Boolean).forEach(input => {
+        const wrapper = input.parentElement;
+        if (wrapper) wrapper.style.removeProperty("display");
+        input.tabIndex = 0;
+        input.removeAttribute("aria-hidden");
+      });
     });
   }
 
   function annotateVitalDate(text, dmy) {
     if (!text || !dmy) return text;
+    if (/^\s*Date\/Time\s*:/im.test(text)) return text;
     if (new RegExp(`VITALS(?: / ANTHROPOMETRY)? \\(${dmy.replace(/\//g, "\\/")}\\)`, "i").test(text)) return text;
-
-    let updated = text.replace(
+    const updated = text.replace(
       /^(VITALS(?:\s*\/\s*ANTHROPOMETRY)?)(?:\s*\([^\n)]*\))?\s*:?$/im,
       `$1 (${dmy})`
     );
-    if (updated !== text) return updated;
-
-    const lines = text.split("\n");
-    const oe = lines.findIndex(line => /^\s*O\/E\s*:?/i.test(line));
-    const start = oe >= 0 ? oe : 0;
-    const end = Math.min(lines.length, start + 12);
-
-    for (let i = start; i < end; i++) {
-      const line = lines[i];
-      if (/^\s*(?:Vital signs?|Vitals?)\s*(?:\([^)]*\))?\s*:/i.test(line)) {
-        lines[i] = line.replace(
-          /^\s*(?:Vital signs?|Vitals?)\s*(?:\([^)]*\))?\s*:/i,
-          `Vital signs (${dmy}):`
-        );
-        return lines.join("\n");
-      }
-      if (/\bBP\s*[:=]?\s*\d{2,3}\s*\/\s*\d{2,3}\b/i.test(line) ||
-          /\b(?:PR|Pulse|Temp(?:erature)?|SpO2|SpO₂|RR)\s*[:=]?\s*\d/i.test(line)) {
-        lines[i] = `Vital signs (${dmy}): ${line.trim()}`;
-        return lines.join("\n");
-      }
-    }
-    return text;
+    return updated;
   }
 
   function annotateFbcDate(text, dmy) {
@@ -160,12 +192,12 @@
   }
 
   function annotateOutput(prefix) {
+    if (DENGUE_PREFIXES.includes(prefix)) return;
     const output = $(`${prefix}Output`);
     if (!output || !output.value) return;
 
     const vitalDate = formatDmy(ensureHiddenDate(prefix, "vital").value);
     const fbcDate = formatDmy(ensureHiddenDate(prefix, "fbc").value || $(`${prefix}ResultDate`)?.value);
-
     let text = output.value;
     if (vitalDate) text = annotateVitalDate(text, vitalDate);
     if (fbcDate) text = annotateFbcDate(text, fbcDate);
@@ -174,46 +206,37 @@
 
   function bindOutputAnnotation(prefix) {
     const generate = $(`${prefix}Generate`);
-    if (generate) {
-      generate.addEventListener("click", () => setTimeout(() => annotateOutput(prefix), 0));
-    }
-
+    if (generate) generate.addEventListener("click", () => setTimeout(() => annotateOutput(prefix), 0));
     const copy = $(`${prefix}Copy`);
-    if (copy) {
-      copy.addEventListener("click", () => annotateOutput(prefix), true);
-    }
+    if (copy) copy.addEventListener("click", () => annotateOutput(prefix), true);
   }
 
   function stampExistingValues(prefix) {
     const root = document.querySelector(`#page-${prefix}`) || document;
     const controls = [...root.querySelectorAll("input,select,textarea")]
       .filter(control => control.id?.startsWith(prefix));
-
     if (controls.some(control => control.value && isVitalControl(control, prefix))) stamp(prefix, "vital");
     if (controls.some(control => control.value && isFbcControl(control, prefix))) stamp(prefix, "fbc");
   }
 
-  function resetDates(prefix) {
-    clearStamp(prefix, "vital");
-    clearStamp(prefix, "fbc");
-  }
-
   function init() {
-    hideManualDatePickers();
+    hideOnlyNcdManualResultDates();
 
     PREFIXES.forEach(prefix => {
       ensureHiddenDate(prefix, "vital");
       ensureHiddenDate(prefix, "fbc");
       bindOutputAnnotation(prefix);
-      stampExistingValues(prefix);
-      $(`${prefix}Reset`)?.addEventListener("click", () => setTimeout(() => resetDates(prefix), 0));
     });
+
+    DENGUE_PREFIXES.forEach(prefix => setDengueDefaults(prefix));
+    ["dm", "htn"].forEach(stampExistingValues);
 
     document.addEventListener("input", event => {
       const control = event.target;
       if (!(control instanceof HTMLInputElement || control instanceof HTMLSelectElement || control instanceof HTMLTextAreaElement)) return;
       const prefix = prefixOf(control);
       if (!prefix) return;
+      if (syncSelectedDate(control, prefix)) return;
       if (control.value && isVitalControl(control, prefix)) stamp(prefix, "vital");
       if (control.value && isFbcControl(control, prefix)) stamp(prefix, "fbc");
     });
@@ -223,11 +246,22 @@
       if (!(control instanceof HTMLInputElement || control instanceof HTMLSelectElement || control instanceof HTMLTextAreaElement)) return;
       const prefix = prefixOf(control);
       if (!prefix) return;
+      if (syncSelectedDate(control, prefix)) return;
       if (control.value && isVitalControl(control, prefix)) stamp(prefix, "vital");
       if (control.value && isFbcControl(control, prefix)) stamp(prefix, "fbc");
     });
 
-    const observer = new MutationObserver(() => hideManualDatePickers());
+    DENGUE_PREFIXES.forEach(prefix => {
+      $(`${prefix}Reset`)?.addEventListener("click", () => {
+        setTimeout(() => {
+          ensureHiddenDate(prefix, "vital").value = "";
+          ensureHiddenDate(prefix, "fbc").value = "";
+          setDengueDefaults(prefix, true);
+        }, 0);
+      });
+    });
+
+    const observer = new MutationObserver(() => hideOnlyNcdManualResultDates());
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
