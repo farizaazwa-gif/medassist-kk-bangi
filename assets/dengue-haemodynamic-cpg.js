@@ -130,19 +130,22 @@
   }
 
   function schedule(prefix) {
+    // Existing clerking scripts also render this box. Re-apply after their synchronous
+    // and short deferred work so the CPG interpretation remains the final display.
     window.setTimeout(() => render(prefix), 0);
+    window.setTimeout(() => render(prefix), 80);
   }
 
   function init() {
     ["cl", "dfu"].forEach(prefix => {
-      render(prefix);
+      schedule(prefix);
       const input = $(`${prefix}VitalText`);
       ["input", "change", "paste"].forEach(eventName => {
         input?.addEventListener(eventName, () => schedule(prefix));
       });
       const group = $(prefix === "dfu" ? "dfuGroup" : "dfGroup");
       group?.addEventListener("change", () => schedule(prefix));
-      $(`${prefix}Reset`)?.addEventListener("click", () => window.setTimeout(() => render(prefix), 20));
+      $(`${prefix}Reset`)?.addEventListener("click", () => window.setTimeout(() => schedule(prefix), 20));
     });
   }
 
