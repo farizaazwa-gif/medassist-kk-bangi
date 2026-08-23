@@ -53,3 +53,35 @@ test("tonsil examination has structured conditional fields in both dengue workfl
   assert.match(html, /window\.dengueTonsilFinding\?\.\("cl"\)/);
   assert.match(html, /window\.dengueTonsilFinding\?\.\("dfu"\)/);
 });
+
+test("dengue examination defaults to normal findings with abnormal dropdown options", () => {
+  const selectOptions = id => {
+    const match = html.match(new RegExp(`<select id="${id}">([\\s\\S]*?)</select>`));
+    assert.ok(match, `${id} select must exist`);
+    return match[1];
+  };
+
+  ["cl", "dfu"].forEach(prefix => {
+    const throat = selectOptions(`${prefix}Throat`);
+    assert.match(throat, /^<option selected="" value="not injected">not injected<\/option>/);
+    assert.match(throat, /value="injected"/);
+    assert.match(throat, /value="erythematous"/);
+    assert.match(throat, /value="with exudate"/);
+
+    const enlargement = selectOptions(`${prefix}Tonsil`);
+    assert.match(enlargement, /^<option selected="" value="not enlarged">Not enlarged<\/option>/);
+    assert.match(enlargement, /value="enlarged"/);
+
+    const inflammation = selectOptions(`${prefix}TonsilInflammation`);
+    assert.match(inflammation, /^<option selected="" value="not inflamed">Not inflamed<\/option>/);
+    assert.match(inflammation, /value="inflamed"/);
+
+    const cervicalLn = selectOptions(`${prefix}CervicalLN`);
+    assert.match(cervicalLn, /^<option selected="" value="not palpable">not palpable<\/option>/);
+    assert.match(cervicalLn, /value="palpable"/);
+
+    [throat, enlargement, inflammation, cervicalLn].forEach(options => {
+      assert.doesNotMatch(options, /Not stated/);
+    });
+  });
+});
