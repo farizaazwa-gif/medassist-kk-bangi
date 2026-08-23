@@ -97,3 +97,21 @@
   script.dataset.medassistTonsilCentor = "true";
   document.head.appendChild(script);
 })();
+
+// Progressive clerking enhancement: auto-date vitals and FBC/result entries.
+(function loadAutoDateEnhancement() {
+  "use strict";
+  if (typeof document === "undefined") return;
+  if (document.querySelector('script[data-medassist-auto-date="true"]')) return;
+
+  const current = document.currentScript;
+  const src = current?.src
+    ? new URL("auto-date-enhancement.js", current.src).href
+    : new URL("assets/auto-date-enhancement.js", document.baseURI).href;
+
+  const script = document.createElement("script");
+  script.src = src;
+  script.async = true;
+  script.dataset.medassistAutoDate = "true";
+  document.head.appendChild(script);
+})();
