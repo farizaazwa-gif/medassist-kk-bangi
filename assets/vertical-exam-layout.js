@@ -196,6 +196,8 @@
       .medassist-pe-nav button[data-state="complete"] .medassist-pe-nav-dot{background:#2f9560}
       .medassist-pe-nav button[data-state="abnormal"] .medassist-pe-nav-dot{background:#d28b13}
       .medassist-pe-nav button[data-state="empty"] .medassist-pe-nav-dot{background:#9da9ad}
+      .medassist-pe-nav button[hidden],
+      .medassist-pe-system[hidden]{display:none!important}
 
       .medassist-pe-groups{
         display:grid!important;
@@ -487,7 +489,7 @@
     nodes.filter(Boolean).forEach(node => body.appendChild(node));
     section.append(head, body);
 
-    return { section, body, badge, title, navButton: null, state: "empty" };
+    return { section, body, badge, title, navButton: null, state: "empty", visible: true };
   }
 
   function setSystemStatus(view, state, text) {
@@ -546,12 +548,30 @@
     return values.reduce((sum, value) => sum + Number(Boolean(value)), 0);
   }
 
+  function syncDengueViewVisibility(view) {
+    if (!view) return false;
+    const visible = [...view.body.children].some(node => !node.classList.contains("dengue-pe-optional-hidden"));
+    view.visible = visible;
+    view.section.hidden = !visible;
+    if (view.navButton) view.navButton.hidden = !visible;
+    return visible;
+  }
+
+  function ensureDengueAbdomenOption(prefix) {
+    const select = byId(`${prefix}PA`);
+    if (!select || [...select.options].some(option => option.value === "hard / rigid")) return;
+    const option = create("option", "", "hard / rigid");
+    option.value = "hard / rigid";
+    select.appendChild(option);
+  }
+
   function enhanceDengue(prefix) {
     const tonsil = document.querySelector(`.tonsil-exam-card[data-tonsil-prefix="${prefix}"]`);
     const flow = tonsil?.parentElement;
     const card = flow?.closest(".card");
     if (!tonsil || !flow || !card || card.dataset.medassistPeEnhanced === "true") return;
     card.dataset.medassistPeEnhanced = "true";
+    ensureDengueAbdomenOption(prefix);
 
     const title = decorateCard(card, "Normal findings stay compact; abnormal details open only when relevant.");
     card.querySelector(":scope > .normal-box")?.classList.add("medassist-pe-normal-banner");
@@ -643,7 +663,9 @@
       ]);
       setSystemStatus(views[2], chestAbnormal ? "abnormal" : "normal", chestAbnormal ? `${chestAbnormal} abnormal` : "Normal");
 
+      const abdomenFinding = fieldValue(`${prefix}PA`).toLowerCase();
       const abdomenAbnormal = abnormalCount([
+        ["hard", "rigid", "hard/rigid", "hard / rigid"].includes(abdomenFinding),
         fieldValue(`${prefix}PATenderness`) === "yes",
         byId(`${prefix}PAHepatomegaly`)?.checked,
         byId(`${prefix}PAAscites`)?.checked
@@ -660,7 +682,8 @@
 
       const otherEntered = Boolean(fieldValue(`${prefix}OtherPhysical`));
       setSystemStatus(views[4], otherEntered ? "complete" : "empty", otherEntered ? "Entered" : "Optional");
-      updateTitleFromViews(title, views.filter(view => view !== views[4]));
+      views.forEach(syncDengueViewVisibility);
+      updateTitleFromViews(title, views.slice(0, 4).filter(view => view.visible));
     }
 
     ["input", "change"].forEach(type => card.addEventListener(type, sync));

@@ -31,6 +31,9 @@ test("physical examination hierarchy enhancement is loaded", () => {
   assert.match(examLayout, /ENT & neck/);
   assert.match(examLayout, /Respiratory & cardiovascular/);
   assert.match(examLayout, /No abnormal selected/);
+  assert.match(examLayout, /syncDengueViewVisibility/);
+  assert.match(examLayout, /view\.section\.hidden = !visible/);
+  assert.match(examLayout, /view\.navButton\.hidden = !visible/);
 });
 
 test("STOP-BANG UI uses the tested clinical safety classifier", () => {
@@ -97,8 +100,22 @@ test("dengue examination defaults to normal findings with abnormal dropdown opti
     assert.match(cervicalLn, /^<option selected="" value="not palpable">not palpable<\/option>/);
     assert.match(cervicalLn, /value="palpable"/);
 
+    const abdomen = selectOptions(`${prefix}PA`);
+    assert.match(abdomen, /^<option>SNT<\/option>/);
+    assert.match(abdomen, /<option>soft<\/option>/);
+
     [throat, enlargement, inflammation, cervicalLn].forEach(options => {
       assert.doesNotMatch(options, /Not stated/);
     });
   });
+});
+
+test("hard or rigid abdomen is treated as an abnormal PE finding", () => {
+  const examLayout = fs.readFileSync(
+    path.join(__dirname, "..", "assets", "vertical-exam-layout.js"),
+    "utf8"
+  );
+  assert.match(examLayout, /function ensureDengueAbdomenOption/);
+  assert.match(examLayout, /option\.value = "hard \/ rigid"/);
+  assert.match(examLayout, /\["hard", "rigid", "hard\/rigid", "hard \/ rigid"\]\.includes\(abdomenFinding\)/);
 });
