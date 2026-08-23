@@ -115,3 +115,21 @@
   script.dataset.medassistAutoDate = "true";
   document.head.appendChild(script);
 })();
+
+// Progressive clerking enhancement: keep dengue examination findings in one vertical flow.
+(function loadVerticalExamLayout() {
+  "use strict";
+  if (typeof document === "undefined") return;
+  if (document.querySelector('script[data-medassist-vertical-exam="true"]')) return;
+
+  const current = document.currentScript;
+  const src = current?.src
+    ? new URL("vertical-exam-layout.js", current.src).href
+    : new URL("assets/vertical-exam-layout.js", document.baseURI).href;
+
+  const script = document.createElement("script");
+  script.src = src;
+  script.async = true;
+  script.dataset.medassistVerticalExam = "true";
+  document.head.appendChild(script);
+})();
