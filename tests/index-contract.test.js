@@ -40,3 +40,16 @@ test("static ids remain unique", () => {
   const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
   assert.deepEqual([...new Set(duplicates)], []);
 });
+
+test("tonsil examination has structured conditional fields in both dengue workflows", () => {
+  ["cl", "dfu"].forEach(prefix => {
+    assert.match(html, new RegExp(`id="${prefix}Tonsil"`));
+    assert.match(html, new RegExp(`id="${prefix}TonsilInflammation"`));
+    assert.match(html, new RegExp(`id="${prefix}TonsilEnlargedDetails"`));
+    assert.match(html, new RegExp(`id="${prefix}TonsilGrade"`));
+    assert.match(html, new RegExp(`id="${prefix}TonsilExudate"`));
+    assert.match(html, new RegExp(`id="${prefix}TonsilDescription"`));
+  });
+  assert.match(html, /window\.dengueTonsilFinding\?\.\("cl"\)/);
+  assert.match(html, /window\.dengueTonsilFinding\?\.\("dfu"\)/);
+});
