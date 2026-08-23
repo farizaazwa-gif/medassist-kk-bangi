@@ -27,7 +27,7 @@
       .tonsil-guide-head p{margin:0;color:#5b6472;font-size:13px}
       .tonsil-guide-figure{display:block;width:100%;height:auto;max-height:68vh;object-fit:contain;border:1px solid #e5e7eb;border-radius:14px;background:#fff}
       .tonsil-guide-caption{margin-top:10px;color:#5b6472;font-size:12px;line-height:1.45}
-      .auto-centor-card{margin-top:14px;padding:13px 14px;border:1px solid #d7e4df;border-radius:14px;background:#f8fbfa}
+      .auto-centor-card{margin:14px 0 4px;padding:13px 14px;border:1px solid #d7e4df;border-radius:14px;background:#f8fbfa}
       .auto-centor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:7px}
       .auto-centor-head strong{font-size:13px;color:#173f38}
       .auto-centor-head small{display:block;margin-top:2px;color:#65736f;font-size:11px;line-height:1.35}
@@ -122,6 +122,15 @@
     return ids.map(id => $(id)).find(Boolean) || null;
   }
 
+  function temperatureFromVitalText(prefix) {
+    const raw = value(`${prefix}VitalText`);
+    if (!raw) return null;
+    const match = raw.match(/(?:temperature|temp|\bT)\s*[:=]?\s*(\d{2}(?:\.\d+)?)\s*(?:°?\s*C)?\b/i);
+    if (!match) return null;
+    const temp = Number(match[1]);
+    return Number.isFinite(temp) && temp >= 30 && temp <= 45 ? temp : null;
+  }
+
   function getTemperature(prefix) {
     const candidateIds = [
       `${prefix}Temp`,
@@ -134,6 +143,10 @@
       if (!raw) continue;
       const temp = Number(raw);
       if (Number.isFinite(temp)) return { known: true, above38: temp > 38, temp, source: "vital" };
+    }
+    const pastedTemp = temperatureFromVitalText(prefix);
+    if (pastedTemp !== null) {
+      return { known: true, above38: pastedTemp > 38, temp: pastedTemp, source: "vital-text" };
     }
     return { known: false };
   }
@@ -224,8 +237,8 @@
     const nodes = getNodePoint(prefix);
     const noCough = !cough.checked;
     const score = Number(tonsil) + Number(nodes) + Number(tempAbove38) + Number(noCough) + ageAdj;
-
     const ageLabel = ageAdj > 0 ? `+${ageAdj}` : String(ageAdj);
+
     box.innerHTML = `
       <div class="auto-centor-head"><div><strong>Modified Centor score</strong><small>Auto-calculated from the current clerking.</small></div><div class="auto-centor-score">${score}</div></div>
       ${tempPrompt}
@@ -252,15 +265,33 @@
     });
   }
 
-  function addCentor(prefix) {
-    const card = document.querySelector(`.tonsil-exam-card[data-tonsil-prefix="${prefix}"]`);
-    if (!card || card.querySelector(`.auto-centor-card[data-centor-prefix="${prefix}"]`)) return;
-    if (!findCoughControl(prefix)) return;
+  function getVitalCard(prefix) {
+    return $(`${prefix}VitalText`)?.closest(".card") || $(`${prefix}VitalDateTime`)?.closest(".card") || null;
+  }
 
-    const box = document.createElement("div");
-    box.className = "auto-centor-card";
-    box.dataset.centorPrefix = prefix;
-    card.appendChild(box);
+  function addCentor(prefix) {
+    if (!findCoughControl(prefix)) return;
+    const vitalCard = getVitalCard(prefix);
+    if (!vitalCard) return;
+
+    let box = document.querySelector(`.auto-centor-card[data-centor-prefix="${prefix}"]`);
+    if (!box) {
+      box = document.createElement("div");
+      box.className = "auto-centor-card";
+      box.dataset.centorPrefix = prefix;
+    }
+
+    const investigationDivider = [...vitalCard.querySelectorAll(".objective-divider")]
+      .find(node => /Investigations today/i.test(node.textContent || ""));
+    const anchor = $(`${prefix}VitalShockResult`) || $(`${prefix}VitalText`);
+
+    if (investigationDivider) {
+      vitalCard.insertBefore(box, investigationDivider);
+    } else if (anchor) {
+      anchor.insertAdjacentElement("afterend", box);
+    } else {
+      vitalCard.appendChild(box);
+    }
     renderCentor(prefix);
   }
 
@@ -293,7 +324,7 @@
         setTimeout(() => {
           const box = document.querySelector(`.auto-centor-card[data-centor-prefix="${prefix}"]`);
           if (box) delete box.dataset.tempAbove38;
-          renderCentor(prefix);
+          addCentor(prefix);
         }, 0);
       });
     });
