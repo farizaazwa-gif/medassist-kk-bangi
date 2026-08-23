@@ -133,3 +133,21 @@
   script.dataset.medassistVerticalExam = "true";
   document.head.appendChild(script);
 })();
+
+// Progressive clinical-safety enhancement: CPG-based adult dengue haemodynamic interpretation.
+(function loadDengueHaemodynamicCpg() {
+  "use strict";
+  if (typeof document === "undefined") return;
+  if (document.querySelector('script[data-medassist-dengue-haemo-cpg="true"]')) return;
+
+  const current = document.currentScript;
+  const src = current?.src
+    ? new URL("dengue-haemodynamic-cpg.js", current.src).href
+    : new URL("assets/dengue-haemodynamic-cpg.js", document.baseURI).href;
+
+  const script = document.createElement("script");
+  script.src = src;
+  script.async = true;
+  script.dataset.medassistDengueHaemoCpg = "true";
+  document.head.appendChild(script);
+})();
