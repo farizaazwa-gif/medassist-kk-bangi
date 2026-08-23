@@ -28,3 +28,13 @@ test("browser hardening module parses", () => {
     () => new vm.Script(source, { filename: "accessibility-hardening.js" })
   );
 });
+
+test("physical examination enhancement parses", () => {
+  const source = fs.readFileSync(
+    path.join(__dirname, "..", "assets", "vertical-exam-layout.js"),
+    "utf8"
+  );
+  assert.doesNotThrow(
+    () => new vm.Script(source, { filename: "vertical-exam-layout.js" })
+  );
+});
