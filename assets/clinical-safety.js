@@ -134,6 +134,24 @@
   document.head.appendChild(script);
 })();
 
+// Progressive clerking enhancement: editable structured general O/E findings for dengue.
+(function loadDengueGeneralExamOptions() {
+  "use strict";
+  if (typeof document === "undefined") return;
+  if (document.querySelector('script[data-medassist-dengue-general-exam="true"]')) return;
+
+  const current = document.currentScript;
+  const src = current?.src
+    ? new URL("dengue-general-exam-options.js", current.src).href
+    : new URL("assets/dengue-general-exam-options.js", document.baseURI).href;
+
+  const script = document.createElement("script");
+  script.src = src;
+  script.async = true;
+  script.dataset.medassistDengueGeneralExam = "true";
+  document.head.appendChild(script);
+})();
+
 // Progressive clinical-safety enhancement: CPG-based adult dengue haemodynamic interpretation.
 (function loadDengueHaemodynamicCpg() {
   "use strict";
