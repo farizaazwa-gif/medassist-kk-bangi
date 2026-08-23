@@ -78,3 +78,22 @@
     classifyStopBang
   });
 });
+
+// Progressive clerking enhancement: tonsil grading guide + integrated Modified Centor.
+// Kept as a separate browser-only asset so the clinical safety module remains Node-testable.
+(function loadTonsilCentorEnhancement() {
+  "use strict";
+  if (typeof document === "undefined") return;
+  if (document.querySelector('script[data-medassist-tonsil-centor="true"]')) return;
+
+  const current = document.currentScript;
+  const src = current?.src
+    ? new URL("tonsil-centor-enhancement.js", current.src).href
+    : new URL("assets/tonsil-centor-enhancement.js", document.baseURI).href;
+
+  const script = document.createElement("script");
+  script.src = src;
+  script.async = true;
+  script.dataset.medassistTonsilCentor = "true";
+  document.head.appendChild(script);
+})();
