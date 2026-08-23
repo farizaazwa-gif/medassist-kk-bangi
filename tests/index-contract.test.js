@@ -16,6 +16,23 @@ test("clinical safety and accessibility modules are loaded", () => {
   assert.match(html, /assets\/accessibility-hardening\.js/);
 });
 
+test("physical examination hierarchy enhancement is loaded", () => {
+  const clinicalSafety = fs.readFileSync(
+    path.join(__dirname, "..", "assets", "clinical-safety.js"),
+    "utf8"
+  );
+  const examLayout = fs.readFileSync(
+    path.join(__dirname, "..", "assets", "vertical-exam-layout.js"),
+    "utf8"
+  );
+
+  assert.match(clinicalSafety, /vertical-exam-layout\.js/);
+  assert.match(examLayout, /medassist-pe-groups/);
+  assert.match(examLayout, /ENT & neck/);
+  assert.match(examLayout, /Respiratory & cardiovascular/);
+  assert.match(examLayout, /No abnormal selected/);
+});
+
 test("STOP-BANG UI uses the tested clinical safety classifier", () => {
   assert.match(html, /MedAssistClinicalSafety\?\.classifyStopBang/);
   assert.doesNotMatch(html, /s<=2\?"low":s<=4\?"intermediate":"high"/);
