@@ -3368,6 +3368,7 @@ html,body{max-width:100%;overflow-x:hidden}
   });
 })();
 </script>
+<script src="assets/who-growth-reference.js"></script>
 <script id="medassist-neuro-enhancements-v2-script">
 (() => {
   'use strict';
@@ -3626,62 +3627,47 @@ html,body{max-width:100%;overflow-x:hidden}
 
   const WHO_GROWTH_REFERENCES = {
     under5: {
+      key: 'under5',
       title: 'WHO 2006 Child Growth Standards — birth to 5 years',
-      shortReference: 'WHO 2006 Child Growth Standards',
-      ageLabel: '0–5 years',
-      sourceText: 'Official WHO Child Growth Standards (2006).',
+      shortReference: 'WHO 2006',
       charts: {
-        weight: {
-          Male: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/weight-for-age/cht-wfa-boys-z-0-5.pdf?sfvrsn=9d3adc06_12', ageMin: 0, ageMax: 60, yMin: 1, yMax: 29, unit: 'kg', label: 'Weight-for-age', plot: { xStart: 13.05, xEnd: 84.41, yTop: 20.12, yBottom: 84.96 }, aspectRatio: 1.421875 },
-          Female: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/weight-for-age/cht-wfa-girls-z-0-5.pdf?sfvrsn=e113a2fa_10', ageMin: 0, ageMax: 60, yMin: 1, yMax: 31, unit: 'kg', label: 'Weight-for-age', plot: { xStart: 13.05, xEnd: 84.41, yTop: 20.12, yBottom: 84.96 }, aspectRatio: 1.421875 }
-        },
-        height: {
-          Male: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/cht-lhfa-boys-z-0-5.pdf?sfvrsn=a839cd27_10', ageMin: 0, ageMax: 60, yMin: 40, yMax: 125, unit: 'cm', label: 'Length/height-for-age', plot: { xStart: 13.05, xEnd: 84.41, yTop: 20.12, yBottom: 84.96 }, aspectRatio: 1.421875 },
-          Female: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/cht-lhfa-girls-z-0-5.pdf?sfvrsn=252d03a5_14', ageMin: 0, ageMax: 60, yMin: 40, yMax: 125, unit: 'cm', label: 'Length/height-for-age', plot: { xStart: 13.05, xEnd: 84.41, yTop: 20.12, yBottom: 84.96 }, aspectRatio: 1.421875 }
-        },
-        bmi: {
-          Male: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/body-mass-index-for-age/cht-bfa-boys-z-0-5.pdf?sfvrsn=2e1bd6a5_17', ageMin: 0, ageMax: 60, yMin: 9.2, yMax: 22.8, unit: 'kg/m²', label: 'BMI-for-age', plot: { xStart: 13.05, xEnd: 84.41, yTop: 20.12, yBottom: 84.96 }, aspectRatio: 1.421875 },
-          Female: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/body-mass-index-for-age/cht-bfa-girls-z-0-5.pdf?sfvrsn=cf716a4a_17', ageMin: 0, ageMax: 60, yMin: 9.2, yMax: 22.8, unit: 'kg/m²', label: 'BMI-for-age', plot: { xStart: 13.05, xEnd: 84.41, yTop: 20.12, yBottom: 84.96 }, aspectRatio: 1.421875 }
-        }
+        weight: { ageMin: 0, ageMax: 60, unit: 'kg', label: 'Weight-for-age' },
+        height: { ageMin: 0, ageMax: 60, unit: 'cm', label: 'Length/height-for-age' },
+        bmi: { ageMin: 0, ageMax: 60, unit: 'kg/m²', label: 'BMI-for-age' },
+        head: { ageMin: 0, ageMax: 60, unit: 'cm', label: 'Head circumference-for-age' }
       }
     },
     fiveTo19: {
+      key: 'fiveTo19',
       title: 'WHO 2007 Growth Reference — 5 to 19 years',
-      shortReference: 'WHO 2007 Growth Reference',
-      ageLabel: '5–19 years',
-      sourceText: 'Official WHO Growth Reference (2007) for school-age children and adolescents.',
+      shortReference: 'WHO 2007',
       charts: {
-        weight: {
-          Male: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/growth-reference-5-19-years/weight-for-age-%285-10-years%29/cht-wfa-boys-z-5-10years.pdf?sfvrsn=a219df7d_4', ageMin: 60, ageMax: 120, yMin: 10, yMax: 58, unit: 'kg', label: 'Weight-for-age', plot: { xStart: 13.35, xEnd: 83.88, yTop: 18.70, yBottom: 85.45 }, aspectRatio: 1.421875 },
-          Female: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/growth-reference-5-19-years/weight-for-age-%285-10-years%29/cht-wfa-girls-z-5-10years.pdf?sfvrsn=47c7069d_4', ageMin: 60, ageMax: 120, yMin: 10, yMax: 60, unit: 'kg', label: 'Weight-for-age', plot: { xStart: 13.35, xEnd: 83.88, yTop: 18.70, yBottom: 85.45 }, aspectRatio: 1.421875 }
-        },
-        height: {
-          Male: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/growth-reference-5-19-years/height-for-age-%285-19-years%29/cht-hfa-boys-z-5-19years.pdf?sfvrsn=d0cdf1fe_4', ageMin: 60, ageMax: 228, yMin: 90, yMax: 200, unit: 'cm', label: 'Height-for-age', plot: { xStart: 13.35, xEnd: 83.88, yTop: 18.70, yBottom: 85.45 }, aspectRatio: 1.421875 },
-          Female: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/growth-reference-5-19-years/height-for-age-%285-19-years%29/cht-hfa-girls-z-5-19years.pdf?sfvrsn=58771973_4', ageMin: 60, ageMax: 228, yMin: 90, yMax: 185, unit: 'cm', label: 'Height-for-age', plot: { xStart: 13.35, xEnd: 83.88, yTop: 18.70, yBottom: 85.45 }, aspectRatio: 1.421875 }
-        },
-        bmi: {
-          Male: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/growth-reference-5-19-years/bmi-for-age-%285-19-years%29/bmifa-boys-z-5-19-labels.pdf?sfvrsn=5775aced_4', ageMin: 60, ageMax: 228, yMin: 10, yMax: 32, unit: 'kg/m²', label: 'BMI-for-age', plot: { xStart: 10.98, xEnd: 85.05, yTop: 20.90, yBottom: 89.65 }, aspectRatio: 1.396484375 },
-          Female: { url: 'https://cdn.who.int/media/docs/default-source/child-growth/growth-reference-5-19-years/bmi-for-age-%285-19-years%29/bmifa-girls-z-5-19-labels.pdf?sfvrsn=94b20617_4', ageMin: 60, ageMax: 228, yMin: 10, yMax: 32, unit: 'kg/m²', label: 'BMI-for-age', plot: { xStart: 10.98, xEnd: 85.05, yTop: 20.90, yBottom: 89.65 }, aspectRatio: 1.396484375 }
-        }
+        weight: { ageMin: 61, ageMax: 120, unit: 'kg', label: 'Weight-for-age' },
+        height: { ageMin: 61, ageMax: 228, unit: 'cm', label: 'Height-for-age' },
+        bmi: { ageMin: 61, ageMax: 228, unit: 'kg/m²', label: 'BMI-for-age' }
       }
     }
   };
 
+  function whoCompletedMonth(ageMonths) {
+    return Number.isFinite(ageMonths) && ageMonths >= 0 ? Math.floor(ageMonths + 1e-7) : NaN;
+  }
+
   function whoReferenceForAge(ageMonths) {
-    if (!Number.isFinite(ageMonths) || ageMonths < 0) return null;
-    if (ageMonths < 60) return WHO_GROWTH_REFERENCES.under5;
-    if (ageMonths <= 228) return WHO_GROWTH_REFERENCES.fiveTo19;
+    const completedMonth = whoCompletedMonth(ageMonths);
+    if (!Number.isFinite(completedMonth)) return null;
+    if (completedMonth <= 60) return WHO_GROWTH_REFERENCES.under5;
+    if (completedMonth <= 228) return WHO_GROWTH_REFERENCES.fiveTo19;
     return null;
   }
 
   function whoAgeDisplay(ageMonths) {
-    if (!Number.isFinite(ageMonths)) return '';
-    if (ageMonths < 24) return `${Number(ageMonths.toFixed(1))} months`;
-    const roundedMonths = Math.round(ageMonths);
-    const years = Math.floor(roundedMonths / 12);
-    const months = roundedMonths % 12;
-    if (!months) return `${years} years`;
-    return `${years} years ${months} ${months === 1 ? 'month' : 'months'}`;
+    const completedMonth = whoCompletedMonth(ageMonths);
+    if (!Number.isFinite(completedMonth)) return '';
+    if (completedMonth < 24) return `${completedMonth} ${completedMonth === 1 ? 'month' : 'months'}`;
+    const years = Math.floor(completedMonth / 12);
+    const months = completedMonth % 12;
+    return months ? `${years} years ${months} ${months === 1 ? 'month' : 'months'}` : `${years} years`;
   }
 
   function whoAgeMonths(prefix) {
@@ -3690,13 +3676,212 @@ html,body{max-width:100%;overflow-x:hidden}
     return value(`${prefix}AgeUnit`) === 'months' ? age : age * 12;
   }
 
-  function whoMetricValue(prefix, type) {
-    const weight = Number(value(`${prefix}Weight`));
-    const height = Number(value(`${prefix}Height`));
+  function whoMetricValue(prefix, type, source = 'current') {
+    const growth = runtimeState[prefix].growth;
+    const weight = Number(source === 'previous' ? growth.previousWeight : value(`${prefix}Weight`));
+    const height = Number(source === 'previous' ? growth.previousHeight : value(`${prefix}Height`));
     if (type === 'weight') return weight;
     if (type === 'height') return height;
-    if (type === 'bmi' && Number.isFinite(weight) && weight > 0 && Number.isFinite(height) && height > 0) return weight / Math.pow(height / 100, 2);
+    if (type === 'head') return Number(source === 'previous' ? growth.previousHead : value('autismHeadCirc'));
+    if (type === 'bmi' && weight > 0 && height > 0) return weight / Math.pow(height / 100, 2);
     return NaN;
+  }
+
+  function whoTable(referenceKey, type, sex) {
+    const packed = window.MedAssistWhoGrowthLms?.tables?.[referenceKey]?.[type]?.[sex];
+    return Array.isArray(packed) && Array.isArray(packed[1]) ? { startMonth: packed[0], rows: packed[1] } : null;
+  }
+
+  function whoLmsAt(ageMonths, type, sex) {
+    const reference = whoReferenceForAge(ageMonths);
+    const completedMonth = whoCompletedMonth(ageMonths);
+    const table = reference && whoTable(reference.key, type, sex);
+    const row = table?.rows?.[completedMonth - table.startMonth];
+    if (!reference || !row) return null;
+    return { reference, completedMonth, L: row[0], M: row[1], S: row[2] };
+  }
+
+  function whoValueAtZ(lms, z) {
+    if (!lms) return NaN;
+    if (Math.abs(lms.L) < 1e-12) return lms.M * Math.exp(lms.S * z);
+    const base = 1 + lms.L * lms.S * z;
+    return base > 0 ? lms.M * Math.pow(base, 1 / lms.L) : NaN;
+  }
+
+  function whoRawZScore(lms, measurement) {
+    if (!lms || !Number.isFinite(measurement) || measurement <= 0) return NaN;
+    if (Math.abs(lms.L) < 1e-12) return Math.log(measurement / lms.M) / lms.S;
+    return (Math.pow(measurement / lms.M, lms.L) - 1) / (lms.L * lms.S);
+  }
+
+  function whoZScore(lms, measurement) {
+    const raw = whoRawZScore(lms, measurement);
+    if (!Number.isFinite(raw)) return NaN;
+    if (raw > 3) {
+      const sd2 = whoValueAtZ(lms, 2);
+      const sd3 = whoValueAtZ(lms, 3);
+      return 3 + (measurement - sd3) / (sd3 - sd2);
+    }
+    if (raw < -3) {
+      const sdNeg3 = whoValueAtZ(lms, -3);
+      const sdNeg2 = whoValueAtZ(lms, -2);
+      return -3 + (measurement - sdNeg3) / (sdNeg2 - sdNeg3);
+    }
+    return raw;
+  }
+
+  function whoNormalCdf(z) {
+    const sign = z < 0 ? -1 : 1;
+    const x = Math.abs(z) / Math.sqrt(2);
+    const t = 1 / (1 + 0.3275911 * x);
+    const erf = sign * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x));
+    return 0.5 * (1 + erf);
+  }
+
+  function whoCentileText(z) {
+    const centile = whoNormalCdf(z) * 100;
+    if (centile < 0.1) return '<0.1';
+    if (centile > 99.9) return '>99.9';
+    return centile.toFixed(1);
+  }
+
+  function whoZText(z) {
+    if (!Number.isFinite(z)) return 'not available';
+    return `${z >= 0 ? '+' : '−'}${Math.abs(z).toFixed(2)}`;
+  }
+
+  function whoClassification(type, z, referenceKey) {
+    if (type === 'weight') {
+      if (z < -3) return 'severely underweight range';
+      if (z < -2) return 'underweight range';
+      if (z > 2) return 'above +2 SD; interpret with BMI-for-age';
+      return 'within −2 to +2 SD';
+    }
+    if (type === 'height') {
+      if (z < -3) return 'severely stunted / short stature range';
+      if (z < -2) return 'stunted / short stature range';
+      if (z > 2) return 'tall stature range';
+      return 'within −2 to +2 SD';
+    }
+    if (type === 'bmi' && referenceKey === 'under5') {
+      if (z < -3) return 'severe wasting range';
+      if (z < -2) return 'wasting range';
+      if (z > 3) return 'obesity range';
+      if (z > 2) return 'overweight range';
+      if (z > 1) return 'possible risk of overweight';
+      return 'within −2 to +1 SD';
+    }
+    if (type === 'bmi') {
+      if (z < -3) return 'severe thinness range';
+      if (z < -2) return 'thinness range';
+      if (z > 2) return 'obesity range';
+      if (z > 1) return 'overweight range';
+      return 'within −2 to +1 SD';
+    }
+    if (type === 'head') {
+      if (z < -3) return 'below −3 SD; clinical review required';
+      if (z < -2) return 'below −2 SD; clinical review required';
+      if (z > 3) return 'above +3 SD; clinical review required';
+      if (z > 2) return 'above +2 SD; clinical review required';
+      return 'within −2 to +2 SD';
+    }
+    return 'interpret in clinical context';
+  }
+
+  function whoPreviousAgeMonths(prefix, currentAgeMonths) {
+    const previousDate = runtimeState[prefix].growth.previousDate;
+    const currentDate = runtimeState[prefix].growth.currentDate || window.MedAssistDateOnly?.malaysiaToday?.();
+    const elapsedDays = window.MedAssistDateOnly?.diffDays?.(previousDate, currentDate);
+    if (!Number.isFinite(elapsedDays) || elapsedDays < 0) return NaN;
+    const previousAge = currentAgeMonths - elapsedDays / 30.4375;
+    return previousAge >= 0 ? previousAge : NaN;
+  }
+
+  function whoNiceStep(range, targetTicks = 6) {
+    const rough = Math.max(range, 1e-6) / targetTicks;
+    const power = Math.pow(10, Math.floor(Math.log10(rough)));
+    const fraction = rough / power;
+    const nice = fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 5 ? 5 : 10;
+    return nice * power;
+  }
+
+  function whoAgeTicks(minMonth, maxMonth) {
+    const span = maxMonth - minMonth;
+    const interval = span > 144 ? 36 : span > 72 ? 24 : 12;
+    const ticks = [minMonth];
+    for (let month = Math.ceil(minMonth / interval) * interval; month < maxMonth; month += interval) {
+      if (month > minMonth) ticks.push(month);
+    }
+    if (ticks[ticks.length - 1] !== maxMonth) ticks.push(maxMonth);
+    return ticks;
+  }
+
+  function whoAxisAge(month) {
+    if (month < 24) return `${month}m`;
+    const years = Math.floor(month / 12);
+    const remainder = month % 12;
+    return remainder ? `${years}y${remainder}m` : `${years}y`;
+  }
+
+  function whoChartSvg(config, table, currentPoint, previousPoint) {
+    const width = 860;
+    const height = 520;
+    const margin = { top: 34, right: 58, bottom: 56, left: 62 };
+    const plotWidth = width - margin.left - margin.right;
+    const plotHeight = height - margin.top - margin.bottom;
+    const zCurves = [-3, -2, -1, 0, 1, 2, 3].map(z => ({
+      z,
+      values: table.rows.map((row, index) => {
+        const month = table.startMonth + index;
+        if (month < config.ageMin || month > config.ageMax) return null;
+        return { month, value: whoValueAtZ({ L: row[0], M: row[1], S: row[2] }, z) };
+      }).filter(Boolean)
+    }));
+    const allValues = zCurves.flatMap(curve => curve.values.map(point => point.value));
+    allValues.push(currentPoint.measurement);
+    if (previousPoint?.plot) allValues.push(previousPoint.measurement);
+    const rawMin = Math.min(...allValues);
+    const rawMax = Math.max(...allValues);
+    const yStep = whoNiceStep(rawMax - rawMin);
+    const yMin = Math.floor((rawMin - yStep * 0.3) / yStep) * yStep;
+    const yMax = Math.ceil((rawMax + yStep * 0.3) / yStep) * yStep;
+    const x = month => margin.left + ((month - config.ageMin) / (config.ageMax - config.ageMin)) * plotWidth;
+    const y = measurement => margin.top + (1 - (measurement - yMin) / (yMax - yMin)) * plotHeight;
+    const fmt = number => Number(number.toFixed(2));
+    const curveStyle = {
+      '-3': ['#c83f49', 2], '-2': ['#e18431', 2], '-1': ['#7f9d96', 1.4],
+      '0': ['#16796d', 2.5], '1': ['#7f9d96', 1.4], '2': ['#e18431', 2], '3': ['#c83f49', 2]
+    };
+    const yTicks = [];
+    for (let tick = yMin; tick <= yMax + yStep / 2; tick += yStep) yTicks.push(tick);
+    const grid = [
+      ...yTicks.map(tick => `<line x1="${margin.left}" y1="${fmt(y(tick))}" x2="${width - margin.right}" y2="${fmt(y(tick))}" stroke="#dce9e5"/><text x="${margin.left - 8}" y="${fmt(y(tick) + 4)}" text-anchor="end" fill="#5e746f" font-size="12">${fmt(tick)}</text>`),
+      ...whoAgeTicks(config.ageMin, config.ageMax).map(tick => `<line x1="${fmt(x(tick))}" y1="${margin.top}" x2="${fmt(x(tick))}" y2="${height - margin.bottom}" stroke="#e5efec"/><text x="${fmt(x(tick))}" y="${height - margin.bottom + 20}" text-anchor="middle" fill="#5e746f" font-size="12">${whoAxisAge(tick)}</text>`)
+    ].join('');
+    const curves = zCurves.map(curve => {
+      const [stroke, strokeWidth] = curveStyle[curve.z];
+      const path = curve.values.map((point, index) => `${index ? 'L' : 'M'}${fmt(x(point.month))},${fmt(y(point.value))}`).join(' ');
+      const last = curve.values[curve.values.length - 1];
+      return `<path d="${path}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}"/><text x="${width - margin.right + 7}" y="${fmt(y(last.value) + 4)}" fill="${stroke}" font-size="11" font-weight="700">${curve.z > 0 ? '+' : ''}${curve.z}</text>`;
+    }).join('');
+    const current = `<circle cx="${fmt(x(currentPoint.lms.completedMonth))}" cy="${fmt(y(currentPoint.measurement))}" r="7" fill="#e31937" stroke="#fff" stroke-width="3"><title>Current: ${currentPoint.measurement.toFixed(2)} ${config.unit}, z ${whoZText(currentPoint.z)}</title></circle>`;
+    let previous = '';
+    let connector = '';
+    if (previousPoint?.plot) {
+      const previousX = fmt(x(previousPoint.lms.completedMonth));
+      const previousY = fmt(y(previousPoint.measurement));
+      connector = `<line x1="${previousX}" y1="${previousY}" x2="${fmt(x(currentPoint.lms.completedMonth))}" y2="${fmt(y(currentPoint.measurement))}" stroke="#326ea8" stroke-width="2" stroke-dasharray="6 5"/>`;
+      previous = `<circle cx="${previousX}" cy="${previousY}" r="7" fill="#fff" stroke="#326ea8" stroke-width="3"><title>Previous: ${previousPoint.measurement.toFixed(2)} ${config.unit}, z ${whoZText(previousPoint.z)}</title></circle>`;
+    }
+    return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${config.label} WHO z-score chart">
+      <rect width="${width}" height="${height}" fill="#fff"/>
+      ${grid}<rect x="${margin.left}" y="${margin.top}" width="${plotWidth}" height="${plotHeight}" fill="none" stroke="#9ebbb4"/>
+      ${curves}${connector}${previous}${current}
+      <circle cx="${margin.left + 8}" cy="16" r="5" fill="#e31937"/><text x="${margin.left + 19}" y="20" fill="#405c56" font-size="12">Current</text>
+      ${previousPoint?.plot ? `<circle cx="${margin.left + 91}" cy="16" r="5" fill="#fff" stroke="#326ea8" stroke-width="2"/><text x="${margin.left + 102}" y="20" fill="#405c56" font-size="12">Previous</text>` : ''}
+      <text x="${margin.left + plotWidth / 2}" y="${height - 11}" text-anchor="middle" fill="#405c56" font-size="12" font-weight="700">Age (completed months / years)</text>
+      <text x="16" y="${margin.top + plotHeight / 2}" text-anchor="middle" fill="#405c56" font-size="12" font-weight="700" transform="rotate(-90 16 ${margin.top + plotHeight / 2})">${config.unit}</text>
+    </svg>`;
   }
 
   function renderWhoGrowthChart(prefix, panel) {
@@ -3710,28 +3895,25 @@ html,body{max-width:100%;overflow-x:hidden}
     const source = qs('[data-who-chart-source]', chartPanel);
     const message = qs('[data-who-chart-message]', chartPanel);
     const stage = qs('[data-who-chart-stage]', chartPanel);
-    const frame = qs('[data-who-chart-frame]', chartPanel);
-    const star = qs('[data-who-chart-star]', chartPanel);
     const summary = qs('[data-who-chart-summary]', chartPanel);
     const buttons = qsa('[data-who-chart-type]', chartPanel);
+    const completedMonth = whoCompletedMonth(ageMonths);
 
-    if (reference) {
-      title.textContent = reference.title;
-      subtitle.textContent = `Sex-specific chart selected automatically from age. The patient's current point is marked with a red star.`;
-      source.textContent = `${reference.sourceText} Weight-for-age is available only up to 10 years; use BMI-for-age and height-for-age thereafter. Internet connection is required to load the official chart.`;
-    } else {
-      title.textContent = 'WHO paediatric growth reference';
-      subtitle.textContent = 'Uses WHO 2006 standards from birth to 5 years and WHO 2007 reference from 5 to 19 years.';
-      source.textContent = 'Official WHO charts. Plotting assists visual review and should be interpreted with longitudinal growth trajectory and clinical context.';
-    }
+    title.textContent = reference?.title || 'WHO paediatric growth reference';
+    subtitle.textContent = reference
+      ? `Sex-specific WHO z-score chart selected by completed age month. Current point is red; a dated previous point is blue.`
+      : 'Uses WHO 2006 standards for completed months 0–60 and WHO 2007 reference for completed months 61–228.';
+    source.textContent = 'Calculated locally from official WHO monthly LMS tables (2006/2007); no PDF overlay or internet connection is required. Enter exact completed age in months for month-specific results. Review unexpected or extreme results clinically.';
 
     buttons.forEach(button => {
       const chartType = button.dataset.whoChartType;
-      const ageWithinPaediatricReference = !Number.isFinite(ageMonths) || (ageMonths >= 0 && ageMonths <= 228);
-      const available = ageWithinPaediatricReference && (!Number.isFinite(ageMonths) || chartType !== 'weight' || ageMonths <= 120);
+      const config = reference?.charts?.[chartType];
+      const available = !Number.isFinite(completedMonth) || Boolean(config && completedMonth >= config.ageMin && completedMonth <= config.ageMax);
       button.disabled = !available;
       button.classList.toggle('unavailable', !available);
-      button.title = !available ? 'WHO weight-for-age reference is not available beyond 10 years; use BMI-for-age and height-for-age.' : '';
+      button.title = !available && chartType === 'weight' && completedMonth > 120
+        ? 'WHO weight-for-age is not available beyond 10 years; use BMI-for-age and height-for-age.'
+        : !available ? 'This WHO indicator is not available at the entered age.' : '';
     });
 
     let activeButton = qs('[data-who-chart-type].active:not(:disabled)', chartPanel);
@@ -3740,52 +3922,54 @@ html,body{max-width:100%;overflow-x:hidden}
       buttons.forEach(button => button.classList.toggle('active', button === activeButton));
     }
     const type = activeButton?.dataset.whoChartType || 'bmi';
-
     const hideChart = text => {
       message.textContent = text;
       message.classList.remove('hidden');
       stage.classList.add('hidden');
+      stage.replaceChildren();
       summary.classList.add('hidden');
-      star.classList.remove('visible');
     };
 
+    if (!window.MedAssistWhoGrowthLms?.tables) return hideChart('WHO reference data could not be loaded. Refresh the page before using the growth calculation.');
     if (!Number.isFinite(ageMonths)) return hideChart('Enter the patient age to select the appropriate WHO growth reference automatically.');
-    if (ageMonths < 0) return hideChart('Enter a valid patient age.');
-    if (ageMonths > 228) return hideChart('Automatic WHO paediatric growth plotting is available from birth to 19 years. For older patients, use adult BMI interpretation and the relevant clinical reference.');
-    if (!['Male', 'Female'].includes(sex)) return hideChart('Select Male or Female to load the sex-specific WHO chart.');
-
-    const config = reference?.charts?.[type]?.[sex];
-    if (!config || ageMonths < config.ageMin || ageMonths > config.ageMax) {
-      if (type === 'weight' && ageMonths > 120) return hideChart('WHO weight-for-age is not available beyond 10 years because it cannot distinguish a tall adolescent from excess body mass. Use BMI-for-age and height-for-age.');
-      return hideChart(`The selected WHO chart is not available for age ${whoAgeDisplay(ageMonths)}.`);
+    if (!reference) return hideChart('WHO paediatric growth calculation is available from birth through completed month 228 (19 years).');
+    if (!['Male', 'Female'].includes(sex)) return hideChart('Select Male or Female to use the sex-specific WHO reference.');
+    const config = reference.charts[type];
+    if (!config || completedMonth < config.ageMin || completedMonth > config.ageMax) {
+      if (type === 'weight' && completedMonth > 120) return hideChart('WHO weight-for-age is not available beyond completed month 120 because it cannot distinguish height from excess body mass. Use BMI-for-age and height-for-age.');
+      return hideChart(`The selected WHO indicator is not available at age ${whoAgeDisplay(ageMonths)}.`);
     }
-
     const metric = whoMetricValue(prefix, type);
     if (!Number.isFinite(metric) || metric <= 0) {
-      const needed = type === 'weight' ? 'weight' : type === 'height' ? 'height / length' : 'both weight and height';
-      return hideChart(`Enter ${needed} to plot ${config.label.toLowerCase()}.`);
+      const needed = type === 'weight' ? 'weight' : type === 'height' ? 'height / length' : type === 'head' ? 'head circumference' : 'both weight and height';
+      return hideChart(`Enter ${needed} to calculate ${config.label.toLowerCase()}.`);
     }
-
-    const targetUrl = `${config.url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`;
-    if (frame.dataset.loadedUrl !== targetUrl) {
-      frame.src = targetUrl;
-      frame.dataset.loadedUrl = targetUrl;
-    }
-    stage.style.aspectRatio = String(config.aspectRatio || 1.421875);
-    const plot = config.plot;
-    const ageRatio = (Math.max(config.ageMin, Math.min(config.ageMax, ageMonths)) - config.ageMin) / (config.ageMax - config.ageMin);
-    const x = plot.xStart + ageRatio * (plot.xEnd - plot.xStart);
-    const clampedMetric = Math.max(config.yMin, Math.min(config.yMax, metric));
-    const y = plot.yBottom - ((clampedMetric - config.yMin) / (config.yMax - config.yMin)) * (plot.yBottom - plot.yTop);
-    star.style.left = `${x}%`;
-    star.style.top = `${y}%`;
-    star.classList.add('visible');
+    const lms = whoLmsAt(ageMonths, type, sex);
+    const table = whoTable(reference.key, type, sex);
+    if (!lms || !table) return hideChart('No WHO LMS row is available for this age, sex and indicator. Check the entered age.');
+    const z = whoZScore(lms, metric);
+    if (!Number.isFinite(z)) return hideChart('The WHO z-score could not be calculated from the entered measurement. Check the value.');
+    const previousAgeMonths = whoPreviousAgeMonths(prefix, ageMonths);
+    const previousMetric = whoMetricValue(prefix, type, 'previous');
+    const previousLms = whoLmsAt(previousAgeMonths, type, sex);
+    const previousZ = whoZScore(previousLms, previousMetric);
+    const previousPoint = Number.isFinite(previousZ) ? {
+      measurement: previousMetric,
+      lms: previousLms,
+      z: previousZ,
+      plot: previousLms.reference.key === reference.key && previousLms.completedMonth >= config.ageMin && previousLms.completedMonth <= config.ageMax
+    } : null;
+    const currentPoint = { measurement: metric, lms, z };
+    stage.innerHTML = whoChartSvg(config, table, currentPoint, previousPoint);
     message.classList.add('hidden');
     stage.classList.remove('hidden');
     summary.classList.remove('hidden');
-    const metricText = type === 'bmi' ? metric.toFixed(1) : type === 'weight' ? metric.toFixed(2) : metric.toFixed(1);
-    const outside = metric < config.yMin || metric > config.yMax;
-    summary.textContent = `${reference.shortReference} · ${config.label}: ${sex.toLowerCase()}, age ${whoAgeDisplay(ageMonths)}, ${metricText} ${config.unit}.${outside ? ' Measurement is outside the displayed chart range; the star is shown at the nearest chart boundary.' : ''}`;
+    const decimals = type === 'weight' ? 2 : 1;
+    const currentText = `${reference.shortReference} · ${config.label} · ${sex.toLowerCase()} · age ${whoAgeDisplay(ageMonths)} · ${metric.toFixed(decimals)} ${config.unit} · z ${whoZText(z)} · centile ${whoCentileText(z)} · ${whoClassification(type, z, reference.key)}.`;
+    const previousText = previousPoint
+      ? ` Previous: age ${whoAgeDisplay(previousAgeMonths)}, ${previousMetric.toFixed(decimals)} ${config.unit}, z ${whoZText(previousZ)}, centile ${whoCentileText(previousZ)}${previousPoint.plot ? '.' : '; scored against its age-appropriate WHO reference and not joined across references.'}`
+      : '';
+    summary.textContent = currentText + previousText;
   }
 
   function createGrowthPanel(prefix, template) {
@@ -3814,14 +3998,12 @@ html,body{max-width:100%;overflow-x:hidden}
           <button type="button" class="active" data-who-chart-type="weight">Weight-for-age</button>
           <button type="button" data-who-chart-type="height">Length/height-for-age</button>
           <button type="button" data-who-chart-type="bmi">BMI-for-age</button>
+          ${prefix === 'autism' ? '<button type="button" data-who-chart-type="head">Head circumference-for-age</button>' : ''}
         </div>
         <div class="who-growth-chart-message" data-who-chart-message>Enter age, sex and anthropometry. The correct WHO reference will be selected automatically.</div>
-        <div class="who-growth-chart-stage hidden" data-who-chart-stage>
-          <iframe data-who-chart-frame title="WHO growth chart" loading="lazy"></iframe>
-          <div class="who-growth-chart-star" data-who-chart-star aria-label="Patient measurement point">★</div>
-        </div>
+        <div class="who-growth-chart-stage hidden" data-who-chart-stage></div>
         <div class="who-growth-chart-summary hidden" data-who-chart-summary></div>
-        <div class="who-growth-chart-source" data-who-chart-source>Official WHO charts. Plotting assists visual review and should be interpreted with the longitudinal growth trend.</div>
+        <div class="who-growth-chart-source" data-who-chart-source>Calculated from official WHO monthly LMS tables. Interpret together with longitudinal trajectory and clinical context.</div>
       </div>
     `;
     statusGrid?.insertAdjacentElement('beforebegin', panel);
@@ -4112,13 +4294,11 @@ html,body{max-width:100%;overflow-x:hidden}
 .who-growth-chart-tabs button:disabled,.who-growth-chart-tabs button.unavailable{cursor:not-allowed;opacity:.48;background:#f2f5f4;color:#71817d;border-color:#d8e2df}
 .who-growth-chart-tabs button:disabled.active{background:#f2f5f4;color:#71817d;border-color:#d8e2df}
 .who-growth-chart-message{padding:12px 14px;border:1px dashed #bfd7d1;border-radius:13px;background:#fff;color:#526d67;line-height:1.45}
-.who-growth-chart-stage{position:relative;width:100%;aspect-ratio:1.421875;overflow:hidden;border:1px solid #cadbd7;border-radius:14px;background:#eef5f3}
-.who-growth-chart-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
-.who-growth-chart-star{position:absolute;z-index:5;display:none;transform:translate(-50%,-50%);font-size:30px;line-height:1;color:#e31937;text-shadow:-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff,2px 2px 0 #fff,0 0 6px rgba(0,0,0,.45);pointer-events:none}
-.who-growth-chart-star.visible{display:block}
+.who-growth-chart-stage{position:relative;width:100%;aspect-ratio:1.65;overflow:hidden;border:1px solid #cadbd7;border-radius:14px;background:#fff}
+.who-growth-chart-stage svg{display:block;width:100%;height:100%}
 .who-growth-chart-summary{margin-top:10px;padding:10px 12px;border-radius:12px;background:#edf7f4;color:#285b53;font-weight:700;line-height:1.45}
 .who-growth-chart-source{margin-top:8px;color:#6c7e7a;font-size:11px;line-height:1.45}
-@media(max-width:760px){.who-growth-chart-head{display:block}.who-growth-chart-stage{border-radius:10px}.who-growth-chart-star{font-size:24px}}
+@media(max-width:760px){.who-growth-chart-head{display:block}.who-growth-chart-stage{border-radius:10px}}
 </style>
 
 <style id="rme1Styles">
@@ -7597,7 +7777,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <h2>1. Patient and referral details</h2>
 <div class="grid three">
 <div><label>Name</label><input autocomplete="name" id="adhdName" placeholder="Patient's name"/></div>
-<div><label>Age</label><div class="age-input-row"><input id="adhdAge" inputmode="numeric" min="0" placeholder="e.g. 9" type="number"/><select aria-label="Age unit" id="adhdAgeUnit"><option value="years">Years old</option><option value="months">Months old</option></select></div></div>
+<div><label>Age</label><div class="age-input-row"><input id="adhdAge" inputmode="decimal" min="0" placeholder="e.g. 9" step="0.01" title="For an exact WHO result, enter completed age in months" type="number"/><select aria-label="Age unit" id="adhdAgeUnit"><option value="years">Years old</option><option value="months">Months old</option></select></div></div>
 <div><label>Sex</label><select id="adhdSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div>
 <div><label>Accompanied by</label><input id="adhdAccompanied" placeholder="e.g. mother and father"/></div>
 <div><label>History obtained from</label><input id="adhdInformant" placeholder="e.g. mother, child and teacher report"/></div>
@@ -7918,7 +8098,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <h2>1. Patient and referral details</h2>
 <div class="grid three">
 <div><label>Name</label><input autocomplete="name" id="autismName" placeholder="Patient's name"/></div>
-<div><label>Age</label><div class="age-input-row"><input id="autismAge" inputmode="numeric" min="0" placeholder="e.g. 3" type="number"/><select aria-label="Age unit" id="autismAgeUnit"><option value="years">Years old</option><option value="months">Months old</option></select></div></div>
+<div><label>Age</label><div class="age-input-row"><input id="autismAge" inputmode="decimal" min="0" placeholder="e.g. 3" step="0.01" title="For an exact WHO result, enter completed age in months" type="number"/><select aria-label="Age unit" id="autismAgeUnit"><option value="years">Years old</option><option value="months">Months old</option></select></div></div>
 <div><label>Sex</label><select id="autismSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div>
 <div><label>Accompanied by</label><input id="autismAccompanied" placeholder="e.g. mother and father"/></div>
 <div><label>History obtained from</label><input id="autismInformant" placeholder="e.g. parents and preschool teacher"/></div>
