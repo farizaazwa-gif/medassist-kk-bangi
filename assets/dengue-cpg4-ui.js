@@ -28,7 +28,7 @@
     const w=C.weights({weight,height,sex,basis:val(c.basis)});
     const s={weight,height,sex,basis:val(c.basis),weightReason:val(`${p}CpgWeightReason`).trim(),
       phase:val(`${p}Phase`),nearCritical:on(`${p}CpgNearCritical`),haemo:val(`${p}Haemo`),
-      fluidState:val(c.state),rate:val(c.rate),oralHourly:val(`${p}CpgOralHourly`),
+      fluidState:val(c.state),rate:val(c.rate),oralHourly:val(`${p}CpgOralHourly`),oralAdequacy:val(`${p}CpgOralAdequacy`),
       oral:["poor","unable"].includes(rawOral)?"unable":rawOral === "reduced"?"reduced":"able",
       dehydrated:val(`${p}Hydration`) === "dehydrated",moderateSevereDehydration:on(`${p}CpgSevereDehydration`),
       vomit:rawCount("Vomit",f?"dfuVomitFrequency":"clVomiting",f?"dfuVomitCount":"clVomitingCount"),
@@ -127,6 +127,8 @@
   function recordLines(p) {
     if(!active(p)) return [];
     const lines=[], status=val(`${p}CpgVaccine`);
+    const fluidState=state(p);
+    if(needsOralAdequacy(fluidState) && ["adequate","inadequate"].includes(fluidState.oralAdequacy)) lines.push(`Oral fluid intake assessed as ${fluidState.oralAdequacy} for current needs; oral tolerance preserved.`);
     if(status) lines.push(`Dengue vaccination: ${status}${status === "yes"?`; date ${val(`${p}CpgVaccineDate`) || "not recorded"}`:""}.`);
     const advice=vaccineAdvice(p); if(advice) lines.push(advice);
     if(val(`${p}CpgSteroidIndication`).trim()) lines.push(`Context / separate indication for recorded NSAID or corticosteroid administration: ${val(`${p}CpgSteroidIndication`).trim()}`);
@@ -168,6 +170,13 @@
     return errors.length === 0;
   }
   const resetting = new Set();
+  function needsOralAdequacy(s) {
+    return ["febrile","warning"].includes(s.fluidState) && s.oral === "able" && !s.dehydrated;
+  }
+  function invalidateOralAdequacy(p, id) {
+    const c=cfg(p);
+    if([c.group,c.state,p === "cl" ? "clDrink" : "dfuOralIntake",`${p}Hydration`,`${p}CpgSevereDehydration`,`${p}Phase`,`${p}CpgNearCritical`,`${p}Weight`,`${p}Height`,`${p}Sex`].includes(id)) setValue(`${p}CpgOralAdequacy`,"");
+  }
   function clearFluidResult(p, message="Select a category, then calculate.") {
     const c=cfg(p), box=el(c.result);
     if(box){box.dataset.cpgCalculated="false";setText(c.result,message);}
@@ -192,6 +201,7 @@
   function syncFluidDisplay(p) {
     const c=cfg(p), isAdult=adult(p), category=val(c.state);
     el(`${p}CpgOralHourlyWrap`)?.classList.toggle("hidden",!isAdult || category!=="febrile");
+    el(`${p}CpgOralAdequacyWrap`)?.classList.toggle("hidden",!active(p) || !needsOralAdequacy(state(p)));
     const quota=el(`${p}CpgQuotaDetails`);
     if(quota)quota.classList.toggle("hidden",!active(p));
     // One fixed adult shock rate does not need a second dropdown; paediatric choices remain visible.
@@ -201,7 +211,7 @@
   }
   function resetStart(p) {resetting.add(p);}
   function resetEnd(p) {
-    resetting.delete(p);clearFluidResult(p);
+    resetting.delete(p);setValue(`${p}CpgOralAdequacy`,"");clearFluidResult(p);
     for(const id of [`${p}FluidWeightDetails`,`${p}CpgQuotaDetails`])if(el(id))el(id).open=false;
     setText(`${p}CpgValidation`,"");el(`${p}CpgValidation`)?.classList.add("hidden");
     if(adult(p))rates(p);refresh(p);
@@ -266,10 +276,12 @@
       const c=cfg(p), root=el(c.root); if(!root)continue;
       root.addEventListener("input",event=>{
         if(event.target.matches("textarea[id$='Output'],textarea[id$='GeneratedDx']"))return;
+        invalidateOralAdequacy(p,event.target.id);
         if(!active(p))clearFluidResult(p,"Inputs changed — calculate again.");
         refresh(p);
       });
       root.addEventListener("change",event=>{
+        invalidateOralAdequacy(p,event.target.id);
         if(event.target.id === c.group || !active(p))clearFluidResult(p,"Inputs changed — calculate again.");
         if(event.target.id === c.group && adult(p)) setValue(c.basis,"cpg");
         if(adult(p) && [c.state,c.group].includes(event.target.id)) rates(p);

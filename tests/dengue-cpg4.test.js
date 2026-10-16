@@ -164,3 +164,36 @@ test('compact febrile and B2 results keep the IV dose prominent and full plan in
   assert.equal(b2.headline,'Isotonic crystalloid 180 mL/hour');
   assert.match(b2.action,/Reassess after 1 hour.*requires admission/);
 });
+
+
+test('B2 oral tolerance is not silently treated as adequate intake: reported 65 kg case',()=>{
+  const s={...base,weight:65,phase:'critical phase',fluidState:'warning',warningConfirmed:true,oral:'able',rate:4};
+  for(const oralAdequacy of [undefined,'','unknown',null]) {
+    const r=C.fluid({...s,oralAdequacy});
+    assert.equal(r.valid,false);
+    assert.equal(r.headline,'Confirm oral intake adequacy');
+    assert.doesNotMatch(r.display,/hydration is adequate|260 mL/);
+  }
+  const adequate=C.fluid({...s,oralAdequacy:'adequate'});
+  assert.equal(adequate.valid,false);
+  assert.match(adequate.action,/Group B2 still requires hospital admission/);
+  assert.doesNotMatch(adequate.plan,/260 mL/);
+  const inadequate=C.fluid({...s,oralAdequacy:'inadequate'});
+  assert.equal(inadequate.valid,true);
+  assert.equal(inadequate.headline,'Isotonic crystalloid 260 mL/hour');
+});
+
+test('oral adequacy assessment preserves phase, warning-sign, shock and weight checks',()=>{
+  const s={...base,weight:65,phase:'critical phase',fluidState:'warning',warningConfirmed:true,oralAdequacy:'inadequate',rate:4};
+  for(const change of [{phase:'febrile phase'},{warningConfirmed:false},{weight:''},{haemo:'compensated shock'}]) assert.equal(C.fluid({...s,...change}).valid,false);
+  for(const oral of ['reduced','unable']) assert.equal(C.fluid({...s,oral,oralAdequacy:''}).valid,true);
+  assert.equal(C.fluid({...s,dehydrated:true,oralAdequacy:''}).valid,true);
+});
+
+test('febrile maintenance distinguishes oral adequacy from tolerance and still deducts measured intake',()=>{
+  const s={...base,fluidState:'febrile',oralHourly:30};
+  assert.equal(C.fluid(s).headline,'Confirm oral intake adequacy');
+  assert.equal(C.fluid({...s,oralAdequacy:'adequate'}).valid,false);
+  assert.equal(C.fluid({...s,oralAdequacy:'inadequate'}).headline,'IV isotonic crystalloid 70 mL/hour');
+  assert.equal(C.fluid({...s,oralAdequacy:'inadequate',oralHourly:''}).valid,false);
+});
