@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MedAssist responsive smoke test</title>
+<style>body{margin:0;background:#e7efed;font:14px system-ui}header{padding:10px;display:flex;gap:12px;align-items:center}button{padding:8px}iframe{display:block;height:calc(100vh - 58px);border:0;background:white;margin:auto;width:390px;max-width:100%}</style>
+<header><strong>QA — synthetic data only</strong><button id="mobile">390 px viewport</button><button id="desktop">Desktop viewport</button><output id="size">390 px</output></header>
+<iframe id="app" title="MedAssist test viewport" src="../index.html"></iframe>
+<script>
+const app=document.getElementById('app'),size=document.getElementById('size');
+document.getElementById('mobile').onclick=()=>{app.style.width='390px';size.textContent='390 px';};
+document.getElementById('desktop').onclick=()=>{app.style.width='100%';size.textContent='Full available width';};
+</script></html>

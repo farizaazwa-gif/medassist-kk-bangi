@@ -154,6 +154,15 @@
     for(const key of ["VomitLast24","StoolLast24","CpgVoids"]) {
       const n=C.number(val(p+key)); if(n !== null && (n<0 || !Number.isInteger(n))) errors.push("Episode / void counts must be non-negative whole numbers.");
     }
+    for(const key of ["CpgOralHourly","CpgOralTotal","CpgIvTotal","CpgUrineMl"]) {
+      const n=C.number(val(p+key)); if(n !== null && n<0) errors.push("Fluid and urine volumes must not be negative.");
+    }
+    const urine=val(`${p}CpgUrineMl`), hours=val(`${p}CpgUrineHours`);
+    if((urine !== "" || hours !== "") && !(C.number(urine)>=0 && urine !== "" && C.number(hours)>0 && C.number(s.weight)>0)) errors.push("Measured urine needs a non-negative volume, a positive time interval and actual body weight.");
+    const target=val(`${p}CpgQuotaTarget`);
+    if(target !== "" && !(C.number(target)>0)) errors.push("The clinician-agreed quota target must be positive.");
+    const start=val(`${p}CpgCriticalStart`), encounter=val(`${p}VitalDateTime`);
+    if(start && encounter && Date.parse(start)>Date.parse(encounter)) errors.push("Critical-phase onset cannot be after the assessment time.");
     const status=el(`${p}CpgValidation`);
     if(status){status.textContent=errors.join(" ");status.classList.toggle("hidden",!errors.length);if(errors.length) status.scrollIntoView?.({behavior:"smooth",block:"center"});}
     return errors.length === 0;
