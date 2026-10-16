@@ -102,7 +102,7 @@
 
   function fluid(s) {
     const fail = message => ({valid:false, display:message, plan:message});
-    const result = message => ({valid:true, display:message, plan:message});
+    const result = (message, headline, action) => ({valid:true, display:message, plan:message, headline, action});
     const category = s.fluidState;
     if (!["no-warning","febrile","warning","compensated","decompensated"].includes(category)) return fail("Select a valid adult fluid category.");
     const declared = s.haemo === "compensated shock" ? "compensated" : s.haemo === "decompensated shock" ? "decompensated" : null;
@@ -120,7 +120,7 @@
     const name = `${round(w.selected)} kg ${w.label}`;
     if (declared) {
       const amount = round(w.selected * (declared === "compensated" ? 10 : 20));
-      return result(`Initial isotonic crystalloid ${amount} mL over ${declared === "compensated" ? "1 hour (10 mL/kg)" : "15–30 minutes (20 mL/kg)"} using ${name}. Reassess CCTVR, BP/pulse pressure, HCT and urine output. Arrange emergency hospital transfer; do not delay transfer to finish the infusion. The non-shock fluid quota and 70 kg maintenance cap do not limit shock resuscitation. [CPG Algorithm ${declared === "compensated" ? "2" : "3"}]`);
+      return result(`Initial isotonic crystalloid ${amount} mL over ${declared === "compensated" ? "1 hour (10 mL/kg)" : "15–30 minutes (20 mL/kg)"} using ${name}. Reassess CCTVR, BP/pulse pressure, HCT and urine output. Arrange emergency hospital transfer; do not delay transfer to finish the infusion. The non-shock fluid quota and 70 kg maintenance cap do not limit shock resuscitation. [CPG Algorithm ${declared === "compensated" ? "2" : "3"}]`, `Isotonic crystalloid ${amount} mL over ${declared === "compensated" ? "1 hour" : "15–30 minutes"}`, "Reassess CCTVR, BP/pulse pressure, HCT and urine output. Emergency hospital transfer; do not delay to complete the infusion.");
     }
     if (s.phase === "recovery phase") return fail("Recovery phase: reassess and reduce/stop unnecessary IV fluid; no automatic critical-phase regimen.");
     const capped = w.maintenanceWeight;
@@ -129,11 +129,11 @@
       const oral = number(s.oralHourly);
       if (oral === null || oral < 0) return fail("Enter the current oral intake in mL/hour (0 if none) to calculate the IV component of maintenance.");
       const iv = Math.max(total-oral,0);
-      return result(`Febrile maintenance estimate: oral + IV ${round(total)} mL/hour (Holliday–Segar 4/2/1; calculation weight ${round(capped)} kg, capped at 70 kg). Documented oral intake ${oral} mL/hour; IV component ${round(iv)} mL/hour of isotonic crystalloid. Assess additional losses individually; reduce/stop IV when oral intake improves and dehydration is corrected. Moderate/severe dehydration requires hospital management. [CPG pp31,40–42]`);
+      return result(`Febrile maintenance estimate: oral + IV ${round(total)} mL/hour (Holliday–Segar 4/2/1; calculation weight ${round(capped)} kg, capped at 70 kg). Documented oral intake ${oral} mL/hour; IV component ${round(iv)} mL/hour of isotonic crystalloid. Assess additional losses individually; reduce/stop IV when oral intake improves and dehydration is corrected. Moderate/severe dehydration requires hospital management. [CPG pp31,40–42]`, `IV isotonic crystalloid ${round(iv)} mL/hour`, `Oral + IV target: ${round(total)} mL/hour; current oral intake: ${oral} mL/hour. Reduce/stop IV as intake and hydration improve. Moderate/severe dehydration needs hospital management.`);
     }
     const rate = number(s.rate);
     if (![3,4,5].includes(rate)) return fail("Select an initial B2 rate within 3–5 mL/kg/hour.");
-    return result(`Initial isotonic crystalloid ${round(rate*capped)} mL/hour (${rate} mL/kg/hour; calculation weight ${round(capped)} kg, capped at 70 kg). Reassess after 1 hour (Algorithm 1); text p44 allows 1–2 hours according to response. Subsequent rate is reassessment-dependent, not an automatic schedule. Group B2 requires admission; stabilise and transfer. Include oral + IV in the non-shock 48-hour quota and stop applying that quota if shock develops. [CPG pp44,46]`);
+    return result(`Initial isotonic crystalloid ${round(rate*capped)} mL/hour (${rate} mL/kg/hour; calculation weight ${round(capped)} kg, capped at 70 kg). Reassess after 1 hour (Algorithm 1); text p44 allows 1–2 hours according to response. Subsequent rate is reassessment-dependent, not an automatic schedule. Group B2 requires admission; stabilise and transfer. Include oral + IV in the non-shock 48-hour quota and stop applying that quota if shock develops. [CPG pp44,46]`, `Isotonic crystalloid ${round(rate*capped)} mL/hour`, "Reassess after 1 hour. Group B2 requires admission; stabilise and transfer. Further rates depend on reassessment.");
   }
 
   function vaccineDays(vaccinated, encounter) {

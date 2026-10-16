@@ -5,8 +5,8 @@
   const el = id => document.getElementById(id);
   const val = id => el(id)?.value ?? "";
   const on = id => Boolean(el(id)?.checked);
-  const setText = (id,text) => { if(el(id)) el(id).textContent=text; };
-  const setValue = (id,text) => { if(el(id)) el(id).value=text; };
+  const setText = (id,text) => { if(el(id) && el(id).textContent!==text) el(id).textContent=text; };
+  const setValue = (id,text) => { if(el(id) && el(id).value!==String(text)) el(id).value=text; };
   const cfg = p => p === "cl" ? {group:"dfGroup",basis:"dfBasis",weight:"dfSelectedWeight",state:"dfState",rate:"dfRate",rateWrap:"dfRateWrap",weightStatus:"dfWeightStatus",result:"dfResult",mode:"new",root:"dengueNewCaseTemplate"}
     : {group:"dfuGroup",basis:"dfuFluidBasis",weight:"dfuFluidSelectedWeight",state:"dfuFluidState",rate:"dfuFluidRate",rateWrap:"dfuFluidRateWrap",weightStatus:"dfuFluidWeightStatus",result:"dfuFluidResult",mode:"followup",root:"dengueFollowUpTemplate"};
   const adult = p => val(cfg(p).group) === "adult";
@@ -167,7 +167,47 @@
     if(status){status.textContent=errors.join(" ");status.classList.toggle("hidden",!errors.length);if(errors.length) status.scrollIntoView?.({behavior:"smooth",block:"center"});}
     return errors.length === 0;
   }
+  const resetting = new Set();
+  function clearFluidResult(p, message="Select a category, then calculate.") {
+    const c=cfg(p), box=el(c.result);
+    if(box){box.dataset.cpgCalculated="false";setText(c.result,message);}
+  }
+  function renderFluidResult(p) {
+    const c=cfg(p), box=el(c.result);if(!box)return;
+    const r=fluid(p);
+    const signature=JSON.stringify(r);
+    // Avoid rebuilding disclosure controls when an unrelated field changes.
+    if(box.dataset.cpgSignature===signature && box.querySelector(".fluid-headline"))return;
+    box.dataset.cpgSignature=signature;
+    const title=document.createElement("strong");title.className="fluid-headline";title.textContent=r.headline || r.display;
+    const nodes=[title];
+    if(r.action){const action=document.createElement("p");action.className="fluid-action";action.textContent=r.action;nodes.push(action);}
+    if(r.valid){
+      const detail=document.createElement("details"), summary=document.createElement("summary"), text=document.createElement("div");
+      summary.textContent="Calculation details & CPG source";text.className="fluid-detail";text.textContent=r.display;
+      detail.append(summary,text);nodes.push(detail);
+    }
+    box.replaceChildren(...nodes);
+  }
+  function syncFluidDisplay(p) {
+    const c=cfg(p), isAdult=adult(p), category=val(c.state);
+    el(`${p}CpgOralHourlyWrap`)?.classList.toggle("hidden",!isAdult || category!=="febrile");
+    const quota=el(`${p}CpgQuotaDetails`);
+    if(quota)quota.classList.toggle("hidden",!active(p));
+    // One fixed adult shock rate does not need a second dropdown; paediatric choices remain visible.
+    if(isAdult)el(c.rateWrap)?.classList.toggle("hidden",category!=="warning");
+    if(isAdult){const w=C.weights(state(p));setText(`${p}FluidWeightSummary`,w.valid?`Calculation weight: ${C.round(w.selected)} kg · ${w.label}${w.manual?" (override)":" (automatic)"}`:"Complete weight and height above, or review the weight override.");}
+    else{const w=C.number(val(`${p}Weight`));setText(`${p}FluidWeightSummary`,w>0?`Calculation weight: ${w} kg · actual body weight`:"Enter weight above.");}
+  }
+  function resetStart(p) {resetting.add(p);}
+  function resetEnd(p) {
+    resetting.delete(p);clearFluidResult(p);
+    for(const id of [`${p}FluidWeightDetails`,`${p}CpgQuotaDetails`])if(el(id))el(id).open=false;
+    setText(`${p}CpgValidation`,"");el(`${p}CpgValidation`)?.classList.add("hidden");
+    if(adult(p))rates(p);refresh(p);
+  }
   function refresh(p) {
+    if(resetting.has(p))return;
     const isAdult=adult(p), isActive=active(p), c=cfg(p), root=el(c.root);
     if(!root) return;
     root.dataset.cpgAdult=String(isAdult);
@@ -182,6 +222,7 @@
     });
     const fluidLabel=el(p === "cl"?"clPlanSubOutFluid":"dfuPlanSubMonFluid")?.parentElement?.querySelector("span");
     if(fluidLabel) fluidLabel.textContent=isAdult?"Oral fluids 200 mL/hour while awake / individualised restriction":"Encourage adequate oral fluids according to age, weight and clinical tolerance";
+    syncFluidDisplay(p);
     if(!isActive) return;
     const s=state(p), a=C.assess(s);
     setText(`${p}CpgAssessment`,`${a.title}. ${a.summary}${a.concerns.length?" Reassessment: "+a.concerns.join("; "):""}`);
@@ -218,27 +259,30 @@
     window.renderDengueReferralAlert?.(c.mode,{silent:true});
     if(p === "cl") window.renderDenguePlanPreview?.(); else window.renderDengueFollowUpPlan?.();
     // Keep a calculated result current when inputs change, rather than retaining a stale dose.
-    if(el(c.result)?.dataset.cpgCalculated === "true") setText(c.result,fluid(p).display);
+    if(el(c.result)?.dataset.cpgCalculated === "true") renderFluidResult(p);
   }
   function init() {
     for(const p of ["cl","dfu"]) {
       const c=cfg(p), root=el(c.root); if(!root)continue;
       root.addEventListener("input",event=>{
         if(event.target.matches("textarea[id$='Output'],textarea[id$='GeneratedDx']"))return;
+        if(!active(p))clearFluidResult(p,"Inputs changed — calculate again.");
         refresh(p);
       });
       root.addEventListener("change",event=>{
+        if(event.target.id === c.group || !active(p))clearFluidResult(p,"Inputs changed — calculate again.");
         if(event.target.id === c.group && adult(p)) setValue(c.basis,"cpg");
         if(adult(p) && [c.state,c.group].includes(event.target.id)) rates(p);
         refresh(p);
       });
       el(p === "cl"?"dfCalculate":"dfuFluidCalculate")?.addEventListener("click",()=>{
-        if(active(p) && el(c.result)){el(c.result).dataset.cpgCalculated="true";setText(c.result,fluid(p).display);}
+        if(active(p) && el(c.result)){el(c.result).dataset.cpgCalculated="true";renderFluidResult(p);}
       });
-      el(`${p}Reset`)?.addEventListener("click",()=>{if(el(c.result))el(c.result).dataset.cpgCalculated="false";refresh(p);});
+      el(`${p}Reset`)?.addEventListener("click",()=>resetStart(p),true);
+      el(`${p}Reset`)?.addEventListener("click",()=>resetEnd(p));
       if(adult(p)){rates(p);refresh(p);}
     }
   }
-  window.MedAssistDengueCpg4UI={state,active,referral,warningData,diagnosis,syncWeight,rates,fluid,oralAdvice,adjustPlan,recordLines,validate,refresh};
+  window.MedAssistDengueCpg4UI={state,active,referral,warningData,diagnosis,syncWeight,rates,fluid,oralAdvice,adjustPlan,recordLines,validate,refresh,renderFluidResult,syncFluidDisplay,clearFluidResult,resetStart,resetEnd};
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
