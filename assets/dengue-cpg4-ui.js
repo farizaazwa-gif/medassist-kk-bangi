@@ -28,7 +28,7 @@
     const w=C.weights({weight,height,sex,basis:val(c.basis)});
     const s={weight,height,sex,basis:val(c.basis),weightReason:val(`${p}CpgWeightReason`).trim(),
       phase:val(`${p}Phase`),nearCritical:on(`${p}CpgNearCritical`),haemo:val(`${p}Haemo`),
-      fluidState:val(c.state),rate:val(c.rate),oralHourly:val(`${p}CpgOralHourly`),oralAdequacy:val(`${p}CpgOralAdequacy`),
+      fluidState:val(c.state),rate:val(c.rate),oralHourly:val(`${p}CpgOralHourly`),oralPeriod:val(`${p}CpgOralPeriod`) || "1",oralAdequacy:val(`${p}CpgOralAdequacy`),
       oral:["poor","unable"].includes(rawOral)?"unable":rawOral === "reduced"?"reduced":"able",
       dehydrated:val(`${p}Hydration`) === "dehydrated",moderateSevereDehydration:on(`${p}CpgSevereDehydration`),
       vomit:rawCount("Vomit",f?"dfuVomitFrequency":"clVomiting",f?"dfuVomitCount":"clVomitingCount"),
@@ -88,7 +88,24 @@
     if(options.some(x=>x[0]===old)) select.value=old;
     el(c.rateWrap)?.classList.toggle("hidden",!options.length);
   }
-  function fluid(p){return C.fluid(state(p));}
+  function syncCategory(p) {
+    const c=cfg(p), select=el(c.state);if(!select)return;
+    const restrict=(option, disabled)=>{
+      if(option.disabled!==disabled)option.disabled=disabled;
+      if(option.hidden!==disabled)option.hidden=disabled;
+    };
+    if(!adult(p)) {
+      for(const option of select.options)restrict(option,option.value==="febrile");
+      return;
+    }
+    const s=state(p), choices=C.fluidCategories(s);
+    for(const option of select.options)restrict(option,!choices.allowed.includes(option.value));
+    if(!choices.allowed.includes(select.value)) {
+      setValue(c.state,choices.preferred);setValue(`${p}CpgOralAdequacy`,"");rates(p);
+    }
+  }
+  function fluid(p){syncCategory(p);return C.fluid(state(p));}
+  function calculate(p){refresh(p);if(active(p) && el(cfg(p).result)){el(cfg(p).result).dataset.cpgCalculated="true";renderFluidResult(p);}}
   function oralAdvice(p) {
     if(on(`${p}CpgFluidRestricted`)) return `Use the individualised oral fluid restriction regimen: ${val(`${p}CpgFluidRegimen`).trim() || "[DOCUMENT PRESCRIBED REGIMEN]"}. Monitor hydration and urine output.`;
     return "Oral fluids approximately 200 mL/hour while awake, including electrolyte-containing fluids (e.g. ORS or soup); avoid plain water alone. Individualise if fluid restriction is required.";
@@ -150,7 +167,8 @@
     if(on(`${p}CpgFluidRestricted`) && !val(`${p}CpgFluidRegimen`).trim()) errors.push("Document the individualised fluid regimen.");
     if(option === "discharge" && !C.dischargeReady(dischargeState())) errors.push("Complete the recovery review and explicit clinician decision before stopping routine FBC monitoring.");
     if(option === "discharge" && (a.needsHospital || s.haemo !== "haemodynamically stable")) errors.push("Resolve the recorded acute findings requiring hospital assessment before selecting routine discharge / stopping FBC.");
-    if(option === "refer" && on(p === "cl"?"clPlanSubReferFluid":"dfuPlanSubReferFluid") && !fluid(p).valid) errors.push("Resolve the fluid calculation, or untick Start IV fluid if no IV prescription is intended.");
+    const fluidResult=fluid(p);
+    if(option === "refer" && on(p === "cl"?"clPlanSubReferFluid":"dfuPlanSubReferFluid") && (!fluidResult.valid || fluidResult.canPrescribe === false)) errors.push("Resolve the fluid calculation, or untick Start IV fluid if no IV prescription is intended.");
     if(on(`${p}IntVoltaren`) && !val(`${p}CpgSteroidIndication`).trim()) errors.push("IM diclofenac is inappropriate as dengue treatment. If already administered, record the prior-exposure context; this must not be interpreted as a dengue treatment recommendation.");
     if(on(`${p}IntHydro`) && !val(`${p}CpgSteroidIndication`).trim()) errors.push("Document the separate indication for hydrocortisone; corticosteroids are not dengue treatment.");
     for(const key of ["VomitLast24","StoolLast24","CpgVoids"]) {
@@ -175,7 +193,7 @@
   }
   function invalidateOralAdequacy(p, id) {
     const c=cfg(p);
-    if([c.group,c.state,p === "cl" ? "clDrink" : "dfuOralIntake",`${p}Hydration`,`${p}CpgSevereDehydration`,`${p}Phase`,`${p}CpgNearCritical`,`${p}Weight`,`${p}Height`,`${p}Sex`].includes(id)) setValue(`${p}CpgOralAdequacy`,"");
+    if([c.group,c.state,p === "cl" ? "clDrink" : "dfuOralIntake",`${p}Hydration`,`${p}CpgSevereDehydration`,`${p}Phase`,`${p}CpgNearCritical`,`${p}Weight`,`${p}Height`,`${p}Sex`,`${p}CpgOralHourly`,`${p}CpgOralPeriod`].includes(id)) setValue(`${p}CpgOralAdequacy`,"");
   }
   function clearFluidResult(p, message="Select a category, then calculate.") {
     const c=cfg(p), box=el(c.result);
@@ -206,12 +224,18 @@
     if(quota)quota.classList.toggle("hidden",!active(p));
     // One fixed adult shock rate does not need a second dropdown; paediatric choices remain visible.
     if(isAdult)el(c.rateWrap)?.classList.toggle("hidden",category!=="warning");
-    if(isAdult){const w=C.weights(state(p));setText(`${p}FluidWeightSummary`,w.valid?`Calculation weight: ${C.round(w.selected)} kg · ${w.label}${w.manual?" (override)":" (automatic)"}`:"Complete weight and height above, or review the weight override.");}
+    if(isAdult){
+      const s=state(p), w=C.weights(s), capped=["febrile","warning"].includes(category), calculationWeight=capped?w.maintenanceWeight:w.selected;
+      setText(`${p}FluidWeightSummary`,w.valid?`Calculation weight: ${C.round(calculationWeight)} kg${capped && w.selected>70?` (70 kg maintenance cap; selected ${C.round(w.selected)} kg ${w.label})`:` · ${w.label}${w.manual?" (override)":" (automatic)"}`}`:"Complete weight and height above, or review the weight override.");
+      setText(`${p}FluidAssessmentSummary`,`${s.phase}${s.nearCritical && s.phase!=="critical phase"?" (approaching critical)":""} · ${C.assess(s).warningSigns.length?"warning signs recorded":"no warning signs recorded"} · ${s.haemo}.`);
+      const oral=C.oralRate(s.oralHourly,s.oralPeriod);
+      setText(`${p}CpgOralUnitHint`,oral===null?"Enter 0 if none. Select the unit explicitly.":Number(s.oralPeriod)===24?`Average: ${C.round(oral)} mL/hour. Confirm the 24-hour average reflects current intake.`:`${C.round(oral)} mL each hour. If this is a daily total, select mL/24 hours.`);
+    }
     else{const w=C.number(val(`${p}Weight`));setText(`${p}FluidWeightSummary`,w>0?`Calculation weight: ${w} kg · actual body weight`:"Enter weight above.");}
   }
   function resetStart(p) {resetting.add(p);}
   function resetEnd(p) {
-    resetting.delete(p);setValue(`${p}CpgOralAdequacy`,"");clearFluidResult(p);
+    resetting.delete(p);setValue(`${p}CpgOralAdequacy`,"");setValue(`${p}CpgOralPeriod`,"1");clearFluidResult(p);
     for(const id of [`${p}FluidWeightDetails`,`${p}CpgQuotaDetails`])if(el(id))el(id).open=false;
     setText(`${p}CpgValidation`,"");el(`${p}CpgValidation`)?.classList.add("hidden");
     if(adult(p))rates(p);refresh(p);
@@ -222,10 +246,11 @@
     if(!root) return;
     root.dataset.cpgAdult=String(isAdult);
     root.querySelectorAll(".adult-cpg4").forEach(x=>x.classList.toggle("hidden",!isActive));
-    const febrile=el(c.state)?.querySelector('option[value="febrile"]');if(febrile){febrile.disabled=!isAdult;febrile.hidden=!isAdult;}
     if(!isAdult && val(c.state) === "febrile") setValue(c.state,"no-warning");
     const cpgBasis=el(c.basis)?.querySelector('option[value="cpg"]');if(cpgBasis){cpgBasis.disabled=!isAdult;cpgBasis.hidden=!isAdult;}
-    const warnOption=el(c.state)?.querySelector('option[value="warning"]');if(warnOption) warnOption.textContent=isAdult?"Critical phase with warning signs (B2)":"With warning signs / unable oral intake";
+    const warnOption=el(c.state)?.querySelector('option[value="warning"]'),warnLabel=isAdult?"Critical phase with warning signs (B2)":"With warning signs / unable oral intake";if(warnOption && warnOption.textContent!==warnLabel)warnOption.textContent=warnLabel;
+    const oralOption=el(c.state)?.querySelector('option[value="no-warning"]'),oralLabel=isAdult?"Oral hydration / reassessment":"Stable, no warning signs";if(oralOption && oralOption.textContent!==oralLabel)oralOption.textContent=oralLabel;
+    syncCategory(p);
     root.querySelectorAll(".dengue-frequency-shell").forEach(shell=>{
       const hint=shell.querySelector(".dengue-frequency-threshold");if(!hint)return;
       hint.textContent=!isAdult?"≥3 episodes in 24 hours is classified as a dengue warning sign.":shell.id.includes("Vomit")?"Adult CPG4: persistent vomiting >3 episodes/24 h; interpret near/in critical phase with the full clinical assessment.":"Loose stool: assess dehydration and oral tolerance; not a standalone adult dengue warning sign.";
@@ -287,14 +312,16 @@
         if(adult(p) && [c.state,c.group].includes(event.target.id)) rates(p);
         refresh(p);
       });
-      el(p === "cl"?"dfCalculate":"dfuFluidCalculate")?.addEventListener("click",()=>{
-        if(active(p) && el(c.result)){el(c.result).dataset.cpgCalculated="true";renderFluidResult(p);}
+      el(`${p}FluidReviewAssessment`)?.addEventListener("click",()=>{
+        const field=el(`${p}Phase`);if(!field)return;
+        for(let parent=field.parentElement;parent;parent=parent.parentElement)if(parent.tagName==="DETAILS")parent.open=true;
+        field.scrollIntoView?.({behavior:"smooth",block:"center"});field.focus({preventScroll:true});
       });
       el(`${p}Reset`)?.addEventListener("click",()=>resetStart(p),true);
       el(`${p}Reset`)?.addEventListener("click",()=>resetEnd(p));
       if(adult(p)){rates(p);refresh(p);}
     }
   }
-  window.MedAssistDengueCpg4UI={state,active,referral,warningData,diagnosis,syncWeight,rates,fluid,oralAdvice,adjustPlan,recordLines,validate,refresh,renderFluidResult,syncFluidDisplay,clearFluidResult,resetStart,resetEnd};
+  window.MedAssistDengueCpg4UI={state,active,referral,warningData,diagnosis,syncWeight,rates,syncCategory,fluid,calculate,oralAdvice,adjustPlan,recordLines,validate,refresh,renderFluidResult,syncFluidDisplay,clearFluidResult,resetStart,resetEnd};
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();

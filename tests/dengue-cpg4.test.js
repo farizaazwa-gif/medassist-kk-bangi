@@ -197,3 +197,53 @@ test('febrile maintenance distinguishes oral adequacy from tolerance and still d
   assert.equal(C.fluid({...s,oralAdequacy:'inadequate'}).headline,'IV isotonic crystalloid 70 mL/hour');
   assert.equal(C.fluid({...s,oralAdequacy:'inadequate',oralHourly:''}).valid,false);
 });
+
+test('fluid pathways exclude the reported febrile/critical mismatch without changing clinical assessment',()=>{
+  const s={...base,weight:72,height:175,phase:'critical phase',warningConfirmed:true,fluidState:'febrile'};
+  assert.deepEqual(C.fluidCategories(s),{allowed:['warning'],preferred:'warning'});
+  assert.equal(s.phase,'critical phase');
+  assert.equal(C.fluid({...s,oralAdequacy:'inadequate',oralHourly:1000}).valid,false);
+});
+
+test('every selectable adult pathway is consistent with phase, warning signs and declared shock',()=>{
+  for(const phase of ['febrile phase','critical phase','recovery phase'])
+  for(const haemo of ['haemodynamically stable','compensated shock','decompensated shock'])
+  for(const warningConfirmed of [false,true])
+  for(const nearCritical of [false,true]) {
+    const s={...base,phase,haemo,warningConfirmed,nearCritical,oral:'unable',oralHourly:0,rate:3};
+    const choices=C.fluidCategories(s);assert.ok(choices.allowed.includes(choices.preferred));
+    for(const fluidState of choices.allowed) assert.doesNotMatch(C.fluid({...s,fluidState}).display,/requires a clinician-confirmed febrile|requires assessment near\/in|Confirm dengue warning|Reconcile haemodynamic/);
+    if(phase==='recovery phase' && haemo==='haemodynamically stable') assert.deepEqual(choices.allowed,['no-warning']);
+  }
+});
+
+test('oral units are explicit and converted without rounding before calculation',()=>{
+  assert.equal(C.oralRate(1000,'24'),1000/24);
+  assert.equal(C.oralRate(1000,'1'),1000);
+  assert.equal(C.oralRate(0,'24'),0);
+  for(const volume of ['',-1,Infinity,NaN]) assert.equal(C.oralRate(volume,'24'),null);
+  for(const period of ['',0,2,Infinity,'day']) assert.equal(C.oralRate(1000,period),null);
+});
+
+test('72 kg febrile case: daily intake gives 68.3 mL/hour; 1000 mL/hour gives zero, not an IV order',()=>{
+  const s={...base,weight:72,height:175,fluidState:'febrile',oralAdequacy:'inadequate',oralHourly:1000};
+  const daily=C.fluid({...s,oralPeriod:'24'});
+  assert.equal(daily.headline,'IV isotonic crystalloid 68.3 mL/hour');
+  assert.match(daily.plan,/calculation weight 70 kg/);assert.match(daily.plan,/1000 mL\/24 hours/);
+  const hourly=C.fluid({...s,oralPeriod:'1'});
+  assert.equal(hourly.headline,'IV maintenance component: 0 mL/hour');
+  assert.equal(hourly.canPrescribe,false);assert.match(hourly.action,/no additional routine IV maintenance/);
+});
+
+test('recovery and referral findings never receive routine outpatient reassurance from no-warning category',()=>{
+  assert.match(C.fluid({...base,phase:'recovery phase',nearCritical:true,warningConfirmed:true}).display,/Recovery phase/);
+  const hospital=C.fluid({...base,phase:'critical phase',warningConfirmed:true});
+  assert.match(hospital.display,/require hospital assessment/);
+  assert.doesNotMatch(hospital.display,/confirm outpatient suitability/);
+});
+
+test('documented inadequate intake is reflected in assessment even when oral tolerance is preserved',()=>{
+  const a=C.assess({...base,oralAdequacy:'inadequate'});
+  assert.equal(a.group,'review');assert.equal(a.needsHospital,false);
+  assert.ok(a.concerns.some(x=>/intake assessed as inadequate/.test(x)));
+});

@@ -71,6 +71,7 @@
     if (stool !== null && stool > 0) concerns.push(`loose stool ${stool} episode(s)/24 h: assess dehydration and oral tolerance`);
     if (s.oral === "unable") concerns.push("unable to tolerate oral fluids — hospital assessment");
     if (s.oral === "reduced") concerns.push("reduced oral intake — assess hydration");
+    if (s.oral === "able" && s.oralAdequacy === "inadequate") concerns.push("oral intake assessed as inadequate — reassess hydration and ongoing losses");
     if (s.dehydrated) concerns.push("dehydration — assess severity; moderate/severe dehydration requires IV fluid and hospital management");
     if (s.reducedUrine && !s.lowUrine4h) concerns.push("reduced urine — establish duration, volume and perfusion");
     if (s.sob && !s.leakRespiratory) concerns.push("shortness of breath — assess promptly for respiratory distress / plasma leakage");
@@ -100,6 +101,22 @@
         : "Use the total clinical assessment; update diagnosis, phase and disposition at every review."};
   }
 
+  function fluidCategories(s) {
+    if (s.haemo === "compensated shock") return {allowed:["compensated"],preferred:"compensated"};
+    if (s.haemo === "decompensated shock") return {allowed:["decompensated"],preferred:"decompensated"};
+    if (s.phase === "recovery phase") return {allowed:["no-warning"],preferred:"no-warning"};
+    const warning = assess(s).warningSigns.length > 0;
+    if (nearCritical(s) && warning) return {allowed:s.phase === "febrile phase" ? ["warning","febrile"] : ["warning"],preferred:"warning"};
+    if (s.phase === "febrile phase") return {allowed:warning ? ["febrile"] : ["no-warning","febrile"],preferred:warning || s.oral !== "able" || s.dehydrated ? "febrile" : "no-warning"};
+    return {allowed:["no-warning"],preferred:"no-warning"};
+  }
+
+  function oralRate(volume, period = "1") {
+    const amount=number(volume), hours=number(period);
+    if(amount === null || amount < 0 || ![1,24].includes(hours)) return null;
+    return amount / hours;
+  }
+
   function fluid(s) {
     const fail = (message, headline = "IV rate not calculated") => ({valid:false, display:message, plan:message, headline, action:message});
     const result = (message, headline, action) => ({valid:true, display:message, plan:message, headline, action});
@@ -107,6 +124,8 @@
     if (!["no-warning","febrile","warning","compensated","decompensated"].includes(category)) return fail("Select a valid adult fluid category.");
     const declared = s.haemo === "compensated shock" ? "compensated" : s.haemo === "decompensated shock" ? "decompensated" : null;
     if ((declared && category !== declared) || (["compensated","decompensated"].includes(category) && category !== declared)) return fail("Reconcile haemodynamic status and fluid category before prescribing. Shock requires emergency referral.");
+    if (!declared && s.phase === "recovery phase") return fail("Recovery phase: reassess and reduce/stop unnecessary IV fluid; no automatic critical-phase regimen.");
+    if (category === "no-warning" && assess(s).needsHospital) return fail("Recorded findings require hospital assessment. Review the phase, warning signs, haemodynamics and oral intake before choosing a fluid pathway; this result does not establish outpatient suitability.");
     if (category === "no-warning") return fail(s.oral === "unable" || s.dehydrated
       ? "Oral intolerance / dehydration requires reassessment. Select the phase-appropriate pathway and assess hospital referral."
       : "No routine IV fluid indicated. Use oral hydration and daily clinical reassessment; confirm outpatient suitability.");
@@ -127,14 +146,14 @@
       const amount = round(w.selected * (declared === "compensated" ? 10 : 20));
       return result(`Initial isotonic crystalloid ${amount} mL over ${declared === "compensated" ? "1 hour (10 mL/kg)" : "15–30 minutes (20 mL/kg)"} using ${name}. Reassess CCTVR, BP/pulse pressure, HCT and urine output. Arrange emergency hospital transfer; do not delay transfer to finish the infusion. The non-shock fluid quota and 70 kg maintenance cap do not limit shock resuscitation. [CPG Algorithm ${declared === "compensated" ? "2" : "3"}]`, `Isotonic crystalloid ${amount} mL over ${declared === "compensated" ? "1 hour" : "15–30 minutes"}`, "Reassess CCTVR, BP/pulse pressure, HCT and urine output. Emergency hospital transfer; do not delay to complete the infusion.");
     }
-    if (s.phase === "recovery phase") return fail("Recovery phase: reassess and reduce/stop unnecessary IV fluid; no automatic critical-phase regimen.");
     const capped = w.maintenanceWeight;
     if (category === "febrile") {
       const total = maintenance(capped);
-      const oral = number(s.oralHourly);
-      if (oral === null || oral < 0) return fail("Enter the current oral intake in mL/hour (0 if none) to calculate the IV component of maintenance.");
+      const oral = oralRate(s.oralHourly, s.oralPeriod);
+      if (oral === null) return fail("Enter a non-negative oral volume (0 if none) and select mL/hour or mL/24 hours to calculate the IV component of maintenance.");
       const iv = Math.max(total-oral,0);
-      return result(`Febrile maintenance estimate: oral + IV ${round(total)} mL/hour (Holliday–Segar 4/2/1; calculation weight ${round(capped)} kg, capped at 70 kg). Documented oral intake ${oral} mL/hour; IV component ${round(iv)} mL/hour of isotonic crystalloid. Assess additional losses individually; reduce/stop IV when oral intake improves and dehydration is corrected. Moderate/severe dehydration requires hospital management. [CPG pp31,40–42]`, `IV isotonic crystalloid ${round(iv)} mL/hour`, `Oral + IV target: ${round(total)} mL/hour; current oral intake: ${oral} mL/hour. Reduce/stop IV as intake and hydration improve. Moderate/severe dehydration needs hospital management.`);
+      const recorded=Number(s.oralPeriod) === 24 ? `${number(s.oralHourly)} mL/24 hours (average ${round(oral)} mL/hour; confirm this reflects current intake)` : `${round(oral)} mL/hour`;
+      return {...result(`Febrile maintenance estimate: oral + IV ${round(total)} mL/hour (Holliday–Segar 4/2/1; calculation weight ${round(capped)} kg, capped at 70 kg). Documented oral intake ${recorded}; IV component ${round(iv)} mL/hour of isotonic crystalloid. ${iv === 0 ? "No additional routine IV maintenance is calculated. " : ""}Assess additional losses individually; reduce/stop IV when oral intake improves and dehydration is corrected. Moderate/severe dehydration requires hospital management. [CPG pp31,40–42]`, iv === 0 ? "IV maintenance component: 0 mL/hour" : `IV isotonic crystalloid ${round(iv)} mL/hour`, `Oral + IV target: ${round(total)} mL/hour; oral intake: ${recorded}. ${iv === 0 ? "Oral intake meets/exceeds this maintenance estimate; no additional routine IV maintenance is calculated. Check the intake unit and reassess losses/hydration." : "Reduce/stop IV as intake and hydration improve."} Moderate/severe dehydration needs hospital management.`),canPrescribe:iv>0};
     }
     const rate = number(s.rate);
     if (![3,4,5].includes(rate)) return fail("Select an initial B2 rate within 3–5 mL/kg/hour.");
@@ -163,5 +182,5 @@
   function dischargeReady(s) {
     return Boolean(s.afebrileConfirmed && s.improving && s.stable && s.intakeUrine && s.noBleedingResp && s.labsReviewed && s.stopFbcConfirmed);
   }
-  return {SOURCE, QUOTA_TABLE, number, round, nearCritical, weights, maintenance, quota, assess, fluid, vaccineDays, medicationAdvice, dischargeReady};
+  return {SOURCE, QUOTA_TABLE, number, round, nearCritical, weights, maintenance, quota, assess, fluidCategories, oralRate, fluid, vaccineDays, medicationAdvice, dischargeReady};
 });
