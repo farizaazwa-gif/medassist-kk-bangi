@@ -14,6 +14,7 @@ The screenshot also contained oral intake 1000 in a field labelled mL/hour. Its 
 - Add an explicit mL/hour versus mL/24 hours input unit. The hourly equivalent is shown; a daily average must be confirmed as representative of current intake. Conversion uses full precision before display rounding.
 - Show effective capped calculation weight for adult febrile/B2 maintenance, and the uncapped selected weight for shock. Previously the headline displayed 72 kg although maintenance used 70 kg.
 - A zero maintenance IV component is displayed as zero, with an explanation. The generated IV-start action cannot be approved as a zero-rate prescription; the user must untick Start IV fluid if none is intended.
+- Propagate explicitly inadequate oral intake into the assessment as a need for clinical reassessment, even when oral tolerance is preserved. This does not create an automatic admission trigger.
 - Avoid routine outpatient reassurance when the no-warning calculator category is inconsistent with recorded hospital-referral findings.
 - Use one adult Calculate renderer. Previously both legacy and CPG handlers wrote to the result on each click. The paediatric renderer is preserved.
 - Version the two dengue assets with this release to avoid reusing older cached script versions with updated markup.
@@ -24,7 +25,7 @@ Source: supplied *Management of Dengue in Adults, Fourth Edition (2026)*. Febril
 
 ## Verification
 
-- 89 Node regression tests pass, including a matrix of febrile/critical/recovery, both shock states, warning-sign status and approaching-critical status.
+- 90 Node regression tests pass, including a matrix of febrile/critical/recovery, both shock states, warning-sign status and approaching-critical status.
 - `scripts/qa-dengue-fluid.cjs` runs against the full actual document with jsdom 26 supplied through `MEDASSIST_JSDOM_MODULE`. It covers both new case and follow-up: stale category repair, 72 kg cap, 1000 mL/hour versus 1000 mL/24 h, repeated button clicks, source-field focus, generated notes, zero-IV validation, recovery, shock, paediatric transitions, stale doses and reset isolation.
 - The jsdom harness omits accessibility-hardening.js due to its jsdom performance; browser smoke testing includes the complete application.
 - Desktop and 390 px browser smoke testing and live asset verification are release gates.

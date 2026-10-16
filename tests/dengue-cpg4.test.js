@@ -241,3 +241,9 @@ test('recovery and referral findings never receive routine outpatient reassuranc
   assert.match(hospital.display,/require hospital assessment/);
   assert.doesNotMatch(hospital.display,/confirm outpatient suitability/);
 });
+
+test('documented inadequate intake is reflected in assessment even when oral tolerance is preserved',()=>{
+  const a=C.assess({...base,oralAdequacy:'inadequate'});
+  assert.equal(a.group,'review');assert.equal(a.needsHospital,false);
+  assert.ok(a.concerns.some(x=>/intake assessed as inadequate/.test(x)));
+});

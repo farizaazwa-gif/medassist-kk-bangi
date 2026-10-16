@@ -71,6 +71,7 @@
     if (stool !== null && stool > 0) concerns.push(`loose stool ${stool} episode(s)/24 h: assess dehydration and oral tolerance`);
     if (s.oral === "unable") concerns.push("unable to tolerate oral fluids — hospital assessment");
     if (s.oral === "reduced") concerns.push("reduced oral intake — assess hydration");
+    if (s.oral === "able" && s.oralAdequacy === "inadequate") concerns.push("oral intake assessed as inadequate — reassess hydration and ongoing losses");
     if (s.dehydrated) concerns.push("dehydration — assess severity; moderate/severe dehydration requires IV fluid and hospital management");
     if (s.reducedUrine && !s.lowUrine4h) concerns.push("reduced urine — establish duration, volume and perfusion");
     if (s.sob && !s.leakRespiratory) concerns.push("shortness of breath — assess promptly for respiratory distress / plasma leakage");

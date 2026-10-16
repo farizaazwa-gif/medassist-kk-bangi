@@ -21,7 +21,7 @@ class Assets extends ResourceLoader{fetch(url){const u=new URL(url);if(u.pathnam
   assert.equal(d.getElementById(category).value,'warning');assert.equal(d.getElementById(p+'Phase').value,'critical phase');assert.match(result.textContent,/Confirm oral intake/);
   set(p+'CpgOralAdequacy','inadequate');assert.match(result.textContent,/280 mL\/hour/);
   d.getElementById(p+'FluidReviewAssessment').click();assert.equal(d.activeElement.id,p+'Phase');
-  set(p+'Phase','febrile phase');set(warning,p==='cl'?'absent':false);set(category,'febrile');set(p+'CpgOralPeriod','24');set(p+'CpgOralAdequacy','inadequate');
+  set(p+'Phase','febrile phase');set(warning,p==='cl'?'none':false);set(category,'febrile');set(p+'CpgOralPeriod','24');set(p+'CpgOralAdequacy','inadequate');
   for(let i=0;i<3;i++){d.getElementById(calc).click();assert.equal(result.querySelectorAll('.fluid-headline').length,1);assert.match(result.querySelector('strong').textContent,/68\.3 mL\/hour/);}
   assert.match(d.getElementById(p+'CpgOralUnitHint').textContent,/41\.7 mL\/hour/);
   set(p+'PlanOption','refer');d.getElementById(p+'Generate').click();assert.match(d.getElementById(p+'Output').value,/68\.3 mL\/hour/);assert.match(d.getElementById(p+'Output').value,/1000 mL\/24 hours/);assert.equal(d.getElementById(p+'Output').readOnly,false);
