@@ -6,10 +6,10 @@ const path = require("node:path");
 const { ROOT, INDEX_HTML: html } = require("./helpers/source-tools.js");
 
 test("all browser assets referenced by the production page exist", () => {
-  const srcs = [...html.matchAll(/<script[^>]+\bsrc="([^"]+\.js)"/gi)].map(match => match[1]);
+  const srcs = [...html.matchAll(/<script[^>]+\bsrc="([^"]+\.js(?:\?[^"]*)?)"/gi)].map(match => match[1]);
   assert.ok(srcs.length > 0, "production page must load JavaScript assets");
   srcs.forEach(src => {
-    assert.equal(fs.existsSync(path.join(ROOT, src)), true, `${src} must exist`);
+    assert.equal(fs.existsSync(path.join(ROOT, src.split("?")[0])), true, `${src} must exist`);
   });
 });
 

@@ -12,8 +12,8 @@
 <meta content="https://farizaazwa-gif.github.io/medassist-kk-bangi/" property="og:url"/>
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
-<script src="assets/dengue-cpg4.js"></script>
-<script src="assets/dengue-cpg4-ui.js"></script>
+<script src="assets/dengue-cpg4.js?v=18.219.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.219.0"></script>
 <script src="assets/clinical-safety.js"></script>
 <script defer src="assets/accessibility-hardening.js"></script>
 <style>
@@ -3303,6 +3303,7 @@ html,body{max-width:100%;overflow-x:hidden}
 .fluid-primary-grid{display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px}.fluid-primary-grid>div{flex:1 1 180px;min-width:0}.fluid-primary-grid>.fluid-calculate{flex:0 0 auto;padding-top:27px}
 .fluid-primary-grid .fluid-oral{margin:0;padding:0;border:0;background:none}.fluid-primary-grid label{margin-top:0}
 .fluid-result{margin:16px 0!important;line-height:1.5}.fluid-result strong{display:block;font-size:18px}.fluid-result .fluid-action{margin:8px 0 0}.fluid-result details{margin-top:10px;font-size:12px}.fluid-result summary{cursor:pointer;font-weight:600}.fluid-result .fluid-detail{margin-top:8px;white-space:pre-line}
+.adult-cpg4.fluid-assessment{border:0;background:none;padding:0;margin:0 0 12px;font-size:12px;line-height:1.5}.fluid-assessment .ref{margin:4px 0}.fluid-oral-measure{display:flex;gap:6px;align-items:center}.fluid-oral-measure input{min-width:0;flex:1;width:50%}.fluid-oral-measure select{min-width:0;flex:1;width:50%}
 .fluid-extra,.fluid-extra.adult-cpg4{border:0;border-top:1px solid #d9e7e2;border-radius:0;background:none;margin:0;padding:0}.fluid-extra>summary{cursor:pointer;font-weight:600;font-size:13px;padding:12px 0}.fluid-extra .grid{margin:8px 0 12px}.fluid-extra .helper{margin:8px 0}.fluid-extra.adult-cpg4.cpg-weight-reason{margin:10px 0;padding:10px}
 @media(max-width:640px){.fluid-primary-grid{display:grid;grid-template-columns:1fr;gap:10px}.fluid-primary-grid>.fluid-calculate{padding-top:0}.fluid-calculate .btn{width:100%}.fluid-result strong{font-size:16px}}
 </style>
@@ -5976,6 +5977,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <h2>Dengue Fluid Management</h2>
 <p class="helper fluid-intro">Uses the measurements entered above.</p>
 <div class="fluid-weight-summary" id="clFluidWeightSummary" aria-live="polite">Enter weight above.</div>
+<div class="adult-cpg4 fluid-assessment"><span id="clFluidAssessmentSummary"></span> <button class="ref" id="clFluidReviewAssessment" type="button">Review assessment</button></div>
 <div class="fluid-primary-grid">
 <div><label for="dfState">Clinical category</label><select id="dfState">
 <option value="no-warning">Stable, no warning signs</option>
@@ -5985,7 +5987,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="decompensated">Decompensated shock</option>
 </select></div>
 <div class="hidden" id="dfRateWrap"><label for="dfRate">Initial rate</label><select id="dfRate"></select></div>
-<div class="adult-cpg4 fluid-oral hidden" id="clCpgOralHourlyWrap"><label for="clCpgOralHourly">Current oral intake (mL/hour)</label><input id="clCpgOralHourly" type="number" min="0" step="any"/><div class="helper">Enter 0 if none.</div></div>
+<div class="adult-cpg4 fluid-oral hidden" id="clCpgOralHourlyWrap"><label for="clCpgOralHourly">Oral intake amount</label><div class="fluid-oral-measure"><input id="clCpgOralHourly" type="number" min="0" step="any" aria-describedby="clCpgOralUnitHint"/><select id="clCpgOralPeriod" aria-label="Oral intake unit"><option value="1">mL/hour</option><option value="24">mL/24 hours</option></select></div><div class="helper" id="clCpgOralUnitHint">Enter 0 if none. Select the unit explicitly.</div></div>
 <div class="fluid-calculate"><button class="btn primary" id="dfCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="clCpgOralAdequacyWrap"><label for="clCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="clCpgOralAdequacy" aria-describedby="clCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="clCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
@@ -6575,6 +6577,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <h2>Dengue Fluid Management</h2>
 <p class="helper fluid-intro">Uses the measurements entered above.</p>
 <div class="fluid-weight-summary" id="dfuFluidWeightSummary" aria-live="polite">Enter weight above.</div>
+<div class="adult-cpg4 fluid-assessment"><span id="dfuFluidAssessmentSummary"></span> <button class="ref" id="dfuFluidReviewAssessment" type="button">Review assessment</button></div>
 <div class="fluid-primary-grid">
 <div><label for="dfuFluidState">Clinical category</label><select id="dfuFluidState">
 <option value="no-warning">Stable, no warning signs</option>
@@ -6584,7 +6587,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="decompensated">Decompensated shock</option>
 </select></div>
 <div class="hidden" id="dfuFluidRateWrap"><label for="dfuFluidRate">Initial rate</label><select id="dfuFluidRate"></select></div>
-<div class="adult-cpg4 fluid-oral hidden" id="dfuCpgOralHourlyWrap"><label for="dfuCpgOralHourly">Current oral intake (mL/hour)</label><input id="dfuCpgOralHourly" type="number" min="0" step="any"/><div class="helper">Enter 0 if none.</div></div>
+<div class="adult-cpg4 fluid-oral hidden" id="dfuCpgOralHourlyWrap"><label for="dfuCpgOralHourly">Oral intake amount</label><div class="fluid-oral-measure"><input id="dfuCpgOralHourly" type="number" min="0" step="any" aria-describedby="dfuCpgOralUnitHint"/><select id="dfuCpgOralPeriod" aria-label="Oral intake unit"><option value="1">mL/hour</option><option value="24">mL/24 hours</option></select></div><div class="helper" id="dfuCpgOralUnitHint">Enter 0 if none. Select the unit explicitly.</div></div>
 <div class="fluid-calculate"><button class="btn primary" id="dfuFluidCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="dfuCpgOralAdequacyWrap"><label for="dfuCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="dfuCpgOralAdequacy" aria-describedby="dfuCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="dfuCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
@@ -12317,6 +12320,7 @@ $("dfState").addEventListener("change",()=>{
 });
 $("dfRate").addEventListener("change",renderDenguePlanPreview);
 $("dfCalculate").addEventListener("click",()=>{
+  if(value("dfGroup")==="adult") return window.MedAssistDengueCpg4UI.calculate("cl");
   const fluid=getDengueFluidInstruction();
 
   $("dfResult").innerHTML=fluid.valid
@@ -15858,6 +15862,7 @@ function getDengueFollowUpFluidInstruction(){
 }
 
 function renderDengueFollowUpFluid(){
+  if(fv("dfuGroup")==="adult") return window.MedAssistDengueCpg4UI.calculate("dfu");
   const fluid=getDengueFollowUpFluidInstruction();
 
   f$("dfuFluidResult").innerHTML=fluid.valid
