@@ -37,7 +37,8 @@ Source: supplied `CPG Dengue4-121026 (2)-1.pdf`, Management of Dengue in Adults,
 
 - `npm test`: existing cross-module regression suite plus CPG4 normal/boundary/abnormal cases.
 - Syntax checks for edited/new JavaScript assets.
-- Full-document DOM integration scenarios for both adult flows, paediatric regression, generated notes, overrides and reset isolation.
-- Desktop and narrow-screen smoke review before merge, then GitHub Clinical regression checks and live-asset verification per `release-safety.md`.
+- Basic full-document DOM integration covered both adult shock outputs and vomiting/phase boundaries. The accessibility pass was excluded for jsdom performance; extended harness completion was limited by runtime failure. Browser checks below covered the real page with all assets loaded.
+- Browser smoke checks at 1348 px and 390 px: adult new/follow-up calculators, editable generated referral with 600 mL / 1 h for a synthetic 60 kg compensated-shock case, outpatient daily-review/200 mL-per-hour advice, discharge guard, retained paediatric 5–7 mL/kg/h choices, and reset isolation.
+- `npm test`: 78/78 pass. JavaScript syntax and whitespace checks pass. GitHub Clinical regression checks and live-asset verification are required per `release-safety.md`.
 
 These checks establish the tested behaviour, not a guarantee of zero clinical/software error or independent clinical sign-off.
