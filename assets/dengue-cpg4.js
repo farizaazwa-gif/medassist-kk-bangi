@@ -101,7 +101,7 @@
   }
 
   function fluid(s) {
-    const fail = message => ({valid:false, display:message, plan:message});
+    const fail = (message, headline = "IV rate not calculated") => ({valid:false, display:message, plan:message, headline, action:message});
     const result = (message, headline, action) => ({valid:true, display:message, plan:message, headline, action});
     const category = s.fluidState;
     if (!["no-warning","febrile","warning","compensated","decompensated"].includes(category)) return fail("Select a valid adult fluid category.");
@@ -113,7 +113,12 @@
     if (category === "febrile" && s.phase !== "febrile phase") return fail("The febrile maintenance pathway requires a clinician-confirmed febrile phase.");
     if (category === "warning" && !nearCritical(s)) return fail("B2 fluid pathway requires assessment near/in critical phase. Assess dehydration separately in febrile illness.");
     if (category === "warning" && !assess(s).warningSigns.length) return fail("Confirm dengue warning signs before using the B2 fluid pathway.");
-    if (["febrile","warning"].includes(category) && s.oral === "able" && !s.dehydrated) return fail("Do not start routine IV fluid when oral hydration is adequate. Reassess intake, perfusion and urine output; B2 still requires hospital admission.");
+    // Oral tolerance alone does not establish adequate intake (CPG pp41–42,44).
+    // Ask for the clinician's assessment instead of inferring adequacy from the default dropdown.
+    if (["febrile","warning"].includes(category) && s.oral === "able" && !s.dehydrated) {
+      if (!["adequate","inadequate"].includes(s.oralAdequacy)) return fail("Able to drink does not confirm sufficient intake. Select oral intake adequacy above based on the current clinical assessment.", "Confirm oral intake adequacy");
+      if (s.oralAdequacy === "adequate") return fail(`Oral intake is assessed as adequate and no dehydration is recorded. Routine IV fluid is not indicated; reassess intake, perfusion and urine output.${category === "warning" ? " Group B2 still requires hospital admission. [CPG p44]" : " [CPG pp41–42]"}`);
+    }
     const w = weights(s);
     if (!w.valid) return fail(w.error);
     if (w.manual && !s.weightReason) return fail("Document the reason for the clinician-selected weight basis, or select CPG automatic weight.");
