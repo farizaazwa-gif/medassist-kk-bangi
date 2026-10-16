@@ -131,3 +131,36 @@ test("both adult workflows are wired to the shared CPG4 module and paediatric br
   }
   assert.match(html,/if\(value\(followUp\?"dfuGroup":"dfGroup"\)==="paeds"\) return denguePaediatricReferralAssessment\(mode\)/);
 });
+test('compact shock result retains emergency action and full source detail', () => {
+  const base={weight:60,height:170,sex:'Male',basis:'cpg',phase:'critical phase',oral:'able'};
+  for (const [haemo,fluidState,amount,duration] of [['compensated shock','compensated',600,'1 hour'],['decompensated shock','decompensated',1200,'15–30 minutes']]) {
+    const r=C.fluid({...base,haemo,fluidState});
+    assert.equal(r.headline,`Isotonic crystalloid ${amount} mL over ${duration}`);
+    assert.match(r.action,/Emergency hospital transfer/);
+    assert.match(r.plan,/CPG Algorithm/);
+    assert.equal(r.plan,r.display);
+  }
+});
+
+test('paediatric calculation uses current weight even before the derived field updates',()=>{
+  const vm=require('node:vm');
+  for(const [name,group,weight,derived,state,rate] of [['getDengueFluidInstruction','dfGroup','clWeight','dfSelectedWeight','dfState','dfRate'],['getDengueFollowUpFluidInstruction','dfuGroup','dfuWeight','dfuFluidSelectedWeight','dfuFluidState','dfuFluidRate']]){
+    const start=html.indexOf(`function ${name}(){`),end=html.indexOf('\nfunction ',start+1);
+    const fields={[group]:'paeds',[weight]:'20',[derived]:'50',[state]:'compensated',[rate]:'10'};
+    const context={value:id=>fields[id]||'',fv:id=>fields[id]||''};
+    vm.runInNewContext(html.slice(start,end)+`;this.calculate=${name};`,context);
+    assert.match(context.calculate().display,/200 mL/);
+    fields[weight]='25';assert.match(context.calculate().display,/250 mL/);
+    for(const invalid of ['','0','-20','Infinity']){fields[weight]=invalid;assert.equal(context.calculate().valid,false);}
+  }
+});
+
+test('compact febrile and B2 results keep the IV dose prominent and full plan intact',()=>{
+  const febrile=C.fluid({...base,oral:'reduced',oralHourly:30,fluidState:'febrile'});
+  assert.equal(febrile.headline,'IV isotonic crystalloid 70 mL/hour');
+  assert.match(febrile.action,/Oral \+ IV target: 100 mL\/hour/);
+  assert.match(febrile.plan,/IV component 70 mL\/hour/);
+  const b2=C.fluid({...base,phase:'critical phase',oral:'reduced',vomit:4,fluidState:'warning',rate:3});
+  assert.equal(b2.headline,'Isotonic crystalloid 180 mL/hour');
+  assert.match(b2.action,/Reassess after 1 hour.*requires admission/);
+});

@@ -3297,6 +3297,14 @@ html,body{max-width:100%;overflow-x:hidden}
   #page-neurodevelopment .neuro-nav-chips{overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}
 }
 
+
+/* Fluid management: primary decisions first, secondary detail on demand. */
+.fluid-intro{margin:0 0 10px}.fluid-weight-summary{font-size:13px;font-weight:650;color:#205e55;margin:8px 0 16px}
+.fluid-primary-grid{display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px}.fluid-primary-grid>div{flex:1 1 180px;min-width:0}.fluid-primary-grid>.fluid-calculate{flex:0 0 auto;padding-top:27px}
+.fluid-primary-grid .fluid-oral{margin:0;padding:0;border:0;background:none}.fluid-primary-grid label{margin-top:0}
+.fluid-result{margin:16px 0!important;line-height:1.5}.fluid-result strong{display:block;font-size:18px}.fluid-result .fluid-action{margin:8px 0 0}.fluid-result details{margin-top:10px;font-size:12px}.fluid-result summary{cursor:pointer;font-weight:600}.fluid-result .fluid-detail{margin-top:8px;white-space:pre-line}
+.fluid-extra,.fluid-extra.adult-cpg4{border:0;border-top:1px solid #d9e7e2;border-radius:0;background:none;margin:0;padding:0}.fluid-extra>summary{cursor:pointer;font-weight:600;font-size:13px;padding:12px 0}.fluid-extra .grid{margin:8px 0 12px}.fluid-extra .helper{margin:8px 0}.fluid-extra.adult-cpg4.cpg-weight-reason{margin:10px 0;padding:10px}
+@media(max-width:640px){.fluid-primary-grid{display:grid;grid-template-columns:1fr;gap:10px}.fluid-primary-grid>.fluid-calculate{padding-top:0}.fluid-calculate .btn{width:100%}.fluid-result strong{font-size:16px}}
 </style>
 <script id="medassist-date-only-script">
 (() => {
@@ -5966,53 +5974,36 @@ html,body{max-width:100%;overflow-x:hidden}
 <label>Generated diagnosis</label><textarea id="clGeneratedDx" readonly=""></textarea>
 </div><div class="card" id="clDengueFluidCard">
 <h2>Dengue Fluid Management</h2>
-<div class="notice">
-      Uses the patient group, weight, height and sex already entered above. Adult: CPG automatic weight is the default; BMI &gt;27.5 uses ABW. Paediatric: actual body weight.
-      Paediatric calculations and paediatric medication doses use the selected patient group automatically.
-    </div>
-<div class="grid three">
-<div>
-<label>Weight basis</label>
-<select id="dfBasis">
-<option selected value="cpg">CPG automatic — actual / adjusted weight</option>
-<option value="actual">Actual body weight</option>
-<option value="ibw">Ideal body weight — adult</option>
-<option value="adj">Adjusted body weight — adult</option>
-</select>
-</div>
-<div>
-<label>Selected weight (kg)</label>
-<input id="dfSelectedWeight" readonly=""/>
-</div>
-<div>
-<label>Clinical category</label>
-<select id="dfState">
+<p class="helper fluid-intro">Uses the measurements entered above.</p>
+<div class="fluid-weight-summary" id="clFluidWeightSummary" aria-live="polite">Enter weight above.</div>
+<div class="fluid-primary-grid">
+<div><label for="dfState">Clinical category</label><select id="dfState">
 <option value="no-warning">Stable, no warning signs</option>
 <option value="febrile">Febrile: oral intolerance / dehydration</option>
 <option value="warning">With warning signs / unable oral intake</option>
 <option value="compensated">Compensated shock</option>
 <option value="decompensated">Decompensated shock</option>
-</select>
+</select></div>
+<div class="hidden" id="dfRateWrap"><label for="dfRate">Initial rate</label><select id="dfRate"></select></div>
+<div class="adult-cpg4 fluid-oral hidden" id="clCpgOralHourlyWrap"><label for="clCpgOralHourly">Current oral intake (mL/hour)</label><input id="clCpgOralHourly" type="number" min="0" step="any"/><div class="helper">Enter 0 if none.</div></div>
+<div class="fluid-calculate"><button class="btn primary" id="dfCalculate" type="button">Calculate fluid</button></div>
 </div>
-<div class="hidden" id="dfRateWrap">
-<label>Initial rate</label>
-<select id="dfRate"></select>
-</div>
-<div>
-<label> </label>
-<button class="btn primary" id="dfCalculate" type="button">Calculate dengue fluid</button>
-</div>
-</div>
-<div class="adult-cpg4" id="clCpgFluidDetails">
-<div class="grid two"><div><label for="clCpgOralHourly">Current oral intake (mL/hour) — for febrile maintenance</label><input id="clCpgOralHourly" type="number" min="0" step="any"/></div></div>
-<div class="cpg-weight-reason hidden"><label for="clCpgWeightReason">Reason for manual weight-basis override</label><input id="clCpgWeightReason" placeholder="Clinical rationale; automatic CPG weight is the default"/></div>
-<details><summary>Maintenance / critical-phase quota and transfer fluid record</summary>
+<div class="result-box fluid-result" id="dfResult" aria-live="polite">Select a category, then calculate.</div>
+<details class="fluid-extra" id="clFluidWeightDetails"><summary>Weight used / clinician override</summary>
+<div class="grid two"><div><label for="dfBasis">Weight basis</label><select id="dfBasis">
+<option selected value="cpg">CPG automatic — actual / adjusted weight</option>
+<option value="actual">Actual body weight</option>
+<option value="ibw">Ideal body weight — adult</option>
+<option value="adj">Adjusted body weight — adult</option>
+</select></div><div><label for="dfSelectedWeight">Selected weight (kg)</label><input id="dfSelectedWeight" readonly=""/></div></div>
+<div class="adult-cpg4 cpg-weight-reason hidden"><label for="clCpgWeightReason">Reason for weight override</label><input id="clCpgWeightReason" placeholder="Clinical rationale"/></div>
+<div class="helper" id="dfWeightStatus"></div>
+</details>
+<details id="clCpgQuotaDetails" class="fluid-extra adult-cpg4"><summary>Fluid record &amp; quota (optional)</summary>
 <div class="helper" id="clCpgQuotaDisplay"></div>
 <div class="grid two"><div><label for="clCpgCriticalStart">Clinician-assessed critical-phase onset</label><input id="clCpgCriticalStart" type="datetime-local" /></div><div><label for="clCpgQuotaTarget">Clinician-agreed 48 h quota (mL), if prescribed</label><input id="clCpgQuotaTarget" type="number" min="0" step="any"/></div><div><label for="clCpgOralTotal">Oral total since that onset (mL)</label><input id="clCpgOralTotal" type="number" min="0" step="any"/></div><div><label for="clCpgIvTotal">IV total since that onset (mL)</label><input id="clCpgIvTotal" type="number" min="0" step="any"/></div></div>
-<div class="helper">Record only intake over the same interval. Quota is for critical phase without shock. Confirm the target at hospital; the calculated balance is not a prescription.</div></details></div>
-<div class="helper" id="dfWeightStatus"></div>
-<div class="result-box" id="dfResult">Complete the weight section above, then select the clinical category.</div>
-<button class="ref" id="openAdultDengueCpg" type="button">
+<div class="helper">Record only intake over the same interval. Quota is for critical phase without shock. Confirm the target at hospital; the calculated balance is not a prescription.</div></details>
+<details class="fluid-extra fluid-reference"><summary>Guideline references</summary><button class="ref" id="openAdultDengueCpg" type="button">
       Adult CPG Fourth Edition — rules and references
     </button>
 <div class="helper">
@@ -6021,6 +6012,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <a class="ref" href="https://www.moh.gov.my/images/04-penerbitan/penerbitan-klinikal/panduan-amalan-klinikal/P-CPG-Dengue_in_Children_Second_Edition.pdf" rel="noopener" target="_blank">
       Paediatric CPG Second Edition 2020
     </a>
+</details>
 </div><div class="card"><h2>Plan</h2><div class="grid two">
 <div>
 <label>Select plan</label>
@@ -6580,56 +6572,36 @@ html,body{max-width:100%;overflow-x:hidden}
 <textarea id="dfuGeneratedDx" readonly=""></textarea>
 </div><div class="card">
 <h2>Dengue Fluid Management</h2>
-<div class="notice">
-  Uses the patient group, weight, height and sex entered in this follow-up template.
-  Adult: CPG automatic weight is the default; BMI &gt;27.5 uses ABW. Paediatric: actual body weight. Paediatric calculations are locked to actual body weight.
-</div>
-<div class="grid three">
-<div>
-<label>Weight basis</label>
-<select id="dfuFluidBasis">
-<option selected value="cpg">CPG automatic — actual / adjusted weight</option>
-<option value="actual">Actual body weight</option>
-<option value="ibw">Ideal body weight — adult</option>
-<option value="adj">Adjusted body weight — adult</option>
-</select>
-</div>
-<div>
-<label>Selected weight (kg)</label>
-<input id="dfuFluidSelectedWeight" readonly=""/>
-</div>
-<div>
-<label>Clinical category</label>
-<select id="dfuFluidState">
+<p class="helper fluid-intro">Uses the measurements entered above.</p>
+<div class="fluid-weight-summary" id="dfuFluidWeightSummary" aria-live="polite">Enter weight above.</div>
+<div class="fluid-primary-grid">
+<div><label for="dfuFluidState">Clinical category</label><select id="dfuFluidState">
 <option value="no-warning">Stable, no warning signs</option>
 <option value="febrile">Febrile: oral intolerance / dehydration</option>
 <option value="warning">With warning signs / unable oral intake</option>
 <option value="compensated">Compensated shock</option>
 <option value="decompensated">Decompensated shock</option>
-</select>
+</select></div>
+<div class="hidden" id="dfuFluidRateWrap"><label for="dfuFluidRate">Initial rate</label><select id="dfuFluidRate"></select></div>
+<div class="adult-cpg4 fluid-oral hidden" id="dfuCpgOralHourlyWrap"><label for="dfuCpgOralHourly">Current oral intake (mL/hour)</label><input id="dfuCpgOralHourly" type="number" min="0" step="any"/><div class="helper">Enter 0 if none.</div></div>
+<div class="fluid-calculate"><button class="btn primary" id="dfuFluidCalculate" type="button">Calculate fluid</button></div>
 </div>
-<div class="hidden" id="dfuFluidRateWrap">
-<label>Initial rate</label>
-<select id="dfuFluidRate"></select>
-</div>
-<div>
-<label> </label>
-<button class="btn primary" id="dfuFluidCalculate" type="button">
-      Calculate dengue fluid
-    </button>
-</div>
-</div>
-<div class="adult-cpg4" id="dfuCpgFluidDetails">
-<div class="grid two"><div><label for="dfuCpgOralHourly">Current oral intake (mL/hour) — for febrile maintenance</label><input id="dfuCpgOralHourly" type="number" min="0" step="any"/></div></div>
-<div class="cpg-weight-reason hidden"><label for="dfuCpgWeightReason">Reason for manual weight-basis override</label><input id="dfuCpgWeightReason" placeholder="Clinical rationale; automatic CPG weight is the default"/></div>
-<details><summary>Maintenance / critical-phase quota and transfer fluid record</summary>
+<div class="result-box fluid-result" id="dfuFluidResult" aria-live="polite">Select a category, then calculate.</div>
+<details class="fluid-extra" id="dfuFluidWeightDetails"><summary>Weight used / clinician override</summary>
+<div class="grid two"><div><label for="dfuFluidBasis">Weight basis</label><select id="dfuFluidBasis">
+<option selected value="cpg">CPG automatic — actual / adjusted weight</option>
+<option value="actual">Actual body weight</option>
+<option value="ibw">Ideal body weight — adult</option>
+<option value="adj">Adjusted body weight — adult</option>
+</select></div><div><label for="dfuFluidSelectedWeight">Selected weight (kg)</label><input id="dfuFluidSelectedWeight" readonly=""/></div></div>
+<div class="adult-cpg4 cpg-weight-reason hidden"><label for="dfuCpgWeightReason">Reason for weight override</label><input id="dfuCpgWeightReason" placeholder="Clinical rationale"/></div>
+<div class="helper" id="dfuFluidWeightStatus"></div>
+</details>
+<details id="dfuCpgQuotaDetails" class="fluid-extra adult-cpg4"><summary>Fluid record &amp; quota (optional)</summary>
 <div class="helper" id="dfuCpgQuotaDisplay"></div>
 <div class="grid two"><div><label for="dfuCpgCriticalStart">Clinician-assessed critical-phase onset</label><input id="dfuCpgCriticalStart" type="datetime-local" /></div><div><label for="dfuCpgQuotaTarget">Clinician-agreed 48 h quota (mL), if prescribed</label><input id="dfuCpgQuotaTarget" type="number" min="0" step="any"/></div><div><label for="dfuCpgOralTotal">Oral total since that onset (mL)</label><input id="dfuCpgOralTotal" type="number" min="0" step="any"/></div><div><label for="dfuCpgIvTotal">IV total since that onset (mL)</label><input id="dfuCpgIvTotal" type="number" min="0" step="any"/></div></div>
-<div class="helper">Record only intake over the same interval. Quota is for critical phase without shock. Confirm the target at hospital; the calculated balance is not a prescription.</div></details></div>
-<div class="helper" id="dfuFluidWeightStatus"></div>
-<div class="result-box" id="dfuFluidResult">
-  Complete the weight section above, then select the clinical category.
-</div>
+<div class="helper">Record only intake over the same interval. Quota is for critical phase without shock. Confirm the target at hospital; the calculated balance is not a prescription.</div></details>
+<details class="fluid-extra fluid-reference"><summary>Guideline references</summary><a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">Adult CPG4 — rules and references</a></details>
 </div><div class="card">
 <h2>Plan</h2>
 <div class="grid two">
@@ -10525,10 +10497,10 @@ calcClerkingWeight();
 
 function getDengueFluidInstruction(){
   if(value("dfGroup")==="adult") return window.MedAssistDengueCpg4UI.fluid("cl");
-  const weight=Number(value("dfSelectedWeight"));
+  const weight=Number(value("clWeight"));
   const state=value("dfState");
 
-  if(!weight){
+  if(!Number.isFinite(weight) || weight<=0){
     return {
       valid:false,
       display:"IVD NS rate unavailable — enter patient weight first.",
@@ -15805,10 +15777,10 @@ function updateDengueFollowUpFluidRateOptions(){
 
 function getDengueFollowUpFluidInstruction(){
   if(fv("dfuGroup")==="adult") return window.MedAssistDengueCpg4UI.fluid("dfu");
-  const weight=Number(fv("dfuFluidSelectedWeight"));
+  const weight=Number(fv("dfuWeight"));
   const state=fv("dfuFluidState");
 
-  if(!weight){
+  if(!Number.isFinite(weight) || weight<=0){
     return {
       valid:false,
       display:"IVD NS rate unavailable — enter patient weight first.",
