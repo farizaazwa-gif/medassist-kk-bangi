@@ -1,0 +1,133 @@
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const C = require("../assets/dengue-cpg4.js");
+const { INDEX_HTML: html } = require("./helpers/source-tools.js");
+const base = {weight:60,height:170,sex:"Male",basis:"cpg",phase:"febrile phase",haemo:"haemodynamically stable",oral:"able",fluidState:"no-warning"};
+
+test("CPG4: numeric vitals alone never diagnose shock",()=>{
+  for(const vital of [{sbp:120,dbp:80,pulse:105},{sbp:110,dbp:95,pulse:90},{sbp:85,dbp:70,pulse:120}]) {
+    const a=C.assess({...base,...vital});
+    assert.notEqual(a.group,"C");
+    assert.equal(a.urgent.length,0);
+  }
+  const a=html.indexOf("function dengueVitalShockAssessment(mode){");
+  const b=html.indexOf("function renderDengueVitalShockResult",a);
+  assert.doesNotMatch(html.slice(a,b),/tachycardia|hypotensiveBp|narrowPulsePressure/);
+});
+test("CPG4: compensated and decompensated shock require clinician-selected status",()=>{
+  assert.equal(C.assess({...base,haemo:"compensated shock"}).group,"C");
+  assert.equal(C.assess({...base,haemo:"decompensated shock"}).group,"C");
+  assert.equal(C.fluid({...base,fluidState:"compensated"}).valid,false);
+});
+test("CPG4 Table 3: exactly 3 vomits differs from >3 near critical phase",()=>{
+  assert.equal(C.assess({...base,phase:"critical phase",vomit:3}).warningSigns.length,0);
+  assert.equal(C.assess({...base,phase:"critical phase",vomit:4}).group,"B2");
+  assert.equal(C.assess({...base,nearCritical:true,vomit:4}).group,"B2");
+  assert.equal(C.assess({...base,vomit:4}).warningSigns.length,0);
+  assert.equal(C.assess({...base,vomit:4,oral:"unable"}).needsHospital,true);
+});
+test("loose stool is assessed for dehydration, never a standalone adult warning sign",()=>{
+  const a=C.assess({...base,phase:"critical phase",stool:8});
+  assert.equal(a.warningSigns.length,0);
+  assert.match(a.concerns[0],/dehydration/);
+});
+test("Group B1 stable comorbidity is distinct from B2 and unstable-comorbidity referral",()=>{
+  const stable=C.assess({...base,comorbidity:true});
+  assert.equal(stable.group,"B1");assert.equal(stable.needsHospital,false);
+  assert.equal(C.assess({...base,unstableComorbidity:true}).needsHospital,true);
+  assert.equal(C.assess({...base,age:65}).group,"A");
+  assert.equal(C.assess({...base,age:66}).group,"B1");
+  assert.equal(C.assess({...base,pregnant:true}).needsHospital,true);
+});
+test("severe organ involvement, severe bleeding and leakage with distress use Group C",()=>{
+  for(const key of ["severeOrgan","severeBleeding","leakRespiratory"])
+    assert.equal(C.assess({...base,[key]:true}).group,"C");
+  assert.equal(C.assess({...base,seizure:true}).level,"red");
+});
+test("mild abdominal pain and small lab changes do not automatically become formal warning signs",()=>{
+  const a=C.assess({...base,phase:"critical phase",abdominalPain:true,labTrend:true});
+  assert.equal(a.warningSigns.length,0);
+  assert.equal(C.assess({...base,phase:"critical phase",intenseAbdominalPain:true}).group,"B2");
+  assert.equal(C.assess({...base,phase:"critical phase",rapidHctPlt:true}).group,"B2");
+});
+test("CPG p48: exact IBW/ABW formula, BMI >27.5 boundary and unrounded computation",()=>{
+  const male=C.weights({weight:90,height:170,sex:"Male"});
+  assert.equal(male.ibw,66.38);assert.equal(male.abw,75.828);assert.equal(male.selected,75.828);
+  assert.ok(Math.abs(C.weights({weight:90,height:170,sex:"Female"}).ibw-61.88)<1e-10);
+  assert.equal(C.weights({weight:110,height:200,sex:"Male"}).basis,"actual");
+  assert.equal(C.weights({weight:110.01,height:200,sex:"Male"}).basis,"adj");
+});
+test("invalid or missing weights are not converted into a dose",()=>{
+  for(const weight of [0,-1,"",NaN,Infinity]) assert.equal(C.weights({...base,weight}).valid,false);
+  assert.equal(C.weights({...base,height:""}).valid,false);
+  assert.equal(C.weights({...base,weight:100,sex:""}).valid,false);
+});
+test("Holliday–Segar is 4/2/1 and maintenance calculation weight is capped at 70 kg",()=>{
+  for(const [weight,expected] of [[10,40],[20,60],[30,70],[50,90],[60,100],[70,110],[90,110]]) assert.equal(C.maintenance(weight),expected);
+});
+test("Appendix 11: 60 kg quota is ONE day maintenance plus 5% over 48h",()=>{
+  assert.deepEqual(C.quota(60),{weight:60,hourly:100,formula:5400,table:5400,differs:false});
+});
+test("CPG table/formula discrepancies remain visible instead of invented rounding",()=>{
+  assert.equal(C.quota(65).formula,5770);assert.equal(C.quota(65).table,5700);assert.equal(C.quota(65).differs,true);
+  assert.equal(C.quota(90).formula,6140);assert.equal(C.quota(90).table,6000);
+  assert.equal(C.quota(62).table,null);
+});
+test("Algorithm 2: 60 kg compensated shock is 600 mL over one hour",()=>{
+  const plan=C.fluid({...base,haemo:"compensated shock",fluidState:"compensated"});
+  assert.equal(plan.valid,true);assert.match(plan.plan,/600 mL over 1 hour/);
+});
+test("Algorithm 3: 60 kg decompensated shock is 1200 mL over 15–30 minutes",()=>{
+  assert.match(C.fluid({...base,haemo:"decompensated shock",fluidState:"decompensated"}).plan,/1200 mL over 15–30 minutes/);
+});
+test("70 kg maintenance cap is NOT imposed on shock resuscitation",()=>{
+  const plan=C.fluid({...base,weight:90,haemo:"compensated shock",fluidState:"compensated"});
+  assert.match(plan.plan,/758\.3 mL/); // 75.828 kg ABW × 10, rounded for display only.
+});
+test("oral+IV maintenance subtracts recorded oral intake and never returns negative IV",()=>{
+  const s={...base,fluidState:"febrile",dehydrated:true,oralHourly:40};
+  assert.match(C.fluid(s).plan,/IV component 60 mL\/hour/);
+  assert.match(C.fluid({...s,oralHourly:120}).plan,/IV component 0 mL\/hour/);
+  assert.equal(C.fluid({...s,oralHourly:""}).valid,false);
+});
+test("B2: phase, warning signs, intake and permitted rate are checked before calculating",()=>{
+  const s={...base,phase:"critical phase",fluidState:"warning",vomit:4,oral:"unable",rate:3};
+  assert.match(C.fluid(s).plan,/180 mL\/hour/);
+  assert.match(C.fluid({...s,rate:5}).plan,/300 mL\/hour/);
+  assert.equal(C.fluid({...s,rate:1.2}).valid,false);
+  assert.equal(C.fluid({...s,phase:"febrile phase"}).valid,false);
+  assert.equal(C.fluid({...s,vomit:0}).valid,false);
+  assert.equal(C.fluid({...s,oral:"able"}).valid,false);
+});
+test("recovery phase does not inherit a critical-phase IV regimen",()=>{
+  assert.equal(C.fluid({...base,phase:"recovery phase",fluidState:"warning",vomit:4,oral:"unable",rate:3}).valid,false);
+});
+test("manual weight override requires a documented rationale",()=>{
+  const s={...base,basis:"actual",haemo:"compensated shock",fluidState:"compensated"};
+  assert.equal(C.fluid(s).valid,false);
+  assert.equal(C.fluid({...s,weightReason:"Clinician-confirmed weight basis"}).valid,true);
+});
+test("post-vaccination timing is date-only, inclusive of day 30 and validates dates",()=>{
+  assert.equal(C.vaccineDays("2026-09-16","2026-10-16"),30);
+  assert.equal(C.vaccineDays("2026-09-15","2026-10-16"),31);
+  assert.equal(C.vaccineDays("2026-10-17","2026-10-16"),-1);
+  assert.equal(C.vaccineDays("2026-02-30","2026-10-16"),null);
+});
+test("medication advice preserves contraindication and chronic-steroid distinctions",()=>{
+  assert.match(C.medicationAdvice({sglt2:true})[0],/temporarily withhold/);
+  assert.match(C.medicationAdvice({metformin:true})[0],/renal impairment, dehydration and haemodynamic instability/);
+  assert.match(C.medicationAdvice({steroid:true})[0],/do not automatically stop chronic/);
+});
+test("stopping FBC requires every recovery check and an explicit clinician decision",()=>{
+  const complete={afebrileConfirmed:true,improving:true,stable:true,intakeUrine:true,noBleedingResp:true,labsReviewed:true,stopFbcConfirmed:true};
+  assert.equal(C.dischargeReady(complete),true);
+  for(const key of Object.keys(complete)) assert.equal(C.dischargeReady({...complete,[key]:false}),false);
+});
+test("both adult workflows are wired to the shared CPG4 module and paediatric branch remains",()=>{
+  for(const p of ["cl","dfu"]) {
+    assert.match(html,new RegExp(`MedAssistDengueCpg4UI\\.fluid\\("${p}"\\)`));
+    assert.match(html,new RegExp(`MedAssistDengueCpg4UI\\.validate\\("${p}"\\)`));
+    assert.match(html,new RegExp(`MedAssistDengueCpg4UI\\.adjustPlan\\("${p}"`));
+  }
+  assert.match(html,/if\(value\(followUp\?"dfuGroup":"dfGroup"\)==="paeds"\) return denguePaediatricReferralAssessment\(mode\)/);
+});

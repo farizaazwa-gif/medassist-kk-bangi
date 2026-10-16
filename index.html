@@ -12,6 +12,8 @@
 <meta content="https://farizaazwa-gif.github.io/medassist-kk-bangi/" property="og:url"/>
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
+<script src="assets/dengue-cpg4.js"></script>
+<script src="assets/dengue-cpg4-ui.js"></script>
 <script src="assets/clinical-safety.js"></script>
 <script defer src="assets/accessibility-hardening.js"></script>
 <style>
@@ -4945,6 +4947,14 @@ html,body{max-width:100%;overflow-x:hidden}
   #page-htn .ncd-result-date-row{grid-template-columns:1fr;gap:5px}
 }
 </style>
+<style id="dengue-cpg4-style">
+.adult-cpg4{margin-top:14px;padding:14px;border:1px solid #aacfc4;border-radius:12px;background:#f4faf7}
+.adult-cpg4 summary{cursor:pointer;font-weight:700;padding:8px 0}
+.adult-cpg4 .helper{white-space:pre-line}.adult-cpg4 .grid{margin:10px 0}
+.adult-cpg4 .check-item{font-size:13px}.cpg-validation{border:2px solid #b42318;background:#fff0ed;color:#8d221a;padding:12px;margin:12px 0;white-space:pre-line}
+[data-cpg-adult="true"] #clWarningWrap{display:none!important}
+@media(max-width:640px){.adult-cpg4 .grid{grid-template-columns:1fr}.adult-cpg4{padding:10px}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -5929,17 +5939,42 @@ html,body{max-width:100%;overflow-x:hidden}
 <div><label>Comorbidity status</label><select id="clDxComorbidStatus"><option value="none">No comorbid</option><option value="present">With comorbid</option></select></div>
 <div class="hidden" id="clDxComorbidWrap"><label>Comorbidities</label><input id="clDxComorbid" placeholder="e.g. DM and HPT"/></div>
 </div>
+<div class="adult-cpg4" id="clCpgReview">
+<strong>Adult dengue — CPG Fourth Edition (2026)</strong>
+<div class="helper">Assess the full clinical picture. Haemodynamic status is entered by the clinician after CCTVR, BP/pulse pressure and urine assessment; pasted vitals alone do not classify shock.</div>
+<div class="result-box" id="clCpgAssessment" aria-live="polite"></div>
+<details><summary>Phase, warning signs and high-risk findings</summary>
+<div class="helper">Symptoms during febrile illness require assessment. Formal warning signs are interpreted near/in critical phase (pp14–15,28). Confirm specific findings below; vomiting, bleeding and lethargy are also taken from the history.</div>
+<div class="check-grid"><label class="check-item"><input id="clCpgNearCritical" type="checkbox"/>Near critical phase — clinician assessed</label><label class="check-item"><input id="clCpgWorse" type="checkbox"/>Worsening when fever subsides</label><label class="check-item"><input id="clCpgIntensePain" type="checkbox"/>Intense abdominal pain or tenderness</label><label class="check-item"><input id="clCpgAccumulation" type="checkbox"/>Clinical fluid accumulation</label><label class="check-item"><input id="clCpgPostural" type="checkbox"/>Postural hypotension</label><label class="check-item"><input id="clCpgLiver" type="checkbox"/>Liver enlargement &gt;2 cm</label><label class="check-item"><input id="clCpgLowUrine" type="checkbox"/>Reduced / absent urine for 4–6 hours</label><label class="check-item"><input id="clCpgLabTrend" type="checkbox"/>Rising HCT with rapidly falling platelets — clinician confirmed</label><label class="check-item"><input id="clCpgSevereBleeding" type="checkbox"/>Severe bleeding requiring intervention</label><label class="check-item"><input id="clCpgSevereLeak" type="checkbox"/>Severe plasma leakage with respiratory distress</label><label class="check-item"><input id="clCpgUnstableComorbid" type="checkbox"/>Unstable co-morbidity</label><label class="check-item"><input id="clCpgSevereDehydration" type="checkbox"/>Moderate / severe dehydration</label></div></details>
+<details><summary>Vaccination and medication review</summary>
+<div class="grid two"><div><label for="clCpgVaccine">Dengue vaccination status</label><select id="clCpgVaccine"><option value="">Not recorded</option><option value="no">No</option><option value="yes">Yes</option><option value="unknown">Unknown</option></select></div>
+<div class="cpg-vaccine-date hidden"><label for="clCpgVaccineDate">Most recent dengue vaccination date</label><input id="clCpgVaccineDate" type="date"/></div></div>
+<div class="helper" id="clCpgVaccineAdvice"></div>
+<div class="check-grid"><label class="check-item"><input id="clCpgSglt2" type="checkbox"/>Taking SGLT2 inhibitor</label><label class="check-item"><input id="clCpgMetformin" type="checkbox"/>Taking metformin</label><label class="check-item"><input id="clCpgStatin" type="checkbox"/>Taking statin</label><label class="check-item"><input id="clCpgNsaid" type="checkbox"/>Taking NSAID</label><label class="check-item"><input id="clCpgSteroid" type="checkbox"/>Taking corticosteroid</label><label class="check-item"><input id="clCpgDerangedLiver" type="checkbox"/>Liver enzymes deranged</label></div>
+<div class="helper" id="clCpgMedicationAdvice"></div>
+<label for="clCpgSteroidIndication">Context / separate indication for any recorded NSAID or corticosteroid administration</label><input id="clCpgSteroidIndication" placeholder="e.g. prior exposure or established non-dengue indication"/>
+</details>
+<details><summary>Oral fluids and measured urine</summary>
+<label class="check-item"><input id="clCpgFluidRestricted" type="checkbox"/>Requires an individualised fluid restriction regimen</label>
+<div class="cpg-fluid-regimen hidden"><label for="clCpgFluidRegimen">Individualised fluid regimen</label><input id="clCpgFluidRegimen" placeholder="Prescribed volume and interval"/></div>
+<div class="grid three"><div><label for="clCpgVoids">Urination frequency / 24 hours</label><input id="clCpgVoids" type="number" min="0" step="1"/></div><div><label for="clCpgUrineMl">Measured urine volume (mL)</label><input id="clCpgUrineMl" type="number" min="0" step="any"/></div><div><label for="clCpgUrineHours">Measurement interval (hours)</label><input id="clCpgUrineHours" type="number" min="0" step="any"/></div></div>
+<div class="helper" id="clCpgUrineDisplay"></div></details>
+<details><summary>Clinician disposition rationale / override</summary>
+<label for="clCpgDispositionReason">Required if the selected plan differs from a hospital-assessment recommendation</label><textarea id="clCpgDispositionReason" rows="2" placeholder="Clinical reassessment, agreed disposition and rationale"></textarea></details>
+<a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG4 rules, page references and interpretation notes</a>
+</div>
 <label>Generated diagnosis</label><textarea id="clGeneratedDx" readonly=""></textarea>
 </div><div class="card" id="clDengueFluidCard">
 <h2>Dengue Fluid Management</h2>
 <div class="notice">
-      Uses the patient group, weight, height and sex already entered above. Actual body weight is the default.
+      Uses the patient group, weight, height and sex already entered above. Adult: CPG automatic weight is the default; BMI &gt;27.5 uses ABW. Paediatric: actual body weight.
       Paediatric calculations and paediatric medication doses use the selected patient group automatically.
     </div>
 <div class="grid three">
 <div>
 <label>Weight basis</label>
 <select id="dfBasis">
+<option selected value="cpg">CPG automatic — actual / adjusted weight</option>
 <option value="actual">Actual body weight</option>
 <option value="ibw">Ideal body weight — adult</option>
 <option value="adj">Adjusted body weight — adult</option>
@@ -5953,6 +5988,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <label>Clinical category</label>
 <select id="dfState">
 <option value="no-warning">Stable, no warning signs</option>
+<option value="febrile">Febrile: oral intolerance / dehydration</option>
 <option value="warning">With warning signs / unable oral intake</option>
 <option value="compensated">Compensated shock</option>
 <option value="decompensated">Decompensated shock</option>
@@ -5967,13 +6003,20 @@ html,body{max-width:100%;overflow-x:hidden}
 <button class="btn primary" id="dfCalculate" type="button">Calculate dengue fluid</button>
 </div>
 </div>
+<div class="adult-cpg4" id="clCpgFluidDetails">
+<div class="grid two"><div><label for="clCpgOralHourly">Current oral intake (mL/hour) — for febrile maintenance</label><input id="clCpgOralHourly" type="number" min="0" step="any"/></div></div>
+<div class="cpg-weight-reason hidden"><label for="clCpgWeightReason">Reason for manual weight-basis override</label><input id="clCpgWeightReason" placeholder="Clinical rationale; automatic CPG weight is the default"/></div>
+<details><summary>Maintenance / critical-phase quota and transfer fluid record</summary>
+<div class="helper" id="clCpgQuotaDisplay"></div>
+<div class="grid two"><div><label for="clCpgCriticalStart">Clinician-assessed critical-phase onset</label><input id="clCpgCriticalStart" type="datetime-local" /></div><div><label for="clCpgQuotaTarget">Clinician-agreed 48 h quota (mL), if prescribed</label><input id="clCpgQuotaTarget" type="number" min="0" step="any"/></div><div><label for="clCpgOralTotal">Oral total since that onset (mL)</label><input id="clCpgOralTotal" type="number" min="0" step="any"/></div><div><label for="clCpgIvTotal">IV total since that onset (mL)</label><input id="clCpgIvTotal" type="number" min="0" step="any"/></div></div>
+<div class="helper">Record only intake over the same interval. Quota is for critical phase without shock. Confirm the target at hospital; the calculated balance is not a prescription.</div></details></div>
 <div class="helper" id="dfWeightStatus"></div>
 <div class="result-box" id="dfResult">Complete the weight section above, then select the clinical category.</div>
 <button class="ref" id="openAdultDengueCpg" type="button">
-      Open Adult CPG Third Edition 2015
+      Adult CPG Fourth Edition — rules and references
     </button>
 <div class="helper">
-      Opens the official KKM CPG listing. Look for “Management of Dengue Infection in Adults (Third Edition), 2015”.
+      Based on the supplied Management of Dengue in Adults, Fourth Edition (2026). See page references and interpretation notes.
     </div>
 <a class="ref" href="https://www.moh.gov.my/images/04-penerbitan/penerbitan-klinikal/panduan-amalan-klinikal/P-CPG-Dengue_in_Children_Second_Edition.pdf" rel="noopener" target="_blank">
       Paediatric CPG Second Edition 2020
@@ -6052,6 +6095,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="helper">These lines will be appended to the selected plan. If Option 5 is selected, they will be used as the main custom plan.</div>
 </div>
 <div class="result-box" id="clPlanPreview"></div><div class="helper" id="clReferralStatus"></div><div class="actions">
+<div class="cpg-validation hidden" id="clCpgValidation" role="alert"></div>
 <button class="btn primary" id="clGenerate" type="button">Generate clinical note</button>
 <button class="btn secondary hidden" id="clGenerateReferral" type="button">Generate ED referral letter</button>
 <button class="btn secondary" id="clCopy" type="button">Copy clinical note</button>
@@ -6508,18 +6552,43 @@ html,body{max-width:100%;overflow-x:hidden}
 </select>
 </div>
 </div>
+<div class="adult-cpg4" id="dfuCpgReview">
+<strong>Adult dengue — CPG Fourth Edition (2026)</strong>
+<div class="helper">Assess the full clinical picture. Haemodynamic status is entered by the clinician after CCTVR, BP/pulse pressure and urine assessment; pasted vitals alone do not classify shock.</div>
+<div class="result-box" id="dfuCpgAssessment" aria-live="polite"></div>
+<details><summary>Phase, warning signs and high-risk findings</summary>
+<div class="helper">Symptoms during febrile illness require assessment. Formal warning signs are interpreted near/in critical phase (pp14–15,28). Confirm specific findings below; vomiting, bleeding and lethargy are also taken from the history.</div>
+<div class="check-grid"><label class="check-item"><input id="dfuCpgNearCritical" type="checkbox"/>Near critical phase — clinician assessed</label><label class="check-item"><input id="dfuCpgWorse" type="checkbox"/>Worsening when fever subsides</label><label class="check-item"><input id="dfuCpgIntensePain" type="checkbox"/>Intense abdominal pain or tenderness</label><label class="check-item"><input id="dfuCpgAccumulation" type="checkbox"/>Clinical fluid accumulation</label><label class="check-item"><input id="dfuCpgPostural" type="checkbox"/>Postural hypotension</label><label class="check-item"><input id="dfuCpgLiver" type="checkbox"/>Liver enlargement &gt;2 cm</label><label class="check-item"><input id="dfuCpgLowUrine" type="checkbox"/>Reduced / absent urine for 4–6 hours</label><label class="check-item"><input id="dfuCpgLabTrend" type="checkbox"/>Rising HCT with rapidly falling platelets — clinician confirmed</label><label class="check-item"><input id="dfuCpgSevereBleeding" type="checkbox"/>Severe bleeding requiring intervention</label><label class="check-item"><input id="dfuCpgSevereLeak" type="checkbox"/>Severe plasma leakage with respiratory distress</label><label class="check-item"><input id="dfuCpgUnstableComorbid" type="checkbox"/>Unstable co-morbidity</label><label class="check-item"><input id="dfuCpgSevereDehydration" type="checkbox"/>Moderate / severe dehydration</label><label class="check-item"><input id="dfuCpgWarningConfirmed" type="checkbox"/>Additional warning signs confirmed by clinician — document details</label></div></details>
+<details><summary>Vaccination and medication review</summary>
+<div class="grid two"><div><label for="dfuCpgVaccine">Dengue vaccination status</label><select id="dfuCpgVaccine"><option value="">Not recorded</option><option value="no">No</option><option value="yes">Yes</option><option value="unknown">Unknown</option></select></div>
+<div class="cpg-vaccine-date hidden"><label for="dfuCpgVaccineDate">Most recent dengue vaccination date</label><input id="dfuCpgVaccineDate" type="date"/></div></div>
+<div class="helper" id="dfuCpgVaccineAdvice"></div>
+<div class="check-grid"><label class="check-item"><input id="dfuCpgSglt2" type="checkbox"/>Taking SGLT2 inhibitor</label><label class="check-item"><input id="dfuCpgMetformin" type="checkbox"/>Taking metformin</label><label class="check-item"><input id="dfuCpgStatin" type="checkbox"/>Taking statin</label><label class="check-item"><input id="dfuCpgNsaid" type="checkbox"/>Taking NSAID</label><label class="check-item"><input id="dfuCpgSteroid" type="checkbox"/>Taking corticosteroid</label><label class="check-item"><input id="dfuCpgDerangedLiver" type="checkbox"/>Liver enzymes deranged</label></div>
+<div class="helper" id="dfuCpgMedicationAdvice"></div>
+<label for="dfuCpgSteroidIndication">Context / separate indication for any recorded NSAID or corticosteroid administration</label><input id="dfuCpgSteroidIndication" placeholder="e.g. prior exposure or established non-dengue indication"/>
+</details>
+<details><summary>Oral fluids and measured urine</summary>
+<label class="check-item"><input id="dfuCpgFluidRestricted" type="checkbox"/>Requires an individualised fluid restriction regimen</label>
+<div class="cpg-fluid-regimen hidden"><label for="dfuCpgFluidRegimen">Individualised fluid regimen</label><input id="dfuCpgFluidRegimen" placeholder="Prescribed volume and interval"/></div>
+<div class="grid three"><div><label for="dfuCpgVoids">Urination frequency / 24 hours</label><input id="dfuCpgVoids" type="number" min="0" step="1"/></div><div><label for="dfuCpgUrineMl">Measured urine volume (mL)</label><input id="dfuCpgUrineMl" type="number" min="0" step="any"/></div><div><label for="dfuCpgUrineHours">Measurement interval (hours)</label><input id="dfuCpgUrineHours" type="number" min="0" step="any"/></div></div>
+<div class="helper" id="dfuCpgUrineDisplay"></div></details>
+<details><summary>Clinician disposition rationale / override</summary>
+<label for="dfuCpgDispositionReason">Required if the selected plan differs from a hospital-assessment recommendation</label><textarea id="dfuCpgDispositionReason" rows="2" placeholder="Clinical reassessment, agreed disposition and rationale"></textarea></details>
+<a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG4 rules, page references and interpretation notes</a>
+</div>
 <label>Generated diagnosis</label>
 <textarea id="dfuGeneratedDx" readonly=""></textarea>
 </div><div class="card">
 <h2>Dengue Fluid Management</h2>
 <div class="notice">
   Uses the patient group, weight, height and sex entered in this follow-up template.
-  Actual body weight is the default. Paediatric calculations are locked to actual body weight.
+  Adult: CPG automatic weight is the default; BMI &gt;27.5 uses ABW. Paediatric: actual body weight. Paediatric calculations are locked to actual body weight.
 </div>
 <div class="grid three">
 <div>
 <label>Weight basis</label>
 <select id="dfuFluidBasis">
+<option selected value="cpg">CPG automatic — actual / adjusted weight</option>
 <option value="actual">Actual body weight</option>
 <option value="ibw">Ideal body weight — adult</option>
 <option value="adj">Adjusted body weight — adult</option>
@@ -6533,6 +6602,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <label>Clinical category</label>
 <select id="dfuFluidState">
 <option value="no-warning">Stable, no warning signs</option>
+<option value="febrile">Febrile: oral intolerance / dehydration</option>
 <option value="warning">With warning signs / unable oral intake</option>
 <option value="compensated">Compensated shock</option>
 <option value="decompensated">Decompensated shock</option>
@@ -6549,6 +6619,13 @@ html,body{max-width:100%;overflow-x:hidden}
     </button>
 </div>
 </div>
+<div class="adult-cpg4" id="dfuCpgFluidDetails">
+<div class="grid two"><div><label for="dfuCpgOralHourly">Current oral intake (mL/hour) — for febrile maintenance</label><input id="dfuCpgOralHourly" type="number" min="0" step="any"/></div></div>
+<div class="cpg-weight-reason hidden"><label for="dfuCpgWeightReason">Reason for manual weight-basis override</label><input id="dfuCpgWeightReason" placeholder="Clinical rationale; automatic CPG weight is the default"/></div>
+<details><summary>Maintenance / critical-phase quota and transfer fluid record</summary>
+<div class="helper" id="dfuCpgQuotaDisplay"></div>
+<div class="grid two"><div><label for="dfuCpgCriticalStart">Clinician-assessed critical-phase onset</label><input id="dfuCpgCriticalStart" type="datetime-local" /></div><div><label for="dfuCpgQuotaTarget">Clinician-agreed 48 h quota (mL), if prescribed</label><input id="dfuCpgQuotaTarget" type="number" min="0" step="any"/></div><div><label for="dfuCpgOralTotal">Oral total since that onset (mL)</label><input id="dfuCpgOralTotal" type="number" min="0" step="any"/></div><div><label for="dfuCpgIvTotal">IV total since that onset (mL)</label><input id="dfuCpgIvTotal" type="number" min="0" step="any"/></div></div>
+<div class="helper">Record only intake over the same interval. Quota is for critical phase without shock. Confirm the target at hospital; the calculated balance is not a prescription.</div></details></div>
 <div class="helper" id="dfuFluidWeightStatus"></div>
 <div class="result-box" id="dfuFluidResult">
   Complete the weight section above, then select the clinical category.
@@ -6601,7 +6678,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="plan-subplan-panel" data-dfu-plan-group="discharge">
 <div class="plan-subplan-title">Choose sub-plan(s) to include</div>
 <div class="plan-subplan-list">
-<label class="plan-subplan-item"><input checked class="dfu-plan-subitem" id="dfuPlanSubDischargeFbc" type="checkbox"/><span>Off FBC monitoring</span></label>
+<div class="adult-cpg4" id="dfuCpgDischarge"><strong>Recovery review before ending outpatient monitoring</strong><div class="helper">CPG Table 7 p30; discharge guidance p84. A checklist supports clinical review; it does not automatically decide discharge.</div><div class="check-grid"><label class="check-item"><input id="dfuCpgAfebrile" type="checkbox"/>Afebrile 24–48 hours without antipyretics — clinician confirmed</label><label class="check-item"><input id="dfuCpgImproving" type="checkbox"/>Clinically improving</label><label class="check-item"><input id="dfuCpgStable" type="checkbox"/>Haemodynamically stable</label><label class="check-item"><input id="dfuCpgIntakeUrine" type="checkbox"/>Adequate oral intake and urine output</label><label class="check-item"><input id="dfuCpgNoBleedingResp" type="checkbox"/>No active bleeding or respiratory distress</label><label class="check-item"><input id="dfuCpgLabsReviewed" type="checkbox"/>Laboratory trends and any organ dysfunction reviewed</label><label class="check-item"><input id="dfuCpgStopFbcConfirmed" type="checkbox"/>Clinician explicitly decides to stop routine FBC monitoring</label></div></div><label class="plan-subplan-item"><input checked class="dfu-plan-subitem" id="dfuPlanSubDischargeFbc" type="checkbox"/><span>Off FBC monitoring</span></label>
 <label class="plan-subplan-item"><input checked class="dfu-plan-subitem" id="dfuPlanSubDischargeAedes" type="checkbox"/><span>Advise elimination of stagnant water / Aedes breeding sites</span></label>
 </div>
 </div>
@@ -6635,6 +6712,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="result-box" id="dfuPlanPreview"></div>
 <div class="helper" id="dfuReferralStatus"></div>
 <div class="actions">
+<div class="cpg-validation hidden" id="dfuCpgValidation" role="alert"></div>
 <button class="btn primary" id="dfuGenerate" type="button">Generate clinical note</button>
 <button class="btn secondary" id="dfuCopy" type="button">Copy clinical note</button>
 <button class="btn secondary hidden" id="dfuGenerateReferral" type="button">Generate ED referral letter</button>
@@ -10268,7 +10346,7 @@ function calcClerkingWeight(){
   }
 
   if(validHeight&&sex){
-    ibw=(sex==="Male"?50:45.5)+2.3*(h/2.54-60);
+    ibw=group==="adult" ? (sex==="Male"?50:45.5)+0.91*(h-152) : (sex==="Male"?50:45.5)+2.3*(h/2.54-60);
     if(ibw>0){
       $("clIBW").value=ibw.toFixed(1);
     }else{
@@ -10283,7 +10361,7 @@ function calcClerkingWeight(){
     group==="adult" &&
     validWeight &&
     ibw>0 &&
-    bmi>=adjustedBmiThreshold
+    bmi>adjustedBmiThreshold
   ){
     adj=ibw+0.4*(w-ibw);
     $("clAdjBW").value=adj.toFixed(1);
@@ -10302,11 +10380,11 @@ function calcClerkingWeight(){
   }else if(!sex){
     $("clBodyCalcResult").innerHTML=
       `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
-      "Select sex under Patient and presentation to calculate adjusted body weight when BMI is ≥27.5 kg/m².";
+      "Select sex under Patient and presentation to calculate adjusted body weight when BMI is >27.5 kg/m².";
   }else{
     const abwText=adj>0
       ? `${adj.toFixed(1)} kg`
-      : `Not applicable — BMI is below ${adjustedBmiThreshold} kg/m²`;
+      : `Not applicable — BMI is at or below ${adjustedBmiThreshold} kg/m²`;
 
     $("clBodyCalcResult").innerHTML=
       `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
@@ -10405,6 +10483,7 @@ function syncDiagnosisBuilder(){
 }
 
 function buildDiagnosis(){
+  if(value("clDxType")==="Dengue fever" && value("dfGroup")==="adult") return window.MedAssistDengueCpg4UI.diagnosis("cl");
   const type=value("clDxType");
 
   if(type!=="Dengue fever"){
@@ -10445,6 +10524,7 @@ buildDiagnosis();
 calcClerkingWeight();
 
 function getDengueFluidInstruction(){
+  if(value("dfGroup")==="adult") return window.MedAssistDengueCpg4UI.fluid("cl");
   const weight=Number(value("dfSelectedWeight"));
   const state=value("dfState");
 
@@ -10696,6 +10776,8 @@ function syncDengueMcUi(){
   if($("clMcDays")) $("clMcDays").disabled=!enabled;
 }
 
+window.renderDenguePlanPreview=renderDenguePlanPreview;
+window.dengueRisingHctFallingPlatelet=dengueRisingHctFallingPlatelet;
 function getDenguePlanLines(){
   const option=value("clPlanOption");
   const lines=[];
@@ -10740,7 +10822,7 @@ function getDenguePlanLines(){
   if(option!=="others" && extraLines.length) lines.push(...extraLines);
   const mcLine=getDengueMcLine();
   if(mcLine) lines.push(mcLine);
-  return lines;
+  return window.MedAssistDengueCpg4UI.adjustPlan("cl",option,lines);
 }
 
 function syncDenguePlanSubplans(){
@@ -11152,90 +11234,9 @@ function denguePulsePressureFromText(mode){
 }
 
 function dengueVitalShockAssessment(mode){
-  const followUp=mode==="followup";
-  const group=value(followUp?"dfuGroup":"dfGroup");
-  const vital=dengueParseVitalSigns(mode);
-
-  if(group!=="adult"){
-    return {
-      category:"disabled",
-      label:"Adult vital-sign shock detector not applied",
-      detail:"Use paediatric age-specific haemodynamic criteria.",
-      referral:false,
-      urgent:false,
-      vital
-    };
-  }
-
-  if(vital.unrecordableBp){
-    return {
-      category:"decompensated",
-      label:"Decompensated shock pattern",
-      detail:"Blood pressure documented as unrecordable.",
-      referral:true,
-      urgent:true,
-      vital
-    };
-  }
-
-  if(vital.sbp===null || vital.dbp===null){
-    return {
-      category:"insufficient",
-      label:"Haemodynamic category not yet available",
-      detail:"Paste a recognisable BP value, for example BP 110/80 mmHg.",
-      referral:false,
-      urgent:false,
-      vital
-    };
-  }
-
-  const summaryParts=[`BP ${vital.sbp}/${vital.dbp}`,`PP ${vital.pp} mmHg`];
-  if(vital.pulse!==null) summaryParts.push(`PR ${vital.pulse}/min`);
-  if(vital.rr!==null) summaryParts.push(`RR ${vital.rr}/min`);
-
-  const hypotensiveBp=vital.sbp<90 && vital.dbp<60;
-  const narrowPulsePressure=vital.pp<20;
-
-  if(hypotensiveBp || narrowPulsePressure){
-    const triggers=[];
-    if(hypotensiveBp) triggers.push("BP <90/60 mmHg");
-    if(narrowPulsePressure) triggers.push("pulse pressure <20 mmHg");
-
-    const bradycardia=vital.pulse!==null && vital.pulse<60;
-    if(bradycardia) triggers.push("bradycardia present");
-
-    return {
-      category:"decompensated",
-      label:"Decompensated shock pattern",
-      detail:`${summaryParts.join(", ")} — ${triggers.join(" and ")}.`,
-      referral:true,
-      urgent:true,
-      vital
-    };
-  }
-
-  const normalBloodPressure=vital.sbp>=90 && vital.dbp>=60;
-  const tachycardia=vital.pulse!==null && vital.pulse>=100;
-
-  if(normalBloodPressure && tachycardia){
-    return {
-      category:"compensated",
-      label:"Compensated shock pattern",
-      detail:`${summaryParts.join(", ")} — normal BP with HR/PR ≥100/min.`,
-      referral:true,
-      urgent:true,
-      vital
-    };
-  }
-
-  return {
-    category:"normal",
-    label:"No shock pattern detected from entered vital signs",
-    detail:summaryParts.join(", ")+".",
-    referral:false,
-    urgent:false,
-    vital
-  };
+  // CPG4 Algorithms 2/3 require a total perfusion assessment. Do not classify
+  // shock from pasted BP/HR alone; clinician-entered status drives the pathway.
+  return {category:"disabled",label:"",detail:"",referral:false,urgent:false,vital:dengueParseVitalSigns(mode)};
 }
 
 function renderDengueVitalShockResult(mode){
@@ -11588,184 +11589,8 @@ function dengueAdultCpgComorbidityReason(rawText){
 
 function dengueReferralAssessment(mode){
   const followUp=mode==="followup";
-  const prefix=followUp?"dfu":"cl";
-  const group=value(followUp?"dfuGroup":"dfGroup");
-
-  if(group==="paeds"){
-    return denguePaediatricReferralAssessment(mode);
-  }
-
-  const reasons=[];
-  const urgentReasons=[];
-
-  if(followUp){
-    const bleedingItems=[
-      ...document.querySelectorAll('#dfuBleedingTendencies input[type="checkbox"]:checked')
-    ].map(item=>item.value);
-
-    if(bleedingItems.length){
-      reasons.push(`bleeding tendency: ${bleedingItems.join(", ")}`);
-    }
-    if(value("dfuVomitFrequency")==="ge3"){
-      reasons.push("persistent vomiting ≥3 times/24 hours");
-    }
-    if(value("dfuLooseStoolFrequency")==="ge3"){
-      reasons.push("persistent diarrhoea ≥3 times/24 hours");
-    }
-    if(value("dfuAbdominalPain")==="yes") reasons.push("abdominal pain");
-    if(value("dfuSob")==="yes") reasons.push("shortness of breath");
-    if(value("dfuLethargy")==="yes") reasons.push("lethargy");
-
-    if(value("dfuOralIntake")==="poor") reasons.push("unable to tolerate oral fluids");
-    if(["reduced","no urine output"].includes(value("dfuUrine"))){
-      reasons.push(value("dfuUrine")==="no urine output"?"no urine output":"reduced urine output");
-    }
-    if(value("dfuSeizure")==="yes") urgentReasons.push("seizure");
-    if(value("dfuHydration")==="dehydrated") reasons.push("dehydration");
-    if(value("dfuOrganFailure")==="yes"){
-      urgentReasons.push(
-        value("dfuOrganFailureDetails")
-          ? `organ failure / severe organ involvement: ${value("dfuOrganFailureDetails")}`
-          : "organ failure / severe organ involvement"
-      );
-    }
-
-    if(value("dfuFluidState")==="warning"){
-      reasons.push("dengue warning signs / unable oral intake");
-    }
-    if(value("dfuHaemo")!=="haemodynamically stable" ||
-       ["compensated","decompensated"].includes(value("dfuFluidState"))){
-      urgentReasons.push(
-        value("dfuHaemo")==="decompensated shock" || value("dfuFluidState")==="decompensated"
-          ? "decompensated / hypotensive shock"
-          : "compensated shock"
-      );
-    }
-
-    {
-      const cpgComorbidity=dengueAdultCpgComorbidityReason(value("dfuDxComorbid"));
-      if(cpgComorbidity) reasons.push(cpgComorbidity);
-    }
-
-    const age=dengueAgeInYears("dfu");
-    if(Number.isFinite(age)&&age>65) reasons.push("age >65 years");
-    if(value("dfuBloodThinner")==="yes") reasons.push("on antiplatelet / anticoagulant");
-    if(value("dfuPregnancy")==="yes") reasons.push("pregnancy");
-    if(value("dfuSocialLimit")==="yes"){
-      reasons.push(
-        value("dfuSocialLimitDetails")
-          ? `social factor limiting follow-up: ${value("dfuSocialLimitDetails")}`
-          : "social factor limiting follow-up"
-      );
-    }
-  }else{
-    if(value("clAbdPain")==="yes") reasons.push("abdominal pain");
-    if(value("clVomiting")==="ge3") reasons.push("persistent vomiting ≥3 times/24 hours");
-    if(value("clDiarrhoea")==="ge3") reasons.push("persistent diarrhoea ≥3 times/24 hours");
-    if(value("clLethargy")==="yes") reasons.push("lethargy");
-    if(value("clBleeding")==="yes") reasons.push("bleeding manifestation");
-
-    document.querySelectorAll("#clWarningSigns input:checked").forEach(item=>{
-      reasons.push(item.value);
-    });
-    if(value("clWarningStatus")==="present" && !reasons.length){
-      reasons.push("dengue warning sign documented");
-    }
-
-    if(value("clDrink")==="unable") reasons.push("unable to tolerate oral fluids");
-    if(value("clUrine")==="yes") reasons.push("reduced urine output");
-    if(value("clSeizure")==="yes") urgentReasons.push("seizure");
-    if(value("clHydration")==="dehydrated") reasons.push("dehydration");
-    if(value("clOrganFailure")==="yes"){
-      urgentReasons.push(
-        value("clOrganFailureDetails")
-          ? `organ failure / severe organ involvement: ${value("clOrganFailureDetails")}`
-          : "organ failure / severe organ involvement"
-      );
-    }
-
-    if(value("dfState")==="warning" && value("clWarningStatus")!=="present"){
-      reasons.push("dengue warning signs / unable oral intake");
-    }
-    if(value("clHaemo")!=="haemodynamically stable" ||
-       ["compensated","decompensated"].includes(value("dfState"))){
-      urgentReasons.push(
-        value("clHaemo")==="decompensated shock" || value("dfState")==="decompensated"
-          ? "decompensated / hypotensive shock"
-          : "compensated shock"
-      );
-    }
-
-    {
-      const detail=dengueMeaningfulText(value("clDxComorbid"))
-        ? value("clDxComorbid")
-        : dengueMeaningfulText(value("clComorbid"))
-        ? value("clComorbid")
-        : "";
-      const cpgComorbidity=dengueAdultCpgComorbidityReason(detail);
-      if(cpgComorbidity) reasons.push(cpgComorbidity);
-    }
-
-    const age=dengueAgeInYears("cl");
-    if(Number.isFinite(age)&&age>65) reasons.push("age >65 years");
-    if(value("clBloodThinner")==="yes") reasons.push("on antiplatelet / anticoagulant");
-    if(value("clPregnancy")==="yes") reasons.push("pregnancy");
-    if(value("clSocialLimit")==="yes"){
-      reasons.push(
-        value("clSocialLimitDetails")
-          ? `social factor limiting follow-up: ${value("clSocialLimitDetails")}`
-          : "social factor limiting follow-up"
-      );
-    }
-  }
-
-  const vitalShock=dengueVitalShockAssessment(mode);
-  if(vitalShock.referral){
-    urgentReasons.push(
-      `${vitalShock.label.toLowerCase()} — ${vitalShock.detail.replace(/\.$/,"")}`
-    );
-  }
-
-  const labTrend=dengueRisingHctFallingPlatelet(mode);
-  if(labTrend) reasons.push(labTrend.text);
-
-  const cleanUrgent=dengueUnique(urgentReasons);
-  const cleanReasons=dengueUnique(reasons.filter(item=>!cleanUrgent.includes(item)));
-  const all=dengueUnique([...cleanUrgent,...cleanReasons]);
-
-  if(cleanUrgent.length){
-    return {
-      enabled:true,
-      level:"red",
-      reasons:all,
-      urgentReasons:cleanUrgent,
-      title:"Urgent hospital referral concern",
-      summary:`${all.length} referral criterion${all.length===1?"":"a"} detected.`,
-      haemodynamic:vitalShock
-    };
-  }
-
-  if(cleanReasons.length){
-    return {
-      enabled:true,
-      level:"amber",
-      reasons:cleanReasons,
-      urgentReasons:[],
-      title:"Hospital referral indicated",
-      summary:`${cleanReasons.length} referral criterion${cleanReasons.length===1?"":"a"} detected.`,
-      haemodynamic:vitalShock
-    };
-  }
-
-  return {
-    enabled:true,
-    level:"neutral",
-    reasons:[],
-    urgentReasons:[],
-    title:"Referral check active",
-    summary:"No hospital referral criterion detected from the documented data.",
-    haemodynamic:vitalShock
-  };
+  if(value(followUp?"dfuGroup":"dfGroup")==="paeds") return denguePaediatricReferralAssessment(mode);
+  return window.MedAssistDengueCpg4UI.referral(followUp?"dfu":"cl");
 }
 
 function dengueReferralNoteLines(mode){
@@ -11776,7 +11601,7 @@ function dengueReferralNoteLines(mode){
   const group=value(followUp?"dfuGroup":"dfGroup");
   const heading=group==="paeds"
     ? "HOSPITAL REFERRAL SCREENING — MOH PAEDIATRIC DENGUE CPG 2020"
-    : "HOSPITAL REFERRAL SCREENING — ADULT DENGUE CPG 2015";
+    : "HOSPITAL REFERRAL SCREENING — ADULT DENGUE CPG FOURTH EDITION 2026";
 
   return [
     heading,
@@ -11822,7 +11647,7 @@ function renderDengueReferralAlert(mode,options={}){
   if(foot){
     foot.textContent=group==="paeds"
       ? "MOH Management of Dengue in Children, Second Edition 2020. Admission criteria: age <12 months, warning signs, severe dengue or co-morbidities; consider social factors."
-      : "Adult Dengue CPG 2015 decision support. Use total clinical assessment.";
+      : "Adult Dengue CPG Fourth Edition (2026), Table 6. Suggested group; clinician confirms assessment and disposition.";
   }
 
   icon.textContent=assessment.level==="red"?"!":assessment.level==="amber"?"!":assessment.level==="disabled"?"i":"✓";
@@ -12130,7 +11955,7 @@ function buildDengueClinicalNote(planLines){
     ...(window.dengueDailyFrequencyLines?.("new","vomiting")||[]),
     ...(window.dengueDailyFrequencyLines?.("new","stool")||[])
   ];
-  const warningLines=["WARNING SIGNS",...warningPositiveLines,...warningHistoryLines,...warningNegativeLines];
+  const warningLines=[value("dfGroup")==="adult"?"DENGUE SYMPTOMS / HYDRATION ASSESSMENT":"WARNING SIGNS",...warningPositiveLines,...warningHistoryLines,...warningNegativeLines];
 
   const examinationLines=[
     "o/e:",
@@ -12162,6 +11987,7 @@ function buildDengueClinicalNote(planLines){
   addParagraph(warningLines);
   addParagraph(exposureLines);
   addParagraph(comorbidityLines);
+  addParagraph(window.MedAssistDengueCpg4UI.recordLines("cl"));
   addParagraph(examinationLines);
 
   if(vitalLines.length){
@@ -12207,6 +12033,7 @@ function buildDengueClinicalNote(planLines){
 }
 
 function generateDengueReferralLetter(planLines){
+  if(!window.MedAssistDengueCpg4UI.validate("cl")) return "";
   const clinicalNote=buildDengueClinicalNote(planLines);
 
   const referral=[
@@ -12225,6 +12052,7 @@ function generateDengueReferralLetter(planLines){
 }
 
 function generateDengueOutputs(options={}){
+  if(!window.MedAssistDengueCpg4UI.validate("cl")) return "";
   if(!window.validateCustomPlan("clPlanOption","clPlanExtra")) return;
   if(!window.validatePlanAntibiotic(window.DENGUE_NEW_PLAN_ABX_CONFIG)) return;
   const planLines=getDenguePlanLines();
@@ -12451,6 +12279,7 @@ initialiseQuickFbcDetection();
 
 // Dengue fluid integrated into clerking
 function calcBodyWeight(){
+  if(value("dfGroup")==="adult") { window.MedAssistDengueCpg4UI.syncWeight("cl"); return; }
   const group=value("dfGroup");
   const actual=Number(value("clWeight"));
   const ibw=Number(value("clIBW"));
@@ -12496,6 +12325,7 @@ function calcBodyWeight(){
   });
 });
 function updateDengueRateOptions(){
+  if(value("dfGroup")==="adult") { window.MedAssistDengueCpg4UI.rates("cl"); return; }
   const group=value("dfGroup"),state=value("dfState"),options=[];
   if(state==="warning"){
     if(group==="paeds")options.push(["5","5 mL/kg/hour"],["6","6 mL/kg/hour"],["7","7 mL/kg/hour"]);
@@ -15336,7 +15166,7 @@ syncDiagnosisBuilder();
 syncDengueInterventions();
 
 $("openAdultDengueCpg").addEventListener("click",()=>{
-  const url="https://www.moh.gov.my/en/publications-and-reports/policies-act-policies-guide-lines/penerbitan-klinikal/senarai-penerbitan-klinikal/panduan-amalan-klinikal-cpg";
+  const url="docs/dengue-cpg4-reference.html";
   const opened=window.open(url,"_blank","noopener");
   if(!opened) window.location.href=url;
 });
@@ -15568,6 +15398,7 @@ function syncFollowUpFrequencyFields(){
 }
 
 function warningSignData(){
+  if(fv("dfuGroup")==="adult") return window.MedAssistDengueCpg4UI.warningData("dfu");
   syncFollowUpFrequencyFields();
   const positive=[];
   const negative=[];
@@ -15647,7 +15478,7 @@ function renderDengueFollowUpWarningClassification(){
 
   if(warning.belowThreshold.length){
     sections.push(
-      `<strong>Symptoms present but not DF warning signs:</strong><br>`+
+      `<strong>Other symptoms / findings requiring reassessment:</strong><br>`+
       warning.belowThreshold.map(item=>`• ${item}`).join("<br>")
     );
   }
@@ -15677,7 +15508,7 @@ function calculateDengueFollowUpBodyWeight(){
   }
 
   if(validHeight&&sex){
-    ibw=(sex==="Male"?50:45.5)+2.3*(height/2.54-60);
+    ibw=group==="adult" ? (sex==="Male"?50:45.5)+0.91*(height-152) : (sex==="Male"?50:45.5)+2.3*(height/2.54-60);
 
     if(ibw>0){
       f$("dfuIBW").value=ibw.toFixed(1);
@@ -15693,7 +15524,7 @@ function calculateDengueFollowUpBodyWeight(){
     group==="adult" &&
     validWeight &&
     ibw>0 &&
-    bmi>=adjustedBmiThreshold
+    bmi>adjustedBmiThreshold
   ){
     adjusted=ibw+0.4*(weight-ibw);
     f$("dfuAdjBW").value=adjusted.toFixed(1);
@@ -15712,11 +15543,11 @@ function calculateDengueFollowUpBodyWeight(){
   }else if(!sex){
     f$("dfuBodyCalcResult").innerHTML=
       `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
-      "Select sex above to calculate adjusted body weight when BMI is ≥27.5 kg/m².";
+      "Select sex above to calculate adjusted body weight when BMI is >27.5 kg/m².";
   }else{
     const adjustedText=adjusted>0
       ? `${adjusted.toFixed(1)} kg`
-      : `Not applicable — BMI is below ${adjustedBmiThreshold} kg/m²`;
+      : `Not applicable — BMI is at or below ${adjustedBmiThreshold} kg/m²`;
 
     f$("dfuBodyCalcResult").innerHTML=
       `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
@@ -15859,6 +15690,7 @@ function getDengueFollowUpInterventionLines(){
 }
 
 function buildDengueFollowUpDiagnosis(){
+  if(fv("dfuGroup")==="adult") return window.MedAssistDengueCpg4UI.diagnosis("dfu");
   const warning=warningSignData();
   const day=fv("dfuDayIllness")||"[ENTER]";
 
@@ -15885,6 +15717,7 @@ function buildDengueFollowUpDiagnosis(){
 }
 
 function syncDengueFollowUpFluidWeight(){
+  if(fv("dfuGroup")==="adult") { window.MedAssistDengueCpg4UI.syncWeight("dfu"); return; }
   const group=fv("dfuGroup");
   const actual=Number(fv("dfuWeight"));
   const ibw=Number(fv("dfuIBW"));
@@ -15928,6 +15761,7 @@ function syncDengueFollowUpFluidWeight(){
 }
 
 function updateDengueFollowUpFluidRateOptions(){
+  if(fv("dfuGroup")==="adult") { window.MedAssistDengueCpg4UI.rates("dfu"); return; }
   const group=fv("dfuGroup");
   const state=fv("dfuFluidState");
   const options=[];
@@ -15970,6 +15804,7 @@ function updateDengueFollowUpFluidRateOptions(){
 }
 
 function getDengueFollowUpFluidInstruction(){
+  if(fv("dfuGroup")==="adult") return window.MedAssistDengueCpg4UI.fluid("dfu");
   const weight=Number(fv("dfuFluidSelectedWeight"));
   const state=fv("dfuFluidState");
 
@@ -16073,6 +15908,8 @@ function syncDengueFollowUpMcUi(){
   if(f$("dfuMcDays")) f$("dfuMcDays").disabled=!enabled;
 }
 
+window.renderDengueFollowUpWarningClassification=renderDengueFollowUpWarningClassification;
+window.renderDengueFollowUpPlan=renderDengueFollowUpPlan;
 function followUpPlanLines(){
   const option=fv("dfuPlanOption");
   const lines=[];
@@ -16125,7 +15962,7 @@ function followUpPlanLines(){
   if(option!=="others" && extraLines.length) lines.push(...extraLines);
   const mcLine=getDengueFollowUpMcLine();
   if(mcLine) lines.push(mcLine);
-  return lines;
+  return window.MedAssistDengueCpg4UI.adjustPlan("dfu",option,lines);
 }
 
 function syncDengueFollowUpPlanSubplans(){
@@ -16243,7 +16080,7 @@ function buildDengueFollowUpClinicalNote(){
     "DENGUE WARNING SIGNS",
     ...warning.positive.map(item=>`+ ${item}`),
     ...(warning.belowThreshold.length
-      ? ["Symptoms present but not DF warning signs:",...warning.belowThreshold.map(item=>`+ ${item}`)]
+      ? ["Other symptoms / findings requiring reassessment:",...warning.belowThreshold.map(item=>`+ ${item}`)]
       : []),
     ...warningHistoryLines,
     ...warning.negative.map(item=>`no ${item}`)
@@ -16289,6 +16126,7 @@ function buildDengueFollowUpClinicalNote(){
 
   addParagraph(warningLines);
   addParagraph(salientLines);
+  addParagraph(window.MedAssistDengueCpg4UI.recordLines("dfu"));
   addParagraph(examinationLines);
 
   if(vitalLines.length){
@@ -16327,6 +16165,7 @@ function buildDengueFollowUpClinicalNote(){
 }
 
 function generateDengueFollowUpReferral(){
+  if(!window.MedAssistDengueCpg4UI.validate("dfu")) return "";
   if(!window.validatePlanAntibiotic(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG)) return "";
   const note=buildDengueFollowUpClinicalNote();
   const referral=[
@@ -16344,6 +16183,7 @@ function generateDengueFollowUpReferral(){
 }
 
 function generateDengueFollowUp(){
+  if(!window.MedAssistDengueCpg4UI.validate("dfu")) return "";
   if(!window.validateCustomPlan("dfuPlanOption","dfuPlanExtra")) return;
   if(!window.validatePlanAntibiotic(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG)) return;
   f$("dfuOutput").value=buildDengueFollowUpClinicalNote();
