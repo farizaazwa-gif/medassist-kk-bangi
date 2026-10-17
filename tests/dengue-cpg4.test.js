@@ -4,6 +4,18 @@ const C = require("../assets/dengue-cpg4.js");
 const { INDEX_HTML: html } = require("./helpers/source-tools.js");
 const base = {weight:60,height:170,sex:"Male",basis:"cpg",phase:"febrile phase",haemo:"haemodynamically stable",oral:"able",fluidState:"no-warning"};
 
+test('CPG4 p10 and Table 6: all ten adult warning findings, with phase context',()=>{
+  const findings=[{worseDefervescence:true},{intenseAbdominalPain:true},{vomit:4},{lethargy:true},{fluidAccumulation:true},{postural:true},{liverGt2:true},{lowUrine4h:true},{bleeding:true},{rapidHctPlt:true}];
+  for(const finding of findings){
+    const critical=C.assess({...base,phase:'critical phase',...finding});
+    assert.equal(critical.group,'B2');assert.equal(critical.needsHospital,true);assert.equal(critical.warningSigns.length,1);
+    const febrile=C.assess({...base,...finding});assert.equal(febrile.warningSigns.length,0);assert.ok(febrile.concerns.length>0);
+    assert.equal(C.assess({...base,nearCritical:true,...finding}).group,'B2');
+  }
+  assert.match(C.assess({...base,nearCritical:true,worseDefervescence:true}).warningSigns[0],/no clinical improvement/);
+  assert.match(C.assess({...base,nearCritical:true,lethargy:true}).warningSigns[0],/irritability \/ confusion/);
+});
+
 test("CPG4: numeric vitals alone never diagnose shock",()=>{
   for(const vital of [{sbp:120,dbp:80,pulse:105},{sbp:110,dbp:95,pulse:90},{sbp:85,dbp:70,pulse:120}]) {
     const a=C.assess({...base,...vital});

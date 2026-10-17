@@ -39,6 +39,7 @@
       worseDefervescence:on(`${p}CpgWorse`),fluidAccumulation:on(`${p}CpgAccumulation`),postural:on(`${p}CpgPostural`),
       liverGt2:on(`${p}CpgLiver`),lowUrine4h:on(`${p}CpgLowUrine`),rapidHctPlt:on(`${p}CpgLabTrend`),
       labTrend:Boolean(window.dengueRisingHctFallingPlatelet?.(c.mode)),
+      manualWarnings: (f?on("dfuCpgWarningConfirmed"):val("clWarningStatus") === "present") && val(`${p}CpgWarningDetail`).trim() ? [val(`${p}CpgWarningDetail`).trim()] : [],
       severeBleeding:on(`${p}CpgSevereBleeding`),leakRespiratory:on(`${p}CpgSevereLeak`),
       severeOrgan:val(`${p}OrganFailure`) === "yes",seizure:val(`${p}Seizure`) === "yes",
       sob:f?val("dfuSob") === "yes":on("clSymSOB"),warningConfirmed:f?on("dfuCpgWarningConfirmed"):val("clWarningStatus") === "present",
@@ -56,6 +57,13 @@
   function warningData(p) {
     const a=C.assess(state(p));
     return {positive:a.warningSigns,negative:[],belowThreshold:a.concerns};
+  }
+  function frequencyLine(p,type) {
+    const s=state(p), count=type === "vomiting"?s.vomit:s.stool;
+    const label=type === "vomiting"?"Vomiting":"Loose stool";
+    if(count === null) return `${label}: not recorded.`;
+    if(count<0 || !Number.isInteger(count)) return `${label}: check the episode count.`;
+    return `${label}: ${count} times/24 h.`;
   }
   function diagnosis(p) {
     const s=state(p), a=C.assess(s), f=p === "dfu";
@@ -104,11 +112,17 @@
       setValue(c.state,choices.preferred);setValue(`${p}CpgOralAdequacy`,"");rates(p);
     }
   }
-  function fluid(p){syncCategory(p);return C.fluid(state(p));}
+  function fluid(p){
+    syncCategory(p);
+    const s=state(p), r=C.fluid(s);
+    if(!r.valid || r.canPrescribe === false || s.fluidState === "no-warning")return r;
+    const follow=s.fluidState === "warning"?"Reassess after 1 hour. Admit to hospital.":s.fluidState === "febrile"?`Oral intake ${s.oralHourly} mL/${s.oralPeriod === "24"?"24 hours":"hour"}. Reassess intake and hydration; reduce/stop IV as intake improves.`:"Reassess CCTVR, BP, HCT and UO. Emergency transfer; do not delay to finish infusion.";
+    return {...r,plan:`${/^IV /.test(r.headline)?r.headline:`IV ${r.headline.replace(/^Isotonic/,"isotonic")}`}. ${follow}`};
+  }
   function calculate(p){refresh(p);if(active(p) && el(cfg(p).result)){el(cfg(p).result).dataset.cpgCalculated="true";renderFluidResult(p);}}
   function oralAdvice(p) {
-    if(on(`${p}CpgFluidRestricted`)) return `Use the individualised oral fluid restriction regimen: ${val(`${p}CpgFluidRegimen`).trim() || "[DOCUMENT PRESCRIBED REGIMEN]"}. Monitor hydration and urine output.`;
-    return "Oral fluids approximately 200 mL/hour while awake, including electrolyte-containing fluids (e.g. ORS or soup); avoid plain water alone. Individualise if fluid restriction is required.";
+    if(on(`${p}CpgFluidRestricted`)) return `Oral fluids: ${val(`${p}CpgFluidRegimen`).trim() || "[ENTER REGIMEN]"}.`;
+    return "Oral fluids ~200 mL/hour while awake; include ORS / electrolyte fluids, not plain water alone.";
   }
   function dischargeState() {
     return {afebrileConfirmed:on("dfuCpgAfebrile"),improving:on("dfuCpgImproving"),stable:on("dfuCpgStable"),intakeUrine:on("dfuCpgIntakeUrine"),noBleedingResp:on("dfuCpgNoBleedingResp"),labsReviewed:on("dfuCpgLabsReviewed"),stopFbcConfirmed:on("dfuCpgStopFbcConfirmed")};
@@ -117,18 +131,27 @@
     if(!active(p)) return input;
     const s=state(p), a=C.assess(s), lines=input.map(line=>{
       if(/Encourage oral fluid intake (?:approximately )?2 L\/day/.test(line)) return oralAdvice(p);
-      if(/^(?:Repeat \/ continue|Continue) serial FBC monitoring\./.test(line)) return "Arrange daily clinical review and serial FBC as clinically indicated. Continue outpatient follow-up until afebrile 24–48 hours without antipyretics, with reassessment of clinical recovery.";
-      if(/^TCA STAT if warning signs/.test(line)) return "Return immediately for worsening symptoms, severe abdominal pain, persistent vomiting, bleeding, drowsiness/restlessness, breathing difficulty or reduced/absent urine. Fever settling does not by itself indicate recovery.";
-      if(line === "Off FBC monitoring.") return C.dischargeReady(dischargeState())?"Clinician reviewed recovery and laboratory trends and decided to stop routine FBC monitoring; return immediately if symptoms recur/worsen.":"Discharge / stopping FBC not confirmed — complete recovery review and clinician decision.";
-      if(/^TCA back if fever persists for 3 days for FBC\./.test(line)) return "Dengue requires daily review and appropriate serial FBC; reassess immediately if warning signs develop.";
+      if(/^(?:Repeat \/ continue|Continue) serial FBC monitoring\./.test(line)) {
+        const date=p === "dfu" && on("dfuPlanSubMonTca")?val("dfuNextTca"):"";
+        return date?`Repeat FBC on ${date.split("-").reverse().join("/")}.`:"Repeat FBC CM.";
+      }
+      if(/^TCA STAT if warning signs/.test(line)) return "TCA STAT if warning signs / worsening symptoms.";
+      if(line === "Off FBC monitoring.") return C.dischargeReady(dischargeState())?"Off FBC monitoring.":"Review recovery before stopping FBC.";
+      if(/^TCA back if fever persists for 3 days for FBC\./.test(line)) return "Review and repeat FBC CM.";
+      if(/^TCA on .* for clinical review and repeat FBC\.$/.test(line)) return line.replace(" for clinical review and repeat FBC", "");
+      if(line === "Arrange TCA for clinical review and repeat FBC.") return "TCA CM.";
+      if(line === "Refer ED for further assessment and management.") return "Refer ED.";
+      if(line === "Notify dengue case via e-notification.") return "Notify dengue via e-notification.";
+      if(line === "Dengue pamphlet / education and safety-net advice given.") return "Dengue advice / pamphlet given.";
+      if(line === "Advise to monitor and eliminate stagnant water collections that may become Aedes breeding sites.") return "Eliminate Aedes breeding sites.";
       return line;
     });
-    if(["outpatient","monitoring"].includes(option)) lines.push("Monitor and document urine output: at least 0.5 mL/kg/hour where measurable, usually 4–6 voids/day and at least once every 6 hours.");
-    if(option === "refer") lines.push("Stabilise before/during transfer, inform the receiving hospital, and send the clerking, investigations, monitoring record and fluid chart.");
-    lines.push(...C.medicationAdvice(s));
+    if(["outpatient","monitoring"].includes(option)) lines.push("Daily clinical review. Monitor intake and urine output.");
+    if(option === "refer") lines.push("Stabilise and inform receiving hospital. Send notes, results and fluid chart.");
+    lines.push(...C.medicationAdvice(s).map(line=>line.replace(/ \(CPG[^)]*\)\./g,".")));
     const override=val(`${p}CpgDispositionReason`).trim();
-    if(override) lines.push(`Clinician disposition decision / rationale: ${override}`);
-    else if(a.needsHospital && option !== "refer") lines.push("Disposition requires review: documented findings indicate hospital assessment/admission or emergency referral.");
+    if(override) lines.push(`Disposition rationale: ${override}`);
+    else if(a.needsHospital && option !== "refer") lines.push("Review disposition: hospital assessment indicated.");
     return [...new Set(lines)];
   }
   function dateToday(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
@@ -163,6 +186,7 @@
   function validate(p) {
     if(!active(p)) return true;
     const s=state(p), a=C.assess(s), errors=[], option=val(`${p}PlanOption`);
+    if(s.warningConfirmed && a.warningSigns.length === 1 && a.warningSigns[0] === "warning signs confirmed by clinician") errors.push("Select the specific warning finding or document it under Additional warning sign / clinical rationale.");
     if(a.needsHospital && option !== "refer" && !val(`${p}CpgDispositionReason`).trim()) errors.push("Select ED referral or document the clinician's disposition rationale for the findings requiring hospital assessment.");
     if(on(`${p}CpgFluidRestricted`) && !val(`${p}CpgFluidRegimen`).trim()) errors.push("Document the individualised fluid regimen.");
     if(option === "discharge" && !C.dischargeReady(dischargeState())) errors.push("Complete the recovery review and explicit clinician decision before stopping routine FBC monitoring.");
@@ -246,6 +270,14 @@
     if(!root) return;
     root.dataset.cpgAdult=String(isAdult);
     root.querySelectorAll(".adult-cpg4").forEach(x=>x.classList.toggle("hidden",!isActive));
+    const phaseWrap=el(`${p}Phase`)?.parentElement;
+    // The same phase field serves adults and children; place it back for the paediatric form.
+    const phaseHome=el(`${p}CpgPhaseHome`),phaseSlot=el(`${p}CpgPhaseSlot`);
+    if(phaseWrap && phaseHome && phaseSlot){const target=isActive?phaseSlot:phaseHome;if(phaseWrap.parentElement!==target)target.appendChild(phaseWrap);}
+    if(p === "cl"){
+      const status=el("clWarningStatus")?.parentElement,slot=el("clCpgOverrideSlot"),home=el("clCpgPhaseHome");
+      if(status && slot && home){const target=isActive?slot:home;if(status.parentElement!==target)target.appendChild(status);}
+    }
     if(!isAdult && val(c.state) === "febrile") setValue(c.state,"no-warning");
     const cpgBasis=el(c.basis)?.querySelector('option[value="cpg"]');if(cpgBasis){cpgBasis.disabled=!isAdult;cpgBasis.hidden=!isAdult;}
     const warnOption=el(c.state)?.querySelector('option[value="warning"]'),warnLabel=isAdult?"Critical phase with warning signs (B2)":"With warning signs / unable oral intake";if(warnOption && warnOption.textContent!==warnLabel)warnOption.textContent=warnLabel;
@@ -260,6 +292,10 @@
     syncFluidDisplay(p);
     if(!isActive) return;
     const s=state(p), a=C.assess(s);
+    setText(`${p}CpgWarningSummary`,a.warningSigns.length?`Warning signs: ${a.warningSigns.join("; ")}.`:a.concerns.length?"No classified warning signs. Review the recorded symptoms and illness phase.":"No warning signs recorded.");
+    el(`${p}CpgWarningDetail`)?.closest(".cpg-warning-detail")?.classList.toggle("hidden",!s.warningConfirmed);
+    const mental=el(`${p}Lethargy`)?.parentElement?.querySelector("label");
+    if(mental)mental.textContent="Lethargy / restlessness / irritability / confusion";
     setText(`${p}CpgAssessment`,`${a.title}. ${a.summary}${a.concerns.length?" Reassessment: "+a.concerns.join("; "):""}`);
     setText(`${p}CpgVaccineAdvice`,vaccineAdvice(p));
     const advice=C.medicationAdvice(s);setText(`${p}CpgMedicationAdvice`,advice.join("\n") || "Review current medicines. Use paracetamol cautiously at the lowest effective dose and shortest duration; avoid/discontinue if liver enzymes are deranged (p34).");
@@ -291,6 +327,7 @@
     setText(`${p}CpgUrineDisplay`,urine !== null && urine>=0 && hours>0 && weight>0?`Measured urine output ${(urine/(weight*hours)).toFixed(2)} mL/kg/hour (actual weight). Outpatient guide: at least 0.5 mL/kg/hour; usually 4–6 voids/day and at least once every 6 hours. Reassess any reduction.`:"Record frequency; add measured volume and interval if available. Do not infer adequate urine output from a blank field.");
     diagnosis(p);
     if(p === "dfu") window.renderDengueFollowUpWarningClassification?.();
+    else window.renderNewCaseFrequencyClassification?.();
     window.renderDengueReferralAlert?.(c.mode,{silent:true});
     if(p === "cl") window.renderDenguePlanPreview?.(); else window.renderDengueFollowUpPlan?.();
     // Keep a calculated result current when inputs change, rather than retaining a stale dose.
@@ -299,6 +336,24 @@
   function init() {
     for(const p of ["cl","dfu"]) {
       const c=cfg(p), root=el(c.root); if(!root)continue;
+      const phase=el(`${p}Phase`)?.parentElement;
+      if(phase){
+        const slot=document.createElement("div");slot.id=`${p}CpgPhaseSlot`;phase.before(slot);slot.appendChild(phase);
+        const home=document.createElement("div");home.id=`${p}CpgPhaseHome`;
+        (el(p === "cl"?"clDxDay":"dfuDxDay")?.parentElement)?.after(home);
+      }
+      if(p === "cl"){
+        const status=el("clWarningStatus")?.parentElement;
+        if(status){const slot=document.createElement("div");slot.id="clCpgOverrideSlot";status.before(slot);slot.appendChild(status);}
+      }
+      root.addEventListener("change",event=>{
+        if(!active(p))return;
+        const pairs=[[`${p}CpgIntensePain`,p === "cl"?"clAbdPain":"dfuAbdominalPain","yes"],[`${p}CpgLowUrine`,p === "cl"?"clUrine":"dfuUrine",p === "cl"?"yes":"reduced"]];
+        for(const [check,field,yes] of pairs){
+          if(event.target.id === check && on(check) && ["no","normal"].includes(val(field))){setValue(field,yes);el(field)?.dispatchEvent(new Event("change",{bubbles:true}));}
+          if(event.target.id === field && ["no","normal"].includes(val(field)) && el(check))el(check).checked=false;
+        }
+      },true);
       root.addEventListener("input",event=>{
         if(event.target.matches("textarea[id$='Output'],textarea[id$='GeneratedDx']"))return;
         invalidateOralAdequacy(p,event.target.id);
@@ -322,6 +377,6 @@
       if(adult(p)){rates(p);refresh(p);}
     }
   }
-  window.MedAssistDengueCpg4UI={state,active,referral,warningData,diagnosis,syncWeight,rates,syncCategory,fluid,calculate,oralAdvice,adjustPlan,recordLines,validate,refresh,renderFluidResult,syncFluidDisplay,clearFluidResult,resetStart,resetEnd};
+  window.MedAssistDengueCpg4UI={state,active,referral,warningData,frequencyLine,diagnosis,syncWeight,rates,syncCategory,fluid,calculate,oralAdvice,adjustPlan,recordLines,validate,refresh,renderFluidResult,syncFluidDisplay,clearFluidResult,resetStart,resetEnd};
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();

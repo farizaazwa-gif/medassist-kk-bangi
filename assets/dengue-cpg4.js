@@ -53,9 +53,9 @@
     const candidates = [], concerns = [], risks = [], urgent = [];
     const vomit = number(s.vomit), stool = number(s.stool);
     if (vomit !== null && Number.isInteger(vomit) && vomit > 3) candidates.push(`persistent vomiting (${vomit} episodes/24 h)`);
-    if (s.worseDefervescence) candidates.push("clinical worsening as fever subsides");
+    if (s.worseDefervescence) candidates.push("no clinical improvement / worsening as fever subsides");
     if (s.intenseAbdominalPain) candidates.push("intense abdominal pain or tenderness");
-    if (s.lethargy) candidates.push("lethargy / restlessness / altered behaviour");
+    if (s.lethargy) candidates.push("lethargy / restlessness / irritability / confusion");
     if (s.fluidAccumulation) candidates.push("clinical fluid accumulation");
     if (s.postural) candidates.push("postural hypotension");
     if (s.liverGt2) candidates.push("liver enlargement >2 cm");
