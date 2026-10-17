@@ -12,12 +12,12 @@
 <meta content="https://farizaazwa-gif.github.io/medassist-kk-bangi/" property="og:url"/>
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
-<script src="assets/dengue-cpg4.js?v=18.231.0"></script>
-<script src="assets/dengue-cpg4-ui.js?v=18.231.0"></script>
-<script src="assets/dengue-symptoms.js?v=18.231.0"></script>
-<link rel="stylesheet" href="assets/dengue-symptoms.css?v=18.231.0"/>
+<script src="assets/dengue-cpg4.js?v=18.232.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.232.0"></script>
+<script src="assets/dengue-symptoms.js?v=18.232.0"></script>
+<link rel="stylesheet" href="assets/dengue-symptoms.css?v=18.232.0"/>
 <script src="assets/clinical-safety.js"></script>
-<script src="assets/note-edits.js?v=18.231.0"></script>
+<script src="assets/note-edits.js?v=18.232.0"></script>
 <script defer src="assets/accessibility-hardening.js"></script>
 <style>
 :root{
@@ -6027,7 +6027,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="fluid-calculate"><button class="btn primary" id="dfCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="clCpgOralAdequacyWrap"><label for="clCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="clCpgOralAdequacy" aria-describedby="clCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="clCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
-<p class="adult-cpg4"><a class="ref" id="clCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.231.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
+<p class="adult-cpg4"><a class="ref" id="clCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.232.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
 <div class="result-box fluid-result" id="dfResult" aria-live="polite">Select a category, then calculate.</div>
 <details class="fluid-extra" id="clFluidWeightDetails"><summary>Weight used / clinician override</summary>
 <div class="grid two"><div><label for="dfBasis">Weight basis</label><select id="dfBasis">
@@ -6644,7 +6644,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="fluid-calculate"><button class="btn primary" id="dfuFluidCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="dfuCpgOralAdequacyWrap"><label for="dfuCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="dfuCpgOralAdequacy" aria-describedby="dfuCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="dfuCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
-<p class="adult-cpg4"><a class="ref" id="dfuCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.231.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
+<p class="adult-cpg4"><a class="ref" id="dfuCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.232.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
 <div class="result-box fluid-result" id="dfuFluidResult" aria-live="polite">Select a category, then calculate.</div>
 <details class="fluid-extra" id="dfuFluidWeightDetails"><summary>Weight used / clinician override</summary>
 <div class="grid two"><div><label for="dfuFluidBasis">Weight basis</label><select id="dfuFluidBasis">
@@ -11939,7 +11939,7 @@ function buildDengueClinicalNote(planLines){
     ...(includeRaw?["Full pasted FBC result:",value("clQuickFbcText")]:[]),
     ...(previousLabs.length?["Previous lab investigations:",...previousLabs]:[]),
     ...(serialLines.length?serialLines:[]),
-    window.MedAssistDengueCpg4UI?.active("cl") && document.getElementById("clCpgLabTrend")?.checked ? "FBC trend: rising HCT with rapidly falling platelets (clinician confirmed)." : ""
+    window.MedAssistDengueCpg4UI?.active("cl") && document.getElementById("clCpgLabTrend")?.checked ? "FBC trend: rising HCT with rapidly falling platelets." : ""
   ].filter(Boolean);
 
   const headerLines=[
@@ -16090,7 +16090,7 @@ function buildDengueFollowUpClinicalNote(){
     ...(includeRaw?["Full pasted FBC result:",fv("dfuQuickFbcText")]:[]),
     ...(previousLabs.length?["Previous lab investigations:",...previousLabs]:[]),
     ...(serialLines.length?serialLines:[]),
-    window.MedAssistDengueCpg4UI?.active("dfu") && document.getElementById("dfuCpgLabTrend")?.checked ? "FBC trend: rising HCT with rapidly falling platelets (clinician confirmed)." : ""
+    window.MedAssistDengueCpg4UI?.active("dfu") && document.getElementById("dfuCpgLabTrend")?.checked ? "FBC trend: rising HCT with rapidly falling platelets." : ""
   ].filter(Boolean);
 
   const interventionLines=getDengueFollowUpInterventionLines();

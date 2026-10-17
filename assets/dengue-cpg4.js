@@ -61,7 +61,7 @@
     if (s.liverGt2) candidates.push("liver enlargement >2 cm");
     if (s.lowUrine4h) candidates.push("reduced or absent urine for 4–6 hours");
     if (s.bleeding) candidates.push("bleeding manifestation");
-    if (s.rapidHctPlt) candidates.push("rising haematocrit with rapidly falling platelets (clinician confirmed)");
+    if (s.rapidHctPlt) candidates.push("rising haematocrit with rapidly falling platelets");
     candidates.push(...(s.manualWarnings || []).filter(x => !/loose stool|diarrh/i.test(x)));
     const warningSigns = nearCritical(s) || s.warningConfirmed ? unique(candidates) : [];
     if (s.warningConfirmed && !warningSigns.length) warningSigns.push("warning signs confirmed by clinician");
