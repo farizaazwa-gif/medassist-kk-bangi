@@ -12,8 +12,8 @@
 <meta content="https://farizaazwa-gif.github.io/medassist-kk-bangi/" property="og:url"/>
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
-<script src="assets/dengue-cpg4.js?v=18.224.0"></script>
-<script src="assets/dengue-cpg4-ui.js?v=18.224.0"></script>
+<script src="assets/dengue-cpg4.js?v=18.225.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.225.0"></script>
 <script src="assets/clinical-safety.js"></script>
 <script defer src="assets/accessibility-hardening.js"></script>
 <style>
@@ -4968,6 +4968,14 @@ html,body{max-width:100%;overflow-x:hidden}
 [data-cpg-adult="true"] #clWarningWrap{display:none!important}
 .cpg-warning-panel h3{font-size:14px;margin:18px 0 8px}
 .cpg-warning-panel .result-box:empty{display:none}
+.cpg-warning-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}
+.cpg-warning-item{border:1px solid var(--line,#d4e4dc);border-radius:8px;padding:10px;min-width:0;background:#fff}
+.cpg-warning-item .check-item{margin:0;align-items:flex-start}.cpg-warning-item .helper{margin:4px 0 0 28px}
+.cpg-history-item strong{font-weight:600}.cpg-history-status{margin-top:5px}.cpg-history-edit{font:inherit;font-size:12px;border:0;background:none;color:#14634b;text-decoration:underline;padding:5px 0;cursor:pointer}
+.cpg-phase-context,.cpg-clinical-interpretation{padding:10px 12px;background:#f3f8f5;border-radius:8px;margin:12px 0}.cpg-phase-context p{margin-bottom:0}
+.cpg-referral-panel h3{font-size:14px;margin:14px 0 8px}
+@media(max-width:650px){.cpg-warning-list{grid-template-columns:1fr}}
+
 .cpg-warning-detail{margin-top:12px}
 </style>
 </head>
@@ -5488,9 +5496,22 @@ html,body{max-width:100%;overflow-x:hidden}
   Vomiting and loose stool classification will appear here.
 </div>
 </div>
-<div class="card adult-cpg4 cpg-warning-panel" id="clCpgWarningPanel"><h2>Adult warning signs — CPG4</h2><div class="result-box" id="clCpgWarningSummary" aria-live="polite"></div>
-<div class="helper">Vomiting >3 times/24 h, mental-state changes and bleeding are taken from the history. Tick other findings below. Interpret with illness phase (CPG pp10,14–15,28). Loose stool is a hydration concern, not a standalone adult warning sign.</div>
-<div class="grid two"><div><label>Phase</label><select id="clPhase"><option value="febrile phase">Febrile</option><option value="critical phase">Critical</option><option value="recovery phase">Recovery</option></select></div></div><div class="check-grid"><label class="check-item"><input id="clCpgNearCritical" type="checkbox"/>Near critical phase — clinician assessed</label><label class="check-item"><input id="clCpgWorse" type="checkbox"/>Not improving / worsening as fever subsides</label><label class="check-item"><input id="clCpgIntensePain" type="checkbox"/>Intense abdominal pain or tenderness</label><label class="check-item"><input id="clCpgAccumulation" type="checkbox"/>Clinical fluid accumulation</label><label class="check-item"><input id="clCpgPostural" type="checkbox"/>Postural hypotension</label><label class="check-item"><input id="clCpgLiver" type="checkbox"/>Liver enlargement &gt;2 cm</label><label class="check-item"><input id="clCpgLowUrine" type="checkbox"/>Reduced / absent urine for 4–6 hours</label><label class="check-item"><input id="clCpgLabTrend" type="checkbox"/>Rising HCT with rapidly falling platelets — clinician confirmed</label></div><h3>Severe / other referral findings</h3><div class="check-grid"><label class="check-item"><input id="clCpgSevereBleeding" type="checkbox"/>Severe bleeding requiring intervention</label><label class="check-item"><input id="clCpgSevereLeak" type="checkbox"/>Severe plasma leakage with respiratory distress</label><label class="check-item"><input id="clCpgUnstableComorbid" type="checkbox"/>Unstable co-morbidity</label><label class="check-item"><input id="clCpgSevereDehydration" type="checkbox"/>Moderate / severe dehydration</label></div><div><label for="clWarningStatus">Warning-sign assessment</label><select id="clWarningStatus"><option value="none">Use recorded findings</option><option value="present">Warning signs confirmed by clinician</option></select></div><div class="cpg-warning-detail hidden"><label for="clCpgWarningDetail">Additional warning sign / clinical rationale</label><input id="clCpgWarningDetail" placeholder="Document the finding and interpretation"/></div></div>
+<div class="card adult-cpg4 cpg-warning-panel" id="clCpgWarningPanel">
+<h2>Dengue warning signs (adults)</h2>
+<p class="helper">Review all 10 findings. Tick those present. Vomiting, mental state and bleeding are shown from the symptoms above — use Edit to change them.</p>
+<div class="cpg-phase-context"><div class="grid two"><div><label for="clPhase">Current illness phase</label><select id="clPhase"><option value="febrile phase">Febrile</option><option value="critical phase">Critical</option><option value="recovery phase">Recovery</option></select></div><div><label class="check-item"><input id="clCpgNearCritical" type="checkbox"/>Approaching critical phase</label><div class="helper">Clinical assessment of phase; this is not a warning sign.</div></div></div>
+<p class="helper">Interpret findings with phase, perfusion, HCT trend and urine output. Persistent vomiting during the febrile phase alone does not establish dengue with warning signs.</p></div>
+<div class="cpg-warning-list"><div class="cpg-warning-item"><label class="check-item"><input id="clCpgWorse" type="checkbox"/><span>1. Not improving / getting worse as fever settles</span></label></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgIntensePain" type="checkbox"/><span>2. Intense abdominal pain or tenderness</span></label></div><div class="cpg-warning-item cpg-history-item"><strong>3. Persistent vomiting &gt;3 times in 24 hours</strong><div class="cpg-history-status" id="clCpgHistoryVomiting">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="clVomitLast24" aria-label="Edit vomiting in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item cpg-history-item"><strong>4. Lethargy / restlessness / irritability / confusion</strong><div class="cpg-history-status" id="clCpgHistoryMental">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="clLethargy" aria-label="Edit mental in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgAccumulation" type="checkbox"/><span>5. Clinical fluid accumulation</span></label><div class="helper">e.g. ascites or pleural effusion</div></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgPostural" type="checkbox"/><span>6. Postural hypotension</span></label><div class="helper">BP drops on standing</div></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgLiver" type="checkbox"/><span>7. Liver enlargement &gt;2 cm</span></label></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgLowUrine" type="checkbox"/><span>8. Reduced / absent urine for 4–6 hours</span></label></div><div class="cpg-warning-item cpg-history-item"><strong>9. Bleeding manifestation</strong><div class="cpg-history-status" id="clCpgHistoryBleeding">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="clBleeding" aria-label="Edit bleeding in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgLabTrend" type="checkbox"/><span>10. Rising HCT with rapidly falling platelets</span></label><div class="helper">Confirm the trend from serial results</div></div></div>
+<p class="helper">Loose stool is a hydration concern, not a standalone adult warning sign. <a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG4: pp10,14–15,28</a></p>
+<div class="cpg-clinical-interpretation"><h3>Clinician confirmation — if needed</h3><div><label for="clWarningStatus">Warning-sign interpretation</label><select id="clWarningStatus"><option value="none">Use phase and recorded findings</option><option value="present">Warning signs confirmed on clinical assessment</option></select></div><div class="helper">If you confirm warning signs after assessment, record the finding and reason.</div><div class="cpg-warning-detail hidden"><label for="clCpgWarningDetail">Additional warning sign / clinical rationale</label><input id="clCpgWarningDetail" placeholder="Finding and reason for the clinical interpretation"/></div></div>
+<h3>Current assessment</h3><div class="result-box" id="clCpgWarningSummary" aria-live="polite"></div>
+</div>
+<div class="card adult-cpg4 cpg-referral-panel" id="clCpgReferralFindings">
+<h2>Severe dengue / other referral findings</h2>
+<h3>Severe dengue findings</h3><div class="check-grid"><label class="check-item"><input id="clCpgSevereBleeding" type="checkbox"/>Severe bleeding requiring intervention</label><label class="check-item"><input id="clCpgSevereLeak" type="checkbox"/>Severe plasma leakage with respiratory distress</label></div>
+<p class="helper">Shock and severe organ involvement are recorded in the clinical assessment below.</p>
+<h3>Other reasons for hospital referral</h3><div class="check-grid"><label class="check-item"><input id="clCpgUnstableComorbid" type="checkbox"/>Unstable co-morbidity</label><label class="check-item"><input id="clCpgSevereDehydration" type="checkbox"/>Moderate / severe dehydration</label></div>
+</div>
 <div class="card">
 <h2>Co-morbidity, recent exposure and body weight</h2>
 <div class="grid three">
@@ -6004,7 +6025,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="fluid-calculate"><button class="btn primary" id="dfCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="clCpgOralAdequacyWrap"><label for="clCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="clCpgOralAdequacy" aria-describedby="clCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="clCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
-<p class="adult-cpg4"><a class="ref" id="clCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.224.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
+<p class="adult-cpg4"><a class="ref" id="clCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.225.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
 <div class="result-box fluid-result" id="dfResult" aria-live="polite">Select a category, then calculate.</div>
 <details class="fluid-extra" id="clFluidWeightDetails"><summary>Weight used / clinician override</summary>
 <div class="grid two"><div><label for="dfBasis">Weight basis</label><select id="dfBasis">
@@ -6302,16 +6323,26 @@ html,body{max-width:100%;overflow-x:hidden}
   Warning-sign classification will appear here.
 </div>
 </div>
-<div class="card adult-cpg4 cpg-warning-panel" id="dfuCpgWarningPanel"><h2>Adult warning signs — CPG4</h2><div class="result-box" id="dfuCpgWarningSummary" aria-live="polite"></div>
-<div class="helper">Vomiting >3 times/24 h, mental-state changes and bleeding are taken from the history. Tick other findings below. Interpret with illness phase (CPG pp10,14–15,28). Loose stool is a hydration concern, not a standalone adult warning sign.</div>
-<div class="grid two"><div>
-<label>Phase</label>
-<select id="dfuPhase">
+<div class="card adult-cpg4 cpg-warning-panel" id="dfuCpgWarningPanel">
+<h2>Dengue warning signs (adults)</h2>
+<p class="helper">Review all 10 findings. Tick those present. Vomiting, mental state and bleeding are shown from the symptoms above — use Edit to change them.</p>
+<div class="cpg-phase-context"><div class="grid two"><div><label for="dfuPhase">Current illness phase</label><select id="dfuPhase">
 <option value="febrile phase">Febrile</option>
 <option value="critical phase">Critical</option>
 <option value="recovery phase">Recovery</option>
-</select>
-</div></div><div class="check-grid"><label class="check-item"><input id="dfuCpgNearCritical" type="checkbox"/>Near critical phase — clinician assessed</label><label class="check-item"><input id="dfuCpgWorse" type="checkbox"/>Not improving / worsening as fever subsides</label><label class="check-item"><input id="dfuCpgIntensePain" type="checkbox"/>Intense abdominal pain or tenderness</label><label class="check-item"><input id="dfuCpgAccumulation" type="checkbox"/>Clinical fluid accumulation</label><label class="check-item"><input id="dfuCpgPostural" type="checkbox"/>Postural hypotension</label><label class="check-item"><input id="dfuCpgLiver" type="checkbox"/>Liver enlargement &gt;2 cm</label><label class="check-item"><input id="dfuCpgLowUrine" type="checkbox"/>Reduced / absent urine for 4–6 hours</label><label class="check-item"><input id="dfuCpgLabTrend" type="checkbox"/>Rising HCT with rapidly falling platelets — clinician confirmed</label></div><h3>Severe / other referral findings</h3><div class="check-grid"><label class="check-item"><input id="dfuCpgSevereBleeding" type="checkbox"/>Severe bleeding requiring intervention</label><label class="check-item"><input id="dfuCpgSevereLeak" type="checkbox"/>Severe plasma leakage with respiratory distress</label><label class="check-item"><input id="dfuCpgUnstableComorbid" type="checkbox"/>Unstable co-morbidity</label><label class="check-item"><input id="dfuCpgSevereDehydration" type="checkbox"/>Moderate / severe dehydration</label><label class="check-item"><input id="dfuCpgWarningConfirmed" type="checkbox"/>Additional warning signs confirmed by clinician — document details</label></div><div class="cpg-warning-detail hidden"><label for="dfuCpgWarningDetail">Additional warning sign / clinical rationale</label><input id="dfuCpgWarningDetail" placeholder="Document the finding and interpretation"/></div></div>
+</select></div><div><label class="check-item"><input id="dfuCpgNearCritical" type="checkbox"/>Approaching critical phase</label><div class="helper">Clinical assessment of phase; this is not a warning sign.</div></div></div>
+<p class="helper">Interpret findings with phase, perfusion, HCT trend and urine output. Persistent vomiting during the febrile phase alone does not establish dengue with warning signs.</p></div>
+<div class="cpg-warning-list"><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgWorse" type="checkbox"/><span>1. Not improving / getting worse as fever settles</span></label></div><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgIntensePain" type="checkbox"/><span>2. Intense abdominal pain or tenderness</span></label></div><div class="cpg-warning-item cpg-history-item"><strong>3. Persistent vomiting &gt;3 times in 24 hours</strong><div class="cpg-history-status" id="dfuCpgHistoryVomiting">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="dfuVomitLast24" aria-label="Edit vomiting in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item cpg-history-item"><strong>4. Lethargy / restlessness / irritability / confusion</strong><div class="cpg-history-status" id="dfuCpgHistoryMental">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="dfuLethargy" aria-label="Edit mental in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgAccumulation" type="checkbox"/><span>5. Clinical fluid accumulation</span></label><div class="helper">e.g. ascites or pleural effusion</div></div><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgPostural" type="checkbox"/><span>6. Postural hypotension</span></label><div class="helper">BP drops on standing</div></div><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgLiver" type="checkbox"/><span>7. Liver enlargement &gt;2 cm</span></label></div><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgLowUrine" type="checkbox"/><span>8. Reduced / absent urine for 4–6 hours</span></label></div><div class="cpg-warning-item cpg-history-item"><strong>9. Bleeding manifestation</strong><div class="cpg-history-status" id="dfuCpgHistoryBleeding">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="dfuBleedingTendencies" aria-label="Edit bleeding in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgLabTrend" type="checkbox"/><span>10. Rising HCT with rapidly falling platelets</span></label><div class="helper">Confirm the trend from serial results</div></div></div>
+<p class="helper">Loose stool is a hydration concern, not a standalone adult warning sign. <a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG4: pp10,14–15,28</a></p>
+<div class="cpg-clinical-interpretation"><h3>Clinician confirmation — if needed</h3><label class="check-item"><input id="dfuCpgWarningConfirmed" type="checkbox"/>Warning signs confirmed on clinical assessment</label><div class="helper">If you confirm warning signs after assessment, record the finding and reason.</div><div class="cpg-warning-detail hidden"><label for="dfuCpgWarningDetail">Additional warning sign / clinical rationale</label><input id="dfuCpgWarningDetail" placeholder="Finding and reason for the clinical interpretation"/></div></div>
+<h3>Current assessment</h3><div class="result-box" id="dfuCpgWarningSummary" aria-live="polite"></div>
+</div>
+<div class="card adult-cpg4 cpg-referral-panel" id="dfuCpgReferralFindings">
+<h2>Severe dengue / other referral findings</h2>
+<h3>Severe dengue findings</h3><div class="check-grid"><label class="check-item"><input id="dfuCpgSevereBleeding" type="checkbox"/>Severe bleeding requiring intervention</label><label class="check-item"><input id="dfuCpgSevereLeak" type="checkbox"/>Severe plasma leakage with respiratory distress</label></div>
+<p class="helper">Shock and severe organ involvement are recorded in the clinical assessment below.</p>
+<h3>Other reasons for hospital referral</h3><div class="check-grid"><label class="check-item"><input id="dfuCpgUnstableComorbid" type="checkbox"/>Unstable co-morbidity</label><label class="check-item"><input id="dfuCpgSevereDehydration" type="checkbox"/>Moderate / severe dehydration</label></div>
+</div>
 <div class="card">
 <h2>Three salient questions</h2>
 <div class="grid three">
@@ -6612,7 +6643,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="fluid-calculate"><button class="btn primary" id="dfuFluidCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="dfuCpgOralAdequacyWrap"><label for="dfuCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="dfuCpgOralAdequacy" aria-describedby="dfuCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="dfuCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
-<p class="adult-cpg4"><a class="ref" id="dfuCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.224.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
+<p class="adult-cpg4"><a class="ref" id="dfuCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.225.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
 <div class="result-box fluid-result" id="dfuFluidResult" aria-live="polite">Select a category, then calculate.</div>
 <details class="fluid-extra" id="dfuFluidWeightDetails"><summary>Weight used / clinician override</summary>
 <div class="grid two"><div><label for="dfuFluidBasis">Weight basis</label><select id="dfuFluidBasis">

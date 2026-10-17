@@ -93,7 +93,7 @@
     const needsHospital = Boolean(urgent.length > 0 || warningSigns.length > 0 || s.oral === "unable" || s.unstableComorbidity || s.pregnant || s.moderateSevereDehydration);
     const group = severe ? "C" : warningSigns.length ? "B2" : risks.length ? "B1" : concerns.length || urgent.length ? "review" : "A";
     const title = ({C:"Group C — severe dengue: emergency referral",B2:"Group B2 — dengue with warning signs: admit to hospital",B1:"Group B1 — assess need for hospital referral / observation",review:"Clinical reassessment required",A:"Group A candidate — confirm outpatient suitability"})[group];
-    return {group, warningSigns, concerns:unique(concerns), risks:unique(risks), urgent:unique(urgent), needsHospital,
+    return {group, warningSigns, recordedWarningFindings:unique(candidates), concerns:unique(concerns), risks:unique(risks), urgent:unique(urgent), needsHospital,
       level:urgent.length ? "red" : warningSigns.length || risks.length || concerns.length ? "amber" : "neutral", title,
       reasons:unique([...urgent,...warningSigns,...risks,...concerns]),
       summary:group === "A" ? "Confirm stable haemodynamics, adequate intake/urine, no warning signs and reliable daily review."
