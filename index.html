@@ -12,8 +12,8 @@
 <meta content="https://farizaazwa-gif.github.io/medassist-kk-bangi/" property="og:url"/>
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
-<script src="assets/dengue-cpg4.js?v=18.219.0"></script>
-<script src="assets/dengue-cpg4-ui.js?v=18.219.0"></script>
+<script src="assets/dengue-cpg4.js?v=18.220.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.220.0"></script>
 <script src="assets/clinical-safety.js"></script>
 <script defer src="assets/accessibility-hardening.js"></script>
 <style>
@@ -4964,6 +4964,12 @@ html,body{max-width:100%;overflow-x:hidden}
 [data-cpg-adult="true"] #clWarningWrap{display:none!important}
 @media(max-width:640px){.adult-cpg4 .grid{grid-template-columns:1fr}.adult-cpg4{padding:10px}}
 </style>
+<style>
+[data-cpg-adult="true"] #clWarningWrap{display:none!important}
+.cpg-warning-panel h3{font-size:14px;margin:18px 0 8px}
+.cpg-warning-panel .result-box:empty{display:none}
+.cpg-warning-detail{margin-top:12px}
+</style>
 </head>
 <body>
 <div class="app">
@@ -5406,7 +5412,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 </div><div class="card">
-<h2>Warning signs</h2>
+<h2>Symptoms and hydration</h2>
 <div class="warning-sign-grid warning-sign-grid-v208">
 <div class="warning-v208-card warning-v208-oral"><label>Oral fluid tolerance</label><select id="clDrink"><option selected="" value="able">Able to tolerate oral fluids</option><option value="reduced">Reduced oral intake</option><option value="unable">Unable to tolerate oral fluids</option></select><div class="warning-v208-inline"><label for="clDrinkMl24">Approx. oral intake</label><div class="warning-v208-unit"><input id="clDrinkMl24" inputmode="numeric" min="0" step="50" type="number" placeholder="e.g. 1500"/><span>mL / 24 h</span></div></div></div>
 <div class="urine-inline-card" id="clUrineInlineCard">
@@ -5444,7 +5450,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 <div class="warning-v208-card"><label>Can perform daily activities</label><select id="clActivity"><option>yes</option><option>no</option></select></div>
-<div class="warning-v208-card"><label>Lethargy</label><select id="clLethargy"><option>no</option><option>yes</option></select></div>
+<div class="warning-v208-card"><label id="clMentalStateLabel">Lethargy / restlessness / irritability / confusion</label><select id="clLethargy"><option>no</option><option>yes</option></select></div>
 <div class="warning-v208-card warning-v208-frequency">
 <label>Vomiting — times/24 hours</label>
 <select id="clVomiting">
@@ -5482,6 +5488,9 @@ html,body{max-width:100%;overflow-x:hidden}
   Vomiting and loose stool classification will appear here.
 </div>
 </div>
+<div class="card adult-cpg4 cpg-warning-panel" id="clCpgWarningPanel"><h2>Adult warning signs — CPG4</h2><div class="result-box" id="clCpgWarningSummary" aria-live="polite"></div>
+<div class="helper">Vomiting >3 times/24 h, mental-state changes and bleeding are taken from the history. Tick other findings below. Interpret with illness phase (CPG pp10,14–15,28). Loose stool is a hydration concern, not a standalone adult warning sign.</div>
+<div class="grid two"><div><label>Phase</label><select id="clPhase"><option value="febrile phase">Febrile</option><option value="critical phase">Critical</option><option value="recovery phase">Recovery</option></select></div></div><div class="check-grid"><label class="check-item"><input id="clCpgNearCritical" type="checkbox"/>Near critical phase — clinician assessed</label><label class="check-item"><input id="clCpgWorse" type="checkbox"/>Not improving / worsening as fever subsides</label><label class="check-item"><input id="clCpgIntensePain" type="checkbox"/>Intense abdominal pain or tenderness</label><label class="check-item"><input id="clCpgAccumulation" type="checkbox"/>Clinical fluid accumulation</label><label class="check-item"><input id="clCpgPostural" type="checkbox"/>Postural hypotension</label><label class="check-item"><input id="clCpgLiver" type="checkbox"/>Liver enlargement &gt;2 cm</label><label class="check-item"><input id="clCpgLowUrine" type="checkbox"/>Reduced / absent urine for 4–6 hours</label><label class="check-item"><input id="clCpgLabTrend" type="checkbox"/>Rising HCT with rapidly falling platelets — clinician confirmed</label></div><h3>Severe / other referral findings</h3><div class="check-grid"><label class="check-item"><input id="clCpgSevereBleeding" type="checkbox"/>Severe bleeding requiring intervention</label><label class="check-item"><input id="clCpgSevereLeak" type="checkbox"/>Severe plasma leakage with respiratory distress</label><label class="check-item"><input id="clCpgUnstableComorbid" type="checkbox"/>Unstable co-morbidity</label><label class="check-item"><input id="clCpgSevereDehydration" type="checkbox"/>Moderate / severe dehydration</label></div><div><label for="clWarningStatus">Warning-sign assessment</label><select id="clWarningStatus"><option value="none">Use recorded findings</option><option value="present">Warning signs confirmed by clinician</option></select></div><div class="cpg-warning-detail hidden"><label for="clCpgWarningDetail">Additional warning sign / clinical rationale</label><input id="clCpgWarningDetail" placeholder="Document the finding and interpretation"/></div></div>
 <div class="card">
 <h2>Co-morbidity, recent exposure and body weight</h2>
 <div class="grid three">
@@ -5931,8 +5940,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="dx-ams-hint hidden" id="clDxAmsHint"></div>
 <div class="grid three dx-dengue-fields" id="clDengueDxFields">
 <div><label>Day of illness</label><input id="clDxDay" min="1" type="number"/></div>
-<div><label>Phase</label><select id="clPhase"><option value="febrile phase">Febrile</option><option value="critical phase">Critical</option><option value="recovery phase">Recovery</option></select></div>
-<div><label>Warning signs</label><select id="clWarningStatus"><option value="none">Without warning signs</option><option value="present">With warning signs</option></select></div>
+
+
 <div class="hidden" id="clWarningWrap" style="grid-column:1/-1">
 <div class="check-grid" id="clWarningSigns">
 <label class="check-item red"><input type="checkbox" value="abdominal pain or tenderness"/>Abdominal pain or tenderness</label>
@@ -5952,9 +5961,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <strong>Adult dengue — CPG Fourth Edition (2026)</strong>
 <div class="helper">Assess the full clinical picture. Haemodynamic status is entered by the clinician after CCTVR, BP/pulse pressure and urine assessment; pasted vitals alone do not classify shock.</div>
 <div class="result-box" id="clCpgAssessment" aria-live="polite"></div>
-<details><summary>Phase, warning signs and high-risk findings</summary>
-<div class="helper">Symptoms during febrile illness require assessment. Formal warning signs are interpreted near/in critical phase (pp14–15,28). Confirm specific findings below; vomiting, bleeding and lethargy are also taken from the history.</div>
-<div class="check-grid"><label class="check-item"><input id="clCpgNearCritical" type="checkbox"/>Near critical phase — clinician assessed</label><label class="check-item"><input id="clCpgWorse" type="checkbox"/>Worsening when fever subsides</label><label class="check-item"><input id="clCpgIntensePain" type="checkbox"/>Intense abdominal pain or tenderness</label><label class="check-item"><input id="clCpgAccumulation" type="checkbox"/>Clinical fluid accumulation</label><label class="check-item"><input id="clCpgPostural" type="checkbox"/>Postural hypotension</label><label class="check-item"><input id="clCpgLiver" type="checkbox"/>Liver enlargement &gt;2 cm</label><label class="check-item"><input id="clCpgLowUrine" type="checkbox"/>Reduced / absent urine for 4–6 hours</label><label class="check-item"><input id="clCpgLabTrend" type="checkbox"/>Rising HCT with rapidly falling platelets — clinician confirmed</label><label class="check-item"><input id="clCpgSevereBleeding" type="checkbox"/>Severe bleeding requiring intervention</label><label class="check-item"><input id="clCpgSevereLeak" type="checkbox"/>Severe plasma leakage with respiratory distress</label><label class="check-item"><input id="clCpgUnstableComorbid" type="checkbox"/>Unstable co-morbidity</label><label class="check-item"><input id="clCpgSevereDehydration" type="checkbox"/>Moderate / severe dehydration</label></div></details>
+
 <details><summary>Vaccination and medication review</summary>
 <div class="grid two"><div><label for="clCpgVaccine">Dengue vaccination status</label><select id="clCpgVaccine"><option value="">Not recorded</option><option value="no">No</option><option value="yes">Yes</option><option value="unknown">Unknown</option></select></div>
 <div class="cpg-vaccine-date hidden"><label for="clCpgVaccineDate">Most recent dengue vaccination date</label><input id="clCpgVaccineDate" type="date"/></div></div>
@@ -6044,7 +6051,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="plan-subplan-panel" data-cl-plan-group="outpatient">
 <div class="plan-subplan-title">Choose sub-plan(s) to include</div>
 <div class="plan-subplan-list">
-<label class="plan-subplan-item"><input checked class="cl-plan-subitem" id="clPlanSubOutFbc" type="checkbox"/><span>Repeat / serial FBC monitoring</span></label>
+<label class="plan-subplan-item"><input checked class="cl-plan-subitem" id="clPlanSubOutFbc" type="checkbox"/><span>Repeat FBC CM</span></label>
 <label class="plan-subplan-item"><input checked class="cl-plan-subitem" id="clPlanSubOutFluid" type="checkbox"/><span>Encourage oral fluid intake 2 L/day</span></label>
 <label class="plan-subplan-item"><input checked class="cl-plan-subitem" id="clPlanSubOutSafety" type="checkbox"/><span>TCA STAT if warning signs develop</span></label>
 <label class="plan-subplan-item"><input checked class="cl-plan-subitem" id="clPlanSubOutPamphlet" type="checkbox"/><span>Dengue pamphlet / education given</span></label>
@@ -6205,7 +6212,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 <div class="card dfu-warning-card">
-<h2>Dengue warning signs</h2>
+<h2>Symptoms and hydration</h2>
 <div class="helper">Record actual findings. Adult warning-sign classification also depends on illness phase and clinical assessment.</div>
 <div class="grid three" id="dfuWarningSigns">
 <div class="dfu-bleeding-block">
@@ -6288,6 +6295,16 @@ html,body{max-width:100%;overflow-x:hidden}
   Warning-sign classification will appear here.
 </div>
 </div>
+<div class="card adult-cpg4 cpg-warning-panel" id="dfuCpgWarningPanel"><h2>Adult warning signs — CPG4</h2><div class="result-box" id="dfuCpgWarningSummary" aria-live="polite"></div>
+<div class="helper">Vomiting >3 times/24 h, mental-state changes and bleeding are taken from the history. Tick other findings below. Interpret with illness phase (CPG pp10,14–15,28). Loose stool is a hydration concern, not a standalone adult warning sign.</div>
+<div class="grid two"><div>
+<label>Phase</label>
+<select id="dfuPhase">
+<option value="febrile phase">Febrile</option>
+<option value="critical phase">Critical</option>
+<option value="recovery phase">Recovery</option>
+</select>
+</div></div><div class="check-grid"><label class="check-item"><input id="dfuCpgNearCritical" type="checkbox"/>Near critical phase — clinician assessed</label><label class="check-item"><input id="dfuCpgWorse" type="checkbox"/>Not improving / worsening as fever subsides</label><label class="check-item"><input id="dfuCpgIntensePain" type="checkbox"/>Intense abdominal pain or tenderness</label><label class="check-item"><input id="dfuCpgAccumulation" type="checkbox"/>Clinical fluid accumulation</label><label class="check-item"><input id="dfuCpgPostural" type="checkbox"/>Postural hypotension</label><label class="check-item"><input id="dfuCpgLiver" type="checkbox"/>Liver enlargement &gt;2 cm</label><label class="check-item"><input id="dfuCpgLowUrine" type="checkbox"/>Reduced / absent urine for 4–6 hours</label><label class="check-item"><input id="dfuCpgLabTrend" type="checkbox"/>Rising HCT with rapidly falling platelets — clinician confirmed</label></div><h3>Severe / other referral findings</h3><div class="check-grid"><label class="check-item"><input id="dfuCpgSevereBleeding" type="checkbox"/>Severe bleeding requiring intervention</label><label class="check-item"><input id="dfuCpgSevereLeak" type="checkbox"/>Severe plasma leakage with respiratory distress</label><label class="check-item"><input id="dfuCpgUnstableComorbid" type="checkbox"/>Unstable co-morbidity</label><label class="check-item"><input id="dfuCpgSevereDehydration" type="checkbox"/>Moderate / severe dehydration</label><label class="check-item"><input id="dfuCpgWarningConfirmed" type="checkbox"/>Additional warning signs confirmed by clinician — document details</label></div><div class="cpg-warning-detail hidden"><label for="dfuCpgWarningDetail">Additional warning sign / clinical rationale</label><input id="dfuCpgWarningDetail" placeholder="Document the finding and interpretation"/></div></div>
 <div class="card">
 <h2>Three salient questions</h2>
 <div class="grid three">
@@ -6526,14 +6543,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <label>Day of illness — auto</label>
 <input id="dfuDxDay" placeholder="Taken from follow-up details" readonly=""/>
 </div>
-<div>
-<label>Phase</label>
-<select id="dfuPhase">
-<option value="febrile phase">Febrile</option>
-<option value="critical phase">Critical</option>
-<option value="recovery phase">Recovery</option>
-</select>
-</div>
+
 <div>
 <label>Warning signs — auto</label>
 <input id="dfuWarningStatusDisplay" readonly=""/>
@@ -6551,9 +6561,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <strong>Adult dengue — CPG Fourth Edition (2026)</strong>
 <div class="helper">Assess the full clinical picture. Haemodynamic status is entered by the clinician after CCTVR, BP/pulse pressure and urine assessment; pasted vitals alone do not classify shock.</div>
 <div class="result-box" id="dfuCpgAssessment" aria-live="polite"></div>
-<details><summary>Phase, warning signs and high-risk findings</summary>
-<div class="helper">Symptoms during febrile illness require assessment. Formal warning signs are interpreted near/in critical phase (pp14–15,28). Confirm specific findings below; vomiting, bleeding and lethargy are also taken from the history.</div>
-<div class="check-grid"><label class="check-item"><input id="dfuCpgNearCritical" type="checkbox"/>Near critical phase — clinician assessed</label><label class="check-item"><input id="dfuCpgWorse" type="checkbox"/>Worsening when fever subsides</label><label class="check-item"><input id="dfuCpgIntensePain" type="checkbox"/>Intense abdominal pain or tenderness</label><label class="check-item"><input id="dfuCpgAccumulation" type="checkbox"/>Clinical fluid accumulation</label><label class="check-item"><input id="dfuCpgPostural" type="checkbox"/>Postural hypotension</label><label class="check-item"><input id="dfuCpgLiver" type="checkbox"/>Liver enlargement &gt;2 cm</label><label class="check-item"><input id="dfuCpgLowUrine" type="checkbox"/>Reduced / absent urine for 4–6 hours</label><label class="check-item"><input id="dfuCpgLabTrend" type="checkbox"/>Rising HCT with rapidly falling platelets — clinician confirmed</label><label class="check-item"><input id="dfuCpgSevereBleeding" type="checkbox"/>Severe bleeding requiring intervention</label><label class="check-item"><input id="dfuCpgSevereLeak" type="checkbox"/>Severe plasma leakage with respiratory distress</label><label class="check-item"><input id="dfuCpgUnstableComorbid" type="checkbox"/>Unstable co-morbidity</label><label class="check-item"><input id="dfuCpgSevereDehydration" type="checkbox"/>Moderate / severe dehydration</label><label class="check-item"><input id="dfuCpgWarningConfirmed" type="checkbox"/>Additional warning signs confirmed by clinician — document details</label></div></details>
+
 <details><summary>Vaccination and medication review</summary>
 <div class="grid two"><div><label for="dfuCpgVaccine">Dengue vaccination status</label><select id="dfuCpgVaccine"><option value="">Not recorded</option><option value="no">No</option><option value="yes">Yes</option><option value="unknown">Unknown</option></select></div>
 <div class="cpg-vaccine-date hidden"><label for="dfuCpgVaccineDate">Most recent dengue vaccination date</label><input id="dfuCpgVaccineDate" type="date"/></div></div>
@@ -6636,7 +6644,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="plan-subplan-panel" data-dfu-plan-group="monitoring">
 <div class="plan-subplan-title">Choose sub-plan(s) to include</div>
 <div class="plan-subplan-list">
-<label class="plan-subplan-item"><input checked class="dfu-plan-subitem" id="dfuPlanSubMonFbc" type="checkbox"/><span>Continue serial FBC monitoring</span></label>
+<label class="plan-subplan-item"><input checked class="dfu-plan-subitem" id="dfuPlanSubMonFbc" type="checkbox"/><span>Repeat FBC CM</span></label>
 <label class="plan-subplan-item"><input checked class="dfu-plan-subitem" id="dfuPlanSubMonFluid" type="checkbox"/><span>Encourage oral fluids according to age / tolerance</span></label>
 <label class="plan-subplan-item"><input checked class="dfu-plan-subitem" id="dfuPlanSubMonSafety" type="checkbox"/><span>TCA STAT if warning signs develop + dengue safety-net advice</span></label>
 <label class="plan-subplan-item"><input checked class="dfu-plan-subitem" id="dfuPlanSubMonTca" type="checkbox"/><span>TCA for clinical review and repeat FBC</span></label>
@@ -7434,6 +7442,9 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="section-subtitle">Blood Group &amp; Haemolysis Risk</div>
 <div class="helper">Enter mother and baby blood groups. Risk reminders update automatically.</div>
 <div class="nnj-blood-grid"><div><label>Mother blood group (MBG)</label><select id="nnjMbg"><option value="">Not known</option><option>A+</option><option>AB+</option><option>B+</option><option>O+</option><option>A-</option><option>AB-</option><option>O-</option></select></div><div><label>Baby blood group (BBG)</label><select id="nnjBbg"><option value="">Not known</option><option>A+</option><option>AB+</option><option>B+</option><option>O+</option><option>A-</option><option>AB-</option><option>O-</option></select></div><div><label>G6PD status</label><select id="nnjG6pdStatus"><option value="">Unknown</option><option value="Normal">Normal</option><option value="Deficient">Deficient</option><option value="Pending">Pending</option></select></div></div>
+<div class="grid two">
+<div><label for="nnjCordTsh">Cord TSH (mIU/L)</label><input id="nnjCordTsh" type="number" min="0" step="any" inputmode="decimal" placeholder="Optional — enter result"/></div>
+</div>
 <div class="nnj-haemolysis-risk-box" id="nnjHaemolysisRiskBox">
     Enter blood groups and G6PD status to screen haemolysis risk.
   </div>
@@ -10165,6 +10176,7 @@ function focusMedAssistWorkspace(){
 }
 
 function showPage(name){
+  document.getElementById("dengueReferralToast")?.classList.add("hidden");
   document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+name));
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===name));
 
@@ -10766,7 +10778,7 @@ function getDenguePlanLines(){
       const fluid=getDengueFluidInstruction();
       const ivdTime=value("clIvdStartTime")||"[ENTER TIME]";
       const fluidPlan=fluid.plan.replace(/\.$/,"");
-      lines.push(`${fluidPlan} at ${ivdTime} in KK before referral to ED.`);
+      lines.push(`${fluidPlan}. IV start time: ${ivdTime} (KK).`);
     }
     if(on("clPlanSubReferEd")) lines.push("Refer ED for further assessment and management.");
     if(on("clPlanSubReferNotify")) lines.push("Notify dengue case via e-notification.");
@@ -10999,6 +11011,7 @@ function syncFrequencyExactField(selectId,inputId,getter=value){
 }
 
 function newCaseFrequencyDescription(type,valueCode,countInputId){
+  if(value("dfGroup")==="adult") return window.MedAssistDengueCpg4UI.frequencyLine("cl",type);
   const exact=countInputId?dengueExactFrequency(countInputId):null;
   const frequentText=exact?`${exact} times/24 hours`:"3 times/24 hours or more";
   const labels={
@@ -11025,6 +11038,10 @@ function newCaseFrequencyDescription(type,valueCode,countInputId){
 function renderNewCaseFrequencyClassification(){
   const box=document.getElementById("clWarningFrequencyClassification");
   if(!box) return;
+  if(value("dfGroup")==="adult"){
+    box.textContent=["vomiting","stool"].map(type=>window.MedAssistDengueCpg4UI.frequencyLine("cl",type)).join("\n");
+    return;
+  }
 
   syncFrequencyExactField("clVomiting","clVomitingCount");
   syncFrequencyExactField("clDiarrhoea","clDiarrhoeaCount");
@@ -11589,9 +11606,12 @@ function dengueReferralNoteLines(mode){
   ];
 }
 
-function showDengueReferralToast(assessment){
+function showDengueReferralToast(assessment,mode){
   const toast=document.getElementById("dengueReferralToast");
-  if(!toast || !assessment.reasons.length) return;
+  const root=document.getElementById(mode==="followup"?"dengueFollowUpTemplate":"dengueNewCaseTemplate");
+  if(!toast || !assessment.reasons.length || !document.getElementById("page-clerking")?.classList.contains("active") || root?.classList.contains("hidden")) return;
+  toast.dataset.mode=mode;
+  toast.dataset.signature=JSON.stringify([assessment.title,assessment.reasons]);
 
   toast.classList.remove("hidden","red");
   toast.classList.toggle("red",assessment.level==="red");
@@ -11610,6 +11630,8 @@ function renderDengueReferralAlert(mode,options={}){
   if(!alert) return null;
 
   const assessment=dengueReferralAssessment(mode);
+  const toast=document.getElementById("dengueReferralToast");
+  if(toast?.dataset.mode===mode && toast.dataset.signature!==JSON.stringify([assessment.title,assessment.reasons])) toast.classList.add("hidden");
   alert.classList.remove("neutral","amber","red","disabled","flash");
   alert.classList.add(assessment.level);
 
@@ -11656,7 +11678,7 @@ function renderDengueReferralAlert(mode,options={}){
     newVitalShock
   )){
     alert.classList.add("flash");
-    showDengueReferralToast(assessment);
+    showDengueReferralToast(assessment,mode);
   }
 
   dengueReferralLastLevel[mode]=assessment.level;
@@ -11779,9 +11801,10 @@ function dengueActivityLine(){
 }
 
 function dengueLethargyLine(){
+  const finding=value("dfGroup")==="adult"?"lethargy / restlessness / irritability / confusion":"lethargy";
   return value("clLethargy")==="yes"
-    ? "+ lethargy"+(window.dengueDurationSuffix?.("clLethargyDuration")||"")
-    : "no lethargy";
+    ? `+ ${finding}`+(window.dengueDurationSuffix?.("clLethargyDuration")||"")
+    : `no ${finding}`;
 }
 
 function dengueYesNoWarningLine(id,label){
@@ -14690,6 +14713,12 @@ function nnjRelevantNegatives(negativeList){
   return preferred.filter(item=>negativeList.includes(item));
 }
 function generateNnjNote(){
+  const cordTsh=$("nnjCordTsh");
+  if(!cordTsh.checkValidity()){
+    alert("Enter a valid, non-negative cord TSH result in mIU/L.");
+    cordTsh.focus();
+    return;
+  }
   const assessment=renderNnjLive();
   if(!assessment){
     alert("Enter date/time of birth, assessment date/time and TSB first.");
@@ -14736,6 +14765,7 @@ function generateNnjNote(){
     value("nnjMbg")?`MBG: ${value("nnjMbg")}.`:"",
     value("nnjBbg")?`BBG: ${value("nnjBbg")}.`:"",
     value("nnjG6pdStatus")?`G6PD: ${value("nnjG6pdStatus")}.`:"",
+    value("nnjCordTsh")!==""?`Cord TSH: ${value("nnjCordTsh")} mIU/L.`:"",
     `Feeding: ${value("nnjFeeding")||"not stated"}${value("nnjFeedFrequency")?`, ${value("nnjFeedFrequency")}`:""}.`
   ].filter(Boolean).join("\n");
 
@@ -14779,7 +14809,6 @@ function generateNnjNote(){
   ].filter(Boolean).join("\n");
 
   const planParagraph=planLines
-    .filter(line=>!line.toLowerCase().includes("urgent escalation of care"))
     .map((line,index)=>`${index+1}. ${line}`)
     .join("\n");
 
@@ -14926,7 +14955,7 @@ $("nnjCopyReferral").addEventListener("click",async()=>{
 $("nnjClear").addEventListener("click",()=>{
   [
     "nnjName","nnjId","nnjHours","nnjBirthDate24","nnjAssessmentDate24","nnjBirthDateTime","nnjAssessmentDateTime","nnjBirthDate","nnjBirthTime","nnjBirthWeight","nnjCurrentWeight","nnjFeedFrequency",
-    "nnjValue","nnjDirect","nnjOtherHistory","nnjOtherExam","nnjPlanOthers","nnjOutput","nnjReferralLetter"
+    "nnjValue","nnjDirect","nnjCordTsh","nnjOtherHistory","nnjOtherExam","nnjPlanOthers","nnjOutput","nnjReferralLetter"
   ].forEach(id=>$(id).value="");
 
   document.querySelectorAll("#nnjSymptoms .nnj-yn").forEach(select=>{
@@ -15326,6 +15355,7 @@ function hydrateDengueFollowUpAfebrileSinceControls(){
 }
 
 function setDengueTemplate(type){
+  document.getElementById("dengueReferralToast")?.classList.add("hidden");
   const newCase=type==="new";
   const followUp=type==="followup";
   f$("dengueNewCaseTemplate").classList.toggle("hidden",!newCase);
@@ -15446,8 +15476,8 @@ function warningSignData(){
 function renderDengueFollowUpWarningClassification(){
   const warning=warningSignData();
   const combined=[
-    ...warning.positive.map(item=>`+ ${item}`),
-    ...warning.negative.map(item=>`no ${item}`)
+    ...warning.positive.map(item=>`+ ${escapePlanHtml(item)}`),
+    ...warning.negative.map(item=>`no ${escapePlanHtml(item)}`)
   ];
 
   const sections=[
@@ -15457,11 +15487,11 @@ function renderDengueFollowUpWarningClassification(){
   if(warning.belowThreshold.length){
     sections.push(
       `<strong>Other symptoms / findings requiring reassessment:</strong><br>`+
-      warning.belowThreshold.map(item=>`• ${item}`).join("<br>")
+      warning.belowThreshold.map(item=>`• ${escapePlanHtml(item)}`).join("<br>")
     );
   }
 
-  f$("dfuWarningClassification").innerHTML=sections.join("<br><br>");
+  f$("dfuWarningClassification").innerHTML=sections.filter(Boolean).join("<br><br>") || "No warning signs recorded.";
 }
 
 function calculateDengueFollowUpBodyWeight(){
@@ -15900,7 +15930,7 @@ function followUpPlanLines(){
       const fluid=getDengueFollowUpFluidInstruction();
       const ivdTime=fv("dfuIvdStartTime")||"[ENTER TIME]";
       const fluidPlan=(fluid.valid?fluid.plan:fluid.display).replace(/\.$/,"");
-      lines.push(`${fluidPlan} at ${ivdTime} in KK before referral to ED.`);
+      lines.push(`${fluidPlan}. IV start time: ${ivdTime} (KK).`);
     }
     if(on("dfuPlanSubReferEd")) lines.push("Refer ED for further assessment and management.");
   }else if(option==="monitoring"){
@@ -16128,12 +16158,16 @@ function buildDengueFollowUpClinicalNote(){
   // Smart referral screening remains on-screen only.
   // It is intentionally excluded from the generated note and referral body.
 
+  // Adult IV prescriptions are included once, when selected in the referral plan.
+  // Calculator prompts are on-screen guidance, not patient-note content.
+  if(fv("dfuGroup")!=="adult"){
   addParagraph([
     "DENGUE FLUID MANAGEMENT",
     getDengueFollowUpFluidInstruction().valid
       ? getDengueFollowUpFluidInstruction().plan
       : getDengueFollowUpFluidInstruction().display
   ]);
+  }
 
   addParagraph([
     "plan:",
@@ -19862,7 +19896,7 @@ document.addEventListener("keydown",event=>{
   }
 
   function assignTargetId(element,label,index,pageName){
-    if(element.dataset.quickbarId) return element.dataset.quickbarId;
+    if(element.dataset.quickbarId) return element.id || element.dataset.quickbarId;
     let id=`quick-${pageName}-${slugify(label)}-${index+1}`;
     let suffix=2;
     while(document.getElementById(id) && document.getElementById(id)!==element){
@@ -22493,8 +22527,12 @@ function syncHtnCombined(){
 }
 let htnPasteTimer;$('htnCombinedPaste')?.addEventListener('input',()=>{clearTimeout(htnPasteTimer);htnPasteTimer=setTimeout(syncHtnCombined,80)});
 
-function resetV208(){setTimeout(()=>{syncTbDetails();syncAbdominalPainSites();syncDmCxDetails();window.syncNcdVisibleLabs('dm');window.syncNcdVisibleLabs('htn');const st=$('htnCombinedImportStatus');if(st)st.textContent='Paste BP and anthropometry together; recognised values will auto-fill below and BMI will calculate automatically.';},30)}
-['clReset','dmReset','htnReset','clerkingFloatingReset'].forEach(id=>$(id)?.addEventListener('click',resetV208));
+function resetV208(prefix){setTimeout(()=>{
+  if(prefix==='cl'){syncTbDetails();syncAbdominalPainSites();}
+  if(prefix==='dm'){syncDmCxDetails();window.syncNcdVisibleLabs('dm');}
+  if(prefix==='htn'){window.syncNcdVisibleLabs('htn');const st=$('htnCombinedImportStatus');if(st)st.textContent='Paste BP and anthropometry together; recognised values will auto-fill below and BMI will calculate automatically.';}
+},30)}
+['cl','dm','htn'].forEach(prefix=>$(prefix+'Reset')?.addEventListener('click',()=>resetV208(prefix)));
 
 syncTbDetails();syncAbdominalPainSites();syncDmCxDetails();window.syncNcdVisibleLabs('dm');window.syncNcdVisibleLabs('htn');
 })();
