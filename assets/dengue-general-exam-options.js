@@ -333,7 +333,12 @@
     return count;
   }
 
+  function shockNeedsReview(prefix) {
+    return /shock/.test($(`${prefix}Haemo`)?.value || "") && abnormalCount(prefix) === 0;
+  }
+
   function currentSentence(prefix) {
+    if (shockNeedsReview(prefix)) return "General / perfusion examination: not documented for recorded shock — review findings.";
     const values = Object.fromEntries(DEFAULT_ORDER.map(key => [
       key,
       getField(prefix, key)?.value || ""
@@ -348,8 +353,8 @@
     const banner = card?.querySelector(".medassist-pe-normal-banner, .normal-box");
     if (!banner) return;
 
-    const state = highestState(prefix);
-    const sentence = currentSentence(prefix) || DEFAULT_SENTENCE;
+    const state = shockNeedsReview(prefix) ? "concern" : highestState(prefix);
+    const sentence = currentSentence(prefix) || "General / perfusion examination: not documented.";
     banner.textContent = `O/e: ${sentence}`;
     banner.dataset.generalExamState = state;
 
@@ -493,52 +498,9 @@
     return true;
   }
 
-  function replaceGeneralLine(text, prefix) {
-    if (!text) return text;
-    const sentence = currentSentence(prefix) || DEFAULT_SENTENCE;
-
-    const defaultPattern = /^\s*alert,\s*comfortable,\s*pink,\s*not tachypneic,\s*crt\s*<\s*2\s*sec,\s*warm peripheries,\s*good PV\s*$/im;
-    if (defaultPattern.test(text)) {
-      return text.replace(defaultPattern, sentence);
-    }
-
-    const lines = text.split("\n");
-    const oeIndex = lines.findIndex(line => /^\s*o\/e\s*:\s*$/i.test(line));
-    if (oeIndex >= 0 && oeIndex + 1 < lines.length) {
-      const next = lines[oeIndex + 1];
-      if (/alert|comfortable|crt|peripher|PV|tachyp/i.test(next)) {
-        lines[oeIndex + 1] = sentence;
-        return lines.join("\n");
-      }
-    }
-    return text;
-  }
-
-  function rewriteOutputs(prefix) {
-    const root = document.querySelector(`#page-${prefix}`) || document;
-    root.querySelectorAll("textarea").forEach(area => {
-      if (!area.value || !/o\/e\s*:|alert,\s*comfortable,\s*pink/i.test(area.value)) return;
-      const updated = replaceGeneralLine(area.value, prefix);
-      if (updated !== area.value) area.value = updated;
-    });
-  }
-
-  function bindOutputHooks(prefix) {
-    const generate = $(`${prefix}Generate`);
-    if (generate && !generate.dataset.generalExamOutputBound) {
-      generate.dataset.generalExamOutputBound = "true";
-      generate.addEventListener("click", () => {
-        window.setTimeout(() => rewriteOutputs(prefix), 0);
-        window.setTimeout(() => rewriteOutputs(prefix), 90);
-      });
-    }
-
-    const copy = $(`${prefix}Copy`);
-    if (copy && !copy.dataset.generalExamOutputBound) {
-      copy.dataset.generalExamOutputBound = "true";
-      copy.addEventListener("click", () => rewriteOutputs(prefix), true);
-    }
-  }
+  // Notes read the recorded examination synchronously when generated.
+  // Copy must preserve edited output; never rewrite other clerkings' textareas.
+  window.MedAssistDengueGeneralExam = { sentence: currentSentence };
 
   function reset(prefix) {
     GROUPS.forEach(group => group.fields.forEach(field => {
@@ -562,7 +524,6 @@
   function ensureAll() {
     PREFIXES.forEach(prefix => {
       addPanel(prefix);
-      bindOutputHooks(prefix);
       bindReset(prefix);
     });
   }
@@ -570,6 +531,10 @@
   function init() {
     addStyles();
     ensureAll();
+    document.addEventListener("change", event => {
+      const prefix = PREFIXES.find(p => event.target?.id === `${p}Haemo`);
+      if (prefix) updateBanner(prefix);
+    });
 
     const observer = new MutationObserver(() => ensureAll());
     observer.observe(document.body, { childList: true, subtree: true });
