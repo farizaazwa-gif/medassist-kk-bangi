@@ -31,10 +31,12 @@ const server=http.createServer((req,res)=>{
   await set(p==='cl'?'clDxDay':'dfuDayIllness',4);
   await set(p+'Output','Existing editable note');
   await page.locator('#'+p+'Generate').click();
-  assert.equal(await value(p+'Output'),'Existing editable note');
-  assert.match(await text(p+'CpgValidation'),/Select suspected or confirmed dengue/);
+  assert.match(await value(p+'Output'),/Existing editable note/);
+  assert.match(await value(p+'Output'),/Diagnosis pending clinical assessment/);
+  assert.equal(await text(p+'CpgValidation'),'');
   await set(p+'CpgDxCertainty','confirmed');await set(p+'CpgDxReviewed',true);
-  await page.locator('#'+p+'Generate').click();assert.match(await text(p+'CpgValidation'),/laboratory evidence/);
+  await page.locator('#'+p+'Generate').click();assert.match(await value(p+'Output'),/Diagnosis pending clinical assessment/);
+  assert.doesNotMatch(await value(p+'Output'),/DIAGNOSIS: Confirmed dengue/);
   await set(p+'CpgDxEvidence','NS1 positive 17/10/2026');
   assert.equal(await page.locator('#'+p+'CpgDxReviewed').isChecked(),false);
   await set(p+'CpgDxReviewed',true);await page.locator('#'+p+'Generate').click();
@@ -43,7 +45,8 @@ const server=http.createServer((req,res)=>{
   assert.match(first,/Dengue confirmation: NS1 positive 17\/10\/2026/);
   assert.doesNotMatch(first,/without classified|Group [ABC]/);
   await set(p+'Phase','critical phase');assert.equal(await page.locator('#'+p+'CpgDxReviewed').isChecked(),false);
-  await page.locator('#'+p+'Generate').click();assert.equal(await value(p+'Output'),first);
+  await page.locator('#'+p+'Generate').click();assert.match(await value(p+'Output'),/Diagnosis pending clinical assessment/);
+  assert.match(await value(p+'Output'),/Existing editable note/);
   await set(p+'CpgDxReviewed',true);await set(p+'PlanExtra','Review as arranged.');
   assert.equal(await page.locator('#'+p+'CpgDxReviewed').isChecked(),true);
   await page.locator('#'+p+'Generate').click();assert.match(await value(p+'Output'),/D4, critical phase, not in shock/);
@@ -63,7 +66,7 @@ const server=http.createServer((req,res)=>{
   await page.setViewportSize({width:1365,height:900});
   await page.locator('#clerkingFloatingReset').click();await page.waitForTimeout(100);
   assert.equal(await value(p+'CpgDxCertainty'),'');assert.equal(await value(p+'CpgDxEvidence'),'');assert.equal(await page.locator('#'+p+'CpgDxReviewed').isChecked(),false);
-  console.log(p+': blank/confirmed validation, review invalidation, manual copy, reset, desktop/mobile guide PASS');
+  console.log(p+': unconditional generation, incomplete diagnosis, review invalidation, manual copy, reset, desktop/mobile guide PASS');
  }
  assert.deepEqual(errors,[]);assert.ok(dialogs.every(d=>['Note copied.','Reset the current dengue clerking?'].includes(d)),JSON.stringify(dialogs));
  }finally{await browser.close();server.close();}
