@@ -116,8 +116,9 @@
     syncCategory(p);
     const s=state(p), r=C.fluid(s);
     if(!r.valid || r.canPrescribe === false || s.fluidState === "no-warning")return r;
-    const follow=s.fluidState === "warning"?"Reassess after 1 hour. Admit to hospital.":s.fluidState === "febrile"?`Oral intake ${s.oralHourly} mL/${s.oralPeriod === "24"?"24 hours":"hour"}. Reassess intake and hydration; reduce/stop IV as intake improves.`:"Reassess CCTVR, BP, HCT and UO. Emergency transfer; do not delay to finish infusion.";
-    return {...r,plan:`${/^IV /.test(r.headline)?r.headline:`IV ${r.headline.replace(/^Isotonic/,"isotonic")}`}. ${follow}`};
+    const reassessment=s.fluidState === "warning"?"Reassess after 1 hour.":s.fluidState === "febrile"?"Reassess hydration; reduce/stop IV as oral intake improves.":"Reassess CCTVR, BP, HCT & UO.";
+    const prescription=r.headline.replace(/^(?:IV )?isotonic crystalloid\b/i,"IV NS");
+    return {...r,plan:`${prescription}.`,reassessment};
   }
   function calculate(p){refresh(p);if(active(p) && el(cfg(p).result)){el(cfg(p).result).dataset.cpgCalculated="true";renderFluidResult(p);}}
   function oralAdvice(p) {
@@ -141,13 +142,13 @@
       if(/^TCA on .* for clinical review and repeat FBC\.$/.test(line)) return line.replace(" for clinical review and repeat FBC", "");
       if(line === "Arrange TCA for clinical review and repeat FBC.") return "TCA CM.";
       if(line === "Refer ED for further assessment and management.") return "Refer ED.";
-      if(line === "Notify dengue case via e-notification.") return "Notify dengue via e-notification.";
+      if(line === "Notify dengue case via e-notification.") return "Notify dengue.";
       if(line === "Dengue pamphlet / education and safety-net advice given.") return "Dengue advice / pamphlet given.";
       if(line === "Advise to monitor and eliminate stagnant water collections that may become Aedes breeding sites.") return "Eliminate Aedes breeding sites.";
       return line;
     });
     if(["outpatient","monitoring"].includes(option)) lines.push("Daily clinical review. Monitor intake and urine output.");
-    if(option === "refer") lines.push("Stabilise and inform receiving hospital. Send notes, results and fluid chart.");
+    if(option === "refer") lines.push("Inform receiving hospital; send notes, results & fluid chart.");
     lines.push(...C.medicationAdvice(s).map(line=>line.replace(/ \(CPG[^)]*\)\./g,".")));
     const override=val(`${p}CpgDispositionReason`).trim();
     if(override) lines.push(`Disposition rationale: ${override}`);
