@@ -258,7 +258,7 @@
   }
   function syncFluidDisplay(p) {
     const c=cfg(p), isAdult=adult(p), category=val(c.state);
-    el(`${p}CpgOralHourlyWrap`)?.classList.toggle("hidden",!isAdult || category!=="febrile");
+    el(`${p}CpgOralHourlyWrap`)?.classList.toggle("hidden",!isAdult || (!window.MedAssistDengueSymptoms?.enabled(p) && category!=="febrile"));
     el(`${p}CpgOralAdequacyWrap`)?.classList.toggle("hidden",!active(p) || !needsOralAdequacy(state(p)));
     const quota=el(`${p}CpgQuotaDetails`);
     if(quota)quota.classList.toggle("hidden",!active(p));
@@ -286,6 +286,7 @@
     if(resetting.has(p))return;
     const isAdult=adult(p), isActive=active(p), c=cfg(p), root=el(c.root);
     if(!root) return;
+    window.MedAssistDengueSymptoms?.refresh(p);
     root.dataset.cpgAdult=String(isAdult);
     root.querySelectorAll(".adult-cpg4").forEach(x=>x.classList.toggle("hidden",!isActive));
     const phaseWrap=el(`${p}Phase`)?.parentElement;
@@ -303,7 +304,7 @@
     syncCategory(p);
     root.querySelectorAll(".dengue-frequency-shell").forEach(shell=>{
       const hint=shell.querySelector(".dengue-frequency-threshold");if(!hint)return;
-      hint.textContent=!isAdult?"≥3 episodes in 24 hours is classified as a dengue warning sign.":shell.id.includes("Vomit")?"Adult CPG4: persistent vomiting >3 episodes/24 h; interpret near/in critical phase with the full clinical assessment.":"Loose stool: assess dehydration and oral tolerance; not a standalone adult dengue warning sign.";
+      hint.textContent=!isAdult?"≥3 episodes in 24 hours is classified as a dengue warning sign.":shell.id.includes("Vomit")?"Warning-sign criterion: >3 episodes/24 h. Interpret with illness phase.":"Loose stool: assess dehydration and oral tolerance; not a standalone adult dengue warning sign.";
     });
     const fluidLabel=el(p === "cl"?"clPlanSubOutFluid":"dfuPlanSubMonFluid")?.parentElement?.querySelector("span");
     if(fluidLabel) fluidLabel.textContent=isAdult?"Oral fluids 200 mL/hour while awake / individualised restriction":"Encourage adequate oral fluids according to age, weight and clinical tolerance";
@@ -317,7 +318,7 @@
     const warningSummary=a.warningSigns.length ? `Warning signs present: ${a.warningSigns.join("; ")}.`
       : pendingFindings.length ? `Findings recorded: ${pendingFindings.join("; ")}. Current phase: ${s.phase}. Review phase, perfusion, HCT trend and urine output before classifying these as warning signs.`
       : a.concerns.length ? "No warning-sign criteria recorded. Other symptoms / hydration concerns still need review before completing the diagnosis."
-      : on(`${p}CpgDxReviewed`) ? "No warning signs on the reviewed assessment." : "Review pending. Confirm the symptoms above and all 10 findings before completing the diagnosis.";
+      : on(`${p}CpgDxReviewed`) ? "No warning signs on the reviewed assessment." : "Review pending. Confirm the symptoms and warning-sign criteria before completing the diagnosis.";
     setText(`${p}CpgWarningSummary`,a.group === "C" ? `Severe dengue: ${a.urgent.join("; ")}. Urgent hospital referral.${a.warningSigns.length ? " " + warningSummary : ""}` : warningSummary);
     el(`${p}CpgDxEvidenceWrap`)?.classList.toggle("hidden",val(`${p}CpgDxCertainty`)!=="confirmed");
     el(`${p}CpgWarningDetail`)?.closest(".cpg-warning-detail")?.classList.toggle("hidden",!s.warningConfirmed);

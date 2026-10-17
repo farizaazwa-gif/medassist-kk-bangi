@@ -9,7 +9,7 @@ const server=http.createServer((req,res)=>{
  const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
  const file=path.join(root,pathname==='/'?'index.html':pathname);
  if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404).end();return;}
- const type=file.endsWith('.js')?'text/javascript':file.endsWith('.html')?'text/html':file.endsWith('.webp')?'image/webp':'text/plain';
+ const type=file.endsWith('.css')?'text/css':file.endsWith('.js')?'text/javascript':file.endsWith('.html')?'text/html':file.endsWith('.webp')?'image/webp':'text/plain';
  res.setHeader('Content-Type',type);res.end(fs.readFileSync(file));
 });
 (async()=>{
@@ -31,12 +31,22 @@ const server=http.createServer((req,res)=>{
   await set(p+'Weight',60);await set(p+'Height',170);await set(p+'Sex','Male');
   await set(p==='cl'?'clDxDay':'dfuDayIllness',5);await set(p+'CpgDxCertainty','suspected');
   assert.equal(await page.locator('#'+p+'CpgWorse').isVisible(),true);
-  assert.equal(await page.locator('#'+p+'CpgWarningPanel .cpg-warning-item').count(),10);
+  assert.equal(await page.locator('#'+p+'CpgWarningPanel .combined-warning').count(),10);
   assert.equal(await page.locator('#'+p+'CpgWarningPanel input[id$=CpgSevereBleeding]').count(),0);
   assert.match(await text(p+'CpgWarningSummary'),/Review pending/);
-  for(const [kind,target] of [['Vomiting',p+'VomitLast24'],['Mental',p+'Lethargy'],['Bleeding',p==='cl'?'clBleeding':'dfuBleedingTendencies']]){
-   await page.locator('#'+p+'CpgWarningPanel [data-cpg-history="'+target+'"]').click();
-   assert.equal(await page.evaluate(target=>{const x=document.getElementById(target);return x===document.activeElement || x.contains(document.activeElement)},target),true);
+  const shared=[p+'VomitLast24',p+'StoolLast24',p+'Lethargy',p+'Activity',p+'Urine',p==='cl'?'clDrink':'dfuOralIntake',p==='cl'?'clBleeding':'dfuBleedingTendencies',p==='cl'?'clAbdPain':'dfuAbdominalPain',p+'OtherSymptoms',p+'CpgOralHourly'];
+  for(const id of shared){
+   assert.equal(await page.locator('#'+id).count(),1,id+' must have one input');
+   assert.equal(await page.locator('#'+id).isVisible(),true,id+' must be visible');
+   assert.equal(await page.locator('#'+id).evaluate((e,p)=>e.closest('.dengue-combined')?.id===p+'CpgWarningPanel',p),true,id+' must be in the combined component');
+  }
+  assert.equal(await page.locator('#'+p+'CpgHistoryVomiting').isVisible(),false);
+  if(p==='cl'){
+   assert.equal(await page.locator('#clSymPoorIntake').isVisible(),false);
+   assert.equal(await page.locator('#clDrinkMl24').isVisible(),false);
+   await set('clSymCough',true);await set('clSymCoughOnset',2);await set('clSymCoughUnit','week');
+   assert.equal(await page.locator('#clTbScreening').isVisible(),true,'TB questions remain accessible');
+   await set('clSymCough',false);
   }
   await set(p+'VomitLast24',4);
   assert.match(await text(p+'CpgWarningSummary'),/Findings recorded: persistent vomiting.*febrile phase/);
@@ -45,13 +55,13 @@ const server=http.createServer((req,res)=>{
   assert.match(await text(p+'CpgWarningSummary'),/Warning signs present: persistent vomiting/);
   await set(p+'CpgNearCritical',false);
   await set(p+'Phase','critical phase');await set(p+'VomitLast24',3);await set(p+'StoolLast24',4);
-  assert.match(await text(p+'CpgHistoryVomiting'),/3 times.*does not meet/);
+  assert.equal(await value(p+'VomitLast24'),'3');
   assert.equal(await page.evaluate(p=>MedAssistDengueCpg4UI.warningData(p).positive.length,p),0);
   await set(p+'VomitLast24',4);assert.match(await page.evaluate(p=>MedAssistDengueCpg4UI.warningData(p).positive.join(' '),p),/persistent vomiting/);
-  assert.match(await text(p+'CpgHistoryVomiting'),/4 times.*meets >3/);
-  await set(p+'Lethargy','yes');assert.match(await text(p+'CpgHistoryMental'),/History: present/);await set(p+'Lethargy','no');
+  assert.equal(await value(p+'VomitLast24'),'4');
+  await set(p+'Lethargy','yes');assert.match(await text(p+'CpgWarningSummary'),/lethargy/);await set(p+'Lethargy','no');
   if(p==='cl')await set('clBleeding','yes');else await page.locator('#dfuBleedingTendencies input').first().check();
-  assert.match(await text(p+'CpgHistoryBleeding'),/bleeding recorded/);
+  assert.match(await text(p+'CpgWarningSummary'),/bleeding manifestation/);
   if(p==='cl')await set('clBleeding','no');else await page.locator('#dfuBleedingTendencies input').first().uncheck();
   await set(p+'VomitLast24',0);await set(p+'CpgWorse',true);assert.match(await page.evaluate(p=>MedAssistDengueCpg4UI.warningData(p).positive.join(' '),p),/no clinical improvement/);
   await set(p+'CpgWorse',false);await set(p+'CpgIntensePain',true);
@@ -87,7 +97,8 @@ const server=http.createServer((req,res)=>{
   await set(p+'PlanOption',p==='cl'?'outpatient':'monitoring');
   if(p==='dfu')await set('dfuNextTca','');
   await set(p+'CpgDxReviewed',true);await page.locator('#'+p+'Generate').click();
-  const note=await value(p+'Output');assert.match(note,/alert, comfortable.*crt < 2 sec, warm peripheries, good PV/);assert.match(note,/Repeat FBC CM\./);assert.doesNotMatch(note,/serial FBC as clinically indicated|loose stool[^\n]*\(DF warning sign\)|vomiting[^\n]*\(DF warning sign\)/i);
+  await set(p+'CpgOralHourly',1500);await set(p+'CpgOralPeriod','24');await set(p+'CpgDxReviewed',true);await page.locator('#'+p+'Generate').click();
+  const note=await value(p+'Output');assert.match(note,/alert, comfortable.*crt < 2 sec, warm peripheries, good PV/);assert.match(note,/1500 mL\/24 h/);assert.doesNotMatch(note,/no poor oral intake/);assert.match(note,/Repeat FBC CM\./);assert.doesNotMatch(note,/serial FBC as clinically indicated|loose stool[^\n]*\(DF warning sign\)|vomiting[^\n]*\(DF warning sign\)/i);
   await set(p+'Weight',72);await set(p+'Height',175);await set(p==='cl'?'dfState':'dfuFluidState','febrile');
   await set(p+'CpgOralHourly',1000);await set(p+'CpgOralPeriod','24');await set(p+'CpgOralAdequacy','inadequate');
   await page.locator('#'+calc).click();assert.match(await text(result),/68\.3 mL\/hour/);
@@ -96,7 +107,13 @@ const server=http.createServer((req,res)=>{
   if(p==='cl')assert.equal(await page.locator('#clWarningStatus').isVisible(),true);
   await set(p+'Weight',20);await set(p==='cl'?'dfState':'dfuFluidState','compensated');await page.locator('#'+calc).click();assert.match(await text(result),/200 mL/);
   await set(p+'Weight',25);assert.match(await text(result),/calculate again/);await page.locator('#'+calc).click();assert.match(await text(result),/250 mL/);
-  await set(group,'adult');assert.doesNotMatch(await text(result),/250 mL/);assert.equal(await page.locator('#dengueReferralToast').isVisible(),false);
+  await set(group,'adult');assert.doesNotMatch(await text(result),/250 mL/);
+  assert.equal(await page.locator('#'+p+'CpgWarningPanel .combined-warning').count(),10);
+  assert.equal(await value(p+'CpgOralHourly'),'1000');
+  if(p==='cl'){
+   await set('clDxType','Acute upper respiratory tract infection');assert.equal(await page.locator('#clCpgWarningPanel').isVisible(),false);assert.equal(await page.locator('#clSymHeadache').isVisible(),true);assert.equal(await page.locator('#clSymPoorIntake').isVisible(),true);
+   await set('clDxType','Dengue fever');assert.equal(await page.locator('#clDrink').evaluate(e=>Boolean(e.closest('.dengue-combined'))),true);assert.equal(await value('clCpgOralHourly'),'1000');
+  }assert.equal(await page.locator('#dengueReferralToast').isVisible(),false);
   await page.locator('#clerkingFloatingReset').click();await page.waitForTimeout(100);assert.equal(await value(p+'GeneralMental'),'alert');
   console.log(p,': warning criteria, concise plans, notes/referrals, fluids, paediatric switch and reset PASS');
  }

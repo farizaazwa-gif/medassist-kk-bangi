@@ -1,0 +1,42 @@
+.combined-suppressed{display:none!important}
+.cpg-warning-panel:not(.dengue-combined)>.combined-body,.dengue-combined>.combined-original{display:none!important}
+.dengue-combined .combined-cardinal-grid,.dengue-combined .combined-sign-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+.dengue-combined .combined-cardinal-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.dengue-combined .combined-field{min-width:0;margin:0!important;padding:11px!important;border:1px solid #d7e4df!important;border-radius:10px;background:#fff!important;grid-column:auto!important}
+.dengue-combined .combined-field.combined-warning{border-color:#d68787!important;background:#fff1f1!important}
+.dengue-combined .combined-warning>.check-item,.dengue-combined .combined-warning .dengue-frequency-shell{background:transparent!important;border:0!important}
+.dengue-combined .combined-warning .check-item{background:transparent;border-color:#e6b7b7}
+.dengue-combined .combined-warning>label,.dengue-combined .combined-warning .dengue-frequency-shell-title{color:#8f2525}
+.dengue-combined .combined-legend{display:flex;align-items:start;gap:7px;margin:8px 0 14px}
+.dengue-combined .combined-red-key{flex:0 0 12px;height:12px;background:#fff1f1;border:1px solid #d68787;border-radius:3px;margin-top:2px}
+.dengue-combined .combined-field label{margin-top:0}
+.dengue-combined .combined-field>.check-item{padding:0;border:0;background:transparent;min-height:0}
+.dengue-combined .combined-field .combined-qualifier{padding:8px 0 0;margin-top:8px;border:0;border-top:1px solid #e6b7b7;background:transparent;align-items:flex-start}
+.dengue-combined .cpg-warning-item .helper{margin:5px 0 0}
+.dengue-combined .combined-field .dengue-frequency-shell{margin:0!important;padding:0!important;border:0!important;background:transparent!important}
+.dengue-combined .combined-field .dengue-frequency-threshold{margin-top:6px}
+.dengue-combined .combined-field .dengue-frequency-row{grid-template-columns:1fr!important}
+.dengue-combined .combined-field .urine-inline-head{display:block}.dengue-combined .combined-field .urine-detail-grid{grid-template-columns:1fr}
+.dengue-combined .combined-field input:not([type=checkbox]):not([type=radio]),.dengue-combined .combined-field select{min-width:0;max-width:100%}
+.dengue-combined .combined-field .fluid-oral-measure{display:grid;grid-template-columns:minmax(0,1fr) minmax(105px,1.3fr);gap:6px}
+.dengue-combined .combined-field .fluid-oral{margin-top:9px;padding:0;border:0;background:none}
+.dengue-combined .combined-field .check-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.dengue-combined .combined-field .check-grid .check-item{padding:6px;font-size:inherit}
+.dengue-combined #clSymptoms{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+.dengue-combined #clSymptoms .symptom-row{display:block;min-height:0;padding:7px!important;border-radius:8px}
+.dengue-combined #clSymptoms .symptom-row .check-item{padding:3px!important;min-height:0}
+.dengue-combined #clSymptoms .symptom-row:not(.active) .symptom-onset{display:none}
+.dengue-combined #clSymptoms .symptom-onset{margin-top:6px;grid-template-columns:1fr 1fr!important}
+.dengue-combined .combined-associated textarea{min-height:65px}
+.dengue-combined .combined-phase{margin-top:16px;border-top:1px solid #d7e4df}
+.dengue-combined .cpg-phase-context{padding:10px 0;background:none;margin:0}
+.dengue-combined .combined-interpretation{margin:8px 0 12px;padding:9px 11px;border:1px solid #d7e4df;border-radius:8px}
+.dengue-combined .combined-interpretation summary{cursor:pointer;font-weight:600}
+.dengue-combined .cpg-clinical-interpretation{background:none;margin:0;padding:10px 0 0}.dengue-combined .cpg-clinical-interpretation>h3{display:none}
+@media(max-width:850px){.dengue-combined .combined-cardinal-grid{grid-template-columns:1fr}.dengue-combined .combined-sign-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.dengue-combined .combined-sign-grid,.dengue-combined #clSymptoms{grid-template-columns:1fr!important}}
+
+.dengue-combined .fluid-oral-measure input,.dengue-combined .fluid-oral-measure select{width:100%!important}
+.dengue-combined .combined-field.combined-bleeding{grid-column:1/-1!important}
+.dengue-combined .combined-bleeding .check-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+@media(max-width:600px){.dengue-combined .combined-bleeding .check-grid{grid-template-columns:1fr!important}}
