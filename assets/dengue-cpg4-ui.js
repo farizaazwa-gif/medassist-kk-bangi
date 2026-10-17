@@ -67,15 +67,22 @@
   }
   function diagnosis(p) {
     const s=state(p), a=C.assess(s), f=p === "dfu";
-    const day=val(f?"dfuDayIllness":"clDxDay") || "[ENTER]";
-    const warning=a.warningSigns.length?`with warning signs (${a.warningSigns.join(", ")})`:"without classified warning signs on current assessment";
+    const day=val(f?"dfuDayIllness":"clDxDay");
+    const reviewed=on(`${p}CpgDxReviewed`), certainty=val(`${p}CpgDxCertainty`);
     const detail=val(`${p}DxComorbid`) || (!f?val("clComorbid"):"");
-    const comorbid=s.comorbidity?`with comorbid ${detail || "[ENTER COMORBID]"}`:"no comorbid documented";
-    const severity=a.group === "C"?"Severe dengue":"Dengue fever";
+    const comorbid=s.comorbidity?`underlying ${detail}`:"NKMI";
+    const special=[s.pregnant?"pregnant":"",Number(s.age)>65?`age ${s.age} years`:"",s.obese?"obesity":""].filter(Boolean);
+    const severeDetails=[s.severeBleeding?"severe bleeding":"",s.leakRespiratory?"severe plasma leakage with respiratory distress":"",s.severeOrgan?`severe organ involvement${val(`${p}OrganFailureDetails`).trim()?`: ${val(`${p}OrganFailureDetails`).trim()}`:""}`:""].filter(Boolean);
+    const severity=a.group === "C"?`severe dengue${severeDetails.length?` (${severeDetails.join("; ")})`:""}`:a.warningSigns.length?`dengue with warning signs (${a.warningSigns.join(", ")})`:"dengue without warning signs";
     const phase=s.nearCritical && s.phase !== "critical phase"?`${s.phase}, approaching critical phase (clinician assessed)`:s.phase;
-    const text=`${severity}, day ${day} of illness, in ${phase}, ${warning}, ${s.haemo}, ${comorbid}`;
+    const haemodynamics=s.haemo === "haemodynamically stable"?"not in shock":s.haemo;
+    const complete=reviewed && ["suspected","confirmed"].includes(certainty) && Number.isInteger(C.number(day)) && Number(day)>0
+      && (certainty!=="confirmed" || val(`${p}CpgDxEvidence`).trim())
+      && (val(`${p}DxComorbidStatus`)!=="present" || s.comorbidity)
+      && (!s.severeOrgan || val(`${p}OrganFailureDetails`).trim());
+    const text=complete?`${certainty === "confirmed"?"Confirmed":"Suspected"} ${severity}, D${Number(day)}, ${phase}, ${haemodynamics}, ${[comorbid,...special].join(", ")}.`:"Complete the diagnosis details and clinical review above.";
     setValue(`${p}GeneratedDx`,text);
-    if(f){setValue("dfuDxDay",val("dfuDayIllness"));setValue("dfuWarningStatusDisplay",a.warningSigns.length?`Present — ${a.warningSigns.join(", ")}`:"No classified warning signs — reassess clinically");}
+    if(f){setValue("dfuDxDay",val("dfuDayIllness"));setValue("dfuWarningStatusDisplay",a.warningSigns.length?`Present — ${a.warningSigns.join(", ")}`:reviewed?"No warning signs":"Clinical review pending");}
     return text;
   }
   function syncWeight(p) {
@@ -168,6 +175,7 @@
   function recordLines(p) {
     if(!active(p)) return [];
     const lines=[], status=val(`${p}CpgVaccine`);
+    if(val(`${p}CpgDxCertainty`) === "confirmed" && val(`${p}CpgDxEvidence`).trim()) lines.push(`Dengue confirmation: ${val(`${p}CpgDxEvidence`).trim()}.`);
     const fluidState=state(p);
     if(needsOralAdequacy(fluidState) && ["adequate","inadequate"].includes(fluidState.oralAdequacy)) lines.push(`Oral fluid intake assessed as ${fluidState.oralAdequacy} for current needs; oral tolerance preserved.`);
     if(status) lines.push(`Dengue vaccination: ${status}${status === "yes"?`; date ${val(`${p}CpgVaccineDate`) || "not recorded"}`:""}.`);
@@ -187,6 +195,13 @@
   function validate(p) {
     if(!active(p)) return true;
     const s=state(p), a=C.assess(s), errors=[], option=val(`${p}PlanOption`);
+    const day=C.number(val(p === "cl"?"clDxDay":"dfuDayIllness"));
+    if(!Number.isInteger(day) || day<1) errors.push("Enter a positive whole-number day of illness.");
+    if(!["suspected","confirmed"].includes(val(`${p}CpgDxCertainty`))) errors.push("Select suspected or confirmed dengue.");
+    if(val(`${p}CpgDxCertainty`) === "confirmed" && !val(`${p}CpgDxEvidence`).trim()) errors.push("Record the laboratory evidence supporting confirmed dengue (including a prior result for follow-up).");
+    if(!on(`${p}CpgDxReviewed`)) errors.push("Review the clinical findings, phase, warning signs, perfusion and comorbidities; then confirm diagnosis review.");
+    if(val(`${p}DxComorbidStatus`) === "present" && !s.comorbidity) errors.push("Enter the recorded comorbidity or select No comorbid after assessment.");
+    if(s.severeOrgan && !val(`${p}OrganFailureDetails`).trim()) errors.push("Document the severe organ involvement.");
     if(s.warningConfirmed && a.warningSigns.length === 1 && a.warningSigns[0] === "warning signs confirmed by clinician") errors.push("Select the specific warning finding or document it under Additional warning sign / clinical rationale.");
     if(a.needsHospital && option !== "refer" && !val(`${p}CpgDispositionReason`).trim()) errors.push("Select ED referral or document the clinician's disposition rationale for the findings requiring hospital assessment.");
     if(on(`${p}CpgFluidRestricted`) && !val(`${p}CpgFluidRegimen`).trim()) errors.push("Document the individualised fluid regimen.");
@@ -261,6 +276,8 @@
   function resetStart(p) {resetting.add(p);}
   function resetEnd(p) {
     resetting.delete(p);setValue(`${p}CpgOralAdequacy`,"");setValue(`${p}CpgOralPeriod`,"1");clearFluidResult(p);
+    if(el(`${p}CpgDxReviewed`))el(`${p}CpgDxReviewed`).checked=false;
+    setValue(`${p}CpgDxCertainty`,"");setValue(`${p}CpgDxEvidence`,"");
     for(const id of [`${p}FluidWeightDetails`,`${p}CpgQuotaDetails`])if(el(id))el(id).open=false;
     setText(`${p}CpgValidation`,"");el(`${p}CpgValidation`)?.classList.add("hidden");
     if(adult(p))rates(p);refresh(p);
@@ -293,7 +310,8 @@
     syncFluidDisplay(p);
     if(!isActive) return;
     const s=state(p), a=C.assess(s);
-    setText(`${p}CpgWarningSummary`,a.warningSigns.length?`Warning signs: ${a.warningSigns.join("; ")}.`:a.concerns.length?"No classified warning signs. Review the recorded symptoms and illness phase.":"No warning signs recorded.");
+    setText(`${p}CpgWarningSummary`,a.warningSigns.length?`Warning signs: ${a.warningSigns.join("; ")}.`:a.concerns.length?"Review the recorded symptoms and illness phase before completing the diagnosis.":on(`${p}CpgDxReviewed`)?"No warning signs on the reviewed assessment.":"Clinical review pending — unchecked findings do not establish absence of warning signs.");
+    el(`${p}CpgDxEvidenceWrap`)?.classList.toggle("hidden",val(`${p}CpgDxCertainty`)!=="confirmed");
     el(`${p}CpgWarningDetail`)?.closest(".cpg-warning-detail")?.classList.toggle("hidden",!s.warningConfirmed);
     const mental=el(`${p}Lethargy`)?.parentElement?.querySelector("label");
     if(mental)mental.textContent="Lethargy / restlessness / irritability / confusion";
@@ -357,11 +375,13 @@
       },true);
       root.addEventListener("input",event=>{
         if(event.target.matches("textarea[id$='Output'],textarea[id$='GeneratedDx']"))return;
+        invalidateDiagnosisReview(p,event.target);
         invalidateOralAdequacy(p,event.target.id);
         if(!active(p))clearFluidResult(p,"Inputs changed — calculate again.");
         refresh(p);
       });
       root.addEventListener("change",event=>{
+        invalidateDiagnosisReview(p,event.target);
         invalidateOralAdequacy(p,event.target.id);
         if(event.target.id === c.group || !active(p))clearFluidResult(p,"Inputs changed — calculate again.");
         if(event.target.id === c.group && adult(p)) setValue(c.basis,"cpg");
@@ -376,6 +396,15 @@
       el(`${p}Reset`)?.addEventListener("click",()=>resetStart(p),true);
       el(`${p}Reset`)?.addEventListener("click",()=>resetEnd(p));
       if(adult(p)){rates(p);refresh(p);}
+    }
+  }
+  function invalidateDiagnosisReview(p,target) {
+    const id=target?.id || "";
+    // Plan, contact details and copied notes do not change the clinical assessment.
+    const clinical=/^(?:Age|Sex|Weight|Height|Phase|Haemo|Dx|DayIllness|Comorbid|Pregnancy|BloodThinner|Social|Drink|OralIntake|Urine|Hydration|Vomit|Vomiting|Stool|Diarrhoea|Abd|Lethargy|Seizure|Organ|Bleeding|Warning|Sob|SymSOB|General|GCS|Vital|QuickFbc|Combo|PA|CVS|Lungs|OtherSymptoms|OtherPhysical|Cpg)/;
+    if([`${p}CpgDxReviewed`,`${p}CpgDispositionReason`].includes(id))return;
+    if((id.startsWith(p) && clinical.test(id.slice(p.length))) || target?.closest?.(`#${p}BleedingTendencies`) || id === cfg(p).group){
+      if(el(`${p}CpgDxReviewed`))el(`${p}CpgDxReviewed`).checked=false;
     }
   }
   window.MedAssistDengueCpg4UI={state,active,referral,warningData,frequencyLine,diagnosis,syncWeight,rates,syncCategory,fluid,calculate,oralAdvice,adjustPlan,recordLines,validate,refresh,renderFluidResult,syncFluidDisplay,clearFluidResult,resetStart,resetEnd};

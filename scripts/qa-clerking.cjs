@@ -17,7 +17,7 @@ const server=http.createServer((req,res)=>{
  const browser=await chromium.launch({headless:true,executablePath:process.env.MEDASSIST_BROWSER,args:['--no-sandbox','--disable-dev-shm-usage','--disable-gpu']});
  try{
  const context=await browser.newContext({viewport:{width:1365,height:900},timezoneId:'Asia/Kuala_Lumpur',permissions:['clipboard-read','clipboard-write']});
- const page=await context.newPage(),errors=[],dialogs=[];
+ const page=await context.newPage(),errors=[],dialogs=[];page.setDefaultTimeout(8000);
  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',async d=>{dialogs.push(d.message());await d.accept();});
  await page.goto(`http://127.0.0.1:${server.address().port}`,{waitUntil:'networkidle'});
  await page.waitForFunction(()=>window.MedAssistDengueCpg4UI && document.querySelector('#clVomitLast24'));
@@ -29,26 +29,27 @@ const server=http.createServer((req,res)=>{
   await activate(p==='cl'?'new':'followup');
   const group=p==='cl'?'dfGroup':'dfuGroup',calc=p==='cl'?'dfCalculate':'dfuFluidCalculate',result=p==='cl'?'dfResult':'dfuFluidResult';
   await set(p+'Weight',60);await set(p+'Height',170);await set(p+'Sex','Male');
+  await set(p==='cl'?'clDxDay':'dfuDayIllness',5);await set(p+'CpgDxCertainty','suspected');
   assert.equal(await page.locator('#'+p+'CpgWorse').isVisible(),true);
   await set(p+'Phase','critical phase');await set(p+'VomitLast24',3);await set(p+'StoolLast24',4);
-  assert.doesNotMatch(await value(p+'GeneratedDx'),/with warning signs/);
-  await set(p+'VomitLast24',4);assert.match(await value(p+'GeneratedDx'),/with warning signs.*persistent vomiting/);
-  await set(p+'VomitLast24',0);await set(p+'CpgWorse',true);assert.match(await value(p+'GeneratedDx'),/no clinical improvement/);
+  assert.equal(await page.evaluate(p=>MedAssistDengueCpg4UI.warningData(p).positive.length,p),0);
+  await set(p+'VomitLast24',4);assert.match(await page.evaluate(p=>MedAssistDengueCpg4UI.warningData(p).positive.join(' '),p),/persistent vomiting/);
+  await set(p+'VomitLast24',0);await set(p+'CpgWorse',true);assert.match(await page.evaluate(p=>MedAssistDengueCpg4UI.warningData(p).positive.join(' '),p),/no clinical improvement/);
   await set(p+'CpgWorse',false);await set(p+'CpgIntensePain',true);
   assert.equal(await value(p==='cl'?'clAbdPain':'dfuAbdominalPain'),'yes');
   await set(p==='cl'?'clAbdPain':'dfuAbdominalPain','no');assert.equal(await page.locator('#'+p+'CpgIntensePain').isChecked(),false);
   await set(p+'CpgLowUrine',true);assert.equal(await value(p==='cl'?'clUrine':'dfuUrine'),p==='cl'?'yes':'reduced');
   await set(p==='cl'?'clUrine':'dfuUrine',p==='cl'?'no':'normal');assert.equal(await page.locator('#'+p+'CpgLowUrine').isChecked(),false);
-  for(const field of ['CpgPostural','CpgLiver','CpgAccumulation','CpgLabTrend']){await set(p+field,true);assert.match(await value(p+'GeneratedDx'),/with warning signs/);await set(p+field,false);}
+  for(const field of ['CpgPostural','CpgLiver','CpgAccumulation','CpgLabTrend']){await set(p+field,true);assert.ok(await page.evaluate(p=>MedAssistDengueCpg4UI.warningData(p).positive.length>0,p));await set(p+field,false);}
   await set(p+'Haemo','compensated shock');await page.locator('#'+calc).click();assert.match(await text(result),/600 mL over 1 hour/);
-  await set(p+'PlanOption','refer');await page.locator('#'+p+'Generate').click();
+  await set(p+'PlanOption','refer');await set(p+'CpgDxReviewed',true);await page.locator('#'+p+'Generate').click();
   assert.match(await value(p+'Output'),/General \/ perfusion examination: not documented/);
   assert.doesNotMatch(await value(p+'Output'),/warm peripheries|good PV|crt < 2 sec/);
   await page.locator('#'+p+'GeneralExamToggle').click();
   await set(p+'GeneralMental','restless');await set(p+'GeneralComfort','ill-looking');
   await set(p+'GeneralCrt','very prolonged crt');await set(p+'GeneralPeripheries','cold, clammy peripheries');await set(p+'GeneralPulseVolume','weak & thready PV');
   if(p==='cl')await set('clDrink','unable');
-  await page.locator('#'+p+'Generate').click();
+  await set(p+'CpgDxReviewed',true);await page.locator('#'+p+'Generate').click();
   for(const output of [p+'Output',p+'ReferralOutput']){
    assert.match(await value(output),/restless.*very prolonged crt.*cold, clammy peripheries.*weak & thready PV/);
    assert.match(await value(output),/IV NS 600 mL over 1 hour\. Started/);
@@ -65,7 +66,7 @@ const server=http.createServer((req,res)=>{
   if(p==='cl')await set('clDrink','able');
   await set(p+'PlanOption',p==='cl'?'outpatient':'monitoring');
   if(p==='dfu')await set('dfuNextTca','');
-  await page.locator('#'+p+'Generate').click();
+  await set(p+'CpgDxReviewed',true);await page.locator('#'+p+'Generate').click();
   const note=await value(p+'Output');assert.match(note,/alert, comfortable.*crt < 2 sec, warm peripheries, good PV/);assert.match(note,/Repeat FBC CM\./);assert.doesNotMatch(note,/serial FBC as clinically indicated|loose stool[^\n]*\(DF warning sign\)|vomiting[^\n]*\(DF warning sign\)/i);
   await set(p+'Weight',72);await set(p+'Height',175);await set(p==='cl'?'dfState':'dfuFluidState','febrile');
   await set(p+'CpgOralHourly',1000);await set(p+'CpgOralPeriod','24');await set(p+'CpgOralAdequacy','inadequate');

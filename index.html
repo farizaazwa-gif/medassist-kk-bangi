@@ -12,8 +12,8 @@
 <meta content="https://farizaazwa-gif.github.io/medassist-kk-bangi/" property="og:url"/>
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
-<script src="assets/dengue-cpg4.js?v=18.222.0"></script>
-<script src="assets/dengue-cpg4-ui.js?v=18.222.0"></script>
+<script src="assets/dengue-cpg4.js?v=18.223.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.223.0"></script>
 <script src="assets/clinical-safety.js"></script>
 <script defer src="assets/accessibility-hardening.js"></script>
 <style>
@@ -5977,6 +5977,12 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="helper" id="clCpgUrineDisplay"></div></details>
 <details><summary>Clinician disposition rationale / override</summary>
 <label for="clCpgDispositionReason">Required if the selected plan differs from a hospital-assessment recommendation</label><textarea id="clCpgDispositionReason" rows="2" placeholder="Clinical reassessment, agreed disposition and rationale"></textarea></details>
+<div class="grid two">
+<div><label for="clCpgDxCertainty">Dengue diagnosis status</label><select id="clCpgDxCertainty"><option value="">Select after assessment</option><option value="suspected">Suspected dengue</option><option value="confirmed">Confirmed dengue</option></select></div>
+<div class="hidden" id="clCpgDxEvidenceWrap"><label for="clCpgDxEvidence">Laboratory evidence reviewed</label><input id="clCpgDxEvidence" placeholder="e.g. NS1 positive 17/10/2026; include prior result if follow-up"/><div class="helper">Interpret the result with illness day and vaccination history. IgG alone does not establish acute dengue.</div></div>
+</div>
+<label class="check-item"><input id="clCpgDxReviewed" type="checkbox"/>Clinical assessment reviewed for this diagnosis</label>
+<div class="helper">Confirm phase, warning signs, shock status and comorbidities/special populations. Recheck after changing clinical findings. Group A/B1/B2/C guides management and is not added to the copied diagnosis.</div>
 <a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG4 rules, page references and interpretation notes</a>
 </div>
 <label>Generated diagnosis</label><textarea id="clGeneratedDx" readonly=""></textarea>
@@ -5998,6 +6004,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="fluid-calculate"><button class="btn primary" id="dfCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="clCpgOralAdequacyWrap"><label for="clCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="clCpgOralAdequacy" aria-describedby="clCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="clCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
+<p class="adult-cpg4"><a class="ref" id="clCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.223.0" target="_blank" rel="noopener">Panduan kiraan IV (CPG4)</a></p>
 <div class="result-box fluid-result" id="dfResult" aria-live="polite">Select a category, then calculate.</div>
 <details class="fluid-extra" id="clFluidWeightDetails"><summary>Weight used / clinician override</summary>
 <div class="grid two"><div><label for="dfBasis">Weight basis</label><select id="dfBasis">
@@ -6577,6 +6584,12 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="helper" id="dfuCpgUrineDisplay"></div></details>
 <details><summary>Clinician disposition rationale / override</summary>
 <label for="dfuCpgDispositionReason">Required if the selected plan differs from a hospital-assessment recommendation</label><textarea id="dfuCpgDispositionReason" rows="2" placeholder="Clinical reassessment, agreed disposition and rationale"></textarea></details>
+<div class="grid two">
+<div><label for="dfuCpgDxCertainty">Dengue diagnosis status</label><select id="dfuCpgDxCertainty"><option value="">Select after assessment</option><option value="suspected">Suspected dengue</option><option value="confirmed">Confirmed dengue</option></select></div>
+<div class="hidden" id="dfuCpgDxEvidenceWrap"><label for="dfuCpgDxEvidence">Laboratory evidence reviewed</label><input id="dfuCpgDxEvidence" placeholder="e.g. NS1 positive 17/10/2026; include prior result if follow-up"/><div class="helper">Interpret the result with illness day and vaccination history. IgG alone does not establish acute dengue.</div></div>
+</div>
+<label class="check-item"><input id="dfuCpgDxReviewed" type="checkbox"/>Clinical assessment reviewed for this diagnosis</label>
+<div class="helper">Confirm phase, warning signs, shock status and comorbidities/special populations. Recheck after changing clinical findings. Group A/B1/B2/C guides management and is not added to the copied diagnosis.</div>
 <a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG4 rules, page references and interpretation notes</a>
 </div>
 <label>Generated diagnosis</label>
@@ -6599,6 +6612,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="fluid-calculate"><button class="btn primary" id="dfuFluidCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="dfuCpgOralAdequacyWrap"><label for="dfuCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="dfuCpgOralAdequacy" aria-describedby="dfuCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="dfuCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
+<p class="adult-cpg4"><a class="ref" id="dfuCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.223.0" target="_blank" rel="noopener">Panduan kiraan IV (CPG4)</a></p>
 <div class="result-box fluid-result" id="dfuFluidResult" aria-live="polite">Select a category, then calculate.</div>
 <details class="fluid-extra" id="dfuFluidWeightDetails"><summary>Weight used / clinician override</summary>
 <div class="grid two"><div><label for="dfuFluidBasis">Weight basis</label><select id="dfuFluidBasis">
