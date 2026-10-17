@@ -31,7 +31,11 @@ const server=http.createServer((req,res)=>{
   await set(p+'Weight',60);await set(p+'Height',170);await set(p+'Sex','Male');
   await set(p==='cl'?'clDxDay':'dfuDayIllness',5);await set(p+'CpgDxCertainty','suspected');
   assert.equal(await page.locator('#'+p+'CpgWorse').isVisible(),true);
-  assert.equal(await page.locator('#'+p+'CpgWarningPanel .combined-warning').count(),10);
+  assert.equal(await page.locator('#'+p+'CpgWarningPanel .combined-warning').count(),8);
+  assert.equal(await page.locator('#'+p+'CpgWarningPanel input[id$=CpgLiver],#'+p+'CpgWarningPanel input[id$=CpgLabTrend]').count(),0);
+  assert.equal(await page.locator('#'+p+'CpgFbcTrend #'+p+'CpgLabTrend').isVisible(),true);
+  assert.equal(await page.locator('#'+p+'CpgFbcTrend #'+p+'SerialFbcCard').count(),1);
+  assert.match(await page.locator('#'+p+'CpgAccumulation').evaluate(e=>e.closest('.cpg-warning-item').textContent),/abdominal swelling.*breathlessness.*symptoms alone do not confirm/);
   assert.equal(await page.locator('#'+p+'CpgWarningPanel input[id$=CpgSevereBleeding]').count(),0);
   assert.match(await text(p+'CpgWarningSummary'),/Review pending/);
   const shared=[p+'VomitLast24',p+'StoolLast24',p+'Lethargy',p+'Activity',p+'Urine',p==='cl'?'clDrink':'dfuOralIntake',p==='cl'?'clBleeding':'dfuBleedingTendencies',p==='cl'?'clAbdPain':'dfuAbdominalPain',p+'OtherSymptoms',p+'CpgOralHourly'];
@@ -69,7 +73,17 @@ const server=http.createServer((req,res)=>{
   await set(p==='cl'?'clAbdPain':'dfuAbdominalPain','no');assert.equal(await page.locator('#'+p+'CpgIntensePain').isChecked(),false);
   await set(p+'CpgLowUrine',true);assert.equal(await value(p==='cl'?'clUrine':'dfuUrine'),p==='cl'?'yes':'reduced');
   await set(p==='cl'?'clUrine':'dfuUrine',p==='cl'?'no':'normal');assert.equal(await page.locator('#'+p+'CpgLowUrine').isChecked(),false);
+  const paToggle=page.locator(`.dengue-pe-picker input[data-target="${p}PA"]`);
+  await paToggle.check();
+  assert.equal(await page.locator('.dengue-pa-wrap #'+p+'CpgLiver').isVisible(),true);
+  await set(p+'PAHepatomegaly',true);assert.equal(await page.locator('#'+p+'CpgLiver').isChecked(),false,'hepatomegaly alone does not confirm >2 cm');
+  await set(p+'CpgLiver',true);assert.match(await page.evaluate(p=>denguePaFinding(p),p),/liver palpable >2 cm below costal margin/);
+  await set(p+'PAHepatomegaly',false);assert.equal(await page.locator('#'+p+'CpgLiver').isChecked(),false);
+  await set(p+'CpgLiver',true);assert.equal(await page.locator('#'+p+'PAHepatomegaly').isChecked(),true);
+  await paToggle.uncheck();assert.equal(await page.locator('#'+p+'CpgLiver').isChecked(),false,'unexamined abdomen must not retain >2 cm warning');
+  await paToggle.check();
   for(const field of ['CpgPostural','CpgLiver','CpgAccumulation','CpgLabTrend']){await set(p+field,true);assert.ok(await page.evaluate(p=>MedAssistDengueCpg4UI.warningData(p).positive.length>0,p));await set(p+field,false);}
+  await set(p+'CpgLiver',true);await set(p+'CpgLabTrend',true);
   await set(p+'Haemo','compensated shock');await page.locator('#'+calc).click();assert.match(await text(result),/600 mL over 1 hour/);
   assert.match(await text(p+'CpgWarningSummary'),/^Severe dengue: compensated shock/);assert.doesNotMatch(await text(p+'CpgWarningSummary'),/No warning signs/);
   await set(p+'PlanOption','refer');await set(p+'CpgDxReviewed',true);await page.locator('#'+p+'Generate').click();
@@ -85,12 +99,15 @@ const server=http.createServer((req,res)=>{
    assert.match(await value(output),/IV NS 600 mL over 1 hour\. Started/);
    assert.match(await value(output),/Reassess CCTVR, BP, HCT & UO\./);
    assert.match(await value(output),/Refer ED\./);
+   assert.match(await value(output),/liver palpable >2 cm below costal margin/);
+   assert.match(await value(output),/rising HCT with rapidly falling platelets/i);
    assert.doesNotMatch(await value(output),/isotonic crystalloid|Emergency transfer|do not delay to finish infusion/);
    assert.doesNotMatch(await value(output),/warm peripheries|good PV|crt < 2 sec|no poor oral intake/);
   }
   assert.match(await value(p+'Output'),/600 mL over 1 hour/);assert.match(await value(p+'ReferralOutput'),/600 mL over 1 hour/);
   assert.equal(await page.locator('#'+p+'Output').isEditable(),true);
   await set(p+'Haemo','decompensated shock');assert.match(await text(result),/1200 mL over 15/);
+  await set(p+'CpgLiver',false);await set(p+'PAHepatomegaly',false);await set(p+'CpgLabTrend',false);
   await set(p+'Haemo','haemodynamically stable');await set(p+'Phase','febrile phase');
   await set(p+'GeneralMental','alert');await set(p+'GeneralComfort','comfortable');await set(p+'GeneralCrt','crt < 2 sec');await set(p+'GeneralPeripheries','warm peripheries');await set(p+'GeneralPulseVolume','good PV');
   if(p==='cl')await set('clDrink','able');
@@ -104,17 +121,22 @@ const server=http.createServer((req,res)=>{
   await page.locator('#'+calc).click();assert.match(await text(result),/68\.3 mL\/hour/);
   await set(p+'CpgOralPeriod','1');await set(p+'CpgOralAdequacy','inadequate');assert.match(await text(result),/component: 0 mL\/hour/);
   await set(group,'paeds');assert.equal(await page.locator('#'+p+'CpgWarningPanel').isVisible(),false);assert.equal(await page.locator('#'+p+'Phase').isVisible(),true);
+  assert.equal(await page.locator('#'+p+'CpgLiver').isVisible(),false);assert.equal(await page.locator('#'+p+'CpgLabTrend').isVisible(),false);
+  assert.equal(await page.locator('#'+p+'PreviousLabOptionalCard #'+p+'SerialFbcCard').count(),1);
+  assert.equal(await page.locator('.dengue-pa-wrap #'+p+'PAHepatomegaly').count(),1);
   if(p==='cl')assert.equal(await page.locator('#clWarningStatus').isVisible(),true);
   await set(p+'Weight',20);await set(p==='cl'?'dfState':'dfuFluidState','compensated');await page.locator('#'+calc).click();assert.match(await text(result),/200 mL/);
   await set(p+'Weight',25);assert.match(await text(result),/calculate again/);await page.locator('#'+calc).click();assert.match(await text(result),/250 mL/);
   await set(group,'adult');assert.doesNotMatch(await text(result),/250 mL/);
-  assert.equal(await page.locator('#'+p+'CpgWarningPanel .combined-warning').count(),10);
+  assert.equal(await page.locator('#'+p+'CpgWarningPanel .combined-warning').count(),8);
+  assert.equal(await page.locator('#'+p+'CpgFbcTrend #'+p+'CpgLabTrend').isVisible(),true);
   assert.equal(await value(p+'CpgOralHourly'),'1000');
   if(p==='cl'){
    await set('clDxType','Acute upper respiratory tract infection');assert.equal(await page.locator('#clCpgWarningPanel').isVisible(),false);assert.equal(await page.locator('#clSymHeadache').isVisible(),true);assert.equal(await page.locator('#clSymPoorIntake').isVisible(),true);
    await set('clDxType','Dengue fever');assert.equal(await page.locator('#clDrink').evaluate(e=>Boolean(e.closest('.dengue-combined'))),true);assert.equal(await value('clCpgOralHourly'),'1000');
   }assert.equal(await page.locator('#dengueReferralToast').isVisible(),false);
   await page.locator('#clerkingFloatingReset').click();await page.waitForTimeout(100);assert.equal(await value(p+'GeneralMental'),'alert');
+  for(const key of ['CpgLiver','CpgLabTrend','CpgAccumulation','PAHepatomegaly'])assert.equal(await page.locator('#'+p+key).isChecked(),false);
   console.log(p,': warning criteria, concise plans, notes/referrals, fluids, paediatric switch and reset PASS');
  }
  // Copy reads the editable note, and resetting one clerking leaves the other intact.
@@ -138,7 +160,16 @@ const server=http.createServer((req,res)=>{
  console.log('DM / HPT / RME1 / IUCD / ADHD / Autism generation and editable outputs PASS');
  for(const width of [1365,390]){
   await page.setViewportSize({width,height:900});
-  for(const mode of ['new','followup']){await activate(mode);const p=mode==='new'?'cl':'dfu';await page.waitForFunction(p=>!!document.querySelector('#sectionQuickBarList [data-target-id="'+p+'CpgWarningPanel"]'),p);await page.locator('#'+p+'CpgPostural').scrollIntoViewIfNeeded();await page.waitForTimeout(200);assert.equal(await page.locator('#'+p+'CpgPostural').isVisible(),true);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2),true,'horizontal overflow '+mode+' '+width);await page.screenshot({path:path.join(artifactDir,`${mode}-${width}.png`)});await page.locator('#'+p+'CpgWarningPanel').screenshot({path:path.join(artifactDir,`warning-panel-${mode}-${width}.png`)});}
+  for(const mode of ['new','followup']){await activate(mode);const p=mode==='new'?'cl':'dfu';await page.waitForFunction(p=>!!document.querySelector('#sectionQuickBarList [data-target-id="'+p+'CpgWarningPanel"]'),p);await page.locator('#'+p+'CpgPostural').scrollIntoViewIfNeeded();await page.waitForTimeout(200);assert.equal(await page.locator('#'+p+'CpgPostural').isVisible(),true);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2),true,'horizontal overflow '+mode+' '+width);await page.screenshot({path:path.join(artifactDir,`${mode}-${width}.png`)});await page.locator('#'+p+'CpgWarningPanel').screenshot({path:path.join(artifactDir,`warning-panel-${mode}-${width}.png`)});
+   await page.locator(`.dengue-pe-picker input[data-target="${p}PA"]`).check();
+   await page.locator('#'+p+'PA').evaluate(e=>e.closest('.dengue-pa-wrap').scrollIntoView({block:'center'}));
+   await page.locator('#'+p+'CpgLiverExam').screenshot({path:path.join(artifactDir,`liver-exam-${mode}-${width}.png`)});
+   await set(p+'QuickFbcDate','2026-10-17');await set(p+'QuickFbcText','Hb 14.0\nHct 42\nWBC 3.0\nPlt 90');
+   assert.equal(await page.locator('#'+p+'CpgLabTrend').isChecked(),false,'single FBC does not auto-confirm the trend');
+   assert.equal(await page.locator('#'+p+'SerialFbcCard').isVisible(),true);
+   await page.locator('#'+p+'CpgFbcTrend').screenshot({path:path.join(artifactDir,`fbc-trend-${mode}-${width}.png`)});
+   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2),true,'objective fields overflow '+mode+' '+width);
+  }
   await page.evaluate(()=>window.showPage('nnj'));await page.waitForFunction(()=>document.querySelector('#sectionQuickBarList')?.textContent.includes('Quick TSB Assessment'));await page.locator('#nnjCordTsh').scrollIntoViewIfNeeded();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2),true,'NNJ overflow');await page.screenshot({path:path.join(artifactDir,`nnj-${width}.png`)});
  }
  assert.deepEqual(errors,[]);console.log('Desktop/mobile layouts and browser runtime PASS');

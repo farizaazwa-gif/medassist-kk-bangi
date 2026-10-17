@@ -374,6 +374,14 @@
         const status=el("clWarningStatus")?.parentElement;
         if(status){const slot=document.createElement("div");slot.id="clCpgOverrideSlot";status.before(slot);slot.appendChild(status);}
       }
+      const syncLiverFinding=event=>{
+        if(!active(p))return;
+        if(event.target.id === `${p}CpgLiver` && on(`${p}CpgLiver`))el(`${p}PAHepatomegaly`).checked=true;
+        if(event.target.id === `${p}PAHepatomegaly` && !on(`${p}PAHepatomegaly`))el(`${p}CpgLiver`).checked=false;
+        if(event.target.matches(`.dengue-pe-picker input[data-target="${p}PA"]`) && !event.target.checked)el(`${p}CpgLiver`).checked=false;
+      };
+      root.addEventListener("input",syncLiverFinding,true);
+      root.addEventListener("change",syncLiverFinding,true);
       root.addEventListener("change",event=>{
         if(!active(p))return;
         const pairs=[[`${p}CpgIntensePain`,p === "cl"?"clAbdPain":"dfuAbdominalPain","yes"],[`${p}CpgLowUrine`,p === "cl"?"clUrine":"dfuUrine",p === "cl"?"yes":"reduced"]];

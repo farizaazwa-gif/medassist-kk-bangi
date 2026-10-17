@@ -1,4 +1,11 @@
 .combined-suppressed{display:none!important}
+.cpg-objective-slot{margin-top:12px;min-width:0}
+.cpg-objective-slot>h3{margin:0 0 8px}
+.cpg-objective-slot .cpg-objective-warning{padding:11px!important;border:1px solid #d68787!important;border-radius:10px;background:#fff1f1!important;min-width:0}
+.cpg-objective-warning>.check-item{padding:0!important;border:0!important;background:transparent!important;color:#8f2525;min-height:0;align-items:flex-start}
+.cpg-objective-warning>.combined-qualifier{padding-top:8px!important;margin-top:8px;border-top:1px solid #e6b7b7!important}
+.cpg-objective-warning .helper{margin:6px 0 0}
+.cpg-objective-slot .serial-fbc-card{margin:0 0 10px}
 .cpg-warning-panel:not(.dengue-combined)>.combined-body,.dengue-combined>.combined-original{display:none!important}
 .dengue-combined .combined-cardinal-grid,.dengue-combined .combined-sign-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
 .dengue-combined .combined-cardinal-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
