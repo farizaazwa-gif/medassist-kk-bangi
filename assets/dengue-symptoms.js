@@ -9,7 +9,7 @@
     while(panel.firstChild)original.appendChild(panel.firstChild);
     const body=document.createElement('div');body.className='combined-body';
     body.innerHTML=`<h2>Symptoms &amp; daily assessment</h2>
-      <p class="helper combined-legend"><span class="combined-red-key" aria-hidden="true"></span>Red boxes contain warning-sign criteria. Record the findings present; interpret them with the illness phase.</p>
+      <p class="helper combined-legend"><span class="combined-red-key" aria-hidden="true"></span>Red boxes contain warning-sign criteria. Record the findings present; interpret them with the illness phase. Liver size is under Examination → Abdomen; HCT / platelet trend is under Investigations → FBC trend.</p>
       <h3>Oral intake, PU &amp; activity</h3><div class="combined-cardinal-grid" id="${p}CombinedCardinal"></div>
       <h3>Symptoms &amp; signs</h3><div class="combined-sign-grid" id="${p}CombinedSigns"></div>
       <div class="combined-associated" id="${p}CombinedAssociated"><h3>Other associated symptoms</h3></div>
@@ -52,11 +52,29 @@
     const stool=mark(host(f?'dfuLooseStoolFrequency':'clDiarrhoea'));
     if(f)bleeding.classList.add('combined-bleeding');
     for(const node of [vomiting,stool,pain,mental,bleeding])move(node,signs,'sign');
-    for(const key of ['CpgWorse','CpgAccumulation','CpgPostural','CpgLiver','CpgLabTrend']){
+    for(const key of ['CpgWorse','CpgAccumulation','CpgPostural']){
       const node=mark(byId(p+key).closest('.cpg-warning-item'),true);
       const span=node.querySelector('label span');if(span)span.textContent=span.textContent.replace(/^\d+\.\s*/,'');
       move(node,signs,'sign');
     }
+    // Objective findings stay beside their examination or investigation inputs.
+    // Reuse the same controls so warning interpretation and saved drafts agree.
+    const abdomen=byId(p+'PA').closest('.dengue-pa-wrap');
+    const liverSlot=document.createElement('div');liverSlot.id=p+'CpgLiverExam';liverSlot.className='adult-cpg4 cpg-objective-slot hidden';
+    abdomen.querySelector('.dengue-pa-additional-grid').before(liverSlot);
+    const liver=byId(p+'CpgLiver').closest('.cpg-warning-item');liver.classList.add('cpg-objective-warning');
+    const liverLabel=liver.querySelector('label');liverLabel.classList.add('combined-qualifier');
+    liverLabel.querySelector('span').textContent='Liver palpable >2 cm below costal margin';
+    const hep=byId(p+'PAHepatomegaly').closest('label');
+    // The general finding and its >2 cm qualifier share one examination box.
+    move(hep,liver,'hepatomegaly');move(liver,liverSlot,'liver examination');
+    const fbc=document.createElement('div');fbc.id=p+'CpgFbcTrend';fbc.className='adult-cpg4 cpg-objective-slot hidden';
+    fbc.innerHTML='<h3>FBC trend</h3>';
+    byId(p+'QuickFbcText').closest('.quick-fbc-card').appendChild(fbc);
+    move(byId(p+'SerialFbcCard'),fbc,'serial FBC');
+    const lab=byId(p+'CpgLabTrend').closest('.cpg-warning-item');lab.classList.add('cpg-objective-warning');
+    lab.querySelector('label span').textContent='Rising HCT with rapidly falling platelets';
+    move(lab,fbc,'FBC warning criterion');
     for(const id of [p+'Seizure',...(f?['dfuSob']:[])])move(mark(host(id)),signs,'sign');
     if(!f){
       // Oral tolerance is recorded once in clDrink, including its own duration.
@@ -98,7 +116,7 @@
       l.oldOral?.classList.toggle('combined-suppressed',active);
       l.labels.forEach(({node,old,text})=>{node.textContent=active?text:old;});
       if(active){
-        for(const {node,target,kind} of l.moves){if(kind==='panel')target.insertBefore(node,l.panelBefore);else target.appendChild(node);}
+        for(const {node,target,kind} of l.moves){if(kind==='panel')target.insertBefore(node,l.panelBefore);else if(kind==='hepatomegaly')target.prepend(node);else target.appendChild(node);}
         if(p==='cl' && !byId(p+'CpgOralHourly').value && byId('clDrinkMl24').value){
           byId(p+'CpgOralHourly').value=byId('clDrinkMl24').value;byId(p+'CpgOralPeriod').value='24';
         }
@@ -107,6 +125,11 @@
       }
     }
     if(active){
+      if(byId(p+'CpgLiver').checked){
+        byId(p+'PAHepatomegaly').checked=true;
+        const toggle=document.querySelector(`.dengue-pe-picker input[data-target="${p}PA"]`);
+        if(toggle && !toggle.checked){toggle.checked=true;toggle.dispatchEvent(new Event('change',{bubbles:true}));}
+      }
       const confirmed=p==='cl'?byId('clWarningStatus').value==='present':byId('dfuCpgWarningConfirmed').checked;
       if(confirmed)byId(p+'CombinedInterpretation').open=true;
     }
