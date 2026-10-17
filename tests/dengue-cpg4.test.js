@@ -149,7 +149,7 @@ test("stopping FBC requires every recovery check and an explicit clinician decis
 test("both adult workflows are wired to the shared CPG4 module and paediatric branch remains",()=>{
   for(const p of ["cl","dfu"]) {
     assert.match(html,new RegExp(`MedAssistDengueCpg4UI\\.fluid\\("${p}"\\)`));
-    assert.match(html,new RegExp(`MedAssistDengueCpg4UI\\.validate\\("${p}"\\)`));
+    assert.match(html,new RegExp(`MedAssistNoteEdits\\.write\\("${p}Output"`));
     assert.match(html,new RegExp(`MedAssistDengueCpg4UI\\.adjustPlan\\("${p}"`));
   }
   assert.match(html,/if\(value\(followUp\?"dfuGroup":"dfGroup"\)==="paeds"\) return denguePaediatricReferralAssessment\(mode\)/);

@@ -80,7 +80,7 @@
       && (certainty!=="confirmed" || val(`${p}CpgDxEvidence`).trim())
       && (val(`${p}DxComorbidStatus`)!=="present" || s.comorbidity)
       && (!s.severeOrgan || val(`${p}OrganFailureDetails`).trim());
-    const text=complete?`${certainty === "confirmed"?"Confirmed":"Suspected"} ${severity}, D${Number(day)}, ${phase}, ${haemodynamics}, ${[comorbid,...special].join(", ")}.`:"Complete the diagnosis details and clinical review above.";
+    const text=complete?`${certainty === "confirmed"?"Confirmed":"Suspected"} ${severity}, D${Number(day)}, ${phase}, ${haemodynamics}, ${[comorbid,...special].join(", ")}.`:"Diagnosis pending clinical assessment.";
     setValue(`${p}GeneratedDx`,text);
     if(f){setValue("dfuDxDay",val("dfuDayIllness"));setValue("dfuWarningStatusDisplay",a.warningSigns.length?`Present — ${a.warningSigns.join(", ")}`:reviewed?"No warning signs":"Clinical review pending");}
     return text;

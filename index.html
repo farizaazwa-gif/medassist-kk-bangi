@@ -12,11 +12,12 @@
 <meta content="https://farizaazwa-gif.github.io/medassist-kk-bangi/" property="og:url"/>
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
-<script src="assets/dengue-cpg4.js?v=18.230.0"></script>
-<script src="assets/dengue-cpg4-ui.js?v=18.230.0"></script>
-<script src="assets/dengue-symptoms.js?v=18.230.0"></script>
-<link rel="stylesheet" href="assets/dengue-symptoms.css?v=18.230.0"/>
+<script src="assets/dengue-cpg4.js?v=18.231.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.231.0"></script>
+<script src="assets/dengue-symptoms.js?v=18.231.0"></script>
+<link rel="stylesheet" href="assets/dengue-symptoms.css?v=18.231.0"/>
 <script src="assets/clinical-safety.js"></script>
+<script src="assets/note-edits.js?v=18.231.0"></script>
 <script defer src="assets/accessibility-hardening.js"></script>
 <style>
 :root{
@@ -6026,7 +6027,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="fluid-calculate"><button class="btn primary" id="dfCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="clCpgOralAdequacyWrap"><label for="clCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="clCpgOralAdequacy" aria-describedby="clCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="clCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
-<p class="adult-cpg4"><a class="ref" id="clCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.230.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
+<p class="adult-cpg4"><a class="ref" id="clCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.231.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
 <div class="result-box fluid-result" id="dfResult" aria-live="polite">Select a category, then calculate.</div>
 <details class="fluid-extra" id="clFluidWeightDetails"><summary>Weight used / clinician override</summary>
 <div class="grid two"><div><label for="dfBasis">Weight basis</label><select id="dfBasis">
@@ -6135,12 +6136,12 @@ html,body{max-width:100%;overflow-x:hidden}
 </div></div>
 <div class="card">
 <h2>Generated clinical note</h2>
-<div class="helper" style="margin-bottom:8px">Editable after generation. Regenerating the note will replace manual edits.</div>
+<div class="helper" id="clOutputHint" style="margin-bottom:8px">Editable. Manual additions and edits are kept when you generate again.</div>
 <textarea class="output" id="clOutput" spellcheck="false"></textarea>
 </div>
 <div class="card hidden" id="clReferralWrap">
 <h2>Generated ED Referral Letter</h2>
-<div class="helper" style="margin-bottom:8px">Generated automatically for the ED referral pathway. Editable after generation; regenerating will replace manual edits.</div>
+<div class="helper" id="clReferralOutputHint" style="margin-bottom:8px">Editable. Manual additions and edits are kept when you generate again.</div>
 <textarea class="output nnj-referral-output" id="clReferralOutput" spellcheck="false"></textarea>
 </div>
 <div class="actions clerking-back-top-wrap"><button class="btn secondary clerking-back-top" type="button">↑ Back to top</button></div></div>
@@ -6643,7 +6644,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="fluid-calculate"><button class="btn primary" id="dfuFluidCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="dfuCpgOralAdequacyWrap"><label for="dfuCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="dfuCpgOralAdequacy" aria-describedby="dfuCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="dfuCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
-<p class="adult-cpg4"><a class="ref" id="dfuCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.230.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
+<p class="adult-cpg4"><a class="ref" id="dfuCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.231.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
 <div class="result-box fluid-result" id="dfuFluidResult" aria-live="polite">Select a category, then calculate.</div>
 <details class="fluid-extra" id="dfuFluidWeightDetails"><summary>Weight used / clinician override</summary>
 <div class="grid two"><div><label for="dfuFluidBasis">Weight basis</label><select id="dfuFluidBasis">
@@ -6752,12 +6753,12 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="card">
 <h2>Generated clinical note</h2>
-<div class="helper" style="margin-bottom:8px">Editable after generation. Regenerating the note will replace manual edits.</div>
+<div class="helper" id="dfuOutputHint" style="margin-bottom:8px">Editable. Manual additions and edits are kept when you generate again.</div>
 <textarea class="output" id="dfuOutput" spellcheck="false"></textarea>
 </div>
 <div class="card hidden" id="dfuReferralWrap">
 <h2>Generated ED Referral Letter</h2>
-<div class="helper" style="margin-bottom:8px">Review clinically before copy-paste. Editable after generation; regenerating will replace manual edits.</div>
+<div class="helper" id="dfuReferralOutputHint" style="margin-bottom:8px">Editable. Manual additions and edits are kept when you generate again.</div>
 <textarea class="output" id="dfuReferralOutput" spellcheck="false"></textarea>
 </div>
 <div class="actions clerking-back-top-wrap"><button class="btn secondary clerking-back-top" type="button">↑ Back to top</button></div></div>
@@ -10822,9 +10823,11 @@ function getDenguePlanLines(){
     if(on("clPlanSubReferFluid")){
       const fluid=getDengueFluidInstruction();
       const ivdTime=value("clIvdStartTime")||"[ENTER TIME]";
-      const fluidPlan=fluid.plan.replace(/\.$/,"");
-      lines.push(`${fluidPlan}. Started ${ivdTime}.`);
-      if(fluid.reassessment) lines.push(fluid.reassessment);
+      if(fluid.valid && fluid.canPrescribe!==false && fluid.plan){
+        const fluidPlan=fluid.plan.replace(/\.$/,"");
+        lines.push(`${fluidPlan}. Started ${ivdTime}.`);
+        if(fluid.reassessment) lines.push(fluid.reassessment);
+      }else lines.push("IV fluid prescription pending assessment.");
     }
     if(on("clPlanSubReferEd")) lines.push("Refer ED for further assessment and management.");
     if(on("clPlanSubReferNotify")) lines.push("Notify dengue case via e-notification.");
@@ -10901,20 +10904,16 @@ function renderDenguePlanPreview(){
       : "<strong>ED referral selected.</strong> Complete the form, then click Generate clinical note + referral letter.";
   }else if(option==="antibiotic"){
     $("clReferralStatus").textContent=
-      "Option 3 selected. Complete the antimicrobial prescription before generating the note.";
-    $("clReferralOutput").value="";
+      "Option 3 selected. Treatment details can be added at any time.";
   }else if(option==="supportive"){
     $("clReferralStatus").textContent=
       "Option 4 selected. Supportive fever / symptomatic plan; adjust the ticked items as needed.";
-    $("clReferralOutput").value="";
   }else if(option==="others"){
     $("clReferralStatus").textContent=
       "Option 5 selected. Enter your own plan in the free-text field.";
-    $("clReferralOutput").value="";
   }else{
     $("clReferralStatus").textContent=
       "Outpatient plan selected. No ED referral letter required.";
-    $("clReferralOutput").value="";
   }
 }
 
@@ -12086,7 +12085,7 @@ function buildDengueClinicalNote(planLines){
 }
 
 function generateDengueReferralLetter(planLines){
-  if(!window.MedAssistDengueCpg4UI.validate("cl")) return "";
+  window.MedAssistNoteEdits.begin("cl");
   const clinicalNote=buildDengueClinicalNote(planLines);
 
   const referral=[
@@ -12095,7 +12094,7 @@ function generateDengueReferralLetter(planLines){
     "Kindly see the patient and do the needful. Thank you"
   ].join("\n\n");
 
-  $("clReferralOutput").value=referral;
+  window.MedAssistNoteEdits.write("clReferralOutput",referral);
   $("clReferralWrap").classList.remove("hidden");
   $("clGenerateReferral").classList.remove("hidden");
   $("clCopyReferral").classList.remove("hidden");
@@ -12105,12 +12104,10 @@ function generateDengueReferralLetter(planLines){
 }
 
 function generateDengueOutputs(options={}){
-  if(!window.MedAssistDengueCpg4UI.validate("cl")) return "";
-  if(!window.validateCustomPlan("clPlanOption","clPlanExtra")) return;
-  if(!window.validatePlanAntibiotic(window.DENGUE_NEW_PLAN_ABX_CONFIG)) return;
+  window.MedAssistNoteEdits.begin("cl");
   const planLines=getDenguePlanLines();
 
-  $("clOutput").value=buildDengueClinicalNote(planLines);
+  window.MedAssistNoteEdits.write("clOutput",buildDengueClinicalNote(planLines));
 
   if(value("clPlanOption")==="refer"){
     generateDengueReferralLetter(planLines);
@@ -12120,7 +12117,6 @@ function generateDengueOutputs(options={}){
       },50);
     }
   }else{
-    $("clReferralOutput").value="";
     $("clReferralWrap").classList.add("hidden");
     $("clGenerateReferral").classList.add("hidden");
     $("clCopyReferral").classList.add("hidden");
@@ -12261,10 +12257,9 @@ $("clCopyReferral").addEventListener("click",async()=>{
 });
 
 function invalidateDengueReferral(event){
-  if(event.target.id==="clReferralOutput") return;
+  if(["clOutput","clReferralOutput"].includes(event.target.id)) return;
   if(!value("clReferralOutput")) return;
 
-  $("clReferralOutput").value="";
   $("clReferralWrap").classList.add("hidden");
   $("clCopyReferral").classList.add("hidden");
 
@@ -12292,6 +12287,7 @@ syncDengueMcUi();
 renderDenguePlanPreview();
 
 function resetDengueNewCase(){
+  window.MedAssistNoteEdits.clear("cl");
   const root=$("dengueNewCaseTemplate");
   root.querySelectorAll("input").forEach(input=>{
     if(input.type==="checkbox"||input.type==="radio") input.checked=input.defaultChecked;
@@ -15977,9 +15973,11 @@ function followUpPlanLines(){
     if(on("dfuPlanSubReferFluid")){
       const fluid=getDengueFollowUpFluidInstruction();
       const ivdTime=fv("dfuIvdStartTime")||"[ENTER TIME]";
-      const fluidPlan=(fluid.valid?fluid.plan:fluid.display).replace(/\.$/,"");
-      lines.push(`${fluidPlan}. Started ${ivdTime}.`);
-      if(fluid.reassessment) lines.push(fluid.reassessment);
+      if(fluid.valid && fluid.canPrescribe!==false && fluid.plan){
+        const fluidPlan=fluid.plan.replace(/\.$/,"");
+        lines.push(`${fluidPlan}. Started ${ivdTime}.`);
+        if(fluid.reassessment) lines.push(fluid.reassessment);
+      }else lines.push("IV fluid prescription pending assessment.");
     }
     if(on("dfuPlanSubReferEd")) lines.push("Refer ED for further assessment and management.");
   }else if(option==="monitoring"){
@@ -16061,17 +16059,14 @@ function renderDengueFollowUpPlan(){
       :"<strong>ED referral selected.</strong> Complete the form and generate the note.";
   }else if(option==="antibiotic"){
     f$("dfuReferralStatus").textContent=
-      "Option 3 selected. Complete the antimicrobial prescription before generating the note.";
-    f$("dfuReferralOutput").value="";
+      "Option 3 selected. Treatment details can be added at any time.";
     f$("dfuReferralWrap").classList.add("hidden");
   }else if(option==="others"){
     f$("dfuReferralStatus").textContent=
       "Option 4 selected. Enter your own plan in the free-text field.";
-    f$("dfuReferralOutput").value="";
     f$("dfuReferralWrap").classList.add("hidden");
   }else{
     f$("dfuReferralStatus").textContent="";
-    f$("dfuReferralOutput").value="";
     f$("dfuReferralWrap").classList.add("hidden");
   }
 }
@@ -16231,8 +16226,7 @@ function buildDengueFollowUpClinicalNote(){
 }
 
 function generateDengueFollowUpReferral(){
-  if(!window.MedAssistDengueCpg4UI.validate("dfu")) return "";
-  if(!window.validatePlanAntibiotic(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG)) return "";
+  window.MedAssistNoteEdits.begin("dfu");
   const note=buildDengueFollowUpClinicalNote();
   const referral=[
     "Dear colleague, thank you for seeing this pt",
@@ -16240,7 +16234,7 @@ function generateDengueFollowUpReferral(){
     "Kindly see the patient and do the needful. Thank you"
   ].join("\n\n");
 
-  f$("dfuReferralOutput").value=referral;
+  window.MedAssistNoteEdits.write("dfuReferralOutput",referral);
   f$("dfuReferralWrap").classList.remove("hidden");
   f$("dfuGenerateReferral").classList.remove("hidden");
   f$("dfuCopyReferral").classList.remove("hidden");
@@ -16249,10 +16243,8 @@ function generateDengueFollowUpReferral(){
 }
 
 function generateDengueFollowUp(){
-  if(!window.MedAssistDengueCpg4UI.validate("dfu")) return "";
-  if(!window.validateCustomPlan("dfuPlanOption","dfuPlanExtra")) return;
-  if(!window.validatePlanAntibiotic(window.DENGUE_FOLLOWUP_PLAN_ABX_CONFIG)) return;
-  f$("dfuOutput").value=buildDengueFollowUpClinicalNote();
+  window.MedAssistNoteEdits.begin("dfu");
+  window.MedAssistNoteEdits.write("dfuOutput",buildDengueFollowUpClinicalNote());
   if(fv("dfuPlanOption")==="refer") generateDengueFollowUpReferral();
   f$("dfuOutput").scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -16268,8 +16260,7 @@ async function copyFollowUpField(id,button){
 }
 
 function invalidateFollowUpReferral(event){
-  if(event.target.id==="dfuReferralOutput"||!fv("dfuReferralOutput")) return;
-  f$("dfuReferralOutput").value="";
+  if(["dfuOutput","dfuReferralOutput"].includes(event.target.id)||!fv("dfuReferralOutput")) return;
   f$("dfuReferralWrap").classList.add("hidden");
   f$("dfuCopyReferral").classList.add("hidden");
   if(fv("dfuPlanOption")==="refer"){
@@ -16278,6 +16269,7 @@ function invalidateFollowUpReferral(event){
 }
 
 function resetDengueFollowUp(){
+  window.MedAssistNoteEdits.clear("dfu");
   f$("dengueFollowUpTemplate").querySelectorAll("input").forEach(input=>{
     if(input.type==="checkbox") input.checked=input.defaultChecked;
     else input.value=input.defaultValue||"";
@@ -19254,6 +19246,9 @@ document.addEventListener("keydown",event=>{
   function resetContainer(type) {
     const container = containerFor(type);
     if (!container) return;
+
+    if(type === "dengue-new") window.MedAssistNoteEdits.clear("cl");
+    if(type === "dengue-followup") window.MedAssistNoteEdits.clear("dfu");
 
     allDraftFields(container).forEach(field => {
       if (field.type === "checkbox" || field.type === "radio") {
