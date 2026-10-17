@@ -310,7 +310,15 @@
     syncFluidDisplay(p);
     if(!isActive) return;
     const s=state(p), a=C.assess(s);
-    setText(`${p}CpgWarningSummary`,a.warningSigns.length?`Warning signs: ${a.warningSigns.join("; ")}.`:a.concerns.length?"Review the recorded symptoms and illness phase before completing the diagnosis.":on(`${p}CpgDxReviewed`)?"No warning signs on the reviewed assessment.":"Clinical review pending — unchecked findings do not establish absence of warning signs.");
+    setText(`${p}CpgHistoryVomiting`,s.vomit === null ? "History: count not recorded" : !Number.isInteger(s.vomit) || s.vomit < 0 ? "History: check the episode count" : `History: ${s.vomit} times/24 h${s.vomit > 3 ? " — meets >3 criterion" : " — does not meet >3 criterion"}`);
+    setText(`${p}CpgHistoryMental`,s.lethargy ? "History: present" : "History: No — confirm on review");
+    setText(`${p}CpgHistoryBleeding`,s.bleeding ? "History: bleeding recorded" : "History: no bleeding selected — confirm on review");
+    const pendingFindings=a.recordedWarningFindings || [];
+    const warningSummary=a.warningSigns.length ? `Warning signs present: ${a.warningSigns.join("; ")}.`
+      : pendingFindings.length ? `Findings recorded: ${pendingFindings.join("; ")}. Current phase: ${s.phase}. Review phase, perfusion, HCT trend and urine output before classifying these as warning signs.`
+      : a.concerns.length ? "No warning-sign criteria recorded. Other symptoms / hydration concerns still need review before completing the diagnosis."
+      : on(`${p}CpgDxReviewed`) ? "No warning signs on the reviewed assessment." : "Review pending. Confirm the symptoms above and all 10 findings before completing the diagnosis.";
+    setText(`${p}CpgWarningSummary`,a.group === "C" ? `Severe dengue: ${a.urgent.join("; ")}. Urgent hospital referral.${a.warningSigns.length ? " " + warningSummary : ""}` : warningSummary);
     el(`${p}CpgDxEvidenceWrap`)?.classList.toggle("hidden",val(`${p}CpgDxCertainty`)!=="confirmed");
     el(`${p}CpgWarningDetail`)?.closest(".cpg-warning-detail")?.classList.toggle("hidden",!s.warningConfirmed);
     const mental=el(`${p}Lethargy`)?.parentElement?.querySelector("label");
@@ -388,6 +396,12 @@
         if(adult(p) && [c.state,c.group].includes(event.target.id)) rates(p);
         refresh(p);
       });
+      root.querySelectorAll("[data-cpg-history]").forEach(button=>button.addEventListener("click",()=>{
+        const target=el(button.dataset.cpgHistory);if(!target)return;
+        for(let parent=target.parentElement;parent;parent=parent.parentElement)if(parent.tagName==="DETAILS")parent.open=true;
+        const field=target.matches("input,select,textarea")?target:target.querySelector("input,select,textarea");
+        target.scrollIntoView({block:"center"});field?.focus({preventScroll:true});
+      }));
       el(`${p}FluidReviewAssessment`)?.addEventListener("click",()=>{
         const field=el(`${p}Phase`);if(!field)return;
         for(let parent=field.parentElement;parent;parent=parent.parentElement)if(parent.tagName==="DETAILS")parent.open=true;
