@@ -124,6 +124,9 @@
     if (!["no-warning","febrile","warning","compensated","decompensated"].includes(category)) return fail("Select a valid adult fluid category.");
     const declared = s.haemo === "compensated shock" ? "compensated" : s.haemo === "decompensated shock" ? "decompensated" : null;
     if ((declared && category !== declared) || (["compensated","decompensated"].includes(category) && category !== declared)) return fail("Reconcile haemodynamic status and fluid category before prescribing. Shock requires emergency referral.");
+    // Severe bleeding/organ impairment/respiratory distress require their own hospital
+    // assessment (Table 6 p28; chapter 9.4); do not apply a routine B2 infusion.
+    if (!declared && assess(s).group === "C") return fail("Severe dengue without recorded shock: urgent hospital assessment. Individualise fluid treatment for bleeding, organ involvement or respiratory distress; no automatic B2 / maintenance prescription.");
     if (!declared && s.phase === "recovery phase") return fail("Recovery phase: reassess and reduce/stop unnecessary IV fluid; no automatic critical-phase regimen.");
     if (category === "no-warning" && assess(s).needsHospital) return fail("Recorded findings require hospital assessment. Review the phase, warning signs, haemodynamics and oral intake before choosing a fluid pathway; this result does not establish outpatient suitability.");
     if (category === "no-warning") return fail(s.oral === "unable" || s.dehydrated

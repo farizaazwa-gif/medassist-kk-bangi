@@ -56,6 +56,17 @@ test("severe organ involvement, severe bleeding and leakage with distress use Gr
     assert.equal(C.assess({...base,[key]:true}).group,"C");
   assert.equal(C.assess({...base,seizure:true}).level,"red");
 });
+test('non-shock Group C never inherits a routine B2 or febrile infusion',()=>{
+  for(const key of ['severeOrgan','severeBleeding','leakRespiratory']){
+    for(const fluidState of ['no-warning','febrile','warning']){
+      const r=C.fluid({...base,[key]:true,phase:fluidState==='warning'?'critical phase':'febrile phase',vomit:5,oral:'unable',oralHourly:0,fluidState,rate:3});
+      assert.equal(r.valid,false);assert.match(r.display,/Severe dengue without recorded shock/);
+    }
+    const r=C.fluid({...base,[key]:true,haemo:'compensated shock',fluidState:'compensated'});
+    assert.equal(r.valid,true);assert.match(r.headline,/600 mL/);
+  }
+  assert.equal(C.fluid({...base,phase:'critical phase',vomit:4,oral:'unable',fluidState:'warning',rate:3}).valid,true);
+});
 test("mild abdominal pain and small lab changes do not automatically become formal warning signs",()=>{
   const a=C.assess({...base,phase:"critical phase",abdominalPain:true,labTrend:true});
   assert.equal(a.warningSigns.length,0);
