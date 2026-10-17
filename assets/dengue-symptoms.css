@@ -6,6 +6,22 @@
 .cpg-objective-warning>.combined-qualifier{padding-top:8px!important;margin-top:8px;border-top:1px solid #e6b7b7!important}
 .cpg-objective-warning .helper{margin:6px 0 0}
 .cpg-objective-slot .serial-fbc-card{margin:0 0 10px}
+.cpg-referral-panel .referral-compact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.cpg-referral-panel .referral-compact-group{min-width:0}
+.cpg-referral-panel .referral-compact-group h3{margin:3px 0 7px;font-size:inherit}
+.cpg-referral-panel .referral-compact-group>.check-item{border:0!important;background:transparent!important;min-height:0!important;padding:6px 0!important;margin:0!important;align-items:flex-start}
+.cpg-referral-panel .referral-compact-group small{font-size:inherit;font-weight:400}
+.cpg-referral-panel .referral-compact-note{margin:10px 0 0!important}
+.dengue-combined .combined-fluid-title{display:block;color:#8f2525}
+.dengue-combined .combined-fluid-symptoms{margin:8px 0}
+.dengue-combined .combined-fluid-symptoms>.helper{margin-bottom:5px}
+.dengue-combined .combined-fluid-symptoms .check-item{padding:5px 0!important;border:0!important;margin:0!important;background:transparent!important;min-height:0!important;align-items:flex-start}
+.dengue-combined .combined-fluid-sob{padding:0!important;margin:5px 0 0!important;border:0!important;background:transparent!important;min-width:0}
+.dengue-combined .combined-fluid-sob>label{margin:0 0 5px}
+.dengue-combined .combined-fluid-sob:not(.active) .symptom-onset{display:none}
+.dengue-combined .combined-fluid-sob .symptom-onset{display:grid;grid-template-columns:1fr 1fr!important;gap:6px;margin-top:6px}
+.dengue-combined .combined-field>.combined-fluid-confirm{border-top:1px solid #e6b7b7!important;padding-top:9px!important;margin-top:9px!important;color:#8f2525}
+@media(max-width:600px){.cpg-referral-panel .referral-compact-grid{grid-template-columns:1fr;gap:8px}}
 .cpg-warning-panel:not(.dengue-combined)>.combined-body,.dengue-combined>.combined-original{display:none!important}
 .dengue-combined .combined-cardinal-grid,.dengue-combined .combined-sign-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
 .dengue-combined .combined-cardinal-grid{grid-template-columns:repeat(3,minmax(0,1fr))}

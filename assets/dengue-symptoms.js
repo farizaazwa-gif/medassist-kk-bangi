@@ -75,7 +75,10 @@
     const lab=byId(p+'CpgLabTrend').closest('.cpg-warning-item');lab.classList.add('cpg-objective-warning');
     lab.querySelector('label span').textContent='Rising HCT with rapidly falling platelets';
     move(lab,fbc,'FBC warning criterion');
-    for(const id of [p+'Seizure',...(f?['dfuSob']:[])])move(mark(host(id)),signs,'sign');
+    move(mark(host(p+'Seizure')),signs,'sign');
+    const sob=f?host('dfuSob'):byId('clSymSOB').closest('.symptom-row');
+    sob.classList.add('combined-fluid-sob');
+    move(sob,byId(p+'CpgAccumulationSymptoms'),'fluid symptom');
     if(!f){
       // Oral tolerance is recorded once in clDrink, including its own duration.
       move(byId('clSymPoorIntake').closest('.symptom-row'),original,'duplicate');
@@ -139,9 +142,25 @@
     const value=byId(p+'CpgOralHourly').value;if(value==='')return '';
     return ` — ${value} mL/${byId(p+'CpgOralPeriod').value==='24'?'24 h':'hour'}`;
   }
+  function fluidLines(p){
+    if(!enabled(p))return [];
+    const lines=[];
+    if(byId(p+'CpgDistension').checked)lines.push('+ abdominal swelling / distension');
+    const sob=p==='cl'?byId('clSymSOB').checked:byId('dfuSob').value==='yes';
+    if(sob){
+      let duration='';
+      if(p==='cl'){
+        const amount=byId('clSymSOBOnset').value,unit=byId('clSymSOBUnit').value;
+        if(amount)duration=` x ${amount} ${unit}${amount==='1'?'':'s'}`;
+      }else duration=window.dengueDurationSuffix?.('dfuSobDuration')||'';
+      lines.push('+ shortness of breath'+duration);
+    }
+    if(byId(p+'CpgAccumulation').checked)lines.push('Clinical fluid accumulation present.');
+    return lines.length?['FLUID ACCUMULATION ASSESSMENT',...lines]:[];
+  }
   function init(){
     for(const p of ['cl','dfu'])build(p);
-    window.MedAssistDengueSymptoms={enabled,refresh,oralAmount};
+    window.MedAssistDengueSymptoms={enabled,refresh,oralAmount,fluidLines};
     for(const p of ['cl','dfu'])window.MedAssistDengueCpg4UI?.refresh(p);
   }
   if(document.readyState==='complete')init();else window.addEventListener('load',init,{once:true});
