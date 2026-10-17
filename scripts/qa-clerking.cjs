@@ -51,6 +51,10 @@ const server=http.createServer((req,res)=>{
   await page.locator('#'+p+'Generate').click();
   for(const output of [p+'Output',p+'ReferralOutput']){
    assert.match(await value(output),/restless.*very prolonged crt.*cold, clammy peripheries.*weak & thready PV/);
+   assert.match(await value(output),/IV NS 600 mL over 1 hour\. Started/);
+   assert.match(await value(output),/Reassess CCTVR, BP, HCT & UO\./);
+   assert.match(await value(output),/Refer ED\./);
+   assert.doesNotMatch(await value(output),/isotonic crystalloid|Emergency transfer|do not delay to finish infusion/);
    assert.doesNotMatch(await value(output),/warm peripheries|good PV|crt < 2 sec|no poor oral intake/);
   }
   assert.match(await value(p+'Output'),/600 mL over 1 hour/);assert.match(await value(p+'ReferralOutput'),/600 mL over 1 hour/);

@@ -12,8 +12,8 @@
 <meta content="https://farizaazwa-gif.github.io/medassist-kk-bangi/" property="og:url"/>
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
-<script src="assets/dengue-cpg4.js?v=18.221.0"></script>
-<script src="assets/dengue-cpg4-ui.js?v=18.221.0"></script>
+<script src="assets/dengue-cpg4.js?v=18.222.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.222.0"></script>
 <script src="assets/clinical-safety.js"></script>
 <script defer src="assets/accessibility-hardening.js"></script>
 <style>
@@ -10778,7 +10778,8 @@ function getDenguePlanLines(){
       const fluid=getDengueFluidInstruction();
       const ivdTime=value("clIvdStartTime")||"[ENTER TIME]";
       const fluidPlan=fluid.plan.replace(/\.$/,"");
-      lines.push(`${fluidPlan}. IV start time: ${ivdTime} (KK).`);
+      lines.push(`${fluidPlan}. Started ${ivdTime}.`);
+      if(fluid.reassessment) lines.push(fluid.reassessment);
     }
     if(on("clPlanSubReferEd")) lines.push("Refer ED for further assessment and management.");
     if(on("clPlanSubReferNotify")) lines.push("Notify dengue case via e-notification.");
@@ -15935,7 +15936,8 @@ function followUpPlanLines(){
       const fluid=getDengueFollowUpFluidInstruction();
       const ivdTime=fv("dfuIvdStartTime")||"[ENTER TIME]";
       const fluidPlan=(fluid.valid?fluid.plan:fluid.display).replace(/\.$/,"");
-      lines.push(`${fluidPlan}. IV start time: ${ivdTime} (KK).`);
+      lines.push(`${fluidPlan}. Started ${ivdTime}.`);
+      if(fluid.reassessment) lines.push(fluid.reassessment);
     }
     if(on("dfuPlanSubReferEd")) lines.push("Refer ED for further assessment and management.");
   }else if(option==="monitoring"){
