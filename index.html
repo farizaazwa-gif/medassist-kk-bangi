@@ -12,10 +12,10 @@
 <meta content="https://farizaazwa-gif.github.io/medassist-kk-bangi/" property="og:url"/>
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
-<script src="assets/dengue-cpg4.js?v=18.228.0"></script>
-<script src="assets/dengue-cpg4-ui.js?v=18.228.0"></script>
-<script src="assets/dengue-symptoms.js?v=18.228.0"></script>
-<link rel="stylesheet" href="assets/dengue-symptoms.css?v=18.228.0"/>
+<script src="assets/dengue-cpg4.js?v=18.229.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.229.0"></script>
+<script src="assets/dengue-symptoms.js?v=18.229.0"></script>
+<link rel="stylesheet" href="assets/dengue-symptoms.css?v=18.229.0"/>
 <script src="assets/clinical-safety.js"></script>
 <script defer src="assets/accessibility-hardening.js"></script>
 <style>
@@ -6026,7 +6026,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="fluid-calculate"><button class="btn primary" id="dfCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="clCpgOralAdequacyWrap"><label for="clCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="clCpgOralAdequacy" aria-describedby="clCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="clCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
-<p class="adult-cpg4"><a class="ref" id="clCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.228.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
+<p class="adult-cpg4"><a class="ref" id="clCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.229.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
 <div class="result-box fluid-result" id="dfResult" aria-live="polite">Select a category, then calculate.</div>
 <details class="fluid-extra" id="clFluidWeightDetails"><summary>Weight used / clinician override</summary>
 <div class="grid two"><div><label for="dfBasis">Weight basis</label><select id="dfBasis">
@@ -6042,9 +6042,9 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="helper" id="clCpgQuotaDisplay"></div>
 <div class="grid two"><div><label for="clCpgCriticalStart">Clinician-assessed critical-phase onset</label><input id="clCpgCriticalStart" type="datetime-local" /></div><div><label for="clCpgQuotaTarget">Clinician-agreed 48 h quota (mL), if prescribed</label><input id="clCpgQuotaTarget" type="number" min="0" step="any"/></div><div><label for="clCpgOralTotal">Oral total since that onset (mL)</label><input id="clCpgOralTotal" type="number" min="0" step="any"/></div><div><label for="clCpgIvTotal">IV total since that onset (mL)</label><input id="clCpgIvTotal" type="number" min="0" step="any"/></div></div>
 <div class="helper">Record only intake over the same interval. Quota is for critical phase without shock. Confirm the target at hospital; the calculated balance is not a prescription.</div></details>
-<details class="fluid-extra fluid-reference"><summary>Guideline references</summary><button class="ref" id="openAdultDengueCpg" type="button">
+<details class="fluid-extra fluid-reference"><summary>Guideline references</summary><a class="ref" id="openAdultDengueCpg" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener noreferrer">
       Adult CPG Fourth Edition — rules and references
-    </button>
+    </a>
 <div class="helper">
       Based on the supplied Management of Dengue in Adults, Fourth Edition (2026). See page references and interpretation notes.
     </div>
@@ -6643,7 +6643,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="fluid-calculate"><button class="btn primary" id="dfuFluidCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="dfuCpgOralAdequacyWrap"><label for="dfuCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="dfuCpgOralAdequacy" aria-describedby="dfuCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="dfuCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
-<p class="adult-cpg4"><a class="ref" id="dfuCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.228.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
+<p class="adult-cpg4"><a class="ref" id="dfuCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.229.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
 <div class="result-box fluid-result" id="dfuFluidResult" aria-live="polite">Select a category, then calculate.</div>
 <details class="fluid-extra" id="dfuFluidWeightDetails"><summary>Weight used / clinician override</summary>
 <div class="grid two"><div><label for="dfuFluidBasis">Weight basis</label><select id="dfuFluidBasis">
@@ -15225,11 +15225,6 @@ updateDengueRateOptions();
 syncDiagnosisBuilder();
 syncDengueInterventions();
 
-$("openAdultDengueCpg").addEventListener("click",()=>{
-  const url="docs/dengue-cpg4-reference.html";
-  const opened=window.open(url,"_blank","noopener");
-  if(!opened) window.location.href=url;
-});
 })();
 </script>
 <!-- MedAssist V18.24: unified clerking drafts -->
