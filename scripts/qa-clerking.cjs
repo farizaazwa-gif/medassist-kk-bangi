@@ -42,14 +42,27 @@ const server=http.createServer((req,res)=>{
   for(const field of ['CpgPostural','CpgLiver','CpgAccumulation','CpgLabTrend']){await set(p+field,true);assert.match(await value(p+'GeneratedDx'),/with warning signs/);await set(p+field,false);}
   await set(p+'Haemo','compensated shock');await page.locator('#'+calc).click();assert.match(await text(result),/600 mL over 1 hour/);
   await set(p+'PlanOption','refer');await page.locator('#'+p+'Generate').click();
+  assert.match(await value(p+'Output'),/General \/ perfusion examination: not documented/);
+  assert.doesNotMatch(await value(p+'Output'),/warm peripheries|good PV|crt < 2 sec/);
+  await page.locator('#'+p+'GeneralExamToggle').click();
+  await set(p+'GeneralMental','restless');await set(p+'GeneralComfort','ill-looking');
+  await set(p+'GeneralCrt','very prolonged crt');await set(p+'GeneralPeripheries','cold, clammy peripheries');await set(p+'GeneralPulseVolume','weak & thready PV');
+  if(p==='cl')await set('clDrink','unable');
+  await page.locator('#'+p+'Generate').click();
+  for(const output of [p+'Output',p+'ReferralOutput']){
+   assert.match(await value(output),/restless.*very prolonged crt.*cold, clammy peripheries.*weak & thready PV/);
+   assert.doesNotMatch(await value(output),/warm peripheries|good PV|crt < 2 sec|no poor oral intake/);
+  }
   assert.match(await value(p+'Output'),/600 mL over 1 hour/);assert.match(await value(p+'ReferralOutput'),/600 mL over 1 hour/);
   assert.equal(await page.locator('#'+p+'Output').isEditable(),true);
   await set(p+'Haemo','decompensated shock');assert.match(await text(result),/1200 mL over 15/);
   await set(p+'Haemo','haemodynamically stable');await set(p+'Phase','febrile phase');
+  await set(p+'GeneralMental','alert');await set(p+'GeneralComfort','comfortable');await set(p+'GeneralCrt','crt < 2 sec');await set(p+'GeneralPeripheries','warm peripheries');await set(p+'GeneralPulseVolume','good PV');
+  if(p==='cl')await set('clDrink','able');
   await set(p+'PlanOption',p==='cl'?'outpatient':'monitoring');
   if(p==='dfu')await set('dfuNextTca','');
   await page.locator('#'+p+'Generate').click();
-  const note=await value(p+'Output');assert.match(note,/Repeat FBC CM\./);assert.doesNotMatch(note,/serial FBC as clinically indicated|loose stool[^\n]*\(DF warning sign\)|vomiting[^\n]*\(DF warning sign\)/i);
+  const note=await value(p+'Output');assert.match(note,/alert, comfortable.*crt < 2 sec, warm peripheries, good PV/);assert.match(note,/Repeat FBC CM\./);assert.doesNotMatch(note,/serial FBC as clinically indicated|loose stool[^\n]*\(DF warning sign\)|vomiting[^\n]*\(DF warning sign\)/i);
   await set(p+'Weight',72);await set(p+'Height',175);await set(p==='cl'?'dfState':'dfuFluidState','febrile');
   await set(p+'CpgOralHourly',1000);await set(p+'CpgOralPeriod','24');await set(p+'CpgOralAdequacy','inadequate');
   await page.locator('#'+calc).click();assert.match(await text(result),/68\.3 mL\/hour/);
@@ -59,11 +72,11 @@ const server=http.createServer((req,res)=>{
   await set(p+'Weight',20);await set(p==='cl'?'dfState':'dfuFluidState','compensated');await page.locator('#'+calc).click();assert.match(await text(result),/200 mL/);
   await set(p+'Weight',25);assert.match(await text(result),/calculate again/);await page.locator('#'+calc).click();assert.match(await text(result),/250 mL/);
   await set(group,'adult');assert.doesNotMatch(await text(result),/250 mL/);assert.equal(await page.locator('#dengueReferralToast').isVisible(),false);
-  await page.locator('#clerkingFloatingReset').click();
+  await page.locator('#clerkingFloatingReset').click();await page.waitForTimeout(100);assert.equal(await value(p+'GeneralMental'),'alert');
   console.log(p,': warning criteria, concise plans, notes/referrals, fluids, paediatric switch and reset PASS');
  }
  // Copy reads the editable note, and resetting one clerking leaves the other intact.
- await activate('new');await set('clOutput','Synthetic edited note');await page.locator('#clCopy').click();assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),'Synthetic edited note');
+ await activate('new');await set('clOutput','Synthetic edited note\no/e:\nClinician edited examination — keep this text.');await page.locator('#clCopy').click();assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),'Synthetic edited note\no/e:\nClinician edited examination — keep this text.');
  await page.evaluate(()=>document.getElementById('htnCombinedImportStatus').textContent='Detected: BP 120/80.');await activate('followup');await set('dfuWeight',22);await activate('new');await page.locator('#clerkingFloatingReset').click();assert.equal(await value('dfuWeight'),'22');
  await page.evaluate(()=>window.showPage('nnj'));assert.equal(await page.locator('#dengueReferralToast').isVisible(),false);
  await set('nnjBirthDate24','2026-10-13');await set('nnjAssessmentDate24','2026-10-17');await set('nnjValue',10);

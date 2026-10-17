@@ -12,8 +12,8 @@
 <meta content="https://farizaazwa-gif.github.io/medassist-kk-bangi/" property="og:url"/>
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
-<script src="assets/dengue-cpg4.js?v=18.220.0"></script>
-<script src="assets/dengue-cpg4-ui.js?v=18.220.0"></script>
+<script src="assets/dengue-cpg4.js?v=18.221.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.221.0"></script>
 <script src="assets/clinical-safety.js"></script>
 <script defer src="assets/accessibility-hardening.js"></script>
 <style>
@@ -5613,7 +5613,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="card">
 <h2>Examination</h2>
-<div class="normal-box">o/e: alert, comfortable, pink, not tachypneic, crt &lt; 2 sec, warm peripheries, good PV</div>
+<div class="normal-box">General / perfusion findings will appear here.</div>
 <div class="grid three">
 <div><label>Throat</label><select id="clThroat"><option selected="" value="not injected">not injected</option><option value="injected">injected</option><option value="erythematous">erythematous</option><option value="with exudate">with exudate</option></select></div>
 <div class="tonsil-exam-card" data-tonsil-prefix="cl">
@@ -6317,7 +6317,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="card">
 <h2>Examination</h2>
-<div class="normal-box">o/e: alert, comfortable, pink, not tachypneic, crt &lt; 2 sec, warm peripheries, good PV</div>
+<div class="normal-box">General / perfusion findings will appear here.</div>
 <div class="grid three">
 <div><label>Throat</label><select id="dfuThroat"><option selected="" value="not injected">not injected</option><option value="injected">injected</option><option value="erythematous">erythematous</option><option value="with exudate">with exudate</option></select></div>
 <div class="tonsil-exam-card" data-tonsil-prefix="dfu">
@@ -11846,7 +11846,12 @@ function buildDengueClinicalNote(planLines){
     });
 
   const negativeSymptoms=symptomRows
-    .filter(row=>!row.querySelector(".cl-symptom-check")?.checked)
+    .filter(row=>{
+      const symptom=row.querySelector(".cl-symptom-check");
+      // Oral tolerance is also recorded in the hydration assessment.
+      // Never assert normal intake when that assessment documents otherwise.
+      return !symptom?.checked && !(symptom?.value==="poor oral intake" && ["reduced","unable"].includes(value("clDrink")));
+    })
     .map(row=>`no ${row.querySelector(".cl-symptom-check").value}`);
 
   const otherSymptoms=value("clOtherSymptoms")
@@ -11959,7 +11964,7 @@ function buildDengueClinicalNote(planLines){
 
   const examinationLines=[
     "o/e:",
-    "alert, comfortable, pink, not tachypneic, crt < 2 sec, warm peripheries, good PV",
+    window.MedAssistDengueGeneralExam?.sentence("cl") || "General / perfusion examination: not documented.",
     value("clGCS")?`GCS: ${value("clGCS")}`:"",
     value("clHydration")?`hydration: ${value("clHydration")}`:"",
     value("clOrganFailure")==="yes"
@@ -16105,7 +16110,7 @@ function buildDengueFollowUpClinicalNote(){
 
   const examinationLines=[
     "o/e:",
-    "alert, comfortable, pink, not tachypneic, crt < 2 sec, warm peripheries, good PV",
+    window.MedAssistDengueGeneralExam?.sentence("dfu") || "General / perfusion examination: not documented.",
     fv("dfuGCS")?`GCS: ${fv("dfuGCS")}`:"",
     fv("dfuHydration")?`hydration: ${fv("dfuHydration")}`:"",
     fv("dfuOrganFailure")==="yes"
