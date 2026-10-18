@@ -43,6 +43,13 @@
 .dengue-combined .combined-field input:not([type=checkbox]):not([type=radio]),.dengue-combined .combined-field select{min-width:0;max-width:100%}
 .dengue-combined .combined-field .fluid-oral-measure{display:grid;grid-template-columns:minmax(0,1fr) minmax(105px,1.3fr);gap:6px}
 .dengue-combined .combined-field .fluid-oral{margin-top:9px;padding:0;border:0;background:none}
+.dengue-combined .combined-field .cpg-fluid-restriction{margin-top:10px;padding:8px 0 0;border:0;border-top:1px solid #d7e4df;background:none}
+.dengue-combined .cpg-fluid-restriction>.check-item{padding:0!important;border:0!important;background:none!important;align-items:flex-start;min-height:0}
+.dengue-combined .cpg-fluid-regimen{margin-top:8px}
+.dengue-combined .combined-field .cpg-urine-record{margin-top:10px;padding:8px 0 0;border:0;border-top:1px solid #e6b7b7;background:none}
+.dengue-combined .cpg-urine-record summary{cursor:pointer;font-weight:600}
+.dengue-combined .cpg-urine-record[open]>summary{margin-bottom:9px}
+.dengue-combined .cpg-urine-record .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:9px}
 .dengue-combined .combined-field .check-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
 .dengue-combined .combined-field .check-grid .check-item{padding:6px;font-size:inherit}
 .dengue-combined #clSymptoms{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}

@@ -13,6 +13,32 @@
   const active = p => adult(p) && (p !== "cl" || val("clDxType") === "Dengue fever");
   const meaningful = s => !/^(?:\s*|no|nil|none|nkmi|n\/a|-|no known medical illness)$/i.test(String(s).trim());
   const checkedValues = selector => Array.from(document.querySelectorAll(selector)).map(x=>x.value);
+  const urineRateText = rate => rate>0 && rate<0.005 ? "<0.01" : rate<0.5 && Number(rate.toFixed(2))>=0.5 ? "<0.50" : rate.toFixed(2);
+  function urineAssessment(p) {
+    const volume=C.number(val(`${p}CpgUrineMl`)), hours=C.number(val(`${p}CpgUrineHours`)), weight=C.number(val(`${p}Weight`));
+    const frequency=C.number(val(`${p}CpgVoids`));
+    const valid=volume !== null && volume>=0 && hours !== null && hours>0;
+    const rate=valid && weight !== null && weight>0 ? volume/(weight*hours) : null;
+    const absent=valid && volume===0, absent4h=absent && hours>=4;
+    const measuredLow=absent || (rate !== null && rate<0.5);
+    const lowFrequency=frequency !== null && Number.isInteger(frequency) && frequency>=0 && frequency<4;
+    const recorded=p === "dfu" ? val("dfuUrine") : val("clUrine") === "yes" ? "reduced" : "normal";
+    const concerns=[];
+    // CPG p10: absent output for 4–6 h can meet the duration finding. A low
+    // average (p31) or void count alone cannot establish persistent oliguria.
+    if(absent) concerns.push(`no measured urine over ${hours} h: ${absent4h ? "meets the absent-output duration finding; interpret with illness phase and reassess perfusion" : "reassess urine output, establish duration and perfusion"}`);
+    else if(measuredLow) concerns.push(`measured urine output ${urineRateText(rate)} mL/kg/hour is below 0.5: reassess hydration and perfusion${hours>=4 ? "; confirm the reduced / absent urine for 4–6 hours finding if present" : "; establish the duration of reduced output"}`);
+    if(lowFrequency) concerns.push(`urination ${frequency} times/24 h is below the usual 4–6/day guide: review urine volume, last void and perfusion; frequency alone does not establish a warning sign`);
+    if(recorded === "normal" && (measuredLow || lowFrequency)) concerns.push("qualitative PU is marked normal: reconcile it with the recorded urine measurement / frequency");
+    const status=absent || recorded === "no urine output" ? "no urine output" : measuredLow ? "reduced" : recorded === "normal" && lowFrequency ? "review required (urination frequency below guide)" : recorded || "normal";
+    return {volume,hours,weight,frequency,valid,rate,absent,absent4h,measuredLow,lowFrequency,status,concern:concerns.join("; ")};
+  }
+  function urineStatus(p) { return urineAssessment(p).status; }
+  function urineSummary(p) {
+    const u=urineAssessment(p);
+    const measured=u.valid ? `Measured urine: ${u.volume} mL over ${u.hours} h${u.rate !== null ? `; ${urineRateText(u.rate)} mL/kg/hour (actual weight)` : "; enter actual weight to calculate mL/kg/hour"}.` : "Record frequency; add measured volume and interval if available. Do not infer adequate urine output from a blank field.";
+    return `${measured} ${u.concern ? `Review: ${u.concern}.` : "Outpatient guide: at least 0.5 mL/kg/hour; usually 4–6 voids/day and at least once every 6 hours. Reassess any reduction."}`;
+  }
   function state(p) {
     const f=p === "dfu", c=cfg(p);
     const rawCount = (key,legacy,count) => {
@@ -26,18 +52,20 @@
     const rawOral=val(f?"dfuOralIntake":"clDrink");
     const weight=val(`${p}Weight`), height=val(`${p}Height`), sex=val(`${p}Sex`);
     const w=C.weights({weight,height,sex,basis:val(c.basis)});
+    const urine=urineAssessment(p);
     const s={weight,height,sex,basis:val(c.basis),weightReason:val(`${p}CpgWeightReason`).trim(),
       phase:val(`${p}Phase`),nearCritical:on(`${p}CpgNearCritical`),haemo:val(`${p}Haemo`),
       fluidState:val(c.state),rate:val(c.rate),oralHourly:val(`${p}CpgOralHourly`),oralPeriod:val(`${p}CpgOralPeriod`) || "1",oralAdequacy:val(`${p}CpgOralAdequacy`),
+      fluidRestricted:on(`${p}CpgFluidRestricted`),fluidRegimen:val(`${p}CpgFluidRegimen`).trim(),
       oral:["poor","unable"].includes(rawOral)?"unable":rawOral === "reduced"?"reduced":"able",
       dehydrated:val(`${p}Hydration`) === "dehydrated",moderateSevereDehydration:on(`${p}CpgSevereDehydration`),
       vomit:rawCount("Vomit",f?"dfuVomitFrequency":"clVomiting",f?"dfuVomitCount":"clVomitingCount"),
       stool:rawCount("Stool",f?"dfuLooseStoolFrequency":"clDiarrhoea",f?"dfuLooseStoolCount":"clDiarrhoeaCount"),
       abdominalPain:val(f?"dfuAbdominalPain":"clAbdPain") === "yes",intenseAbdominalPain:on(`${p}CpgIntensePain`),
       lethargy:val(`${p}Lethargy`) === "yes",bleeding:f?checkedValues('#dfuBleedingTendencies input:checked').length>0:val("clBleeding") === "yes",
-      reducedUrine:f?["reduced","no urine output"].includes(val("dfuUrine")):val("clUrine") === "yes",
-      worseDefervescence:on(`${p}CpgWorse`),fluidAccumulation:on(`${p}CpgAccumulation`),postural:on(`${p}CpgPostural`),
-      liverGt2:on(`${p}CpgLiver`),lowUrine4h:on(`${p}CpgLowUrine`),rapidHctPlt:on(`${p}CpgLabTrend`),
+      reducedUrine:urine.measuredLow || (f?["reduced","no urine output"].includes(val("dfuUrine")):val("clUrine") === "yes"),urineConcern:urine.concern,
+      worseDefervescence:on(`${p}CpgWorse`),fluidAccumulation:on(`${p}CpgAccumulation`) || (Boolean(val(`${p}PA`)) && on(`${p}PAAscites`)),postural:on(`${p}CpgPostural`),
+      liverGt2:on(`${p}CpgLiver`),lowUrine4h:on(`${p}CpgLowUrine`) || urine.absent4h,rapidHctPlt:on(`${p}CpgLabTrend`),
       labTrend:Boolean(window.dengueRisingHctFallingPlatelet?.(c.mode)),
       manualWarnings: (f?on("dfuCpgWarningConfirmed"):val("clWarningStatus") === "present") && val(`${p}CpgWarningDetail`).trim() ? [val(`${p}CpgWarningDetail`).trim()] : [],
       severeBleeding:on(`${p}CpgSevereBleeding`),leakRespiratory:on(`${p}CpgSevereLeak`),
@@ -125,11 +153,11 @@
     if(!r.valid || r.canPrescribe === false || s.fluidState === "no-warning")return r;
     const reassessment=s.fluidState === "warning"?"Reassess after 1 hour.":s.fluidState === "febrile"?"Reassess hydration; reduce/stop IV as oral intake improves.":"Reassess CCTVR, BP, HCT & UO.";
     const prescription=r.headline.replace(/^(?:IV )?isotonic crystalloid\b/i,"IV NS");
-    return {...r,plan:`${prescription}.`,reassessment};
+    return {...r,plan:`${prescription}.${r.prescriptionNote ? ` ${r.prescriptionNote}` : ""}`,reassessment};
   }
   function calculate(p){refresh(p);if(active(p) && el(cfg(p).result)){el(cfg(p).result).dataset.cpgCalculated="true";renderFluidResult(p);}}
   function oralAdvice(p) {
-    if(on(`${p}CpgFluidRestricted`)) return `Oral fluids: ${val(`${p}CpgFluidRegimen`).trim() || "[ENTER REGIMEN]"}.`;
+    if(on(`${p}CpgFluidRestricted`)) return `Individualised fluid regimen: ${val(`${p}CpgFluidRegimen`).trim() || "[ENTER REGIMEN]"}.`;
     return "Oral fluids ~200 mL/hour while awake; include ORS / electrolyte fluids, not plain water alone.";
   }
   function dischargeState() {
@@ -177,16 +205,14 @@
     const lines=[], status=val(`${p}CpgVaccine`);
     if(val(`${p}CpgDxCertainty`) === "confirmed" && val(`${p}CpgDxEvidence`).trim()) lines.push(`Dengue confirmation: ${val(`${p}CpgDxEvidence`).trim()}.`);
     const fluidState=state(p);
+    if(fluidState.fluidRestricted) lines.push(`Fluid restriction: ${fluidState.fluidRegimen || "[DOCUMENT INDIVIDUALISED REGIMEN]"}.`);
     if(needsOralAdequacy(fluidState) && ["adequate","inadequate"].includes(fluidState.oralAdequacy)) lines.push(`Oral fluid intake assessed as ${fluidState.oralAdequacy} for current needs; oral tolerance preserved.`);
     if(status) lines.push(`Dengue vaccination: ${status}${status === "yes"?`; date ${val(`${p}CpgVaccineDate`) || "not recorded"}`:""}.`);
     const advice=vaccineAdvice(p); if(advice) lines.push(advice);
     if(val(`${p}CpgSteroidIndication`).trim()) lines.push(`Context / separate indication for recorded NSAID or corticosteroid administration: ${val(`${p}CpgSteroidIndication`).trim()}`);
-    const frequency=val(`${p}CpgVoids`), urine=val(`${p}CpgUrineMl`), hours=val(`${p}CpgUrineHours`);
-    if(frequency !== "") lines.push(`Urination frequency: ${frequency} times/24 h.`);
-    if(urine !== "" && hours !== "") {
-      const weight=C.number(val(`${p}Weight`)), u=C.number(urine), h=C.number(hours);
-      if(weight>0 && u>=0 && h>0) lines.push(`Measured urine: ${u} mL over ${h} h; ${(u/(weight*h)).toFixed(2)} mL/kg/hour using actual weight ${weight} kg.`);
-    }
+    const urine=urineAssessment(p);
+    if(val(`${p}CpgVoids`) !== "") lines.push(`Urination frequency: ${val(`${p}CpgVoids`)} times/24 h.`);
+    if(urine.valid) lines.push(`Measured urine: ${urine.volume} mL over ${urine.hours} h${urine.rate !== null ? `; ${urineRateText(urine.rate)} mL/kg/hour using actual weight ${urine.weight} kg` : "; actual weight required for mL/kg/hour"}.`);
     const oral=C.number(val(`${p}CpgOralTotal`)), iv=C.number(val(`${p}CpgIvTotal`));
     if(oral !== null || iv !== null) lines.push(`Fluid chart since critical-phase onset ${val(`${p}CpgCriticalStart`) || "[RECORD TIME]"}: oral ${oral === null?"not recorded":oral+" mL"}; IV ${iv === null?"not recorded":iv+" mL"}${oral !== null && iv !== null?`; combined ${oral+iv} mL`:""}.`);
     if(val(`${p}CpgWeightReason`).trim()) lines.push(`Fluid weight basis rationale: ${val(`${p}CpgWeightReason`).trim()}`);
@@ -278,7 +304,7 @@
     resetting.delete(p);setValue(`${p}CpgOralAdequacy`,"");setValue(`${p}CpgOralPeriod`,"1");clearFluidResult(p);
     if(el(`${p}CpgDxReviewed`))el(`${p}CpgDxReviewed`).checked=false;
     setValue(`${p}CpgDxCertainty`,"");setValue(`${p}CpgDxEvidence`,"");
-    for(const id of [`${p}FluidWeightDetails`,`${p}CpgQuotaDetails`])if(el(id))el(id).open=false;
+    for(const id of [`${p}FluidWeightDetails`,`${p}CpgQuotaDetails`,`${p}CpgUrineRecord`])if(el(id))el(id).open=false;
     setText(`${p}CpgValidation`,"");el(`${p}CpgValidation`)?.classList.add("hidden");
     if(adult(p))rates(p);refresh(p);
   }
@@ -335,6 +361,12 @@
     let qText="Enter valid body measurements for maintenance and quota estimates.";
     const inShock=["compensated shock","decompensated shock"].includes(s.haemo) || ["compensated","decompensated"].includes(s.fluidState);
     if(inShock) qText="Shock: the non-shock fluid quota does not apply. Use shock resuscitation and reassess urgently.";
+    else if(s.fluidRestricted) {
+      qText=`Fluid restriction: ${s.fluidRegimen || "document the individualised regimen"}. Individualised fluid prescription required; record the clinician-agreed total and include oral + IV intake.`;
+      const oral=C.number(val(`${p}CpgOralTotal`)), iv=C.number(val(`${p}CpgIvTotal`)), target=C.number(val(`${p}CpgQuotaTarget`));
+      if(oral !== null && oral>=0 && iv !== null && iv>=0)qText+=` Recorded oral + IV: ${oral+iv} mL.`;
+      if(target>0)qText+=` Clinician-agreed target: ${target} mL; confirm its time interval. This is not an instruction to infuse the balance.`;
+    }
     else if(q) {
       qText=`Maintenance (oral + IV): ${C.round(q.hourly)} mL/hour. Critical phase WITHOUT shock only: formula estimate ${q.formula} mL over 48 hours (one-day maintenance + 50 mL/kg; calculation weight ${C.round(q.weight)} kg, maximum 70 kg).`;
       if(q.table !== null) qText+=` CPG Table/Algorithm 1 quota: ${q.table} mL.`;
@@ -351,8 +383,7 @@
       }
     }
     setText(`${p}CpgQuotaDisplay`,qText);
-    const urine=C.number(val(`${p}CpgUrineMl`)), hours=C.number(val(`${p}CpgUrineHours`)), weight=C.number(s.weight);
-    setText(`${p}CpgUrineDisplay`,urine !== null && urine>=0 && hours>0 && weight>0?`Measured urine output ${(urine/(weight*hours)).toFixed(2)} mL/kg/hour (actual weight). Outpatient guide: at least 0.5 mL/kg/hour; usually 4–6 voids/day and at least once every 6 hours. Reassess any reduction.`:"Record frequency; add measured volume and interval if available. Do not infer adequate urine output from a blank field.");
+    setText(`${p}CpgUrineDisplay`,urineSummary(p));
     diagnosis(p);
     if(p === "dfu") window.renderDengueFollowUpWarningClassification?.();
     else window.renderNewCaseFrequencyClassification?.();
@@ -378,7 +409,10 @@
         if(!active(p))return;
         if(event.target.id === `${p}CpgLiver` && on(`${p}CpgLiver`))el(`${p}PAHepatomegaly`).checked=true;
         if(event.target.id === `${p}PAHepatomegaly` && !on(`${p}PAHepatomegaly`))el(`${p}CpgLiver`).checked=false;
-        if(event.target.matches(`.dengue-pe-picker input[data-target="${p}PA"]`) && !event.target.checked)el(`${p}CpgLiver`).checked=false;
+        if(event.target.matches(`.dengue-pe-picker input[data-target="${p}PA"]`) && !event.target.checked){
+          el(`${p}CpgLiver`).checked=false;
+          if(el(`${p}PAAscites`))el(`${p}PAAscites`).checked=false;
+        }
       };
       root.addEventListener("input",syncLiverFinding,true);
       root.addEventListener("change",syncLiverFinding,true);
@@ -430,6 +464,6 @@
       if(el(`${p}CpgDxReviewed`))el(`${p}CpgDxReviewed`).checked=false;
     }
   }
-  window.MedAssistDengueCpg4UI={state,active,referral,warningData,frequencyLine,diagnosis,syncWeight,rates,syncCategory,fluid,calculate,oralAdvice,adjustPlan,recordLines,validate,refresh,renderFluidResult,syncFluidDisplay,clearFluidResult,resetStart,resetEnd};
+  window.MedAssistDengueCpg4UI={state,active,referral,warningData,frequencyLine,diagnosis,urineStatus,urineSummary,syncWeight,rates,syncCategory,fluid,calculate,oralAdvice,adjustPlan,recordLines,validate,refresh,renderFluidResult,syncFluidDisplay,clearFluidResult,resetStart,resetEnd};
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();

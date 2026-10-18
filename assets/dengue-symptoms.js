@@ -96,6 +96,8 @@
     // A single entered oral amount is shared with the fluid calculator.
     move(byId(p+'CpgOralHourlyWrap'),oral,'oral amount');
     move(byId(p+'CpgOralAdequacyWrap'),oral,'oral adequacy');
+    move(byId(p+'CpgFluidRestriction'),oral,'fluid restriction');
+    move(byId(p+'CpgUrineRecord'),urine,'urine record');
     move(original.querySelector('.cpg-phase-context'),container('CombinedPhase'),'phase');
     move(original.querySelector('.cpg-clinical-interpretation'),container('CombinedOverride'),'override');
     move(byId(p+'CpgWarningSummary'),container('CombinedSummary'),'summary');
@@ -123,6 +125,7 @@
         if(p==='cl' && !byId(p+'CpgOralHourly').value && byId('clDrinkMl24').value){
           byId(p+'CpgOralHourly').value=byId('clDrinkMl24').value;byId(p+'CpgOralPeriod').value='24';
         }
+        if(['CpgVoids','CpgUrineMl','CpgUrineHours'].some(key=>byId(p+key).value!==''))byId(p+'CpgUrineRecord').open=true;
       }else{
         for(const {node,marker} of [...l.moves].reverse())marker.after(node);
       }
