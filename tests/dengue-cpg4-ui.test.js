@@ -5,12 +5,23 @@ const path = require('node:path');
 const vm = require('node:vm');
 const C = require('../assets/dengue-cpg4');
 
-function form(overrides = {}) {
+function fixture(overrides = {}) {
   const values = {clDxDay:'4',clCpgDxCertainty:'suspected',clCpgDxReviewed:true,dfGroup:'adult',clDxType:'Dengue fever',clPhase:'febrile phase',clHaemo:'haemodynamically stable',clPlanOption:'outpatient',clWeight:'60',clHeight:'170',clSex:'Male',dfBasis:'cpg',...overrides};
   const elements = Object.fromEntries(Object.entries(values).map(([id,value])=>[id,typeof value === 'boolean'?{checked:value,value:''}:{value:String(value)}]));
+  for(const id of ['dfState','dfuFluidState'])if(elements[id])elements[id].options=['no-warning','febrile','warning','compensated','decompensated'].map(value=>({value,disabled:false,hidden:false}));
   const context={window:{MedAssistDengueCpg4:C},document:{readyState:'loading',addEventListener(){},getElementById:id=>elements[id],querySelectorAll:()=>[]}};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../assets/dengue-cpg4-ui.js'),'utf8'),context);
-  return context.window.MedAssistDengueCpg4UI;
+  return {ui:context.window.MedAssistDengueCpg4UI,elements};
+}
+function form(overrides = {}) { return fixture(overrides).ui; }
+function adultValues(p, extra = {}) {
+  return {[p === 'cl'?'dfGroup':'dfuGroup']:'adult',
+    [`${p}Phase`]:'critical phase',[`${p}Haemo`]:'haemodynamically stable',
+    [`${p}Weight`]:60,[`${p}Height`]:170,[`${p}Sex`]:'Male',[`${p}PA`]:'SNT',
+    [p === 'cl'?'dfBasis':'dfuFluidBasis']:'cpg',
+    [p === 'cl'?'clDxDay':'dfuDayIllness']:4,[`${p}CpgDxCertainty`]:'suspected',[`${p}CpgDxReviewed`]:true,
+    [p === 'cl'?'clUrine':'dfuUrine']:p === 'cl'?'no':'normal',
+    [p === 'cl'?'clDrink':'dfuOralIntake']:p === 'cl'?'able':'good',...extra};
 }
 
 test('measured urine requires volume, positive interval and actual weight',()=>{
@@ -95,4 +106,162 @@ test('special populations and follow-up retain complete diagnosis components',()
   assert.match(form({clWeight:100}).diagnosis('cl'),/obesity/);
   const followup=form({dfuGroup:'adult',dfuDayIllness:5,dfuPhase:'critical phase',dfuHaemo:'haemodynamically stable',dfuCpgDxCertainty:'confirmed',dfuCpgDxEvidence:'NS1 positive yesterday',dfuCpgDxReviewed:true});
   assert.equal(followup.diagnosis('dfu'),'Confirmed dengue without warning signs, D5, critical phase, not in shock, NKMI.');
+});
+
+test('both adult forms include examination ascites in warning assessment and diagnosis',()=>{
+  for(const p of ['cl','dfu']){
+    const {ui,elements}=fixture(adultValues(p,{[`${p}PAAscites`]:true,[`${p}CpgAccumulation`]:false}));
+    assert.equal(ui.state(p).fluidAccumulation,true);
+    assert.equal(ui.referral(p).group,'B2');
+    assert.equal(ui.referral(p).needsHospital,true);
+    assert.match(ui.diagnosis(p),/dengue with warning signs \(clinical fluid accumulation\)/);
+    elements[`${p}PAAscites`].checked=false;
+    assert.equal(ui.referral(p).group,'A');
+    elements[`${p}CpgAccumulation`].checked=true;
+    assert.equal(ui.referral(p).group,'B2');
+  }
+});
+
+test('ascites retains illness-phase interpretation and never infers shock',()=>{
+  for(const p of ['cl','dfu'])for(const phase of ['febrile phase','recovery phase']){
+    const ui=form(adultValues(p,{[`${p}Phase`]:phase,[`${p}PAAscites`]:true}));
+    assert.equal(ui.referral(p).group,'review');
+    assert.equal(ui.warningData(p).positive.length,0);
+    assert.match(ui.warningData(p).belowThreshold.join(' '),/clinical fluid accumulation/);
+    assert.equal(ui.state(p).haemo,'haemodynamically stable');
+  }
+  assert.equal(form(adultValues('cl',{clPhase:'febrile phase',clCpgNearCritical:true,clPAAscites:true})).referral('cl').group,'B2');
+});
+
+test('deselected abdominal examination does not retain a hidden ascites warning',()=>{
+  for(const p of ['cl','dfu']){
+    const {ui,elements}=fixture(adultValues(p,{[`${p}PAAscites`]:true,[`${p}CpgAccumulation`]:false}));
+    assert.equal(ui.referral(p).group,'B2');
+    elements[`${p}PA`].value='';
+    assert.equal(ui.referral(p).group,'A');
+    elements[`${p}CpgAccumulation`].checked=true;
+    assert.equal(ui.referral(p).group,'B2');
+  }
+});
+
+test('measured absent urine reaches the duration finding at 4 hours in both adult forms',()=>{
+  for(const p of ['cl','dfu'])for(const hours of [0.5,3.99,4,6,24]){
+    const ui=form(adultValues(p,{[`${p}CpgUrineMl`]:0,[`${p}CpgUrineHours`]:hours}));
+    assert.equal(ui.state(p).lowUrine4h,hours>=4);
+    assert.equal(ui.referral(p).group,hours>=4?'B2':'review');
+    assert.equal(ui.referral(p).needsHospital,hours>=4);
+    assert.equal(ui.urineStatus(p),'no urine output');
+    assert.equal(ui.state(p).haemo,'haemodynamically stable');
+    assert.match(ui.recordLines(p).join(' '),new RegExp(`Measured urine: 0 mL over ${hours} h`));
+    assert.match(ui.urineSummary(p),/qualitative PU is marked normal: reconcile/);
+  }
+});
+
+test('zero measured urine stays phase-sensitive and does not depend on a weight to establish absence',()=>{
+  for(const p of ['cl','dfu'])for(const phase of ['febrile phase','critical phase','recovery phase']){
+    const ui=form(adultValues(p,{[`${p}Phase`]:phase,[`${p}CpgUrineMl`]:0,[`${p}CpgUrineHours`]:6,[`${p}Weight`]:''}));
+    assert.equal(ui.state(p).lowUrine4h,true);
+    assert.equal(ui.referral(p).group,phase === 'critical phase'?'B2':'review');
+    assert.match(ui.recordLines(p).join(' '),/actual weight required for mL\/kg\/hour/);
+    assert.equal(ui.state(p).haemo,'haemodynamically stable');
+  }
+});
+
+test('positive measured output below 0.5 prompts review without inventing a persistent warning or shock',()=>{
+  for(const p of ['cl','dfu'])for(const volume of [1,60,119.99,120,120.01]){
+    const ui=form(adultValues(p,{[`${p}CpgUrineMl`]:volume,[`${p}CpgUrineHours`]:4}));
+    assert.equal(ui.referral(p).group,volume<120?'review':'A');
+    assert.equal(ui.state(p).lowUrine4h,false);
+    assert.equal(ui.warningData(p).positive.length,0);
+    assert.equal(ui.state(p).haemo,'haemodynamically stable');
+    assert.equal(ui.urineStatus(p),volume<120?'reduced':'normal');
+    if(volume<120)assert.match(ui.urineSummary(p),/confirm the reduced \/ absent urine for 4–6 hours finding if present/);
+    if(volume===119.99)assert.match(ui.urineSummary(p),/<0.50 mL\/kg\/hour/);
+    if(volume===120)assert.match(ui.urineSummary(p),/0.50 mL\/kg\/hour/);
+  }
+});
+
+test('derived urine findings clear with corrected measurements and never overwrite the qualitative dropdown',()=>{
+  for(const p of ['cl','dfu']){
+    const urineId=p === 'cl'?'clUrine':'dfuUrine';
+    const {ui,elements}=fixture(adultValues(p,{[`${p}CpgUrineMl`]:0,[`${p}CpgUrineHours`]:6}));
+    assert.equal(ui.referral(p).group,'B2');
+    assert.equal(elements[urineId].value,p === 'cl'?'no':'normal');
+    elements[`${p}CpgUrineMl`].value='180';
+    assert.equal(ui.referral(p).group,'A');
+    assert.equal(ui.urineStatus(p),'normal');
+    elements[`${p}CpgUrineMl`].value='';elements[`${p}CpgUrineHours`].value='';
+    assert.equal(ui.state(p).lowUrine4h,false);
+    assert.equal(ui.referral(p).group,'A');
+  }
+  for(const values of [{clCpgUrineMl:'',clCpgUrineHours:6},{clCpgUrineMl:0,clCpgUrineHours:''},{clCpgUrineMl:0,clCpgUrineHours:0},{clCpgUrineMl:-1,clCpgUrineHours:6}]){
+    assert.equal(form(adultValues('cl',values)).state('cl').lowUrine4h,false);
+  }
+  assert.equal(form(adultValues('dfu',{dfuUrine:'no urine output',dfuCpgUrineMl:60,dfuCpgUrineHours:4})).urineStatus('dfu'),'no urine output');
+});
+
+test('below-guide urination frequency including zero prompts review but no automatic warning sign',()=>{
+  for(const p of ['cl','dfu'])for(const frequency of [0,1,3,4,6]){
+    const ui=form(adultValues(p,{[`${p}CpgVoids`]:frequency}));
+    assert.equal(ui.referral(p).group,frequency<4?'review':'A');
+    assert.equal(ui.warningData(p).positive.length,0);
+    assert.equal(ui.state(p).lowUrine4h,false);
+    assert.equal(ui.urineStatus(p),frequency<4?'review required (urination frequency below guide)':'normal');
+    if(frequency<4)assert.match(ui.urineSummary(p),/frequency alone does not establish a warning sign/);
+  }
+});
+
+test('fluid restriction reaches the engine and prevents routine febrile or B2 prescriptions in both forms',()=>{
+  for(const p of ['cl','dfu'])for(const category of ['febrile','warning']){
+    const ui=form(adultValues(p,{
+      [`${p}Phase`]:category === 'febrile'?'febrile phase':'critical phase',
+      [p === 'cl'?'dfState':'dfuFluidState']:category,[p === 'cl'?'dfRate':'dfuFluidRate']:3,
+      [p === 'cl'?'clDrink':'dfuOralIntake']:p === 'cl'?'unable':'poor',
+      [`${p}CpgOralHourly`]:0,[`${p}CpgAccumulation`]:category === 'warning',
+      [`${p}CpgFluidRestricted`]:true,[`${p}CpgFluidRegimen`]:'  1000 mL/day total as prescribed  '
+    }));
+    assert.equal(ui.state(p).fluidRestricted,true);
+    assert.equal(ui.state(p).fluidRegimen,'1000 mL/day total as prescribed');
+    const result=ui.fluid(p);
+    assert.equal(result.valid,false);assert.equal(result.canPrescribe,false);
+    assert.match(result.headline,/Individualised fluid prescription required/);
+    assert.doesNotMatch(result.plan,/IV NS \d/);
+    assert.match(ui.recordLines(p).join(' '),/Fluid restriction: 1000 mL\/day total as prescribed/);
+    assert.match(ui.oralAdvice(p),/^Individualised fluid regimen: 1000 mL\/day total as prescribed/);
+    assert.doesNotMatch(ui.oralAdvice(p),/200 mL\/hour/);
+  }
+});
+
+test('restriction context survives the concise copied shock prescription without changing clinician shock status',()=>{
+  for(const p of ['cl','dfu'])for(const [haemo,category,amount] of [['compensated shock','compensated',600],['decompensated shock','decompensated',1200]]){
+    const ui=form(adultValues(p,{
+      [`${p}Haemo`]:haemo,[p === 'cl'?'dfState':'dfuFluidState']:category,
+      [`${p}CpgFluidRestricted`]:true,[`${p}CpgFluidRegimen`]:'1000 mL/day total as prescribed'
+    }));
+    const result=ui.fluid(p);
+    assert.equal(result.valid,true);assert.notEqual(result.canPrescribe,false);
+    assert.match(result.plan,new RegExp(`IV NS ${amount} mL`));
+    assert.ok(result.prescriptionNote);
+    assert.ok(result.plan.includes(result.prescriptionNote));
+    assert.match(result.plan,/1000 mL\/day total as prescribed/);
+    assert.equal(ui.state(p).haemo,haemo);
+  }
+});
+
+test('restricted quota display retains entered totals without presenting a routine maintenance target',()=>{
+  for(const p of ['cl','dfu']){
+    const {ui,elements}=fixture(adultValues(p,{
+      [p === 'cl'?'dengueNewCaseTemplate':'dengueFollowUpTemplate']:'',
+      [`${p}CpgQuotaDisplay`]:'',
+      [`${p}CpgFluidRestricted`]:true,[`${p}CpgFluidRegimen`]:'1000 mL/day total as prescribed',
+      [`${p}CpgOralTotal`]:200,[`${p}CpgIvTotal`]:100,[`${p}CpgQuotaTarget`]:1000
+    }));
+    for(const element of Object.values(elements))Object.assign(element,{dataset:{},textContent:'',classList:{toggle(){}},querySelector(){return null;},querySelectorAll(){return [];},closest(){return null;}});
+    ui.refresh(p);
+    const text=elements[`${p}CpgQuotaDisplay`].textContent;
+    assert.match(text,/Individualised fluid prescription required/);
+    assert.match(text,/Recorded oral \+ IV: 300 mL/);
+    assert.match(text,/Clinician-agreed target: 1000 mL/);
+    assert.doesNotMatch(text,/Maintenance \(oral \+ IV\):|formula estimate|5400 mL|mL\/hour/);
+  }
 });

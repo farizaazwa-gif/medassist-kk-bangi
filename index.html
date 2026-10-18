@@ -12,12 +12,12 @@
 <meta content="https://farizaazwa-gif.github.io/medassist-kk-bangi/" property="og:url"/>
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
-<script src="assets/dengue-cpg4.js?v=18.232.0"></script>
-<script src="assets/dengue-cpg4-ui.js?v=18.232.0"></script>
-<script src="assets/dengue-symptoms.js?v=18.232.0"></script>
-<link rel="stylesheet" href="assets/dengue-symptoms.css?v=18.232.0"/>
+<script src="assets/dengue-cpg4.js?v=18.233.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.233.0"></script>
+<script src="assets/dengue-symptoms.js?v=18.233.0"></script>
+<link rel="stylesheet" href="assets/dengue-symptoms.css?v=18.233.0"/>
 <script src="assets/clinical-safety.js"></script>
-<script src="assets/note-edits.js?v=18.232.0"></script>
+<script src="assets/note-edits.js?v=18.233.0"></script>
 <script defer src="assets/accessibility-hardening.js"></script>
 <style>
 :root{
@@ -5981,7 +5981,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="hidden" id="clDxComorbidWrap"><label>Comorbidities</label><input id="clDxComorbid" placeholder="e.g. DM and HPT"/></div>
 </div>
 <div class="adult-cpg4" id="clCpgReview">
-<strong>Adult dengue — CPG Fourth Edition (2026)</strong>
+<strong>Assessment review</strong>
 <div class="helper">Assess the full clinical picture. Haemodynamic status is entered by the clinician after CCTVR, BP/pulse pressure and urine assessment; pasted vitals alone do not classify shock.</div>
 <div class="result-box" id="clCpgAssessment" aria-live="polite"></div>
 
@@ -5993,11 +5993,14 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="helper" id="clCpgMedicationAdvice"></div>
 <label for="clCpgSteroidIndication">Context / separate indication for any recorded NSAID or corticosteroid administration</label><input id="clCpgSteroidIndication" placeholder="e.g. prior exposure or established non-dengue indication"/>
 </details>
-<details><summary>Oral fluids and measured urine</summary>
-<label class="check-item"><input id="clCpgFluidRestricted" type="checkbox"/>Requires an individualised fluid restriction regimen</label>
-<div class="cpg-fluid-regimen hidden"><label for="clCpgFluidRegimen">Individualised fluid regimen</label><input id="clCpgFluidRegimen" placeholder="Prescribed volume and interval"/></div>
-<div class="grid three"><div><label for="clCpgVoids">Urination frequency / 24 hours</label><input id="clCpgVoids" type="number" min="0" step="1"/></div><div><label for="clCpgUrineMl">Measured urine volume (mL)</label><input id="clCpgUrineMl" type="number" min="0" step="any"/></div><div><label for="clCpgUrineHours">Measurement interval (hours)</label><input id="clCpgUrineHours" type="number" min="0" step="any"/></div></div>
-<div class="helper" id="clCpgUrineDisplay"></div></details>
+<div class="adult-cpg4 cpg-fluid-restriction" id="clCpgFluidRestriction">
+<label class="check-item"><input id="clCpgFluidRestricted" type="checkbox"/>Individualised fluid restriction</label>
+<div class="cpg-fluid-regimen hidden"><label for="clCpgFluidRegimen">Prescribed fluid regimen</label><input id="clCpgFluidRegimen" placeholder="Volume, interval and route (oral / total fluid)"/></div>
+</div>
+<details class="adult-cpg4 cpg-urine-record" id="clCpgUrineRecord"><summary>Urine frequency / measured output (optional)</summary>
+<label for="clCpgVoids">Urination frequency / 24 hours</label><input id="clCpgVoids" type="number" min="0" step="1"/>
+<div class="grid two"><div><label for="clCpgUrineMl">Measured urine (mL)</label><input id="clCpgUrineMl" type="number" min="0" step="any"/></div><div><label for="clCpgUrineHours">Over how many hours?</label><input id="clCpgUrineHours" type="number" min="0" step="any"/></div></div>
+<div class="helper" id="clCpgUrineDisplay" aria-live="polite"></div></details>
 <details><summary>Clinician disposition rationale / override</summary>
 <label for="clCpgDispositionReason">Required if the selected plan differs from a hospital-assessment recommendation</label><textarea id="clCpgDispositionReason" rows="2" placeholder="Clinical reassessment, agreed disposition and rationale"></textarea></details>
 <div class="grid two">
@@ -6006,7 +6009,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <label class="check-item"><input id="clCpgDxReviewed" type="checkbox"/>Clinical assessment reviewed for this diagnosis</label>
 <div class="helper">Confirm phase, warning signs, shock status and comorbidities/special populations. Recheck after changing clinical findings. Group A/B1/B2/C guides management and is not added to the copied diagnosis.</div>
-<a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG4 rules, page references and interpretation notes</a>
+<a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG Fourth Edition (2026) — rules &amp; page references</a>
 </div>
 <label>Generated diagnosis</label><textarea id="clGeneratedDx" readonly=""></textarea>
 </div><div class="card" id="clDengueFluidCard">
@@ -6027,7 +6030,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="fluid-calculate"><button class="btn primary" id="dfCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="clCpgOralAdequacyWrap"><label for="clCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="clCpgOralAdequacy" aria-describedby="clCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="clCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
-<p class="adult-cpg4"><a class="ref" id="clCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.232.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
+<p class="adult-cpg4"><a class="ref" id="clCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.233.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
 <div class="result-box fluid-result" id="dfResult" aria-live="polite">Select a category, then calculate.</div>
 <details class="fluid-extra" id="clFluidWeightDetails"><summary>Weight used / clinician override</summary>
 <div class="grid two"><div><label for="dfBasis">Weight basis</label><select id="dfBasis">
@@ -6597,7 +6600,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 <div class="adult-cpg4" id="dfuCpgReview">
-<strong>Adult dengue — CPG Fourth Edition (2026)</strong>
+<strong>Assessment review</strong>
 <div class="helper">Assess the full clinical picture. Haemodynamic status is entered by the clinician after CCTVR, BP/pulse pressure and urine assessment; pasted vitals alone do not classify shock.</div>
 <div class="result-box" id="dfuCpgAssessment" aria-live="polite"></div>
 
@@ -6609,11 +6612,14 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="helper" id="dfuCpgMedicationAdvice"></div>
 <label for="dfuCpgSteroidIndication">Context / separate indication for any recorded NSAID or corticosteroid administration</label><input id="dfuCpgSteroidIndication" placeholder="e.g. prior exposure or established non-dengue indication"/>
 </details>
-<details><summary>Oral fluids and measured urine</summary>
-<label class="check-item"><input id="dfuCpgFluidRestricted" type="checkbox"/>Requires an individualised fluid restriction regimen</label>
-<div class="cpg-fluid-regimen hidden"><label for="dfuCpgFluidRegimen">Individualised fluid regimen</label><input id="dfuCpgFluidRegimen" placeholder="Prescribed volume and interval"/></div>
-<div class="grid three"><div><label for="dfuCpgVoids">Urination frequency / 24 hours</label><input id="dfuCpgVoids" type="number" min="0" step="1"/></div><div><label for="dfuCpgUrineMl">Measured urine volume (mL)</label><input id="dfuCpgUrineMl" type="number" min="0" step="any"/></div><div><label for="dfuCpgUrineHours">Measurement interval (hours)</label><input id="dfuCpgUrineHours" type="number" min="0" step="any"/></div></div>
-<div class="helper" id="dfuCpgUrineDisplay"></div></details>
+<div class="adult-cpg4 cpg-fluid-restriction" id="dfuCpgFluidRestriction">
+<label class="check-item"><input id="dfuCpgFluidRestricted" type="checkbox"/>Individualised fluid restriction</label>
+<div class="cpg-fluid-regimen hidden"><label for="dfuCpgFluidRegimen">Prescribed fluid regimen</label><input id="dfuCpgFluidRegimen" placeholder="Volume, interval and route (oral / total fluid)"/></div>
+</div>
+<details class="adult-cpg4 cpg-urine-record" id="dfuCpgUrineRecord"><summary>Urine frequency / measured output (optional)</summary>
+<label for="dfuCpgVoids">Urination frequency / 24 hours</label><input id="dfuCpgVoids" type="number" min="0" step="1"/>
+<div class="grid two"><div><label for="dfuCpgUrineMl">Measured urine (mL)</label><input id="dfuCpgUrineMl" type="number" min="0" step="any"/></div><div><label for="dfuCpgUrineHours">Over how many hours?</label><input id="dfuCpgUrineHours" type="number" min="0" step="any"/></div></div>
+<div class="helper" id="dfuCpgUrineDisplay" aria-live="polite"></div></details>
 <details><summary>Clinician disposition rationale / override</summary>
 <label for="dfuCpgDispositionReason">Required if the selected plan differs from a hospital-assessment recommendation</label><textarea id="dfuCpgDispositionReason" rows="2" placeholder="Clinical reassessment, agreed disposition and rationale"></textarea></details>
 <div class="grid two">
@@ -6622,7 +6628,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <label class="check-item"><input id="dfuCpgDxReviewed" type="checkbox"/>Clinical assessment reviewed for this diagnosis</label>
 <div class="helper">Confirm phase, warning signs, shock status and comorbidities/special populations. Recheck after changing clinical findings. Group A/B1/B2/C guides management and is not added to the copied diagnosis.</div>
-<a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG4 rules, page references and interpretation notes</a>
+<a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG Fourth Edition (2026) — rules &amp; page references</a>
 </div>
 <label>Generated diagnosis</label>
 <textarea id="dfuGeneratedDx" readonly=""></textarea>
@@ -6644,7 +6650,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="fluid-calculate"><button class="btn primary" id="dfuFluidCalculate" type="button">Calculate fluid</button></div>
 </div>
 <div class="adult-cpg4 fluid-oral hidden" id="dfuCpgOralAdequacyWrap"><label for="dfuCpgOralAdequacy">Oral intake adequate for current needs?</label><select id="dfuCpgOralAdequacy" aria-describedby="dfuCpgOralAdequacyHint"><option value="">Select after clinical assessment</option><option value="adequate">Adequate</option><option value="inadequate">Inadequate</option></select><div class="helper" id="dfuCpgOralAdequacyHint">Able to drink does not confirm sufficient intake. Assess the amount and current clinical needs.</div></div>
-<p class="adult-cpg4"><a class="ref" id="dfuCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.232.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
+<p class="adult-cpg4"><a class="ref" id="dfuCpgIvdGuide" href="docs/dengue-iv-guide.html?v=18.233.0" target="_blank" rel="noopener">IV fluid calculation guide (CPG4)</a></p>
 <div class="result-box fluid-result" id="dfuFluidResult" aria-live="polite">Select a category, then calculate.</div>
 <details class="fluid-extra" id="dfuFluidWeightDetails"><summary>Weight used / clinician override</summary>
 <div class="grid two"><div><label for="dfuFluidBasis">Weight basis</label><select id="dfuFluidBasis">
@@ -11798,7 +11804,10 @@ function dengueOralIntakeLine(){
 }
 
 function dengueUrineWarningLine(){
+  const assessedStatus=window.MedAssistDengueCpg4UI?.active("cl")
+    ? window.MedAssistDengueCpg4UI.urineStatus("cl") : null;
   if(value("clUrine")!=="yes"){
+    if(assessedStatus && assessedStatus!=="normal") return `PU: ${assessedStatus}; see recorded urine assessment.`;
     return "PU normal volume and concentration";
   }
 
@@ -11833,9 +11842,10 @@ function dengueUrineWarningLine(){
     if(lastPu) details.push(`last PU ${formatDateTimeDisplay(lastPu)}`);
   }
 
+  const status=assessedStatus==="no urine output" ? "no urine output" : "reduced PU";
   const line=details.length
-    ? `reduced PU: ${details.join("; ")}`
-    : "reduced PU";
+    ? `${status}: ${details.join("; ")}`
+    : status;
   return line+(window.dengueDurationSuffix?.("clUrineDuration")||"");
 }
 
@@ -16142,11 +16152,13 @@ function buildDengueFollowUpClinicalNote(){
     ...warning.negative.map(item=>`no ${item}`)
   ].filter(Boolean);
 
+  const assessedUrine=window.MedAssistDengueCpg4UI?.active("dfu")
+    ? window.MedAssistDengueCpg4UI.urineStatus("dfu") : fv("dfuUrine");
   const salientLines=[
     "THREE SALIENT QUESTIONS",
     fv("dfuOralIntake")?`Oral intake: ${fv("dfuOralIntake")}${fv("dfuOralIntake")!=="good"?(window.dengueDurationSuffix?.("dfuOralIntakeDuration")||""):""}${window.MedAssistDengueSymptoms?.oralAmount("dfu")||""}`:"",
     fv("dfuActivity")?`Active as usual: ${fv("dfuActivity")}${fv("dfuActivity")==="no"?(window.dengueDurationSuffix?.("dfuActivityDuration")||""):""}`:"",
-    fv("dfuUrine")?`Urine output: ${fv("dfuUrine")}${fv("dfuUrine")!=="normal"?(window.dengueDurationSuffix?.("dfuUrineDuration")||""):""}`:"",
+    assessedUrine?`Urine output: ${assessedUrine}${fv("dfuUrine")!=="normal"?(window.dengueDurationSuffix?.("dfuUrineDuration")||""):""}`:"",
     fv("dfuOtherSymptoms")?`Other symptoms: ${fv("dfuOtherSymptoms")}`:""
   ].filter(Boolean);
 

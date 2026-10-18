@@ -52,6 +52,7 @@
   function assess(s) {
     const candidates = [], concerns = [], risks = [], urgent = [];
     const vomit = number(s.vomit), stool = number(s.stool);
+    const urineConcern = typeof s.urineConcern === "string" ? s.urineConcern.trim() : "";
     if (vomit !== null && Number.isInteger(vomit) && vomit > 3) candidates.push(`persistent vomiting (${vomit} episodes/24 h)`);
     if (s.worseDefervescence) candidates.push("no clinical improvement / worsening as fever subsides");
     if (s.intenseAbdominalPain) candidates.push("intense abdominal pain or tenderness");
@@ -73,7 +74,8 @@
     if (s.oral === "reduced") concerns.push("reduced oral intake — assess hydration");
     if (s.oral === "able" && s.oralAdequacy === "inadequate") concerns.push("oral intake assessed as inadequate — reassess hydration and ongoing losses");
     if (s.dehydrated) concerns.push("dehydration — assess severity; moderate/severe dehydration requires IV fluid and hospital management");
-    if (s.reducedUrine && !s.lowUrine4h) concerns.push("reduced urine — establish duration, volume and perfusion");
+    if (urineConcern) concerns.push(urineConcern);
+    if (s.reducedUrine && !s.lowUrine4h && !urineConcern) concerns.push("reduced urine — establish duration, volume and perfusion");
     if (s.sob && !s.leakRespiratory) concerns.push("shortness of breath — assess promptly for respiratory distress / plasma leakage");
     if (s.labTrend && !s.rapidHctPlt) concerns.push("HCT rising / platelets falling — assess trend and phase; no automatic IV bolus");
     if (s.comorbidity) risks.push("co-morbidity documented — assess stability and need for hospital observation");
@@ -135,6 +137,17 @@
     if (category === "febrile" && s.phase !== "febrile phase") return fail("The febrile maintenance pathway requires a clinician-confirmed febrile phase.");
     if (category === "warning" && !nearCritical(s)) return fail("B2 fluid pathway requires assessment near/in critical phase. Assess dehydration separately in febrile illness.");
     if (category === "warning" && !assess(s).warningSigns.length) return fail("Confirm dengue warning signs before using the B2 fluid pathway.");
+    const restricted = Boolean(s.fluidRestricted);
+    const regimen = String(s.fluidRegimen || "").trim();
+    const restrictionRecord = restricted ? `Fluid restriction recorded${regimen ? `: ${regimen}` : "; individualised regimen not entered"}.` : "";
+    // CPG pp31,40: honour the prescribed regimen and individualise fluids for
+    // comorbidity. Free-text restrictions are records, never a calculated dose.
+    if (!declared && restricted) {
+      const disposition = category === "warning" ? "Group B2 requires hospital admission; reassess while arranging transfer."
+        : assess(s).needsHospital ? "Hospital assessment is indicated; reassess hydration and perfusion while arranging referral."
+        : "Reassess hydration, perfusion and the need for hospital review.";
+      return {...fail(`${restrictionRecord} Review the prescribed oral + IV allowance and current clinical needs with the treating team before prescribing; a routine maintenance/B2 IV dose is not calculated. ${disposition} [CPG pp31,40]`, "Individualised fluid prescription required"),canPrescribe:false};
+    }
     // Oral tolerance alone does not establish adequate intake (CPG pp41–42,44).
     // Ask for the clinician's assessment instead of inferring adequacy from the default dropdown.
     if (["febrile","warning"].includes(category) && s.oral === "able" && !s.dehydrated) {
@@ -147,7 +160,9 @@
     const name = `${round(w.selected)} kg ${w.label}`;
     if (declared) {
       const amount = round(w.selected * (declared === "compensated" ? 10 : 20));
-      return result(`Initial isotonic crystalloid ${amount} mL over ${declared === "compensated" ? "1 hour (10 mL/kg)" : "15–30 minutes (20 mL/kg)"} using ${name}. Reassess CCTVR, BP/pulse pressure, HCT and urine output. Arrange emergency hospital transfer; do not delay transfer to finish the infusion. The non-shock fluid quota and 70 kg maintenance cap do not limit shock resuscitation. [CPG Algorithm ${declared === "compensated" ? "2" : "3"}]`, `Isotonic crystalloid ${amount} mL over ${declared === "compensated" ? "1 hour" : "15–30 minutes"}`, "Reassess CCTVR, BP/pulse pressure, HCT and urine output. Emergency hospital transfer; do not delay to complete the infusion.");
+      const prescriptionNote = restricted ? `${restrictionRecord} Individually titrate fluids with frequent perfusion and respiratory reassessment; discuss with the receiving team. Do not delay shock resuscitation or emergency transfer because of a pre-existing restriction.` : "";
+      const restrictionCaution = prescriptionNote ? ` ${prescriptionNote}` : "";
+      return {...result(`Initial isotonic crystalloid ${amount} mL over ${declared === "compensated" ? "1 hour (10 mL/kg)" : "15–30 minutes (20 mL/kg)"} using ${name}. Reassess CCTVR, BP/pulse pressure, HCT and urine output. Arrange emergency hospital transfer; do not delay transfer to finish the infusion. The non-shock fluid quota and 70 kg maintenance cap do not limit shock resuscitation.${restrictionCaution} [CPG Algorithm ${declared === "compensated" ? "2" : "3"}${restricted ? "; pp31,40,48" : ""}]`, `Isotonic crystalloid ${amount} mL over ${declared === "compensated" ? "1 hour" : "15–30 minutes"}`, `Reassess CCTVR, BP/pulse pressure, HCT and urine output. Emergency hospital transfer; do not delay to complete the infusion.${restrictionCaution}`),prescriptionNote};
     }
     const capped = w.maintenanceWeight;
     if (category === "febrile") {

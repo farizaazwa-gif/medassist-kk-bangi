@@ -270,3 +270,70 @@ test('documented inadequate intake is reflected in assessment even when oral tol
   assert.equal(a.group,'review');assert.equal(a.needsHospital,false);
   assert.ok(a.concerns.some(x=>/intake assessed as inadequate/.test(x)));
 });
+
+test('measured urine or void-frequency concerns prompt review without assuming a warning sign or shock',()=>{
+  for(const phase of ['febrile phase','critical phase']) {
+    const urineConcern='Measured urine below 0.5 mL/kg/hour; confirm duration and reassess perfusion.';
+    const low=C.assess({...base,phase,reducedUrine:true,urineConcern});
+    assert.equal(low.group,'review');assert.equal(low.warningSigns.length,0);
+    assert.equal(low.urgent.length,0);assert.deepEqual(low.concerns,[urineConcern]);
+    const frequency=C.assess({...base,phase,urineConcern:'Urine frequency below the 4–6 voids/day guide; establish volume and last void time.'});
+    assert.equal(frequency.group,'review');assert.equal(frequency.warningSigns.length,0);
+    const absent=C.assess({...base,phase,lowUrine4h:true});
+    assert.equal(absent.group,phase==='critical phase'?'B2':'review');
+    assert.equal(absent.urgent.length,0);
+  }
+  assert.equal(C.assess({...base,urineConcern:'  '}).group,'A');
+});
+
+test('non-shock fluid restriction prevents a routine maintenance order without parsing the regimen',()=>{
+  const s={...base,fluidState:'febrile',oral:'unable',oralHourly:0,oralPeriod:'24'};
+  assert.equal(C.fluid(s).headline,'IV isotonic crystalloid 100 mL/hour');
+  assert.equal(C.fluid({...s,fluidRestricted:false,fluidRegimen:'1 L/day'}).headline,'IV isotonic crystalloid 100 mL/hour');
+  for(const fluidRegimen of ['1 L/day','800 mL per day; review with renal team']) {
+    const r=C.fluid({...s,fluidRestricted:true,fluidRegimen});
+    assert.equal(r.valid,false);assert.equal(r.canPrescribe,false);
+    assert.equal(r.headline,'Individualised fluid prescription required');
+    assert.ok(r.plan.includes(fluidRegimen));
+    assert.match(r.action,/Hospital assessment is indicated/);
+    assert.doesNotMatch(r.plan,/100 mL\/hour|41\.7 mL\/hour|33\.3 mL\/hour/);
+  }
+});
+
+test('restricted B2 withholds routine IV doses while retaining admission advice',()=>{
+  const s={...base,phase:'critical phase',fluidState:'warning',vomit:4,oral:'unable',rate:3};
+  assert.equal(C.fluid(s).headline,'Isotonic crystalloid 180 mL/hour');
+  for(const fluidRegimen of ['1 L/day','',undefined]) {
+    const r=C.fluid({...s,fluidRestricted:true,fluidRegimen});
+    assert.equal(r.valid,false);assert.equal(r.canPrescribe,false);
+    assert.equal(r.headline,'Individualised fluid prescription required');
+    assert.match(r.action,/Group B2 requires hospital admission/);
+    assert.doesNotMatch(r.plan,/180 mL\/hour/);
+    if(!fluidRegimen) assert.match(r.plan,/individualised regimen not entered/);
+  }
+});
+
+test('empty restricted regimen still blocks routine maintenance without removing clinical reassessment',()=>{
+  const r=C.fluid({...base,fluidState:'febrile',oralAdequacy:'inadequate',oralHourly:30,fluidRestricted:true,fluidRegimen:'  '});
+  assert.equal(r.valid,false);assert.equal(r.canPrescribe,false);
+  assert.match(r.plan,/individualised regimen not entered/);
+  assert.match(r.action,/Reassess hydration, perfusion and the need for hospital review/);
+  assert.doesNotMatch(r.plan,/70 mL\/hour/);
+});
+
+test('restricted shock retains emergency initial dose and carries individual reassessment into the plan',()=>{
+  for(const [haemo,fluidState,amount,duration] of [['compensated shock','compensated',600,'1 hour'],['decompensated shock','decompensated',1200,'15–30 minutes']]) {
+    for(const fluidRegimen of ['1 L/day','']) {
+      const r=C.fluid({...base,haemo,fluidState,fluidRestricted:true,fluidRegimen});
+      assert.equal(r.valid,true);assert.notEqual(r.canPrescribe,false);
+      assert.equal(r.headline,`Isotonic crystalloid ${amount} mL over ${duration}`);
+      assert.match(r.prescriptionNote,/Fluid restriction recorded/);
+      assert.match(r.prescriptionNote,/frequent perfusion and respiratory reassessment/);
+      assert.match(r.prescriptionNote,/Do not delay shock resuscitation or emergency transfer/);
+      assert.ok(r.plan.includes(r.prescriptionNote));assert.ok(r.action.includes(r.prescriptionNote));
+      assert.equal(r.plan,r.display);
+      if(fluidRegimen) assert.ok(r.prescriptionNote.includes(fluidRegimen));
+    }
+  }
+  assert.equal(C.fluid({...base,haemo:'compensated shock',fluidState:'warning',fluidRestricted:true}).valid,false);
+});
