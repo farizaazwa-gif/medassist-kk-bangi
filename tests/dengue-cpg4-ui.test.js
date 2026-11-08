@@ -96,8 +96,9 @@ test('diagnosis review and confirmation cannot be inferred from blank/default in
 test('severe dengue diagnosis names severity and shock without a second DNWS/DWWS label',()=>{
   for(const haemo of ['compensated shock','decompensated shock']){
     const dx=form({clPhase:'critical phase',clHaemo:haemo,clVomitLast24:5}).diagnosis('cl');
-    assert.equal(dx,`Treat as probable severe dengue, D4 of illness, in critical phase, with ${haemo}, without comorbid.`);
-    assert.doesNotMatch(dx,/with(?:out)? warning signs/);
+    // v18.241: warning signs present are named even in severe dengue.
+    assert.equal(dx,`Treat as probable severe dengue, D4 of illness, in critical phase, with warning signs (persistent vomiting (5 episodes/24 h)), with ${haemo}, without comorbid.`);
+    assert.doesNotMatch(dx,/without warning signs/);
   }
   const nonShock=form({clCpgSevereBleeding:true});
   assert.match(nonShock.diagnosis('cl'),/^Treat as probable severe dengue \(severe bleeding\), D4 of illness, in febrile phase, not in shock/);

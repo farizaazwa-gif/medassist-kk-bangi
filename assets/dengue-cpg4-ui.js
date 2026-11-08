@@ -95,13 +95,14 @@
   }
   /* v18.240 standard diagnosis sentence (all dengue forms):
      "Treat as [probable] dengue fever | severe dengue, D<n> of illness, in <phase>, with/without warning signs, with <shock> | not in shock, with/without comorbid".
-     Confirmed dengue drops "probable"; severe dengue omits the warning-sign clause. */
+     Confirmed dengue drops "probable"; warning signs are listed whenever present. */
   function formatDiagnosis(o) {
     const severe=Boolean(o.severe);
     const lead=`Treat as ${o.certainty === "confirmed" || o.certainty === "none" ? "" : "probable "}${severe?`severe dengue${o.severeDetails && o.severeDetails.length?` (${o.severeDetails.join("; ")})`:""}`:"dengue fever"}`;
     const day=`D${o.day} of illness`;
     const phase=o.phase ? `in ${o.phase}${o.nearCritical && o.phase !== "critical phase" ? ", approaching critical phase" : ""}` : "in [SELECT PHASE]";
-    const warning=severe ? "" : o.warningSigns && o.warningSigns.length ? `with warning signs (${o.warningSigns.join(", ")})` : o.withoutWarning === false ? "[SELECT WARNING SIGNS]" : "without warning signs";
+    // Warning signs are always named when present (severe dengue included); severe dengue without them omits the clause.
+    const warning=o.warningSigns && o.warningSigns.length ? `with warning signs (${o.warningSigns.join(", ")})` : severe ? "" : o.withoutWarning === false ? "[SELECT WARNING SIGNS]" : "without warning signs";
     const shock=o.haemo === "haemodynamically stable" ? "not in shock" : o.haemo ? `with ${o.haemo}` : "[SELECT SHOCK STATUS]";
     const comorbid=o.comorbid === null ? "[SELECT COMORBIDITY STATUS]" : o.comorbid ? `with comorbid ${o.comorbid}` : "without comorbid";
     return `${[lead,day,phase,warning,shock,comorbid,...(o.special || [])].filter(Boolean).join(", ")}.`;

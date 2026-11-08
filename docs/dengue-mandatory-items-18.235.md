@@ -47,3 +47,6 @@ Standard diagnosis sentence for every dengue form (adult and paediatric, new cas
 - Suspected dengue → "Treat as probable …"; confirmed dengue → "Treat as …" (no "probable").
 - Severe dengue omits the warning-sign clause (severity details stay in brackets).
 - Paediatric forms have no suspected/confirmed field, so they read "Treat as dengue fever, …".
+
+## v18.241.0 (9 Nov 2026)
+- Warning signs are named in the diagnosis whenever present, including severe dengue, e.g. "Treat as probable severe dengue, D5 of illness, in critical phase, with warning signs (persistent vomiting (5 episodes/24 h)), with compensated shock, without comorbid."
