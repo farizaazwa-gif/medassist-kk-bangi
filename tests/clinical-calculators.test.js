@@ -69,8 +69,13 @@ test("HPT BP and BMI boundary classifications remain stable", () => {
   assert.equal(hpt.bpCategory(140, 90), "Stage 1 (Mild)");
   assert.equal(hpt.bpCategory(160, 100), "Stage 2 (Moderate)");
   assert.equal(hpt.bpCategory(180, 110), "Stage 3 (Severe)");
-  assert.equal(hpt.bmiCategory(hpt.calcBmi(160, 64)), "Normal");
-  assert.equal(hpt.bmiCategory(30), "Obese");
+  // Malaysian/Asian adult cut-offs, aligned with the DM module.
+  assert.equal(hpt.bmiCategory(22.9), "Normal range");
+  assert.equal(hpt.bmiCategory(23), "Overweight / pre-obese");
+  assert.equal(hpt.bmiCategory(hpt.calcBmi(160, 64)), "Overweight / pre-obese");
+  assert.equal(hpt.bmiCategory(27.5), "Obese I");
+  assert.equal(hpt.bmiCategory(35), "Obese II");
+  assert.equal(hpt.bmiCategory(40), "Obese III");
 });
 
 test("Framingham output is reproducible and bypassed for established CVD", () => {

@@ -165,13 +165,19 @@ test('compact shock result retains emergency action and full source detail', () 
   }
 });
 
+function paedsWeightHelpers(){
+  const start=html.indexOf('function paedsDengueFields(prefix)'),end=html.indexOf('window.paedsDengueScreenText=',start);
+  return html.slice(start,end);
+}
 test('paediatric calculation uses current weight even before the derived field updates',()=>{
   const vm=require('node:vm');
   for(const [name,group,weight,derived,state,rate] of [['getDengueFluidInstruction','dfGroup','clWeight','dfSelectedWeight','dfState','dfRate'],['getDengueFollowUpFluidInstruction','dfuGroup','dfuWeight','dfuFluidSelectedWeight','dfuFluidState','dfuFluidRate']]){
     const start=html.indexOf(`function ${name}(){`),end=html.indexOf('\nfunction ',start+1);
-    const fields={[group]:'paeds',[weight]:'20',[derived]:'50',[state]:'compensated',[rate]:'10'};
-    const context={value:id=>fields[id]||'',fv:id=>fields[id]||''};
-    vm.runInNewContext(html.slice(start,end)+`;this.calculate=${name};`,context);
+    const basis=name==='getDengueFluidInstruction'?'dfBasis':'dfuFluidBasis';
+    const fields={[group]:'paeds',[weight]:'20',[derived]:'50',[state]:'compensated',[rate]:'10',[basis]:'actual'};
+    const window={MedAssistPaedsDengueWeight:require('../assets/paeds-dengue-weight.js')};
+    const context={value:id=>fields[id]||'',fv:id=>fields[id]||'',window,document:{getElementById:id=>({value:fields[id]||''})}};
+    vm.runInNewContext(paedsWeightHelpers()+html.slice(start,end)+`;this.calculate=${name};window.paedsDengueFluidWeight=paedsDengueFluidWeight;`,context);
     assert.match(context.calculate().display,/200 mL/);
     fields[weight]='25';assert.match(context.calculate().display,/250 mL/);
     for(const invalid of ['','0','-20','Infinity']){fields[weight]=invalid;assert.equal(context.calculate().valid,false);}
