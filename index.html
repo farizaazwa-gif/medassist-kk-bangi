@@ -14,6 +14,7 @@
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
 <script src="assets/dengue-cpg4.js?v=18.233.0"></script>
 <script src="assets/dengue-cpg4-ui.js?v=18.233.0"></script>
+<script src="assets/paeds-dengue-weight.js?v=18.234.0"></script>
 <script src="assets/dengue-symptoms.js?v=18.233.0"></script>
 <link rel="stylesheet" href="assets/dengue-symptoms.css?v=18.233.0"/>
 <script src="assets/clinical-safety.js"></script>
@@ -5798,7 +5799,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="card hidden dengue-optional-card" data-optional-section="intervention" id="clInterventionCard"><div class="dengue-optional-card-head"><h2>Intervention done in clinic</h2><button class="btn secondary dengue-optional-close" data-close-optional="intervention" type="button">Hide</button></div>
 <div class="helper">
   Select an intervention, then click Add. Only selected interventions will be displayed.
-  Paediatric IV hydrocortisone is calculated automatically using 4 mg/kg.
+  Paediatric IV hydrocortisone is calculated automatically using 4 mg/kg (maximum 100 mg/dose).
 </div>
 <div class="intervention-picker">
 <div>
@@ -6039,7 +6040,9 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="actual">Actual body weight</option>
 <option value="ibw">Ideal body weight — adult</option>
 <option value="adj">Adjusted body weight — adult</option>
+<option disabled hidden value="pibw">Ideal body weight — paediatric (CPG Appendix 7)</option>
 </select></div><div><label for="dfSelectedWeight">Selected weight (kg)</label><input id="dfSelectedWeight" readonly=""/></div></div>
+<div class="hidden" id="clPaedsIbwWrap"><label for="clPaedsIbw">Paediatric ideal body weight (kg)</label><input id="clPaedsIbw" min="0" step="0.1" type="number" placeholder="From growth chart"/><div class="helper">CPG Dengue in Children 2020, Appendix 7 (pp47–48): height 5th–95th centile → weight-for-age on the same centile as height (Moore); height &gt;95th centile → 50th-centile weight for height-age (McLaren).</div></div>
 <div class="adult-cpg4 cpg-weight-reason hidden"><label for="clCpgWeightReason">Reason for weight override</label><input id="clCpgWeightReason" placeholder="Clinical rationale"/></div>
 <div class="helper" id="dfWeightStatus"></div>
 </details>
@@ -6463,7 +6466,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="card hidden dengue-optional-card" data-optional-section="intervention" id="dfuInterventionCard"><div class="dengue-optional-card-head"><h2>Intervention done in clinic</h2><button class="btn secondary dengue-optional-close" data-close-optional="intervention" type="button">Hide</button></div>
 <div class="helper">
   Tick the intervention given and enter the actual administration time.
-  Paediatric IV hydrocortisone is calculated automatically at 4 mg/kg using the follow-up weight.
+  Paediatric IV hydrocortisone is calculated automatically at 4 mg/kg (maximum 100 mg/dose) using the follow-up weight.
 </div>
 <div class="cl-intervention-table">
 <div class="cl-intervention-header">
@@ -6659,7 +6662,9 @@ html,body{max-width:100%;overflow-x:hidden}
 <option value="actual">Actual body weight</option>
 <option value="ibw">Ideal body weight — adult</option>
 <option value="adj">Adjusted body weight — adult</option>
+<option disabled hidden value="pibw">Ideal body weight — paediatric (CPG Appendix 7)</option>
 </select></div><div><label for="dfuFluidSelectedWeight">Selected weight (kg)</label><input id="dfuFluidSelectedWeight" readonly=""/></div></div>
+<div class="hidden" id="dfuPaedsIbwWrap"><label for="dfuPaedsIbw">Paediatric ideal body weight (kg)</label><input id="dfuPaedsIbw" min="0" step="0.1" type="number" placeholder="From growth chart"/><div class="helper">CPG Dengue in Children 2020, Appendix 7 (pp47–48): height 5th–95th centile → weight-for-age on the same centile as height (Moore); height &gt;95th centile → 50th-centile weight for height-age (McLaren).</div></div>
 <div class="adult-cpg4 cpg-weight-reason hidden"><label for="dfuCpgWeightReason">Reason for weight override</label><input id="dfuCpgWeightReason" placeholder="Clinical rationale"/></div>
 <div class="helper" id="dfuFluidWeightStatus"></div>
 </details>
@@ -8826,7 +8831,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div><label>Early / previous OGTT status</label><select id="rmeOgttStatus"><option value="not-done">Not done / not documented</option><option value="normal-early">Normal early OGTT</option><option value="abnormal">Abnormal OGTT / known GDM</option></select></div>
 <div><label>OGTT notes</label><input id="rmeOgttNotes" placeholder="Optional"/></div>
 </div>
-<div class="rme1-screen-note">Auto-considered: BMI &gt;27 kg/m², glucosuria ≥2+ on two occasions, age &gt;25 years.</div>
+<div class="rme1-screen-note">Auto-considered: BMI &gt;27 kg/m², glucosuria ≥2+ on two occasions. Age ≥25 years alone is not an early-OGTT trigger — screen at 24–28 weeks (CPG Diabetes in Pregnancy 2017).</div>
 <div class="rme1-engine-result rme1-mini-result" id="rmeOgttResult">No OGTT risk assessment generated yet.</div>
 </div>
 <div class="rme1-risk-panel">
@@ -8881,7 +8886,7 @@ html,body{max-width:100%;overflow-x:hidden}
 
 <div class="card" id="rme1VteCard">
 <h2>8. VTE risk assessment — booking</h2>
-<div class="helper">Tick any factor that is currently applicable. BMI contribution is added automatically. Previous VTE is treated as <strong>Very High Risk</strong> as shown in the supplied clinic flowchart.</div>
+<div class="helper">Tick any factor that is currently applicable. BMI, age &gt;35, parity ≥3 and multiple pregnancy on ultrasound are added automatically (RCOG Green-top 37a risk factors; confirm against the KKM flowchart in use). Previous VTE is treated as <strong>Very High Risk</strong> as shown in the supplied clinic flowchart.</div>
 <div class="rme1-vte-groups" id="rmeVteChecklist">
 <div class="rme1-vte-group"><div class="rme1-vte-group-title">Pre-existing risk factors</div>
 <div class="rme1-vte-item"><label><input class="rme-vte-factor" data-score="4" id="rmeVtePrevious" type="checkbox"/>Previous VTE</label><span class="rme1-vte-score">4</span></div>
@@ -8891,10 +8896,15 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="rme1-vte-item"><label><input class="rme-vte-factor" data-score="1" id="rmeVteFamily" type="checkbox"/>Family history of VTE</label><span class="rme1-vte-score">1</span></div>
 <div class="rme1-vte-item"><label><input class="rme-vte-factor" data-score="1" id="rmeVteLowThrombophilia" type="checkbox"/>Low-risk thrombophilia (Factor V Leiden, high FVIII)</label><span class="rme1-vte-score">1</span></div>
 <div class="rme1-vte-item"><label><input class="rme-vte-factor" data-score="1" id="rmeVteSmoker" type="checkbox"/><span>Current smoker ≥10 cigarettes/day<small>Tick manually if exactly 10/day or cigarette count is not captured in Fagerström.</small></span></label><span class="rme1-vte-score">1</span></div>
+<div class="rme1-vte-item auto"><label><span>Age &gt;35 years — auto from maternal age</span></label><span class="rme1-vte-score" id="rmeVteAgeScore">0</span></div>
+<div class="rme1-vte-item auto"><label><span>Parity ≥3 — auto from Para</span></label><span class="rme1-vte-score" id="rmeVteParityScore">0</span></div>
+<div class="rme1-vte-item"><label><input class="rme-vte-factor" data-score="1" id="rmeVteVaricose" type="checkbox"/>Gross varicose veins</label><span class="rme1-vte-score">1</span></div>
 </div>
 <div class="rme1-vte-group"><div class="rme1-vte-group-title">Obstetric risk factors</div>
 <div class="rme1-vte-item"><label><input class="rme-vte-factor" data-score="2" id="rmeVteCaesarean" type="checkbox"/>Caesarean section — current episode / when applicable</label><span class="rme1-vte-score">2</span></div>
 <div class="rme1-vte-item"><label><input class="rme-vte-factor" data-score="1" id="rmeVtePreeclampsia" type="checkbox"/>Current pre-eclampsia</label><span class="rme1-vte-score">1</span></div>
+<div class="rme1-vte-item"><label><input class="rme-vte-factor" data-score="1" id="rmeVteMultiple" type="checkbox"/><span>Multiple pregnancy<small>Auto-counted when the ultrasound records twins or higher-order pregnancy.</small></span></label><span class="rme1-vte-score">1</span></div>
+<div class="rme1-vte-item"><label><input class="rme-vte-factor" data-score="1" id="rmeVtePreterm" type="checkbox"/>Preterm birth &lt;37+0 weeks — current delivery</label><span class="rme1-vte-score">1</span></div>
 <div class="rme1-vte-item"><label><input class="rme-vte-factor" data-score="1" id="rmeVteIvf" type="checkbox"/>IVF — 1st trimester only</label><span class="rme1-vte-score">1</span></div>
 <div class="rme1-vte-item"><label><input class="rme-vte-factor" data-score="1" id="rmeVteInstrumental" type="checkbox"/>Mid-cavity / rotational instrumental delivery</label><span class="rme1-vte-score">1</span></div>
 <div class="rme1-vte-item"><label><input class="rme-vte-factor" data-score="1" id="rmeVtePph" type="checkbox"/>PPH ≥1000 mL or requires blood transfusion</label><span class="rme1-vte-score">1</span></div>
@@ -10388,7 +10398,8 @@ function calcClerkingWeight(){
   }
 
   if(validHeight&&sex){
-    ibw=group==="adult" ? (sex==="Male"?50:45.5)+0.91*(h-152) : (sex==="Male"?50:45.5)+2.3*(h/2.54-60);
+    // Adult Devine IBW only; paediatric IBW is read from the CPG Appendix 7 growth chart.
+    ibw=group==="adult" ? (sex==="Male"?50:45.5)+0.91*(h-152) : 0;
     if(ibw>0){
       $("clIBW").value=ibw.toFixed(1);
     }else{
@@ -10418,7 +10429,7 @@ function calcClerkingWeight(){
   }else if(group!=="adult"){
     $("clBodyCalcResult").innerHTML=
       `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
-      "<strong>Adjusted body weight:</strong> Not applicable for paediatric patients — use actual body weight.";
+      `<strong>Overweight screen:</strong> ${paedsDengueScreenText("cl")}`;
   }else if(!sex){
     $("clBodyCalcResult").innerHTML=
       `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
@@ -10567,16 +10578,17 @@ calcClerkingWeight();
 
 function getDengueFluidInstruction(){
   if(value("dfGroup")==="adult") return window.MedAssistDengueCpg4UI.fluid("cl");
-  const weight=Number(value("clWeight"));
+  const weightResult=paedsDengueFluidWeight("cl");
   const state=value("dfState");
 
-  if(!Number.isFinite(weight) || weight<=0){
+  if(!weightResult.valid){
     return {
       valid:false,
-      display:"IVD NS rate unavailable — enter patient weight first.",
-      plan:"Start IVD NS — rate unavailable because patient weight has not been entered."
+      display:`IVD NS rate unavailable — ${weightResult.error}`,
+      plan:"Start IVD NS — rate unavailable until the paediatric fluid weight is confirmed."
     };
   }
+  const weight=weightResult.selected;
 
   if(state==="no-warning"){
     return {
@@ -10634,10 +10646,22 @@ function dengueInterventionTime(id){
   return value(id)||"[ENTER TIME]";
 }
 
+/* Paediatric IV hydrocortisone 4 mg/kg/dose, capped at 100 mg/dose (BNFc: max 100 mg for 5–17 years;
+   lower age-band maxima apply to younger children — confirm against the Paediatric Protocols). */
+const PAEDS_HYDROCORTISONE_MAX_MG=100;
+function paedsHydrocortisoneDose(weight){
+  const w=Number(weight);
+  if(!Number.isFinite(w) || w<=0) return null;
+  return Math.min(w*4,PAEDS_HYDROCORTISONE_MAX_MG);
+}
+function paedsHydrocortisoneBasis(weight){
+  const w=Number(weight);
+  return `4 mg/kg using ${w.toFixed(1)} kg${w*4>PAEDS_HYDROCORTISONE_MAX_MG?`, capped at maximum ${PAEDS_HYDROCORTISONE_MAX_MG} mg/dose`:""}`;
+}
+window.paedsHydrocortisoneDose=paedsHydrocortisoneDose;
+window.paedsHydrocortisoneBasis=paedsHydrocortisoneBasis;
 function getPaediatricHydrocortisoneDose(){
-  const weight=Number(value("clWeight"));
-  if(!Number.isFinite(weight) || weight<=0) return null;
-  return weight*4;
+  return paedsHydrocortisoneDose(value("clWeight"));
 }
 
 function getDengueInterventionLines(){
@@ -10661,7 +10685,7 @@ function getDengueInterventionLines(){
           ? calculated.toFixed(0)
           : calculated.toFixed(1);
         lines.push(
-          `IV hydrocortisone ${dose} mg STAT (4 mg/kg using ${weight.toFixed(1)} kg) given at ${dengueInterventionTime("clIntHydroTime")}.`
+          `IV hydrocortisone ${dose} mg STAT (${paedsHydrocortisoneBasis(weight)}) given at ${dengueInterventionTime("clIntHydroTime")}.`
         );
       }else{
         lines.push(
@@ -10767,7 +10791,7 @@ function syncDengueInterventions(){
         ? calculated.toFixed(0)
         : calculated.toFixed(1);
       $("clIntHydroPaedsDose").textContent=
-        `Paediatric dose: ${dose} mg STAT (4 mg/kg using ${Number(value("clWeight")).toFixed(1)} kg)`;
+        `Paediatric dose: ${dose} mg STAT (${paedsHydrocortisoneBasis(value("clWeight"))})`;
     }
   }
 
@@ -12338,44 +12362,69 @@ initialisePreviousLabInvestigations();
 initialiseQuickFbcDetection();
 
 // Dengue fluid integrated into clerking
+// Paediatric fluid weight basis — CPG Dengue in Children 2020 p19 & Appendix 7.
+// Function (not const) so it is hoisted: calcClerkingWeight() runs on load before this point.
+function paedsDengueFields(prefix){return ({
+  cl:{group:"dfGroup",basis:"dfBasis",weight:"clWeight",height:"clHeight",sex:"clSex",age:"clAge",ageUnit:"clAgeUnit",ibw:"clPaedsIbw",ibwWrap:"clPaedsIbwWrap",selected:"dfSelectedWeight",status:"dfWeightStatus",details:"clFluidWeightDetails"},
+  dfu:{group:"dfuGroup",basis:"dfuFluidBasis",weight:"dfuWeight",height:"dfuHeight",sex:"dfuSex",age:"dfuAge",ageUnit:"dfuAgeUnit",ibw:"dfuPaedsIbw",ibwWrap:"dfuPaedsIbwWrap",selected:"dfuFluidSelectedWeight",status:"dfuFluidWeightStatus",details:"dfuFluidWeightDetails"}
+})[prefix];}
+function paedsDengueField(id){return (document.getElementById(id)?.value||"").trim();}
+function paedsDengueScreen(prefix){
+  const f=paedsDengueFields(prefix),P=window.MedAssistPaedsDengueWeight;
+  if(!P) return {status:"unknown",reason:"paediatric weight module not loaded — refresh the page"};
+  return P.screen({weight:paedsDengueField(f.weight),height:paedsDengueField(f.height),sex:paedsDengueField(f.sex),age:paedsDengueField(f.age),ageUnit:paedsDengueField(f.ageUnit),tables:window.MedAssistWhoGrowthLms?.tables});
+}
+function paedsDengueScreenText(prefix){
+  const P=window.MedAssistPaedsDengueWeight;
+  return P?P.screenText(paedsDengueScreen(prefix)):"Paediatric weight module not loaded — refresh the page.";
+}
+function setDengueWeightBasisMode(prefix){
+  const f=paedsDengueFields(prefix),select=document.getElementById(f.basis);
+  if(!select) return;
+  const paeds=paedsDengueField(f.group)==="paeds";
+  select.querySelectorAll("option").forEach(option=>{
+    const paedsOption=option.value==="pibw",shared=option.value==="actual";
+    if(shared) return;
+    const show=paeds?paedsOption:!paedsOption;
+    if(option.value==="cpg"&&!paeds) return; // adult CPG option visibility is managed by the CPG4 module
+    option.hidden=!show;option.disabled=!show;
+  });
+  if(paeds&&!["actual","pibw"].includes(select.value)) select.value="actual";
+  if(!paeds&&select.value==="pibw") select.value="cpg";
+  select.disabled=false;
+  document.getElementById(f.ibwWrap)?.classList.toggle("hidden",!(paeds&&select.value==="pibw"));
+}
+function paedsDengueFluidWeight(prefix){
+  const f=paedsDengueFields(prefix),P=window.MedAssistPaedsDengueWeight;
+  if(!P) return {valid:false,error:"Paediatric weight module could not be loaded. Refresh the page before calculating fluid."};
+  return P.select({actual:paedsDengueField(f.weight),basis:paedsDengueField(f.basis),ibw:paedsDengueField(f.ibw),screenResult:paedsDengueScreen(prefix)});
+}
+function syncPaedsDengueWeight(prefix){
+  const f=paedsDengueFields(prefix);
+  setDengueWeightBasisMode(prefix);
+  const result=paedsDengueFluidWeight(prefix);
+  const selected=document.getElementById(f.selected);
+  if(selected) selected.value=result.valid?result.selected.toFixed(1):"";
+  const status=document.getElementById(f.status);
+  if(status) status.textContent=result.valid
+    ? `Using ${result.selected.toFixed(1)} kg ${result.label}.${result.warning?` ${result.warning}`:""}`
+    : result.error;
+  if(!result.valid&&paedsDengueField(f.weight)){const details=document.getElementById(f.details);if(details) details.open=true;}
+  return result;
+}
+window.paedsDengueScreenText=paedsDengueScreenText;
+window.setDengueWeightBasisMode=setDengueWeightBasisMode;
+window.paedsDengueFluidWeight=paedsDengueFluidWeight;
+window.syncPaedsDengueWeight=syncPaedsDengueWeight;
+
 function calcBodyWeight(){
+  setDengueWeightBasisMode("cl");
   if(value("dfGroup")==="adult") { window.MedAssistDengueCpg4UI.syncWeight("cl"); return; }
-  const group=value("dfGroup");
-  const actual=Number(value("clWeight"));
-  const ibw=Number(value("clIBW"));
-  const adj=Number(value("clAdjBW"));
-
-  if(group==="paeds"){
-    $("dfBasis").value="actual";
-    $("dfBasis").disabled=true;
-  }else{
-    $("dfBasis").disabled=false;
-  }
-
-  let selected=actual;
-  if(value("dfBasis")==="ibw") selected=ibw;
-  if(value("dfBasis")==="adj") selected=adj;
-
-  $("dfSelectedWeight").value=selected>0?selected.toFixed(1):"";
-
-  if(selected>0){
-    const label=value("dfBasis")==="actual"
-      ? "actual body weight"
-      : value("dfBasis")==="ibw"
-      ? "ideal body weight"
-      : "adjusted body weight";
-    $("dfWeightStatus").textContent=`Using ${label} from Dengue Clerking.`;
-  }else{
-    $("dfWeightStatus").textContent=
-      value("dfBasis")==="actual"
-      ? "Enter weight in the Dengue Clerking section above."
-      : value("dfBasis")==="ibw"
-      ? "IBW unavailable. Enter height and select sex above."
-      : "Adjusted body weight unavailable or not applicable.";
-  }
-
+  syncPaedsDengueWeight("cl");
   if($("clPlanPreview")) renderDenguePlanPreview();
 }
+$("clPaedsIbw")?.addEventListener("input",()=>{calcBodyWeight();});
+["clAge","clAgeUnit","clSex"].forEach(id=>$(id)?.addEventListener("change",()=>{if(value("dfGroup")==="paeds") calcClerkingWeight();}));
 
 ["dfGroup","dfBasis"].forEach(id=>{
   $(id).addEventListener("change",()=>{
@@ -13486,7 +13535,7 @@ window.initialiseDenguePlanAntibiotic(window.DENGUE_NEW_PLAN_ABX_CONFIG,renderDe
 if(typeof syncDiagnosisAmsLink==="function") syncDiagnosisAmsLink();
 
 // Vitals
-const bands=[{max:.25,label:"0–3 months",hr:[115,170],rr:[25,60],sbp:[60,105]},{max:1,label:"3–12 months",hr:[105,170],rr:[20,55],sbp:[70,105]},{max:2,label:"1–2 years",hr:[95,150],rr:[20,40],sbp:[70,105]},{max:5,label:"2–5 years",hr:[80,140],rr:[17,30],sbp:[75,110]},{max:12,label:"6–12 years",hr:[60,130],rr:[15,30],sbp:[80,120]},{max:18,label:"13–18 years",hr:[60,115],rr:[14,25],sbp:[90,130]}];
+const bands=[{max:.25,label:"0–3 months",hr:[115,170],rr:[25,60],sbp:[60,105]},{max:1,label:"3–12 months",hr:[105,170],rr:[20,55],sbp:[70,105]},{max:2,label:"1–2 years",hr:[95,150],rr:[20,40],sbp:[70,105]},{max:5,label:"2–5 years",hr:[80,140],rr:[17,30],sbp:[75,110]},{max:12,label:">5–12 years",hr:[60,130],rr:[15,30],sbp:[80,120]},{max:18,label:">12–18 years",hr:[60,115],rr:[14,25],sbp:[90,130]}];
 $("pvCalculate").addEventListener("click",()=>{let age=Number(value("pvAge"));if(value("pvUnit")==="months")age/=12;if(value("pvUnit")==="days")age/=365.25;const b=bands.find(x=>age<=x.max)||bands[bands.length-1];const interp=(v,r,lo,hi)=>!v?"not entered":v<r[0]?lo:v>r[1]?hi:"within range";const hr=Number(value("pvHR")),rr=Number(value("pvRR")),sbp=Number(value("pvSBP")),temp=Number(value("pvTemp")),spo=Number(value("pvSpO2")),crt=Number(value("pvCRT"));$("pvResult").innerHTML=`Age band: <strong>${b.label}</strong><br>HR: ${b.hr[0]}–${b.hr[1]} — ${interp(hr,b.hr,"below range","tachycardic")}<br>RR: ${b.rr[0]}–${b.rr[1]} — ${interp(rr,b.rr,"below range","tachypnoeic")}<br>SBP: ${b.sbp[0]}–${b.sbp[1]} — ${interp(sbp,b.sbp,"below range","above range")}<br>Temperature: ${!temp?"not entered":temp>=38?"fever":temp<35?"hypothermia":"afebrile range"}<br>SpO₂: ${!spo?"not entered":spo>=95?"normal":spo>=92?"low":"significantly low"}<br>CRT: ${!crt?"not entered":crt<2?"normal":crt===2?"upper limit":"delayed"}.`;});
 
 // Pack-year
@@ -15571,7 +15620,8 @@ function calculateDengueFollowUpBodyWeight(){
   }
 
   if(validHeight&&sex){
-    ibw=group==="adult" ? (sex==="Male"?50:45.5)+0.91*(height-152) : (sex==="Male"?50:45.5)+2.3*(height/2.54-60);
+    // Adult Devine IBW only; paediatric IBW is read from the CPG Appendix 7 growth chart.
+    ibw=group==="adult" ? (sex==="Male"?50:45.5)+0.91*(height-152) : 0;
 
     if(ibw>0){
       f$("dfuIBW").value=ibw.toFixed(1);
@@ -15602,7 +15652,7 @@ function calculateDengueFollowUpBodyWeight(){
   }else if(group!=="adult"){
     f$("dfuBodyCalcResult").innerHTML=
       `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
-      "<strong>Adjusted body weight:</strong> Not applicable for paediatric patients — use actual body weight.";
+      `<strong>Overweight screen:</strong> ${window.paedsDengueScreenText("dfu")}`;
   }else if(!sex){
     f$("dfuBodyCalcResult").innerHTML=
       `<strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²<br>`+
@@ -15626,9 +15676,7 @@ function dengueFollowUpInterventionTime(id){
 }
 
 function getDengueFollowUpPaediatricHydrocortisoneDose(){
-  const weight=Number(fv("dfuWeight"));
-  if(!Number.isFinite(weight)||weight<=0) return null;
-  return weight*4;
+  return window.paedsHydrocortisoneDose(fv("dfuWeight"));
 }
 
 function syncDengueFollowUpInterventions(){
@@ -15675,7 +15723,7 @@ function syncDengueFollowUpInterventions(){
         : calculated.toFixed(1);
 
       f$("dfuIntHydroPaedsDose").textContent=
-        `Paediatric dose: ${dose} mg STAT (4 mg/kg using ${Number(fv("dfuWeight")).toFixed(1)} kg)`;
+        `Paediatric dose: ${dose} mg STAT (${window.paedsHydrocortisoneBasis(fv("dfuWeight"))})`;
     }
   }
 }
@@ -15705,7 +15753,7 @@ function getDengueFollowUpInterventionLines(){
           : calculated.toFixed(1);
 
         lines.push(
-          `IV hydrocortisone ${dose} mg STAT (4 mg/kg using ${weight.toFixed(1)} kg) given at ${dengueFollowUpInterventionTime("dfuIntHydroTime")}.`
+          `IV hydrocortisone ${dose} mg STAT (${window.paedsHydrocortisoneBasis(weight)}) given at ${dengueFollowUpInterventionTime("dfuIntHydroTime")}.`
         );
       }else{
         lines.push(
@@ -15780,47 +15828,9 @@ function buildDengueFollowUpDiagnosis(){
 }
 
 function syncDengueFollowUpFluidWeight(){
+  window.setDengueWeightBasisMode("dfu");
   if(fv("dfuGroup")==="adult") { window.MedAssistDengueCpg4UI.syncWeight("dfu"); return; }
-  const group=fv("dfuGroup");
-  const actual=Number(fv("dfuWeight"));
-  const ibw=Number(fv("dfuIBW"));
-  const adjusted=Number(fv("dfuAdjBW"));
-
-  if(group==="paeds"){
-    f$("dfuFluidBasis").value="actual";
-    f$("dfuFluidBasis").disabled=true;
-  }else{
-    f$("dfuFluidBasis").disabled=false;
-  }
-
-  let selected=actual;
-
-  if(fv("dfuFluidBasis")==="ibw"){
-    selected=ibw;
-  }else if(fv("dfuFluidBasis")==="adj"){
-    selected=adjusted;
-  }
-
-  f$("dfuFluidSelectedWeight").value=
-    selected>0 ? selected.toFixed(1) : "";
-
-  if(selected>0){
-    const label=fv("dfuFluidBasis")==="actual"
-      ? "actual body weight"
-      : fv("dfuFluidBasis")==="ibw"
-        ? "ideal body weight"
-        : "adjusted body weight";
-
-    f$("dfuFluidWeightStatus").textContent=
-      `Using ${label} from this follow-up clerking.`;
-  }else{
-    f$("dfuFluidWeightStatus").textContent=
-      fv("dfuFluidBasis")==="actual"
-        ? "Enter weight in the Body weight section above."
-        : fv("dfuFluidBasis")==="ibw"
-          ? "IBW unavailable. Enter height and select sex above."
-          : "Adjusted body weight unavailable or not applicable.";
-  }
+  window.syncPaedsDengueWeight("dfu");
 }
 
 function updateDengueFollowUpFluidRateOptions(){
@@ -15868,16 +15878,17 @@ function updateDengueFollowUpFluidRateOptions(){
 
 function getDengueFollowUpFluidInstruction(){
   if(fv("dfuGroup")==="adult") return window.MedAssistDengueCpg4UI.fluid("dfu");
-  const weight=Number(fv("dfuWeight"));
+  const weightResult=window.paedsDengueFluidWeight("dfu");
   const state=fv("dfuFluidState");
 
-  if(!Number.isFinite(weight) || weight<=0){
+  if(!weightResult.valid){
     return {
       valid:false,
-      display:"IVD NS rate unavailable — enter patient weight first.",
-      plan:"Start IVD NS — rate unavailable because patient weight has not been entered."
+      display:`IVD NS rate unavailable — ${weightResult.error}`,
+      plan:"Start IVD NS — rate unavailable until the paediatric fluid weight is confirmed."
     };
   }
+  const weight=weightResult.selected;
 
   if(state==="no-warning"){
     return {
@@ -16417,6 +16428,8 @@ f$("dfuFluidBasis").addEventListener(
   "change",
   syncDengueFollowUpFluidWeight
 );
+f$("dfuPaedsIbw")?.addEventListener("input",()=>{syncDengueFollowUpFluidWeight();renderDengueFollowUpPlan();});
+["dfuAge","dfuAgeUnit","dfuSex"].forEach(id=>f$(id)?.addEventListener("change",()=>{if(fv("dfuGroup")==="paeds") calculateDengueFollowUpBodyWeight();}));
 
 f$("dfuFluidState").addEventListener("change",()=>{
   updateDengueFollowUpFluidRateOptions();
@@ -20779,7 +20792,8 @@ function ogttRisk(){
   const g=gaData(),b=bmiData(),auto=[],manual=[];
   if(b.bmi!==null&&b.bmi>27)auto.push("BMI >27 kg/m²");
   if((val("rmeUrineGlucose")==="2"&&val("rmeGlucosuriaRepeated")==="yes")||(["3","4"].includes(val("rmeUrineGlucose"))&&val("rmeGlucosuriaRepeated")==="yes"))auto.push("glucosuria ≥2+ on two occasions");
-  if(num("rmeAge")!==null&&num("rmeAge")>25)auto.push("age >25 years");
+  /* CPG Management of Diabetes in Pregnancy 2017 (p2): age ≥25 years is NOT an early-OGTT risk factor —
+     women ≥25 without other risk factors are screened at 24–28 weeks, which the universal-screening branch below covers. */
   if(checked("rmeOgttPrevGdm"))manual.push("history of GDM");
   if(checked("rmeOgttFamilyDm"))manual.push("first-degree family history of diabetes");
   if(checked("rmeOgttMacrosomia"))manual.push("previous baby ≥4 kg / macrosomia");
@@ -20836,6 +20850,14 @@ function vteData(){
   const b=bmiData();let bmiScore=0;if(b.bmi!==null){if(b.bmi>=40)bmiScore=2;else if(b.bmi>=30)bmiScore=1;}if(q("rmeVteBmiScore"))q("rmeVteBmiScore").textContent=String(bmiScore);
   let score=bmiScore;const selected=[];document.querySelectorAll("#rmeVteChecklist .rme-vte-factor:checked").forEach(el=>{const pts=Number(el.dataset.score||0);score+=pts;selected.push({label:el.parentElement?.textContent?.trim()||el.id,score:pts,id:el.id});});
   if(val("rmeTbStatus")==="treatment"&&!checked("rmeVteComorbidity")){score+=3;selected.push({label:"Active TB — medical comorbidity (auto)",score:3,id:"auto-tb"});}if(["smoking","multiple"].includes(val("rmeAddiction"))&&Number(val("rmeFag4"))>=1&&!checked("rmeVteSmoker")){score+=1;selected.push({label:"Current smoker ≥11 cigarettes/day (auto from Fagerström)",score:1,id:"auto-smoker"});}
+  /* RCOG Green-top 37a pre-existing/obstetric factors captured elsewhere in this clerking. */
+  const vteAge=num("rmeAge"),vtePara=num("rmePara");
+  const ageScore=vteAge!==null&&vteAge>35?1:0,parityScore=vtePara!==null&&vtePara>=3?1:0;
+  if(q("rmeVteAgeScore"))q("rmeVteAgeScore").textContent=String(ageScore);
+  if(q("rmeVteParityScore"))q("rmeVteParityScore").textContent=String(parityScore);
+  if(ageScore){score+=1;selected.push({label:"Age >35 years (auto)",score:1,id:"auto-age"});}
+  if(parityScore){score+=1;selected.push({label:"Parity ≥3 (auto)",score:1,id:"auto-parity"});}
+  if(["twins","multiple"].includes(val("rmeMultiplicity"))&&!checked("rmeVteMultiple")){score+=1;selected.push({label:"Multiple pregnancy (auto from ultrasound)",score:1,id:"auto-multiple"});}
   const previous=checked("rmeVtePrevious");let level="none",title="VTE score 0 — no risk factor selected",management="Tick a risk factor and the score, alert and clinic management will update immediately.";
   if(previous){level="very-high";title=`VERY HIGH RISK — previous VTE · score ${score}`;management="Consider antenatal thromboprophylaxis from the 1st trimester and continue postpartum. Postnatal prophylaxis is usually continued for up to 6 weeks.";}else if(score>=4){level="high";title=`HIGH RISK — VTE score ${score}`;management="Consider antenatal thromboprophylaxis now. If this is a single risk factor with score 4, consider prophylaxis up to 6 weeks postnatal. If the total score ≥4 is from combined factors, consider 3 weeks postnatal then O&G review whether a further 3 weeks is warranted.";}else if(score===3){level="intermediate";title="INTERMEDIATE RISK — VTE score 3";management="Consider antenatal thromboprophylaxis from 28 weeks and continue for 3 weeks postnatal.";}else if(score>0){level="low";title=`LOW RISK — VTE score ${score}`;management="General advice: anti-embolic stockings, avoid dehydration and remain physically active. Reassess VTE risk antenatally if new factors arise and again postpartum.";}
   const box=q("rmeVteResult");box.className=`rme1-vte-summary ${level}`;box.innerHTML=`<strong>${escapeHtml(title)}</strong><small>${escapeHtml(management)}</small>${selected.length||bmiScore?`<div style="margin-top:7px">${selected.map(x=>`<span class="rme1-score-chip">${escapeHtml(x.label)} +${x.score}</span>`).join("")}${bmiScore?`<span class="rme1-score-chip">BMI +${bmiScore}</span>`:""}</div>`:""}`;return{score,level,previous,selected,bmiScore,management};
@@ -22119,7 +22141,8 @@ function avg(ids){const a=ids.map(n).filter(Number.isFinite);return a.length?a.r
 function bp(){return {s:n("htnSbp1"),d:n("htnDbp1")} }
 function bpCategory(s,d){if(!Number.isFinite(s)||!Number.isFinite(d))return "";if(s>=180||d>=110)return "Stage 3 (Severe)"+(s>=140&&d<90?" — isolated systolic":"");if(s>=160||d>=100)return "Stage 2 (Moderate)"+(s>=140&&d<90?" — isolated systolic":"");if(s>=140||d>=90)return "Stage 1 (Mild)"+(s>=140&&d<90?" — isolated systolic":"");if(s>=130||d>=85)return "At Risk";if(s>=120||d>=80)return "Normal";return "Optimal"}
 function calcBmi(h,w){return Number.isFinite(h)&&Number.isFinite(w)&&h>0?w/((h/100)**2):NaN}
-function bmiCategory(x){if(!Number.isFinite(x))return "";if(x<18.5)return "Underweight";if(x<25)return "Normal";if(x<30)return "Overweight";return "Obese"}
+// Malaysian/Asian adult BMI cut-offs (CPG Management of Obesity: overweight ≥23, obese ≥27.5), same as the DM module.
+function bmiCategory(x){if(!Number.isFinite(x))return "";if(x<18.5)return "Underweight";if(x<23)return "Normal range";if(x<27.5)return "Overweight / pre-obese";if(x<35)return "Obese I";if(x<40)return "Obese II";return "Obese III"}
 function egfr(age,sex,cr){if(!Number.isFinite(age)||age<18||!Number.isFinite(cr)||cr<=0)return NaN;const scr=cr/88.4,f=sex==="female",k=f?0.7:0.9,a=f?-0.241:-0.302;return 142*Math.pow(Math.min(scr/k,1),a)*Math.pow(Math.max(scr/k,1),-1.2)*Math.pow(0.9938,age)*(f?1.012:1)}
 function gCat(e){if(!Number.isFinite(e))return "";if(e>=90)return "G1";if(e>=60)return "G2";if(e>=45)return "G3a";if(e>=30)return "G3b";if(e>=15)return "G4";return "G5"}
 function ckdSummary(){
@@ -22157,7 +22180,22 @@ function syncCkdWorkflow(e){
   }
 }
 function highRisk(e){return val("htnDm")==="yes"||val("htnCkd")==="yes"||val("htnIhd")==="yes"||val("htnCva")==="yes"||val("htnHf")==="yes"||(Number.isFinite(e)&&e<60)}
-function targetBp(e){const age=n("htnAge");if(!Number.isFinite(age))return "Enter age / risk data";if(age>=80)return "Individualise (≥80 years)";return "<130/80 mmHg"}
+/* Target BP — CPG Management of Hypertension, 5th Ed (2018): summary pp16–19 and section 5.1c p45.
+   Most patients <140/90; diabetes <140/80 (consider <130/80 if younger); CKD <140/90 if proteinuria <1 g/day,
+   <130/80 if >1 g/day; lacunar stroke <130/80; age ≥80 <150/90. */
+function targetBp(e){
+  const age=n("htnAge");
+  if(!Number.isFinite(age))return "Enter age / risk data";
+  if(age>=80)return "<150/90 mmHg (age ≥80; individualise)";
+  const dm=val("htnDm")==="yes",ckd=val("htnCkd")==="yes",cva=val("htnCva")==="yes";
+  const notes=[];
+  let target="<140/90 mmHg";
+  if(dm){target="<140/80 mmHg";notes.push("DM: consider <130/80 if younger");}
+  if(ckd)notes.push("CKD with proteinuria >1 g/day: <130/80");
+  if(cva)notes.push("lacunar stroke: <130/80");
+  if(!dm&&age>=65)notes.push("age 65–79: consider SBP <130 if fit");
+  return notes.length?`${target} (${notes.join("; ")})`:target;
+}
 
 function directRisk(){if(val("htnIhd")==="yes"||val("htnCva")==="yes"||val("htnHf")==="yes")return "Established CVD — Framingham General CVD model not applicable";return ""}
 function frs(e){
