@@ -267,3 +267,8 @@ test('restricted quota display retains entered totals without presenting a routi
     assert.doesNotMatch(text,/Maintenance \(oral \+ IV\):|formula estimate|5400 mL|mL\/hour/);
   }
 });
+
+test('pending adult diagnosis names what is still required',()=>{
+  const dx=form({clPhase:'',clDxComorbidStatus:'',clCpgDxReviewed:false}).diagnosis('cl');
+  assert.equal(dx,'Diagnosis pending clinical assessment. Still required: 3. phase; 6. comorbidities; tick “Clinical assessment reviewed”.');
+});

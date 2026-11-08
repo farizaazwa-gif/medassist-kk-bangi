@@ -25,3 +25,7 @@ If anything is missing, a pop-up lists the items, the fields are outlined in red
 - Adult (CPG4) diagnosis text shows "Diagnosis pending clinical assessment" until phase, shock, warning-sign and comorbidity status are chosen.
 
 Tests: `tests/dengue-required.test.js` (8 new); CPG4 UI fixtures updated. Full suite 147/147.
+
+## v18.236.0 (9 Nov 2026)
+- Adult "Generated diagnosis" no longer shows a bare "Diagnosis pending clinical assessment." It now names what is still required (e.g. "Still required: 3. phase; 6. comorbidities."). Group B2 can appear before the phase is selected when "Approaching critical phase" is ticked, which made the pending state confusing.
+- Severe organ involvement without documented details is now listed in the required-items pop-up (it already blocked the adult diagnosis).

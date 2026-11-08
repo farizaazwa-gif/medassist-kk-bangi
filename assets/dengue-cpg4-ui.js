@@ -113,7 +113,19 @@
       && (s.comorbidity || comorbidStatus === "none")
       && (comorbidStatus!=="present" || s.comorbidity)
       && (!s.severeOrgan || val(`${p}OrganFailureDetails`).trim());
-    const text=complete?`${certainty === "confirmed"?"Confirmed":"Suspected"} ${severity}, D${Number(day)}, ${phase}, ${haemodynamics}, ${[comorbid,...special].join(", ")}.`:"Diagnosis pending clinical assessment.";
+    // Say exactly what is still needed instead of a bare "pending".
+    const pending=[
+      !["suspected","confirmed"].includes(certainty)?"1. suspected / confirmed":"",
+      certainty === "confirmed" && !val(`${p}CpgDxEvidence`).trim()?"1. laboratory evidence":"",
+      !(Number.isInteger(C.number(day)) && Number(day)>0)?"2. day of illness":"",
+      !s.phase?"3. phase":"",
+      !(a.warningSigns.length>0 || val(`${p}DxWarning`) === "without")?"4. warning signs":"",
+      !s.haemo?"5. shock status":"",
+      !(s.comorbidity || comorbidStatus === "none") || (comorbidStatus === "present" && !s.comorbidity)?"6. comorbidities":"",
+      s.severeOrgan && !val(`${p}OrganFailureDetails`).trim()?"severe organ involvement details":"",
+      !reviewed?"tick “Clinical assessment reviewed”":""
+    ].filter(Boolean);
+    const text=complete?`${certainty === "confirmed"?"Confirmed":"Suspected"} ${severity}, D${Number(day)}, ${phase}, ${haemodynamics}, ${[comorbid,...special].join(", ")}.`:`Diagnosis pending clinical assessment.${pending.length?` Still required: ${pending.join("; ")}.`:""}`;
     setValue(`${p}GeneratedDx`,text);
     if(f){setValue("dfuDxDay",val("dfuDayIllness"));setValue("dfuWarningStatusDisplay",a.warningSigns.length?`Present — ${a.warningSigns.join(", ")}`:reviewed?"No warning signs":"Clinical review pending");}
     return text;

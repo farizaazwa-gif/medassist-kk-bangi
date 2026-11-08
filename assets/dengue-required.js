@@ -61,6 +61,7 @@
     if (!filled(input.comorbidStatus) && !top) add(`${p}DxComorbidStatus`, "6. Comorbidities — with or without");
     else if (input.comorbidStatus === "present" && !meaningful(input.comorbidDetail) && !top) add(`${p}DxComorbid`, "6. Comorbidities — list the comorbidities");
 
+    if (input.adult && input.severeOrgan && !filled(input.organDetails)) add(`${p}OrganFailureDetails`, "Severe organ involvement — document the details");
     if (input.adult && !input.reviewed) add(`${p}CpgDxReviewed`, "Tick “Clinical assessment reviewed for this diagnosis”");
     return items;
   }
@@ -103,6 +104,9 @@
     return p === "cl" ? "clWarningSigns" : "dfuWarningStatusDisplay";
   }
 
+  function severeOrganRecorded(p) {
+    try { return Boolean(UI()?.state?.(p)?.severeOrgan); } catch (_) { return false; }
+  }
   function collect(p) {
     const adult = cpgActive(p);
     return {
@@ -120,7 +124,9 @@
       haemo: val(`${p}Haemo`),
       comorbidStatus: val(`${p}DxComorbidStatus`),
       comorbidDetail: val(`${p}DxComorbid`),
-      topComorbid: p === "cl" ? val("clComorbid") : ""
+      topComorbid: p === "cl" ? val("clComorbid") : "",
+      severeOrgan: adult ? severeOrganRecorded(p) : false,
+      organDetails: val(`${p}OrganFailureDetails`)
     };
   }
   function missing(p) { return evaluate(collect(p)); }

@@ -59,6 +59,11 @@ test("item 6: comorbidity status and list; top-level comorbidity counts for the 
   assert.deepEqual(fields(complete("dfu", false, { comorbidStatus: "present", comorbidDetail: "Asthma" })), []);
 });
 
+test("adult severe organ involvement needs documented details", () => {
+  assert.deepEqual(fields(complete("cl", true, { severeOrgan: true })), ["clOrganFailureDetails"]);
+  assert.deepEqual(fields(complete("cl", true, { severeOrgan: true, organDetails: "ALT 1200, confusion" })), []);
+});
+
 test("weight must be positive", () => {
   for (const weight of ["", "0", "-3", "abc"]) assert.deepEqual(fields(complete("dfu", false, { weight })), ["dfuWeight"], weight);
 });
@@ -72,6 +77,6 @@ test("form markup: blank defaults, required markers and warning-sign selectors",
   for (const label of ["2. Day of illness", "3. Phase", "4. Warning signs", "5. Shock status", "6. Comorbidities"]) {
     assert.ok(html.split(label).length - 1 >= 2, `${label} must label both modules`);
   }
-  assert.match(html, /<script src="assets\/dengue-required\.js\?v=18\.235\.0"><\/script>/);
+  assert.match(html, /<script src="assets\/dengue-required\.js\?v=18\.236\.0"><\/script>/);
   assert.doesNotMatch(html, /TPC-OHCIS/);
 });
