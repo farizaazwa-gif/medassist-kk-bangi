@@ -35,3 +35,6 @@ Tests: `tests/dengue-required.test.js` (8 new); CPG4 UI fixtures updated. Full s
 
 ## v18.238.0 (9 Nov 2026)
 - Removed the "Clinical assessment reviewed for this diagnosis" tick (new case and follow-up). The adult diagnosis is produced as soon as the required items are filled; the pop-up no longer asks for the tick.
+
+## v18.239.0 (9 Nov 2026)
+- Adult dengue diagnosis writes "without comorbid" instead of "NKMI" when there is no comorbidity. The separate comorbidity line in the note is unchanged.

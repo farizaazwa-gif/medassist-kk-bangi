@@ -98,7 +98,7 @@
     const day=val(f?"dfuDayIllness":"clDxDay");
     const certainty=val(`${p}CpgDxCertainty`);
     const detail=val(`${p}DxComorbid`) || (!f?val("clComorbid"):"");
-    const comorbid=s.comorbidity?`underlying ${detail}`:"NKMI";
+    const comorbid=s.comorbidity?`underlying ${detail}`:"without comorbid";
     const special=[s.pregnant?"pregnant":"",Number(s.age)>65?`age ${s.age} years`:"",s.obese?"obesity":""].filter(Boolean);
     const severeDetails=[s.severeBleeding?"severe bleeding":"",s.leakRespiratory?"severe plasma leakage with respiratory distress":"",s.severeOrgan?`severe organ involvement${val(`${p}OrganFailureDetails`).trim()?`: ${val(`${p}OrganFailureDetails`).trim()}`:""}`:""].filter(Boolean);
     const severity=a.group === "C"?`severe dengue${severeDetails.length?` (${severeDetails.join("; ")})`:""}`:a.warningSigns.length?`dengue with warning signs (${a.warningSigns.join(", ")})`:"dengue without warning signs";

@@ -72,20 +72,20 @@ test('clinician warning override needs a specific documented finding',()=>{
 });
 
 test('diagnosis follows Table 7 without management groups or invented qualifiers',()=>{
-  assert.equal(form().diagnosis('cl'),'Suspected dengue without warning signs, D4, febrile phase, not in shock, NKMI.');
+  assert.equal(form().diagnosis('cl'),'Suspected dengue without warning signs, D4, febrile phase, not in shock, without comorbid.');
   const confirmed=form({clCpgDxCertainty:'confirmed',clCpgDxEvidence:'NS1 positive 17/10/2026'});
   assert.equal(confirmed.validate('cl'),true);
-  assert.equal(confirmed.diagnosis('cl'),'Confirmed dengue without warning signs, D4, febrile phase, not in shock, NKMI.');
+  assert.equal(confirmed.diagnosis('cl'),'Confirmed dengue without warning signs, D4, febrile phase, not in shock, without comorbid.');
   assert.match(confirmed.recordLines('cl').join(' '),/Dengue confirmation: NS1 positive/);
   assert.equal(form({clComorbid:'DM',clDxComorbidStatus:'present'}).diagnosis('cl'),'Suspected dengue without warning signs, D4, febrile phase, not in shock, underlying DM.');
   const b2=form({clPhase:'critical phase',clVomitLast24:4});
-  assert.equal(b2.diagnosis('cl'),'Suspected dengue with warning signs (persistent vomiting (4 episodes/24 h)), D4, critical phase, not in shock, NKMI.');
+  assert.equal(b2.diagnosis('cl'),'Suspected dengue with warning signs (persistent vomiting (4 episodes/24 h)), D4, critical phase, not in shock, without comorbid.');
   assert.doesNotMatch(b2.diagnosis('cl'),/Group|classified|current assessment/);
 });
 
 test('diagnosis review and confirmation cannot be inferred from blank/default inputs',()=>{
   for(const patch of [{clCpgDxCertainty:''},{clCpgDxCertainty:'confirmed'},{clDxDay:''},{clDxDay:0},{clDxDay:1.5},{clDxDay:-1},{clDxComorbidStatus:'present',clDxComorbid:''}])assert.equal(form(patch).validate('cl'),false,JSON.stringify(patch));
-  assert.doesNotMatch(form({clCpgDxCertainty:''}).diagnosis('cl'),/without warning signs|NKMI/);
+  assert.doesNotMatch(form({clCpgDxCertainty:''}).diagnosis('cl'),/without warning signs|without comorbid/);
   // v18.238: the review tick was removed; a complete form produces the diagnosis without it.
   assert.match(form({clCpgDxReviewed:false}).diagnosis('cl'),/^Suspected dengue without warning signs/);
   assert.doesNotMatch(form({clCpgDxCertainty:'confirmed',clCpgDxEvidence:''}).diagnosis('cl'),/Confirmed dengue/);
@@ -105,11 +105,11 @@ test('severe dengue diagnosis names severity and shock without a second DNWS/DWW
 });
 
 test('special populations and follow-up retain complete diagnosis components',()=>{
-  assert.match(form({clSex:'Female',clPregnancy:'yes'}).diagnosis('cl'),/NKMI, pregnant/);
+  assert.match(form({clSex:'Female',clPregnancy:'yes'}).diagnosis('cl'),/without comorbid, pregnant/);
   assert.match(form({clAge:70}).diagnosis('cl'),/age 70 years/);
   assert.match(form({clWeight:100}).diagnosis('cl'),/obesity/);
   const followup=form({dfuGroup:'adult',dfuDayIllness:5,dfuPhase:'critical phase',dfuHaemo:'haemodynamically stable',dfuCpgDxCertainty:'confirmed',dfuCpgDxEvidence:'NS1 positive yesterday',dfuCpgDxReviewed:true});
-  assert.equal(followup.diagnosis('dfu'),'Confirmed dengue without warning signs, D5, critical phase, not in shock, NKMI.');
+  assert.equal(followup.diagnosis('dfu'),'Confirmed dengue without warning signs, D5, critical phase, not in shock, without comorbid.');
 });
 
 test('both adult forms include examination ascites in warning assessment and diagnosis',()=>{
