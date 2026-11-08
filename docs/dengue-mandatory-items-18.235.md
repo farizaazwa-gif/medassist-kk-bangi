@@ -38,3 +38,12 @@ Tests: `tests/dengue-required.test.js` (8 new); CPG4 UI fixtures updated. Full s
 
 ## v18.239.0 (9 Nov 2026)
 - Adult dengue diagnosis writes "without comorbid" instead of "NKMI" when there is no comorbidity. The separate comorbidity line in the note is unchanged.
+
+## v18.240.0 (9 Nov 2026)
+Standard diagnosis sentence for every dengue form (adult and paediatric, new case and follow-up):
+
+`Treat as [probable] dengue fever | severe dengue, D<n> of illness, in <phase>, with/without warning signs, with <compensated/decompensated> shock | not in shock, with comorbid <list> | without comorbid.`
+
+- Suspected dengue → "Treat as probable …"; confirmed dengue → "Treat as …" (no "probable").
+- Severe dengue omits the warning-sign clause (severity details stay in brackets).
+- Paediatric forms have no suspected/confirmed field, so they read "Treat as dengue fever, …".

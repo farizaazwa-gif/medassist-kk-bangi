@@ -93,17 +93,26 @@
     if(count<0 || !Number.isInteger(count)) return `${label}: check the episode count.`;
     return `${label}: ${count} times/24 h.`;
   }
+  /* v18.240 standard diagnosis sentence (all dengue forms):
+     "Treat as [probable] dengue fever | severe dengue, D<n> of illness, in <phase>, with/without warning signs, with <shock> | not in shock, with/without comorbid".
+     Confirmed dengue drops "probable"; severe dengue omits the warning-sign clause. */
+  function formatDiagnosis(o) {
+    const severe=Boolean(o.severe);
+    const lead=`Treat as ${o.certainty === "confirmed" || o.certainty === "none" ? "" : "probable "}${severe?`severe dengue${o.severeDetails && o.severeDetails.length?` (${o.severeDetails.join("; ")})`:""}`:"dengue fever"}`;
+    const day=`D${o.day} of illness`;
+    const phase=o.phase ? `in ${o.phase}${o.nearCritical && o.phase !== "critical phase" ? ", approaching critical phase" : ""}` : "in [SELECT PHASE]";
+    const warning=severe ? "" : o.warningSigns && o.warningSigns.length ? `with warning signs (${o.warningSigns.join(", ")})` : o.withoutWarning === false ? "[SELECT WARNING SIGNS]" : "without warning signs";
+    const shock=o.haemo === "haemodynamically stable" ? "not in shock" : o.haemo ? `with ${o.haemo}` : "[SELECT SHOCK STATUS]";
+    const comorbid=o.comorbid === null ? "[SELECT COMORBIDITY STATUS]" : o.comorbid ? `with comorbid ${o.comorbid}` : "without comorbid";
+    return `${[lead,day,phase,warning,shock,comorbid,...(o.special || [])].filter(Boolean).join(", ")}.`;
+  }
   function diagnosis(p) {
     const s=state(p), a=C.assess(s), f=p === "dfu";
     const day=val(f?"dfuDayIllness":"clDxDay");
     const certainty=val(`${p}CpgDxCertainty`);
     const detail=val(`${p}DxComorbid`) || (!f?val("clComorbid"):"");
-    const comorbid=s.comorbidity?`underlying ${detail}`:"without comorbid";
     const special=[s.pregnant?"pregnant":"",Number(s.age)>65?`age ${s.age} years`:"",s.obese?"obesity":""].filter(Boolean);
     const severeDetails=[s.severeBleeding?"severe bleeding":"",s.leakRespiratory?"severe plasma leakage with respiratory distress":"",s.severeOrgan?`severe organ involvement${val(`${p}OrganFailureDetails`).trim()?`: ${val(`${p}OrganFailureDetails`).trim()}`:""}`:""].filter(Boolean);
-    const severity=a.group === "C"?`severe dengue${severeDetails.length?` (${severeDetails.join("; ")})`:""}`:a.warningSigns.length?`dengue with warning signs (${a.warningSigns.join(", ")})`:"dengue without warning signs";
-    const phase=s.nearCritical && s.phase !== "critical phase"?`${s.phase}, approaching critical phase (clinician assessed)`:s.phase;
-    const haemodynamics=s.haemo === "haemodynamically stable"?"not in shock":s.haemo;
     // Mandatory diagnosis items: phase, warning-sign status, shock status and comorbidity status must be chosen.
     const comorbidStatus=val(`${p}DxComorbidStatus`);
     const complete=["suspected","confirmed"].includes(certainty) && Number.isInteger(C.number(day)) && Number(day)>0
@@ -124,7 +133,7 @@
       !(s.comorbidity || comorbidStatus === "none") || (comorbidStatus === "present" && !s.comorbidity)?"6. comorbidities":"",
       s.severeOrgan && !val(`${p}OrganFailureDetails`).trim()?"severe organ involvement details":""
     ].filter(Boolean);
-    const text=complete?`${certainty === "confirmed"?"Confirmed":"Suspected"} ${severity}, D${Number(day)}, ${phase}, ${haemodynamics}, ${[comorbid,...special].join(", ")}.`:`Diagnosis pending clinical assessment.${pending.length?` Still required: ${pending.join("; ")}.`:""}`;
+    const text=complete?formatDiagnosis({certainty,severe:a.group === "C",severeDetails,warningSigns:a.warningSigns,day:Number(day),phase:s.phase,nearCritical:s.nearCritical,haemo:s.haemo,comorbid:s.comorbidity?detail:"",special}):`Diagnosis pending clinical assessment.${pending.length?` Still required: ${pending.join("; ")}.`:""}`;
     setValue(`${p}GeneratedDx`,text);
     if(f){setValue("dfuDxDay",val("dfuDayIllness"));setValue("dfuWarningStatusDisplay",a.warningSigns.length?`Present — ${a.warningSigns.join(", ")}`:val(`${p}DxWarning`) === "without"?"No warning signs":"Warning signs not yet selected");}
     return text;
@@ -475,6 +484,6 @@
   }
   // v18.238: the "Clinical assessment reviewed" tick was removed, so there is nothing to invalidate.
   function invalidateDiagnosisReview() {}
-  window.MedAssistDengueCpg4UI={state,active,referral,warningData,frequencyLine,diagnosis,urineStatus,urineSummary,syncWeight,rates,syncCategory,fluid,calculate,oralAdvice,adjustPlan,recordLines,validate,refresh,renderFluidResult,syncFluidDisplay,clearFluidResult,resetStart,resetEnd};
+  window.MedAssistDengueCpg4UI={formatDiagnosis,state,active,referral,warningData,frequencyLine,diagnosis,urineStatus,urineSummary,syncWeight,rates,syncCategory,fluid,calculate,oralAdvice,adjustPlan,recordLines,validate,refresh,renderFluidResult,syncFluidDisplay,clearFluidResult,resetStart,resetEnd};
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();

@@ -13,7 +13,7 @@
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
 <script src="assets/dengue-cpg4.js?v=18.233.0"></script>
-<script src="assets/dengue-cpg4-ui.js?v=18.239.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.240.0"></script>
 <script src="assets/paeds-dengue-weight.js?v=18.234.0"></script>
 <script src="assets/dengue-required.js?v=18.238.0"></script>
 <script src="assets/dengue-symptoms.js?v=18.233.0"></script>
@@ -10577,21 +10577,20 @@ function buildDiagnosis(){
     return dx;
   }
 
-  const day=value("clDxDay")||"[ENTER]";
+  // v18.240: standard diagnosis sentence shared with the adult form.
   const warningList=clPaedsWarningList();
-  const warning=(warningList.length || value("clWarningStatus")==="present")
-    ? (warningList.length ? `with warning signs (${warningList.join(", ")})` : "with warning signs")
-    : value("clDxWarning")==="without" ? "without warning signs" : "[SELECT WARNING SIGNS]";
-
   const topComorbid=value("clComorbid");
-  const hasTopComorbid=dengueMeaningfulText(topComorbid);
-  const dxComorbid=dengueMeaningfulText(value("clDxComorbid")) ? value("clDxComorbid") : (hasTopComorbid ? topComorbid : "");
-  const hasComorbid=value("clDxComorbidStatus")==="present" || hasTopComorbid;
-  const comorbid=hasComorbid
-    ? `with comorbid ${dxComorbid||"[ENTER COMORBID]"}`
-    : value("clDxComorbidStatus")==="none" ? "no comorbid" : "[SELECT COMORBIDITY STATUS]";
-
-  const dx=`Dengue fever, day ${day} of illness, in ${value("clPhase")||"[SELECT PHASE]"}, ${warning}, ${value("clHaemo")||"[SELECT SHOCK STATUS]"}, ${comorbid}`;
+  const dxComorbid=dengueMeaningfulText(value("clDxComorbid")) ? value("clDxComorbid") : (dengueMeaningfulText(topComorbid) ? topComorbid : "");
+  const hasComorbid=value("clDxComorbidStatus")==="present" || dengueMeaningfulText(topComorbid);
+  const dx=window.MedAssistDengueCpg4UI.formatDiagnosis({
+    certainty:"none",
+    day:value("clDxDay")||"[ENTER]",
+    phase:value("clPhase"),
+    warningSigns:warningList.length ? warningList : (value("clWarningStatus")==="present" ? ["clinician confirmed"] : []),
+    withoutWarning:value("clDxWarning")==="without" ? true : false,
+    haemo:value("clHaemo"),
+    comorbid:hasComorbid ? (dxComorbid||"[ENTER COMORBID]") : value("clDxComorbidStatus")==="none" ? "" : null
+  });
   $("clGeneratedDx").value=dx;
   return dx;
 }
@@ -15830,21 +15829,20 @@ function buildDengueFollowUpDiagnosis(){
 
   f$("dfuDxDay").value=fv("dfuDayIllness");
 
-  const warningText=warning.positive.length
-    ? `with warning signs (${warning.positive.join(", ")})`
-    : fv("dfuDxWarning")==="without" ? "with no warning sign" : "[SELECT WARNING SIGNS]";
-
   f$("dfuWarningStatusDisplay").value=warning.positive.length
     ? `Present — ${warning.positive.join(", ")}`
     : "No warning sign";
 
-  const comorbid=fv("dfuDxComorbidStatus")==="present"
-    ? `with comorbid ${fv("dfuDxComorbid")||"[ENTER COMORBID]"}`
-    : fv("dfuDxComorbidStatus")==="none" ? "no comorbid" : "[SELECT COMORBIDITY STATUS]";
-
-  const diagnosis=
-    `Dengue fever, day ${day} of illness, in ${fv("dfuPhase")||"[SELECT PHASE]"}, `+
-    `${warningText}, ${fv("dfuHaemo")?`with ${fv("dfuHaemo")}`:"[SELECT SHOCK STATUS]"}, ${comorbid}`;
+  // v18.240: standard diagnosis sentence shared with the adult form.
+  const diagnosis=window.MedAssistDengueCpg4UI.formatDiagnosis({
+    certainty:"none",
+    day,
+    phase:fv("dfuPhase"),
+    warningSigns:warning.positive,
+    withoutWarning:fv("dfuDxWarning")==="without",
+    haemo:fv("dfuHaemo"),
+    comorbid:fv("dfuDxComorbidStatus")==="present" ? (fv("dfuDxComorbid")||"[ENTER COMORBID]") : fv("dfuDxComorbidStatus")==="none" ? "" : null
+  });
 
   f$("dfuGeneratedDx").value=diagnosis;
   return diagnosis;
