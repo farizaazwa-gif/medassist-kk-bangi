@@ -146,7 +146,7 @@ test("DM HbA1c profile keeps standard, tight and less-tight safeguards", () => {
   assert.match(dm.dmHbA1cProfile(80).target, /^7\.1–8\.0%/);
 });
 
-test("RME1 vital-sign parser recognises a representative TPC-OHCIS block", () => {
+test("RME1 vital-sign parser recognises a representative CCMS block", () => {
   const { exports: rme } = runScriptPrefix(
     "rme1AntenatalScript",
     "function extractLabs",

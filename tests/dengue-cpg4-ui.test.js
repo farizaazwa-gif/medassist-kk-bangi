@@ -6,7 +6,9 @@ const vm = require('node:vm');
 const C = require('../assets/dengue-cpg4');
 
 function fixture(overrides = {}) {
-  const values = {clDxDay:'4',clCpgDxCertainty:'suspected',clCpgDxReviewed:true,dfGroup:'adult',clDxType:'Dengue fever',clPhase:'febrile phase',clHaemo:'haemodynamically stable',clPlanOption:'outpatient',clWeight:'60',clHeight:'170',clSex:'Male',dfBasis:'cpg',...overrides};
+  const values = {clDxDay:'4',clCpgDxCertainty:'suspected',clCpgDxReviewed:true,dfGroup:'adult',clDxType:'Dengue fever',clPhase:'febrile phase',clHaemo:'haemodynamically stable',clPlanOption:'outpatient',clWeight:'60',clHeight:'170',clSex:'Male',dfBasis:'cpg',
+    // v18.235: diagnosis items 4 and 6 are explicit clinician choices.
+    clDxWarning:'without',clDxComorbidStatus:'none',dfuDxWarning:'without',dfuDxComorbidStatus:'none',...overrides};
   const elements = Object.fromEntries(Object.entries(values).map(([id,value])=>[id,typeof value === 'boolean'?{checked:value,value:''}:{value:String(value)}]));
   for(const id of ['dfState','dfuFluidState'])if(elements[id])elements[id].options=['no-warning','febrile','warning','compensated','decompensated'].map(value=>({value,disabled:false,hidden:false}));
   const context={window:{MedAssistDengueCpg4:C},document:{readyState:'loading',addEventListener(){},getElementById:id=>elements[id],querySelectorAll:()=>[]}};

@@ -13,8 +13,9 @@
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
 <script src="assets/dengue-cpg4.js?v=18.233.0"></script>
-<script src="assets/dengue-cpg4-ui.js?v=18.233.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.235.0"></script>
 <script src="assets/paeds-dengue-weight.js?v=18.234.0"></script>
+<script src="assets/dengue-required.js?v=18.235.0"></script>
 <script src="assets/dengue-symptoms.js?v=18.233.0"></script>
 <link rel="stylesheet" href="assets/dengue-symptoms.css?v=18.233.0"/>
 <script src="assets/clinical-safety.js"></script>
@@ -4982,6 +4983,19 @@ html,body{max-width:100%;overflow-x:hidden}
 
 .cpg-warning-detail{margin-top:12px}
 </style>
+<style id="dengue-required-styles">
+.req-star{color:#b42318;font-weight:700;margin-left:2px}
+.required-missing{outline:2px solid #b42318!important;outline-offset:2px;border-radius:8px}
+.dengue-required-backdrop{position:fixed;inset:0;z-index:10000;background:rgba(16,24,40,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.dengue-required-backdrop.hidden{display:none}
+.dengue-required-dialog{background:#fff;color:#1d2939;border-radius:14px;max-width:440px;width:100%;max-height:85vh;overflow:auto;padding:18px 18px 14px;box-shadow:0 20px 40px rgba(16,24,40,.25);border-top:5px solid #b42318}
+.dengue-required-dialog h2{margin:0 0 4px;font-size:18px;color:#8d221a}
+.dengue-required-dialog p{margin:0 0 12px;font-size:13px;color:#475467}
+.dengue-required-list{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px}
+.dengue-required-list button{width:100%;text-align:left;background:#fff0ed;border:1px solid #efb6b1;color:#8d221a;border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;cursor:pointer}
+.dengue-required-list button:hover,.dengue-required-list button:focus-visible{background:#ffe3dd;outline:none}
+.dengue-required-actions{display:flex;justify-content:flex-end}
+</style>
 </head>
 <body>
 <div class="app">
@@ -5504,7 +5518,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="card adult-cpg4 cpg-warning-panel" id="clCpgWarningPanel">
 <h2>Dengue warning signs (adults)</h2>
 <p class="helper">Review all 10 findings. Tick those present. Vomiting, mental state and bleeding are shown from the symptoms above — use Edit to change them.</p>
-<div class="cpg-phase-context"><div class="grid two"><div><label for="clPhase">Current illness phase</label><select id="clPhase"><option value="febrile phase">Febrile</option><option value="critical phase">Critical</option><option value="recovery phase">Recovery</option></select></div><div><label class="check-item"><input id="clCpgNearCritical" type="checkbox"/>Approaching critical phase</label><div class="helper">Clinical assessment of phase; this is not a warning sign.</div></div></div>
+<div class="cpg-phase-context"><div class="grid two"><div><label for="clPhase">3. Phase <span class="req-star" aria-hidden="true">*</span></label><select id="clPhase"><option selected="" value="">— Select —</option><option value="febrile phase">Febrile</option><option value="critical phase">Critical</option><option value="recovery phase">Recovery</option></select></div><div><label class="check-item"><input id="clCpgNearCritical" type="checkbox"/>Approaching critical phase</label><div class="helper">Clinical assessment of phase; this is not a warning sign.</div></div></div>
 <p class="helper">Interpret findings with phase, perfusion, HCT trend and urine output. Persistent vomiting during the febrile phase alone does not establish dengue with warning signs.</p></div>
 <div class="cpg-warning-list"><div class="cpg-warning-item"><label class="check-item"><input id="clCpgWorse" type="checkbox"/><span>1. Not improving / getting worse as fever settles</span></label></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgIntensePain" type="checkbox"/><span>2. Intense abdominal pain or tenderness</span></label></div><div class="cpg-warning-item cpg-history-item"><strong>3. Persistent vomiting &gt;3 times in 24 hours</strong><div class="cpg-history-status" id="clCpgHistoryVomiting">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="clVomitLast24" aria-label="Edit vomiting in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item cpg-history-item"><strong>4. Lethargy / restlessness / irritability / confusion</strong><div class="cpg-history-status" id="clCpgHistoryMental">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="clLethargy" aria-label="Edit mental in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item combined-fluid-card"><strong class="combined-fluid-title">Clinical fluid accumulation</strong><div class="combined-fluid-symptoms" id="clCpgAccumulationSymptoms"><div class="helper">Related symptoms</div><label class="check-item"><input id="clCpgDistension" type="checkbox"/>Abdominal swelling / distension</label></div><label class="check-item combined-fluid-confirm"><input id="clCpgAccumulation" type="checkbox"/><span>Ascites / pleural effusion present</span></label><div class="helper">Confirm on examination / imaging. Symptoms alone do not confirm fluid accumulation.</div></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgPostural" type="checkbox"/><span>6. Postural hypotension</span></label><div class="helper">BP drops on standing</div></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgLiver" type="checkbox"/><span>7. Liver enlargement &gt;2 cm</span></label></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgLowUrine" type="checkbox"/><span>8. Reduced / absent urine for 4–6 hours</span></label></div><div class="cpg-warning-item cpg-history-item"><strong>9. Bleeding manifestation</strong><div class="cpg-history-status" id="clCpgHistoryBleeding">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="clBleeding" aria-label="Edit bleeding in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgLabTrend" type="checkbox"/><span>10. Rising HCT with rapidly falling platelets</span></label><div class="helper">Compare dated serial FBC results. Tick after clinical review; a single result cannot confirm this trend.</div></div></div>
 <p class="helper">Loose stool is a hydration concern, not a standalone adult warning sign. <a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG4: pp10,14–15,28</a></p>
@@ -5610,8 +5624,8 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div><label>Dengue-prone area / fogging</label><select id="clArea"><option>no</option><option>yes</option></select></div>
 <div>
-<label>Weight (kg)</label>
-<input id="clWeight" min="0" placeholder="e.g. 70" step="0.1" type="number"/>
+<label for="clWeight">Weight (kg) <span class="req-star" aria-hidden="true">*</span></label>
+<input id="clWeight" required="" min="0" placeholder="e.g. 70" step="0.1" type="number"/>
 </div>
 <div>
 <label>Height (cm)</label>
@@ -5689,7 +5703,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <input id="clVitalDateTime" type="datetime-local"/>
 </div>
 </div>
-<label>Vital signs — paste directly from TPC-OHCIS</label>
+<label>Vital signs — paste directly from CCMS</label>
 <textarea id="clVitalText" placeholder="Paste vital signs here, e.g. BP, PR, RR, temperature, SpO2 and pain score" rows="5"></textarea><div class="vital-shock-result neutral" id="clVitalShockResult">
 <strong>Auto haemodynamic check</strong>
 <span>Paste BP and pulse rate to assess the adult haemodynamic pattern.</span>
@@ -5697,13 +5711,13 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="objective-divider"><div class="section-subtitle">Investigations today</div><div class="helper">Paste today’s FBC below. Auto-detected values, serial FBC and previous investigations are kept together in this section.</div></div><div class="quick-fbc-card">
 <div class="section-subtitle">Investigation today — current FBC</div>
-<div class="helper">Paste full FBC from TPC-OHCIS. Hb, Hct, WC and Plt are detected automatically.</div>
+<div class="helper">Paste full FBC from CCMS. Hb, Hct, WC and Plt are detected automatically.</div>
 <div class="quick-fbc-grid">
 <div><label>FBC date</label><input id="clQuickFbcDate" type="date"/></div>
 <div><label>Source</label><select id="clQuickFbcSource"><option>KK</option><option>Hospital</option><option>GP</option></select></div>
 </div>
 <label>Paste full FBC result</label>
-<textarea id="clQuickFbcText" placeholder="Paste full FBC result from TPC-OHCIS here" rows="7"></textarea>
+<textarea id="clQuickFbcText" placeholder="Paste full FBC result from CCMS here" rows="7"></textarea>
 <div class="fbc-detected-box" id="clQuickFbcDetected">
 <div class="fbc-detected-title"><strong>Auto-detected FBC</strong><span class="helper">Updates immediately</span></div>
 <div class="fbc-detected-grid">
@@ -5938,7 +5952,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <h2>Diagnosis Builder</h2>
 <div class="grid three">
 <div>
-<label>Diagnosis type</label>
+<label for="clDxType">1. Diagnosis <span class="req-star" aria-hidden="true">*</span></label>
 <select id="clDxType">
 <option value="Dengue fever">Dengue fever</option>
 <option value="Acute upper respiratory tract infection">Acute URTI</option>
@@ -5964,9 +5978,10 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="dx-ams-hint hidden" id="clDxAmsHint"></div>
 <div class="grid three dx-dengue-fields" id="clDengueDxFields">
-<div><label>Day of illness</label><input id="clDxDay" min="1" type="number"/></div>
+<div><label for="clDxDay">2. Day of illness <span class="req-star" aria-hidden="true">*</span></label><input id="clDxDay" min="1" step="1" type="number"/></div>
 
 
+<div><label for="clDxWarning">4. Warning signs <span class="req-star" aria-hidden="true">*</span></label><select id="clDxWarning"><option selected="" value="">— Select —</option><option value="without">Without warning signs</option><option value="with">With warning signs</option></select><div class="helper" id="clDxWarningHelp">Set automatically to “With” when warning findings are recorded.</div></div>
 <div class="hidden" id="clWarningWrap" style="grid-column:1/-1">
 <div class="check-grid" id="clWarningSigns">
 <label class="check-item red"><input type="checkbox" value="abdominal pain or tenderness"/>Abdominal pain or tenderness</label>
@@ -5978,8 +5993,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <label class="check-item red"><input type="checkbox" value="rising HCT with rapid platelet drop"/>Rising HCT with rapid platelet drop</label>
 </div>
 </div>
-<div><label>Haemodynamic status</label><select id="clHaemo"><option value="haemodynamically stable">Haemodynamically stable</option><option value="compensated shock">Compensated shock</option><option value="decompensated shock">Decompensated shock</option></select></div>
-<div><label>Comorbidity status</label><select id="clDxComorbidStatus"><option value="none">No comorbid</option><option value="present">With comorbid</option></select></div>
+<div><label for="clHaemo">5. Shock status <span class="req-star" aria-hidden="true">*</span></label><select id="clHaemo"><option selected="" value="">— Select —</option><option value="haemodynamically stable">Haemodynamically stable</option><option value="compensated shock">Compensated shock</option><option value="decompensated shock">Decompensated shock</option></select></div>
+<div><label for="clDxComorbidStatus">6. Comorbidities <span class="req-star" aria-hidden="true">*</span></label><select id="clDxComorbidStatus"><option selected="" value="">— Select —</option><option value="none">No comorbid</option><option value="present">With comorbid</option></select></div>
 <div class="hidden" id="clDxComorbidWrap"><label>Comorbidities</label><input id="clDxComorbid" placeholder="e.g. DM and HPT"/></div>
 </div>
 <div class="adult-cpg4" id="clCpgReview">
@@ -6006,10 +6021,10 @@ html,body{max-width:100%;overflow-x:hidden}
 <details><summary>Clinician disposition rationale / override</summary>
 <label for="clCpgDispositionReason">Required if the selected plan differs from a hospital-assessment recommendation</label><textarea id="clCpgDispositionReason" rows="2" placeholder="Clinical reassessment, agreed disposition and rationale"></textarea></details>
 <div class="grid two">
-<div><label for="clCpgDxCertainty">Dengue diagnosis status</label><select id="clCpgDxCertainty"><option value="">Select after assessment</option><option value="suspected">Suspected dengue</option><option value="confirmed">Confirmed dengue</option></select></div>
+<div><label for="clCpgDxCertainty">1. Dengue — suspected / confirmed <span class="req-star" aria-hidden="true">*</span></label><select id="clCpgDxCertainty"><option value="">Select after assessment</option><option value="suspected">Suspected dengue</option><option value="confirmed">Confirmed dengue</option></select></div>
 <div class="hidden" id="clCpgDxEvidenceWrap"><label for="clCpgDxEvidence">Laboratory evidence reviewed</label><input id="clCpgDxEvidence" placeholder="e.g. NS1 positive 17/10/2026; include prior result if follow-up"/><div class="helper">Interpret the result with illness day and vaccination history. IgG alone does not establish acute dengue.</div></div>
 </div>
-<label class="check-item"><input id="clCpgDxReviewed" type="checkbox"/>Clinical assessment reviewed for this diagnosis</label>
+<label class="check-item"><input id="clCpgDxReviewed" type="checkbox"/>Clinical assessment reviewed for this diagnosis <span class="req-star" aria-hidden="true">*</span></label>
 <div class="helper">Confirm phase, warning signs, shock status and comorbidities/special populations. Recheck after changing clinical findings. Group A/B1/B2/C guides management and is not added to the copied diagnosis.</div>
 <a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG Fourth Edition (2026) — rules &amp; page references</a>
 </div>
@@ -6176,10 +6191,11 @@ html,body{max-width:100%;overflow-x:hidden}
 <div><label>Sex</label><select id="dfuSex"><option value="">Select</option><option>Male</option><option>Female</option></select></div><div id="dfuAgeWrap"><label>Age</label><div class="age-input-row"><input autocomplete="off" id="dfuAge" inputmode="numeric" maxlength="3" pattern="[0-9]*" placeholder="e.g. 4" type="text"/><select aria-label="Age unit" id="dfuAgeUnit"><option value="years">Years old</option><option value="months">Months old</option></select></div><div class="helper age-unit-help" id="dfuAgeHelp">Adult age is recorded in years.</div></div>
 <div><label>Foreigner</label><select id="dfuForeigner"><option value="no">No</option><option value="yes">Yes</option></select></div>
 <div class="hidden" id="dfuCitizenshipWrap"><label>Nationality</label><input id="dfuCitizenship" placeholder="e.g. Burmese, Nepalese"/></div>
-<div><label>Day of illness</label><input id="dfuDayIllness" min="1" placeholder="e.g. 5" step="1" type="number"/></div>
+<div><label for="dfuDayIllness">Day of illness <span class="req-star" aria-hidden="true">*</span></label><input id="dfuDayIllness" min="1" placeholder="e.g. 5" step="1" type="number"/></div>
 <div>
-<label>Comorbidity status</label>
+<label for="dfuDxComorbidStatus">6. Comorbidities <span class="req-star" aria-hidden="true">*</span></label>
 <select id="dfuDxComorbidStatus">
+<option selected="" value="">— Select —</option>
 <option value="none">No comorbid</option>
 <option value="present">With comorbid</option>
 </select>
@@ -6222,8 +6238,8 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="grid four">
 <div>
-<label>Weight (kg)</label>
-<input id="dfuWeight" min="0" placeholder="e.g. 70" step="0.1" type="number"/>
+<label for="dfuWeight">Weight (kg) <span class="req-star" aria-hidden="true">*</span></label>
+<input id="dfuWeight" required="" min="0" placeholder="e.g. 70" step="0.1" type="number"/>
 </div>
 <div>
 <label>Height (cm)</label>
@@ -6335,7 +6351,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="card adult-cpg4 cpg-warning-panel" id="dfuCpgWarningPanel">
 <h2>Dengue warning signs (adults)</h2>
 <p class="helper">Review all 10 findings. Tick those present. Vomiting, mental state and bleeding are shown from the symptoms above — use Edit to change them.</p>
-<div class="cpg-phase-context"><div class="grid two"><div><label for="dfuPhase">Current illness phase</label><select id="dfuPhase">
+<div class="cpg-phase-context"><div class="grid two"><div><label for="dfuPhase">3. Phase <span class="req-star" aria-hidden="true">*</span></label><select id="dfuPhase">
+<option selected="" value="">— Select —</option>
 <option value="febrile phase">Febrile</option>
 <option value="critical phase">Critical</option>
 <option value="recovery phase">Recovery</option>
@@ -6415,7 +6432,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <input id="dfuVitalDateTime" type="datetime-local"/>
 </div>
 </div>
-<label>Vital signs — paste directly from TPC-OHCIS</label>
+<label>Vital signs — paste directly from CCMS</label>
 <textarea id="dfuVitalText" placeholder="Paste vital signs here, e.g. BP, PR, RR, temperature, SpO2 and pain score" rows="5"></textarea><div class="vital-shock-result neutral" id="dfuVitalShockResult">
 <strong>Auto haemodynamic check</strong>
 <span>Paste BP and pulse rate to assess the adult haemodynamic pattern.</span>
@@ -6423,13 +6440,13 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="objective-divider"><div class="section-subtitle">Investigations today</div><div class="helper">Paste today’s FBC below. Auto-detected values, serial FBC and previous investigations are kept together in this section.</div></div><div class="quick-fbc-card">
 <div class="section-subtitle">Investigation today — current FBC</div>
-<div class="helper">Paste full FBC from TPC-OHCIS. Hb, Hct, WC and Plt are detected automatically.</div>
+<div class="helper">Paste full FBC from CCMS. Hb, Hct, WC and Plt are detected automatically.</div>
 <div class="quick-fbc-grid">
 <div><label>FBC date</label><input id="dfuQuickFbcDate" type="date"/></div>
 <div><label>Source</label><select id="dfuQuickFbcSource"><option>KK</option><option>Hospital</option><option>GP</option></select></div>
 </div>
 <label>Paste full FBC result</label>
-<textarea id="dfuQuickFbcText" placeholder="Paste full FBC result from TPC-OHCIS here" rows="7"></textarea>
+<textarea id="dfuQuickFbcText" placeholder="Paste full FBC result from CCMS here" rows="7"></textarea>
 <div class="fbc-detected-box" id="dfuQuickFbcDetected">
 <div class="fbc-detected-title"><strong>Auto-detected FBC</strong><span class="helper">Updates immediately</span></div>
 <div class="fbc-detected-grid">
@@ -6586,17 +6603,19 @@ html,body{max-width:100%;overflow-x:hidden}
 <h2>Diagnosis Builder</h2>
 <div class="grid three">
 <div>
-<label>Day of illness — auto</label>
+<label for="dfuDxDay">2. Day of illness <span class="req-star" aria-hidden="true">*</span> — from follow-up details</label>
 <input id="dfuDxDay" placeholder="Taken from follow-up details" readonly=""/>
 </div>
 
 <div>
-<label>Warning signs — auto</label>
+<label for="dfuWarningStatusDisplay">Recorded warning findings — auto</label>
 <input id="dfuWarningStatusDisplay" readonly=""/>
 </div>
+<div><label for="dfuDxWarning">4. Warning signs <span class="req-star" aria-hidden="true">*</span></label><select id="dfuDxWarning"><option selected="" value="">— Select —</option><option value="without">Without warning signs</option><option value="with">With warning signs</option></select><div class="helper" id="dfuDxWarningHelp">Set automatically to “With” when warning findings are recorded.</div></div>
 <div>
-<label>Haemodynamic status</label>
+<label for="dfuHaemo">5. Shock status <span class="req-star" aria-hidden="true">*</span></label>
 <select id="dfuHaemo">
+<option selected="" value="">— Select —</option>
 <option value="haemodynamically stable">Haemodynamically stable</option>
 <option value="compensated shock">Compensated shock</option>
 <option value="decompensated shock">Decompensated shock</option>
@@ -6627,10 +6646,10 @@ html,body{max-width:100%;overflow-x:hidden}
 <details><summary>Clinician disposition rationale / override</summary>
 <label for="dfuCpgDispositionReason">Required if the selected plan differs from a hospital-assessment recommendation</label><textarea id="dfuCpgDispositionReason" rows="2" placeholder="Clinical reassessment, agreed disposition and rationale"></textarea></details>
 <div class="grid two">
-<div><label for="dfuCpgDxCertainty">Dengue diagnosis status</label><select id="dfuCpgDxCertainty"><option value="">Select after assessment</option><option value="suspected">Suspected dengue</option><option value="confirmed">Confirmed dengue</option></select></div>
+<div><label for="dfuCpgDxCertainty">1. Dengue — suspected / confirmed <span class="req-star" aria-hidden="true">*</span></label><select id="dfuCpgDxCertainty"><option value="">Select after assessment</option><option value="suspected">Suspected dengue</option><option value="confirmed">Confirmed dengue</option></select></div>
 <div class="hidden" id="dfuCpgDxEvidenceWrap"><label for="dfuCpgDxEvidence">Laboratory evidence reviewed</label><input id="dfuCpgDxEvidence" placeholder="e.g. NS1 positive 17/10/2026; include prior result if follow-up"/><div class="helper">Interpret the result with illness day and vaccination history. IgG alone does not establish acute dengue.</div></div>
 </div>
-<label class="check-item"><input id="dfuCpgDxReviewed" type="checkbox"/>Clinical assessment reviewed for this diagnosis</label>
+<label class="check-item"><input id="dfuCpgDxReviewed" type="checkbox"/>Clinical assessment reviewed for this diagnosis <span class="req-star" aria-hidden="true">*</span></label>
 <div class="helper">Confirm phase, warning signs, shock status and comorbidities/special populations. Recheck after changing clinical findings. Group A/B1/B2/C guides management and is not added to the copied diagnosis.</div>
 <a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG Fourth Edition (2026) — rules &amp; page references</a>
 </div>
@@ -7068,8 +7087,8 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="ncd-quick-import">
 <div class="ncd-quick-import-title">Quick paste — auto-capture into the boxes below</div>
 <div class="ncd-import-grid">
-<div class="ncd-import-box"><label>Vital signs — paste from TPC-OHCIS</label><textarea id="dmVitalPaste" rows="4" placeholder="Paste BP / pulse / RR / temperature / SpO2 block here"></textarea><div class="ncd-import-status" id="dmVitalImportStatus">Paste vital signs to auto-fill recognised values.</div></div>
-<div class="ncd-import-box"><label>Anthropometry — paste from TPC-OHCIS</label><textarea id="dmAnthroPaste" rows="4" placeholder="Paste height / weight / waist circumference here"></textarea><div class="ncd-import-status" id="dmAnthroImportStatus">Paste anthropometry to auto-fill height, weight and waist.</div></div>
+<div class="ncd-import-box"><label>Vital signs — paste from CCMS</label><textarea id="dmVitalPaste" rows="4" placeholder="Paste BP / pulse / RR / temperature / SpO2 block here"></textarea><div class="ncd-import-status" id="dmVitalImportStatus">Paste vital signs to auto-fill recognised values.</div></div>
+<div class="ncd-import-box"><label>Anthropometry — paste from CCMS</label><textarea id="dmAnthroPaste" rows="4" placeholder="Paste height / weight / waist circumference here"></textarea><div class="ncd-import-status" id="dmAnthroImportStatus">Paste anthropometry to auto-fill height, weight and waist.</div></div>
 <div class="ncd-import-box ncd-import-span-2"><label>Blood / urine results — paste one or multiple result blocks</label><div class="ncd-result-date-row"><label for="dmResultDate">Date of results</label><input id="dmResultDate" type="date"/></div><textarea id="dmBloodPaste" rows="7" placeholder="Paste HbA1c, RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME results here"></textarea><div class="ncd-import-status" id="dmBloodImportStatus">Recognises HbA1c, RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME.</div><div class="ncd-import-help">Auto-capture only fills recognised values. Choose the result date above if available. All result boxes remain editable.</div></div>
 </div></div>
 <div class="grid four">
@@ -7241,7 +7260,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <h2>BP &amp; anthropometry</h2>
 <div class="ncd-quick-import">
 <div class="ncd-quick-import-title">Quick paste — auto-capture</div>
-<div class="ncd-import-grid"><div class="ncd-import-box ncd-import-span-2"><label>BP &amp; anthropometry — paste from TPC-OHCIS</label><textarea id="htnCombinedPaste" rows="6" placeholder="Paste BP / pulse / height / weight / waist circumference block here"></textarea><div class="ncd-import-status" id="htnCombinedImportStatus">Paste BP and anthropometry together; recognised values will auto-fill below and BMI will calculate automatically.</div><textarea class="hidden" id="htnVitalPaste" aria-hidden="true"></textarea><div class="hidden" id="htnVitalImportStatus"></div><textarea class="hidden" id="htnAnthroPaste" aria-hidden="true"></textarea><div class="hidden" id="htnAnthroImportStatus"></div></div></div></div>
+<div class="ncd-import-grid"><div class="ncd-import-box ncd-import-span-2"><label>BP &amp; anthropometry — paste from CCMS</label><textarea id="htnCombinedPaste" rows="6" placeholder="Paste BP / pulse / height / weight / waist circumference block here"></textarea><div class="ncd-import-status" id="htnCombinedImportStatus">Paste BP and anthropometry together; recognised values will auto-fill below and BMI will calculate automatically.</div><textarea class="hidden" id="htnVitalPaste" aria-hidden="true"></textarea><div class="hidden" id="htnVitalImportStatus"></div><textarea class="hidden" id="htnAnthroPaste" aria-hidden="true"></textarea><div class="hidden" id="htnAnthroImportStatus"></div></div></div></div>
 <div class="grid four htn-single-bp-grid">
 <div><label>BP — SBP</label><input id="htnSbp1" type="number" min="60" max="300"/></div><div><label>DBP</label><input id="htnDbp1" type="number" min="30" max="200"/></div>
 <div><label>BP category</label><input class="ncd-readonly" id="htnBpCategory" readonly/></div>
@@ -8727,9 +8746,9 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="card" id="rme1ExamCard">
 <h2>4. Examination &amp; anthropometry</h2>
 <div class="rme1-import-panel">
-<div class="rme1-import-head"><div><strong>TPC-OHCIS quick import — vital signs</strong><small>Paste the Vital Signs block. BP, pulse, RR, temperature, SpO₂, weight and height are extracted automatically when present.</small></div><button class="btn secondary" id="rmeExtractVitals" type="button">Extract vital signs</button></div>
-<textarea id="rmeVitalPaste" rows="6" placeholder="Paste Vital Signs from TPC-OHCIS here, e.g. Captured..., BP : 118 / 82 mmHg, Pulse Rate : 96 bpm, Temperature : 36.8 °C, Weight : 62 kg, Height : 158 cm"></textarea>
-<div class="rme1-import-status" id="rmeVitalImportStatus">Paste a TPC-OHCIS vital-sign block to begin.</div>
+<div class="rme1-import-head"><div><strong>CCMS quick import — vital signs</strong><small>Paste the Vital Signs block. BP, pulse, RR, temperature, SpO₂, weight and height are extracted automatically when present.</small></div><button class="btn secondary" id="rmeExtractVitals" type="button">Extract vital signs</button></div>
+<textarea id="rmeVitalPaste" rows="6" placeholder="Paste Vital Signs from CCMS here, e.g. Captured..., BP : 118 / 82 mmHg, Pulse Rate : 96 bpm, Temperature : 36.8 °C, Weight : 62 kg, Height : 158 cm"></textarea>
+<div class="rme1-import-status" id="rmeVitalImportStatus">Paste a CCMS vital-sign block to begin.</div>
 </div>
 <div class="rme1-field-grid rme1-field-grid-3" style="margin-top:16px">
 <div><label>Height (cm)</label><input id="rmeHeight" min="100" max="220" step="0.1" type="number"/></div>
@@ -8761,9 +8780,9 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="card" id="rme1InvestigationsCard">
 <h2>5. Booking investigations</h2>
 <div class="rme1-import-panel">
-<div class="rme1-import-head"><div><strong>TPC-OHCIS quick import — blood results</strong><small>Paste booking blood results. FBC indices, blood group / Rh, HIV, syphilis and HBsAg are auto-filled when recognised. All boxes remain editable.</small></div><button class="btn secondary" id="rmeExtractLabs" type="button">Extract results</button></div>
-<textarea id="rmeLabPaste" rows="8" placeholder="Paste FBC / blood group / HIV / VDRL or RPR / HBsAg results from TPC-OHCIS here"></textarea>
-<div class="rme1-import-status" id="rmeLabImportStatus">Paste TPC-OHCIS booking blood results to begin.</div>
+<div class="rme1-import-head"><div><strong>CCMS quick import — blood results</strong><small>Paste booking blood results. FBC indices, blood group / Rh, HIV, syphilis and HBsAg are auto-filled when recognised. All boxes remain editable.</small></div><button class="btn secondary" id="rmeExtractLabs" type="button">Extract results</button></div>
+<textarea id="rmeLabPaste" rows="8" placeholder="Paste FBC / blood group / HIV / VDRL or RPR / HBsAg results from CCMS here"></textarea>
+<div class="rme1-import-status" id="rmeLabImportStatus">Paste CCMS booking blood results to begin.</div>
 </div>
 <div class="rme1-section-kicker">Blood results</div>
 <div class="rme1-field-grid rme1-field-grid-3">
@@ -9915,7 +9934,7 @@ function createPreviousLabTest(dateIndex,testType){
       </button>
     </div>
     <textarea rows="6" data-lab-result
-      placeholder="Paste ${labels[testType]} result directly from TPC-OHCIS"></textarea>
+      placeholder="Paste ${labels[testType]} result directly from CCMS"></textarea>
   `;
 
   test.querySelector("[data-remove-lab-test]").addEventListener("click",()=>{
@@ -10084,7 +10103,7 @@ function createFollowUpPreviousLabTest(dateIndex,testType){
       </button>
     </div>
     <textarea rows="6" data-dfu-lab-result
-      placeholder="Paste ${labels[testType]} result directly from TPC-OHCIS"></textarea>
+      placeholder="Paste ${labels[testType]} result directly from CCMS"></textarea>
   `;
 
   test.querySelector("[data-dfu-remove-lab-test]").addEventListener("click",()=>{
@@ -10454,7 +10473,9 @@ function syncClComorbidFromTop(){
   syncingClComorbid=true;
   const detail=value("clComorbid");
   const present=dengueMeaningfulText(detail);
-  $("clDxComorbidStatus").value=present?"present":"none";
+  // No top-level comorbidity: leave the status for the clinician to choose (mandatory item 6).
+  if(present) $("clDxComorbidStatus").value="present";
+  else if(value("clDxComorbidStatus")==="present") $("clDxComorbidStatus").value="";
   $("clDxComorbid").value=present?detail:"";
   $("clDxComorbidWrap").classList.toggle("hidden",!present);
   syncingClComorbid=false;
@@ -10535,6 +10556,16 @@ function syncDiagnosisBuilder(){
   buildDiagnosis();
 }
 
+// Paediatric warning findings for the new-case form (symptom answers + manually ticked signs).
+function clPaedsWarningList(){
+  const autoWarningSigns=[];
+  if(value("clVomiting")==="ge3") autoWarningSigns.push("persistent vomiting");
+  if(value("clAbdPain")==="yes") autoWarningSigns.push("abdominal pain or tenderness");
+  if(value("clBleeding")==="yes") autoWarningSigns.push("mucosal bleeding");
+  if(value("clLethargy")==="yes") autoWarningSigns.push("lethargy or restlessness");
+  return [...new Set([...autoWarningSigns,...checked("clWarningSigns")])];
+}
+window.clPaedsWarningList=clPaedsWarningList;
 function buildDiagnosis(){
   if(value("clDxType")==="Dengue fever" && value("dfGroup")==="adult") return window.MedAssistDengueCpg4UI.diagnosis("cl");
   const type=value("clDxType");
@@ -10549,16 +10580,10 @@ function buildDiagnosis(){
   }
 
   const day=value("clDxDay")||"[ENTER]";
-  const autoWarningSigns=[];
-  if(value("clVomiting")==="ge3") autoWarningSigns.push("persistent vomiting");
-  if(value("clAbdPain")==="yes") autoWarningSigns.push("abdominal pain or tenderness");
-  if(value("clBleeding")==="yes") autoWarningSigns.push("mucosal bleeding");
-  if(value("clLethargy")==="yes") autoWarningSigns.push("lethargy or restlessness");
-  const manualWarningSigns=checked("clWarningSigns");
-  const warningList=[...new Set([...autoWarningSigns,...manualWarningSigns])];
+  const warningList=clPaedsWarningList();
   const warning=(warningList.length || value("clWarningStatus")==="present")
     ? (warningList.length ? `with warning signs (${warningList.join(", ")})` : "with warning signs")
-    : "without warning signs";
+    : value("clDxWarning")==="without" ? "without warning signs" : "[SELECT WARNING SIGNS]";
 
   const topComorbid=value("clComorbid");
   const hasTopComorbid=dengueMeaningfulText(topComorbid);
@@ -10566,9 +10591,9 @@ function buildDiagnosis(){
   const hasComorbid=value("clDxComorbidStatus")==="present" || hasTopComorbid;
   const comorbid=hasComorbid
     ? `with comorbid ${dxComorbid||"[ENTER COMORBID]"}`
-    : "no comorbid";
+    : value("clDxComorbidStatus")==="none" ? "no comorbid" : "[SELECT COMORBIDITY STATUS]";
 
-  const dx=`Dengue fever, day ${day} of illness, in ${value("clPhase")}, ${warning}, ${value("clHaemo")}, ${comorbid}`;
+  const dx=`Dengue fever, day ${day} of illness, in ${value("clPhase")||"[SELECT PHASE]"}, ${warning}, ${value("clHaemo")||"[SELECT SHOCK STATUS]"}, ${comorbid}`;
   $("clGeneratedDx").value=dx;
   return dx;
 }
@@ -11479,7 +11504,7 @@ function denguePaediatricReferralAssessment(mode){
     if(value("dfuFluidState")==="warning"){
       reasons.push("dengue warning signs / unable oral intake");
     }
-    if(value("dfuHaemo")!=="haemodynamically stable" ||
+    if(["compensated shock","decompensated shock"].includes(value("dfuHaemo")) ||
        ["compensated","decompensated"].includes(value("dfuFluidState"))){
       urgentReasons.push(
         value("dfuHaemo")==="decompensated shock" || value("dfuFluidState")==="decompensated"
@@ -11555,7 +11580,7 @@ function denguePaediatricReferralAssessment(mode){
     if(value("dfState")==="warning" && value("clWarningStatus")!=="present"){
       reasons.push("dengue warning signs / unable oral intake");
     }
-    if(value("clHaemo")!=="haemodynamically stable" ||
+    if(["compensated shock","decompensated shock"].includes(value("clHaemo")) ||
        ["compensated","decompensated"].includes(value("dfState"))){
       urgentReasons.push(
         value("clHaemo")==="decompensated shock" || value("dfState")==="decompensated"
@@ -15809,7 +15834,7 @@ function buildDengueFollowUpDiagnosis(){
 
   const warningText=warning.positive.length
     ? `with warning signs (${warning.positive.join(", ")})`
-    : "with no warning sign";
+    : fv("dfuDxWarning")==="without" ? "with no warning sign" : "[SELECT WARNING SIGNS]";
 
   f$("dfuWarningStatusDisplay").value=warning.positive.length
     ? `Present — ${warning.positive.join(", ")}`
@@ -15817,11 +15842,11 @@ function buildDengueFollowUpDiagnosis(){
 
   const comorbid=fv("dfuDxComorbidStatus")==="present"
     ? `with comorbid ${fv("dfuDxComorbid")||"[ENTER COMORBID]"}`
-    : "no comorbid";
+    : fv("dfuDxComorbidStatus")==="none" ? "no comorbid" : "[SELECT COMORBIDITY STATUS]";
 
   const diagnosis=
-    `Dengue fever, day ${day} of illness, in ${fv("dfuPhase")}, `+
-    `${warningText}, with ${fv("dfuHaemo")}, ${comorbid}`;
+    `Dengue fever, day ${day} of illness, in ${fv("dfuPhase")||"[SELECT PHASE]"}, `+
+    `${warningText}, ${fv("dfuHaemo")?`with ${fv("dfuHaemo")}`:"[SELECT SHOCK STATUS]"}, ${comorbid}`;
 
   f$("dfuGeneratedDx").value=diagnosis;
   return diagnosis;
@@ -20707,7 +20732,7 @@ function parseVitalPaste(raw){
 }
 function extractVitals(){
   const raw=val("rmeVitalPaste"),r=parseVitalPaste(raw),det=[];
-  if(!raw.trim()){q("rmeVitalImportStatus").className="rme1-import-status";q("rmeVitalImportStatus").textContent="Paste a TPC-OHCIS vital-sign block to begin.";return r;}
+  if(!raw.trim()){q("rmeVitalImportStatus").className="rme1-import-status";q("rmeVitalImportStatus").textContent="Paste a CCMS vital-sign block to begin.";return r;}
   [["rmeSbp",r.sbp,"BP systolic"],["rmeDbp",r.dbp,"BP diastolic"],["rmePulse",r.pulse,"pulse"],["rmeRr",r.rr,"RR"],["rmeTemp",r.temp,"temperature"],["rmeSpo2",r.spo2,"SpO₂"],["rmeBookingWeight",r.weight,"weight"],["rmeHeight",r.height,"height"],["rmeVitalCaptured",r.captured,"captured time"]].forEach(([id,v,label])=>{if(v){setIf(id,v);det.push(label);}});
   q("rmeVitalImportStatus").className=`rme1-import-status ${det.length>=4?"success":"partial"}`;q("rmeVitalImportStatus").textContent=det.length?`Detected: ${det.join(", ")}. BMI updates automatically when height + weight are available.`:"No recognised vital-sign values yet. You can still enter the boxes manually.";bmiData();return r;
 }
@@ -20738,7 +20763,7 @@ function parseLabPaste(raw){
 }
 function extractLabs(){
   const raw=val("rmeLabPaste"),r=parseLabPaste(raw),det=[];
-  if(!raw.trim()){q("rmeLabImportStatus").className="rme1-import-status";q("rmeLabImportStatus").textContent="Paste TPC-OHCIS booking blood results to begin.";return r;}
+  if(!raw.trim()){q("rmeLabImportStatus").className="rme1-import-status";q("rmeLabImportStatus").textContent="Paste CCMS booking blood results to begin.";return r;}
   [["rmeHb",r.hb,"Hb"],["rmeHct",r.hct,"Hct"],["rmeWbc",r.wbc,"WBC"],["rmePlt",r.plt,"platelet"],["rmeMcv",r.mcv,"MCV"],["rmeMch",r.mch,"MCH"],["rmeBloodGroup",r.abo,"blood group"],["rmeRh",r.rh,"Rh"],["rmeHiv",r.hiv,"HIV"],["rmeVdrl",r.vdrl,"syphilis"],["rmeHbs",r.hbs,"HBsAg"],["rmeThal",r.thal,"thal screen"],["rmeGlucose",r.glucose,"glucose"]].forEach(([id,v,label])=>{if(v){setIf(id,v);det.push(label);}});
   q("rmeLabImportStatus").className=`rme1-import-status ${det.length>=5?"success":"partial"}`;q("rmeLabImportStatus").textContent=det.length?`Detected: ${det.join(", ")}. Review the populated boxes before generating the note.`:"No recognised booking blood result yet. Enter results manually if the TPC format is different.";return r;
 }
@@ -22409,7 +22434,7 @@ function importBlood(prefix){
   const raw=byId(prefix+"BloodPaste")?.value||"",r=parseBlood(raw),items=[];
   for(const id of Object.values(labMap[prefix])){const el=byId(id);if(el&&el.value!==""){el.value="";el.dispatchEvent(new Event("input",{bubbles:true}));el.dispatchEvent(new Event("change",{bubbles:true}));}}
   for(const [k,id] of Object.entries(labMap[prefix])) if(r[k]&&setField(id,r[k])) items.push(labels[k]||k);
-  status(prefix+"BloodImportStatus",items,raw.trim()?"No recognised result labels yet. Check the pasted TPC-OHCIS format or enter manually.":(prefix==="dm"?"Recognises HbA1c, RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME.":"Recognises RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME."));
+  status(prefix+"BloodImportStatus",items,raw.trim()?"No recognised result labels yet. Check the pasted CCMS format or enter manually.":(prefix==="dm"?"Recognises HbA1c, RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME.":"Recognises RP, LFT, FBC, FBS, FLP, urine microalbumin/protein and UFEME."));
   window.syncNcdVisibleLabs?.(prefix);
 }
 function debounce(fn,ms=120){let t;return()=>{clearTimeout(t);t=setTimeout(fn,ms);};}

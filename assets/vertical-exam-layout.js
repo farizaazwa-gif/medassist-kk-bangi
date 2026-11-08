@@ -718,7 +718,7 @@
     const groups = create("div", "medassist-pe-groups");
     card.insertBefore(groups, anchor);
     const views = [
-      makeSystem({ id:"rmePeImportSystem", title:"TPC-OHCIS quick import", icon:"IN", theme:"general", nodes:[importPanel], span:"full", columns:1 }),
+      makeSystem({ id:"rmePeImportSystem", title:"CCMS quick import", icon:"IN", theme:"general", nodes:[importPanel], span:"full", columns:1 }),
       makeSystem({ id:"rmePeVitalsSystem", title:"Anthropometry & vital signs", icon:"VS", theme:"chest", nodes:[vitalsGrid, bmiSummary], span:"full", columns:1 }),
       makeSystem({ id:"rmePeFindingsSystem", title:"Relevant examination findings", icon:"PE", theme:"ent", nodes:[kicker, checks], span:"half", columns:1 }),
       makeSystem({ id:"rmePeSystemsSystem", title:"System examination", icon:"SYS", theme:"abdomen", nodes:[systems], span:"half", columns:1 })

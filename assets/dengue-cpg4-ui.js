@@ -104,9 +104,14 @@
     const severity=a.group === "C"?`severe dengue${severeDetails.length?` (${severeDetails.join("; ")})`:""}`:a.warningSigns.length?`dengue with warning signs (${a.warningSigns.join(", ")})`:"dengue without warning signs";
     const phase=s.nearCritical && s.phase !== "critical phase"?`${s.phase}, approaching critical phase (clinician assessed)`:s.phase;
     const haemodynamics=s.haemo === "haemodynamically stable"?"not in shock":s.haemo;
+    // Mandatory diagnosis items: phase, warning-sign status, shock status and comorbidity status must be chosen.
+    const comorbidStatus=val(`${p}DxComorbidStatus`);
     const complete=reviewed && ["suspected","confirmed"].includes(certainty) && Number.isInteger(C.number(day)) && Number(day)>0
       && (certainty!=="confirmed" || val(`${p}CpgDxEvidence`).trim())
-      && (val(`${p}DxComorbidStatus`)!=="present" || s.comorbidity)
+      && Boolean(s.phase) && Boolean(s.haemo)
+      && (a.warningSigns.length>0 || val(`${p}DxWarning`) === "without")
+      && (s.comorbidity || comorbidStatus === "none")
+      && (comorbidStatus!=="present" || s.comorbidity)
       && (!s.severeOrgan || val(`${p}OrganFailureDetails`).trim());
     const text=complete?`${certainty === "confirmed"?"Confirmed":"Suspected"} ${severity}, D${Number(day)}, ${phase}, ${haemodynamics}, ${[comorbid,...special].join(", ")}.`:"Diagnosis pending clinical assessment.";
     setValue(`${p}GeneratedDx`,text);
