@@ -84,8 +84,10 @@ test('diagnosis follows Table 7 without management groups or invented qualifiers
 });
 
 test('diagnosis review and confirmation cannot be inferred from blank/default inputs',()=>{
-  for(const patch of [{clCpgDxReviewed:false},{clCpgDxCertainty:''},{clCpgDxCertainty:'confirmed'},{clDxDay:''},{clDxDay:0},{clDxDay:1.5},{clDxDay:-1},{clDxComorbidStatus:'present',clDxComorbid:''}])assert.equal(form(patch).validate('cl'),false,JSON.stringify(patch));
-  assert.doesNotMatch(form({clCpgDxReviewed:false}).diagnosis('cl'),/without warning signs|NKMI/);
+  for(const patch of [{clCpgDxCertainty:''},{clCpgDxCertainty:'confirmed'},{clDxDay:''},{clDxDay:0},{clDxDay:1.5},{clDxDay:-1},{clDxComorbidStatus:'present',clDxComorbid:''}])assert.equal(form(patch).validate('cl'),false,JSON.stringify(patch));
+  assert.doesNotMatch(form({clCpgDxCertainty:''}).diagnosis('cl'),/without warning signs|NKMI/);
+  // v18.238: the review tick was removed; a complete form produces the diagnosis without it.
+  assert.match(form({clCpgDxReviewed:false}).diagnosis('cl'),/^Suspected dengue without warning signs/);
   assert.doesNotMatch(form({clCpgDxCertainty:'confirmed',clCpgDxEvidence:''}).diagnosis('cl'),/Confirmed dengue/);
   assert.equal(form({clCpgDxCertainty:'confirmed',clCpgDxEvidence:'Prior positive PCR reviewed'}).validate('cl'),true);
   assert.equal(form({dfGroup:'paeds',clCpgDxReviewed:false,clDxDay:''}).validate('cl'),true);
@@ -269,6 +271,6 @@ test('restricted quota display retains entered totals without presenting a routi
 });
 
 test('pending adult diagnosis names what is still required',()=>{
-  const dx=form({clPhase:'',clDxComorbidStatus:'',clCpgDxReviewed:false}).diagnosis('cl');
-  assert.equal(dx,'Diagnosis pending clinical assessment. Still required: 3. phase; 6. comorbidities; tick “Clinical assessment reviewed”.');
+  const dx=form({clPhase:'',clDxComorbidStatus:''}).diagnosis('cl');
+  assert.equal(dx,'Diagnosis pending clinical assessment. Still required: 3. phase; 6. comorbidities.');
 });

@@ -6,7 +6,7 @@ const { INDEX_HTML: html } = require("./helpers/source-tools.js");
 const complete = (prefix, adult, extra = {}) => ({
   prefix, adult,
   weight: "20", dxType: "Dengue fever", dxOther: "",
-  certainty: adult ? "suspected" : "", evidence: "", reviewed: adult,
+  certainty: adult ? "suspected" : "", evidence: "",
   day: "4", phase: "febrile phase", warningChoice: "without", effectiveWarnings: [],
   warningTarget: `${prefix}DxWarning`, warningDetail: "",
   haemo: "haemodynamically stable", comorbidStatus: "none", comorbidDetail: "", topComorbid: "",
@@ -36,7 +36,6 @@ test("item 1: diagnosis type, other text, and adult suspected/confirmed with evi
   assert.deepEqual(fields(complete("cl", true, { certainty: "" })), ["clCpgDxCertainty"]);
   assert.deepEqual(fields(complete("dfu", true, { certainty: "confirmed" })), ["dfuCpgDxEvidence"]);
   assert.deepEqual(fields(complete("dfu", true, { certainty: "confirmed", evidence: "NS1 +ve 2/11" })), []);
-  assert.deepEqual(fields(complete("cl", true, { reviewed: false })), ["clCpgDxReviewed"]);
 });
 
 test("item 2: day of illness must be a positive whole number", () => {
@@ -77,6 +76,6 @@ test("form markup: blank defaults, required markers and warning-sign selectors",
   for (const label of ["2. Day of illness", "3. Phase", "4. Warning signs", "5. Shock status", "6. Comorbidities"]) {
     assert.ok(html.split(label).length - 1 >= 2, `${label} must label both modules`);
   }
-  assert.match(html, /<script src="assets\/dengue-required\.js\?v=18\.236\.0"><\/script>/);
+  assert.match(html, /<script src="assets\/dengue-required\.js\?v=18\.238\.0"><\/script>/);
   assert.doesNotMatch(html, /TPC-OHCIS/);
 });

@@ -32,3 +32,6 @@ Tests: `tests/dengue-required.test.js` (8 new); CPG4 UI fixtures updated. Full s
 
 ## v18.237.0 (9 Nov 2026)
 - "3. Phase" now always sits in the Diagnosis Builder (adults and children, new case and follow-up), between "2. Day of illness" and "4. Warning signs". The adult warning-sign panel shows the current phase with a pointer to the builder.
+
+## v18.238.0 (9 Nov 2026)
+- Removed the "Clinical assessment reviewed for this diagnosis" tick (new case and follow-up). The adult diagnosis is produced as soon as the required items are filled; the pop-up no longer asks for the tick.

@@ -4,7 +4,6 @@
  *   1. Dengue fever (adults: suspected / confirmed, with lab evidence if confirmed)
  *   2. Day of illness  3. Phase  4. With / without warning signs
  *   5. Shock status    6. Comorbidities (with list if present)
- *   Adults (CPG4 flow): "Clinical assessment reviewed" tick, without which no diagnosis is produced.
  * Draft saving is not blocked. */
 (function (root, factory) {
   "use strict";
@@ -62,7 +61,6 @@
     else if (input.comorbidStatus === "present" && !meaningful(input.comorbidDetail) && !top) add(`${p}DxComorbid`, "6. Comorbidities — list the comorbidities");
 
     if (input.adult && input.severeOrgan && !filled(input.organDetails)) add(`${p}OrganFailureDetails`, "Severe organ involvement — document the details");
-    if (input.adult && !input.reviewed) add(`${p}CpgDxReviewed`, "Tick “Clinical assessment reviewed for this diagnosis”");
     return items;
   }
 
@@ -114,7 +112,7 @@
       weight: val(`${p}Weight`),
       dxType: p === "cl" ? val("clDxType") : "Dengue fever",
       dxOther: val("clDxOther"),
-      certainty: val(`${p}CpgDxCertainty`), evidence: val(`${p}CpgDxEvidence`), reviewed: on(`${p}CpgDxReviewed`),
+      certainty: val(`${p}CpgDxCertainty`), evidence: val(`${p}CpgDxEvidence`),
       day: val(p === "cl" ? "clDxDay" : "dfuDayIllness"),
       phase: val(`${p}Phase`),
       warningChoice: val(`${p}DxWarning`),
