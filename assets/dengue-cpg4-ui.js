@@ -334,8 +334,11 @@
     root.querySelectorAll(".adult-cpg4").forEach(x=>x.classList.toggle("hidden",!isActive));
     const phaseWrap=el(`${p}Phase`)?.parentElement;
     // The same phase field serves adults and children; place it back for the paediatric form.
-    const phaseHome=el(`${p}CpgPhaseHome`),phaseSlot=el(`${p}CpgPhaseSlot`);
-    if(phaseWrap && phaseHome && phaseSlot){const target=isActive?phaseSlot:phaseHome;if(phaseWrap.parentElement!==target)target.appendChild(phaseWrap);}
+    const phaseHome=el(`${p}CpgPhaseHome`);
+    // v18.237: phase is diagnosis item 3, so it always sits in the Diagnosis Builder; the adult warning panel shows a pointer.
+    if(phaseWrap && phaseHome && phaseWrap.parentElement!==phaseHome)phaseHome.appendChild(phaseWrap);
+    const phaseSelect=el(`${p}Phase`),phaseText=phaseSelect?.selectedOptions?.[0]?.textContent||"";
+    setText(`${p}CpgPhaseNote`,val(`${p}Phase`)?`Phase: ${phaseText} — change it in the Diagnosis Builder (3. Phase).`:"Phase not selected — choose it in the Diagnosis Builder (3. Phase).");
     if(p === "cl"){
       const status=el("clWarningStatus")?.parentElement,slot=el("clCpgOverrideSlot"),home=el("clCpgPhaseHome");
       if(status && slot && home){const target=isActive?slot:home;if(status.parentElement!==target)target.appendChild(status);}
@@ -415,6 +418,7 @@
       const phase=el(`${p}Phase`)?.parentElement;
       if(phase){
         const slot=document.createElement("div");slot.id=`${p}CpgPhaseSlot`;phase.before(slot);slot.appendChild(phase);
+        const note=document.createElement("div");note.id=`${p}CpgPhaseNote`;note.className="helper";slot.appendChild(note);
         const home=document.createElement("div");home.id=`${p}CpgPhaseHome`;
         (el(p === "cl"?"clDxDay":"dfuDxDay")?.parentElement)?.after(home);
       }

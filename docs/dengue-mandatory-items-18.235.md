@@ -29,3 +29,6 @@ Tests: `tests/dengue-required.test.js` (8 new); CPG4 UI fixtures updated. Full s
 ## v18.236.0 (9 Nov 2026)
 - Adult "Generated diagnosis" no longer shows a bare "Diagnosis pending clinical assessment." It now names what is still required (e.g. "Still required: 3. phase; 6. comorbidities."). Group B2 can appear before the phase is selected when "Approaching critical phase" is ticked, which made the pending state confusing.
 - Severe organ involvement without documented details is now listed in the required-items pop-up (it already blocked the adult diagnosis).
+
+## v18.237.0 (9 Nov 2026)
+- "3. Phase" now always sits in the Diagnosis Builder (adults and children, new case and follow-up), between "2. Day of illness" and "4. Warning signs". The adult warning-sign panel shows the current phase with a pointer to the builder.
