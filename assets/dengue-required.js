@@ -1,7 +1,7 @@
 /* Mandatory items before a dengue clinical note / referral can be generated
  * (new case "cl" and follow-up "dfu"):
  *   Weight, then the six diagnosis items —
- *   1. Dengue fever (adults: suspected / confirmed, with lab evidence if confirmed)
+ *   1. Diagnosis — Dengue fever (confirmed) or Probable dengue fever
  *   2. Day of illness  3. Phase  4. With / without warning signs
  *   5. Shock status    6. Comorbidities (with list if present)
  * Draft saving is not blocked. */
@@ -14,6 +14,7 @@
   "use strict";
 
   const GENERIC_CONFIRMED = "warning signs confirmed by clinician";
+  const DENGUE_TYPES = ["", "Dengue fever", "Probable dengue fever"];
   const meaningful = text => !/^(?:\s*|no|nil|none|nkmi|n\/a|na|-|no known medical illness)$/i.test(String(text ?? "").trim());
   const filled = text => String(text ?? "").trim() !== "";
 
@@ -25,17 +26,11 @@
 
     if (!(Number(input.weight) > 0)) add(`${p}Weight`, "Weight (kg)");
 
-    if (p === "cl") {
-      if (!filled(input.dxType)) add("clDxType", "1. Diagnosis");
-      else if (input.dxType === "Other" && !filled(input.dxOther)) add("clDxOther", "1. Diagnosis — enter the diagnosis");
-    }
-    const dengue = p === "dfu" || input.dxType === "Dengue fever";
+    if (!filled(input.dxType)) add(p === "cl" ? "clDxType" : "dfuDxType", "1. Diagnosis — dengue fever or probable dengue fever");
+    else if (p === "cl" && input.dxType === "Other" && !filled(input.dxOther)) add("clDxOther", "1. Diagnosis — enter the diagnosis");
+    // Blank = dengue clerking with item 1 not chosen yet; keep checking the other dengue items.
+    const dengue = p === "dfu" || DENGUE_TYPES.includes(input.dxType);
     if (!dengue) return items;
-
-    if (input.adult) {
-      if (!["suspected", "confirmed"].includes(input.certainty)) add(`${p}CpgDxCertainty`, "1. Dengue — select suspected or confirmed");
-      else if (input.certainty === "confirmed" && !filled(input.evidence)) add(`${p}CpgDxEvidence`, "1. Confirmed dengue — record the laboratory evidence");
-    }
 
     const day = Number(input.day);
     if (!filled(input.day) || !Number.isInteger(day) || day < 1) add(p === "cl" ? "clDxDay" : "dfuDayIllness", "2. Day of illness");
@@ -47,8 +42,8 @@
       add(`${p}DxWarning`, "4. Warning signs — with or without");
     } else if (input.warningChoice === "with") {
       if (!effective.length) add(input.warningTarget || `${p}DxWarning`, "4. Warning signs — record the warning sign(s) present");
-      else if (input.adult && effective.length === 1 && effective[0] === GENERIC_CONFIRMED && !filled(input.warningDetail)) {
-        add(`${p}CpgWarningDetail`, "4. Warning signs — specify the warning sign / clinical rationale");
+      else if (input.adult && effective.length === 1 && effective[0] === GENERIC_CONFIRMED) {
+        add(input.warningTarget || `${p}DxWarning`, "4. Warning signs — tick the specific warning sign found");
       }
     } else if (input.warningChoice === "without" && effective.length) {
       add(`${p}DxWarning`, "4. Warning signs — findings are recorded; select “With warning signs”");
@@ -75,7 +70,7 @@
   const ROOTS = { cl: "dengueNewCaseTemplate", dfu: "dengueFollowUpTemplate" };
   const GENERATE = { cl: ["clGenerate", "clGenerateReferral"], dfu: ["dfuGenerate", "dfuGenerateReferral"] };
   const isAdult = p => val(p === "cl" ? "dfGroup" : "dfuGroup") === "adult";
-  const cpgActive = p => isAdult(p) && (p !== "cl" || val("clDxType") === "Dengue fever");
+  const cpgActive = p => isAdult(p) && (p !== "cl" || DENGUE_TYPES.includes(val("clDxType")));
   const UI = () => window.MedAssistDengueCpg4UI;
   const C = () => window.MedAssistDengueCpg4;
 
@@ -110,15 +105,13 @@
     return {
       prefix: p, adult,
       weight: val(`${p}Weight`),
-      dxType: p === "cl" ? val("clDxType") : "Dengue fever",
+      dxType: p === "cl" ? val("clDxType") : val("dfuDxType"),
       dxOther: val("clDxOther"),
-      certainty: val(`${p}CpgDxCertainty`), evidence: val(`${p}CpgDxEvidence`),
       day: val(p === "cl" ? "clDxDay" : "dfuDayIllness"),
       phase: val(`${p}Phase`),
       warningChoice: val(`${p}DxWarning`),
       effectiveWarnings: effectiveWarnings(p),
       warningTarget: warningTarget(p),
-      warningDetail: val(`${p}CpgWarningDetail`),
       haemo: val(`${p}Haemo`),
       comorbidStatus: val(`${p}DxComorbidStatus`),
       comorbidDetail: val(`${p}DxComorbid`),

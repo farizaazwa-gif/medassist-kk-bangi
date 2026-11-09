@@ -14,7 +14,7 @@
       <h3>Symptoms &amp; signs</h3><div class="combined-sign-grid" id="${p}CombinedSigns"></div>
       <div class="combined-associated" id="${p}CombinedAssociated"><h3>Other associated symptoms</h3></div>
       <div class="combined-phase" id="${p}CombinedPhase"></div>
-      <details class="combined-interpretation" id="${p}CombinedInterpretation"><summary>Clinician confirmation / additional finding</summary><div id="${p}CombinedOverride"></div></details>
+      <details class="combined-interpretation" id="${p}CombinedInterpretation"><summary>Clinician confirmation of warning signs</summary><div id="${p}CombinedOverride"></div></details>
       <div id="${p}CombinedSummary"></div>`;
     panel.append(body,original);
     const l={p,panel,body,original,moves:[],hidden:[],labels:[],enabled:false};

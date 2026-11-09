@@ -13,10 +13,10 @@
 <link href="https://farizaazwa-gif.github.io/medassist-kk-bangi/" rel="canonical"/>
 <title>MedAssist KK Bangi — Clinical Clerking &amp; Calculators</title>
 <script src="assets/dengue-cpg4.js?v=18.233.0"></script>
-<script src="assets/dengue-cpg4-ui.js?v=18.241.0"></script>
+<script src="assets/dengue-cpg4-ui.js?v=18.242.0"></script>
 <script src="assets/paeds-dengue-weight.js?v=18.234.0"></script>
-<script src="assets/dengue-required.js?v=18.238.0"></script>
-<script src="assets/dengue-symptoms.js?v=18.233.0"></script>
+<script src="assets/dengue-required.js?v=18.242.0"></script>
+<script src="assets/dengue-symptoms.js?v=18.242.0"></script>
 <link rel="stylesheet" href="assets/dengue-symptoms.css?v=18.233.0"/>
 <script src="assets/clinical-safety.js"></script>
 <script src="assets/note-edits.js?v=18.233.0"></script>
@@ -5522,7 +5522,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <p class="helper">Interpret findings with phase, perfusion, HCT trend and urine output. Persistent vomiting during the febrile phase alone does not establish dengue with warning signs.</p></div>
 <div class="cpg-warning-list"><div class="cpg-warning-item"><label class="check-item"><input id="clCpgWorse" type="checkbox"/><span>1. Not improving / getting worse as fever settles</span></label></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgIntensePain" type="checkbox"/><span>2. Intense abdominal pain or tenderness</span></label></div><div class="cpg-warning-item cpg-history-item"><strong>3. Persistent vomiting &gt;3 times in 24 hours</strong><div class="cpg-history-status" id="clCpgHistoryVomiting">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="clVomitLast24" aria-label="Edit vomiting in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item cpg-history-item"><strong>4. Lethargy / restlessness / irritability / confusion</strong><div class="cpg-history-status" id="clCpgHistoryMental">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="clLethargy" aria-label="Edit mental in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item combined-fluid-card"><strong class="combined-fluid-title">Clinical fluid accumulation</strong><div class="combined-fluid-symptoms" id="clCpgAccumulationSymptoms"><div class="helper">Related symptoms</div><label class="check-item"><input id="clCpgDistension" type="checkbox"/>Abdominal swelling / distension</label></div><label class="check-item combined-fluid-confirm"><input id="clCpgAccumulation" type="checkbox"/><span>Ascites / pleural effusion present</span></label><div class="helper">Confirm on examination / imaging. Symptoms alone do not confirm fluid accumulation.</div></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgPostural" type="checkbox"/><span>6. Postural hypotension</span></label><div class="helper">BP drops on standing</div></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgLiver" type="checkbox"/><span>7. Liver enlargement &gt;2 cm</span></label></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgLowUrine" type="checkbox"/><span>8. Reduced / absent urine for 4–6 hours</span></label></div><div class="cpg-warning-item cpg-history-item"><strong>9. Bleeding manifestation</strong><div class="cpg-history-status" id="clCpgHistoryBleeding">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="clBleeding" aria-label="Edit bleeding in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item"><label class="check-item"><input id="clCpgLabTrend" type="checkbox"/><span>10. Rising HCT with rapidly falling platelets</span></label><div class="helper">Compare dated serial FBC results. Tick after clinical review; a single result cannot confirm this trend.</div></div></div>
 <p class="helper">Loose stool is a hydration concern, not a standalone adult warning sign. <a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG4: pp10,14–15,28</a></p>
-<div class="cpg-clinical-interpretation"><h3>Clinician confirmation — if needed</h3><div><label for="clWarningStatus">Warning-sign interpretation</label><select id="clWarningStatus"><option value="none">Use phase and recorded findings</option><option value="present">Warning signs confirmed on clinical assessment</option></select></div><div class="helper">If you confirm warning signs after assessment, record the finding and reason.</div><div class="cpg-warning-detail hidden"><label for="clCpgWarningDetail">Additional warning sign / clinical rationale</label><input id="clCpgWarningDetail" placeholder="Finding and reason for the clinical interpretation"/></div></div>
+<div class="cpg-clinical-interpretation"><h3>Clinician confirmation — if needed</h3><div><label for="clWarningStatus">Warning-sign interpretation</label><select id="clWarningStatus"><option value="none">Use phase and recorded findings</option><option value="present">Warning signs confirmed on clinical assessment</option></select></div><div class="helper">Choose this to count the findings recorded above as warning signs outside the critical phase. Tick the specific finding above if it is not yet recorded.</div></div>
 <h3>Current assessment</h3><div class="result-box" id="clCpgWarningSummary" aria-live="polite"></div>
 </div>
 <div class="card adult-cpg4 cpg-referral-panel" id="clCpgReferralFindings">
@@ -5947,6 +5947,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 </div>
+<div class="cpg-steroid-indication hidden" id="clCpgSteroidIndicationWrap"><label for="clCpgSteroidIndication">Indication for IM Voltaren / IV hydrocortisone <span class="req-star" aria-hidden="true">*</span></label><input id="clCpgSteroidIndication" placeholder="e.g. given before dengue was suspected; separate indication"/><div class="helper">NSAIDs and corticosteroids are not dengue treatment (CPG4).</div></div>
 </div>
 <div class="card">
 <h2>Diagnosis Builder</h2>
@@ -5954,7 +5955,9 @@ html,body{max-width:100%;overflow-x:hidden}
 <div>
 <label for="clDxType">1. Diagnosis <span class="req-star" aria-hidden="true">*</span></label>
 <select id="clDxType">
-<option value="Dengue fever">Dengue fever</option>
+<option selected="" value="">— Select —</option>
+<option value="Dengue fever">Dengue fever (confirmed)</option>
+<option value="Probable dengue fever">Probable dengue fever</option>
 <option value="Acute upper respiratory tract infection">Acute URTI</option>
 <option value="Acute bacterial rhinosinusitis">Acute bacterial rhinosinusitis</option>
 <option value="Acute pharyngitis">Acute pharyngitis</option>
@@ -5997,19 +6000,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div><label for="clDxComorbidStatus">6. Comorbidities <span class="req-star" aria-hidden="true">*</span></label><select id="clDxComorbidStatus"><option selected="" value="">— Select —</option><option value="none">No comorbid</option><option value="present">With comorbid</option></select></div>
 <div class="hidden" id="clDxComorbidWrap"><label>Comorbidities</label><input id="clDxComorbid" placeholder="e.g. DM and HPT"/></div>
 </div>
-<div class="adult-cpg4" id="clCpgReview">
-<strong>Assessment review</strong>
-<div class="helper">Assess the full clinical picture. Haemodynamic status is entered by the clinician after CCTVR, BP/pulse pressure and urine assessment; pasted vitals alone do not classify shock.</div>
-<div class="result-box" id="clCpgAssessment" aria-live="polite"></div>
-
-<details><summary>Vaccination and medication review</summary>
-<div class="grid two"><div><label for="clCpgVaccine">Dengue vaccination status</label><select id="clCpgVaccine"><option value="">Not recorded</option><option value="no">No</option><option value="yes">Yes</option><option value="unknown">Unknown</option></select></div>
-<div class="cpg-vaccine-date hidden"><label for="clCpgVaccineDate">Most recent dengue vaccination date</label><input id="clCpgVaccineDate" type="date"/></div></div>
-<div class="helper" id="clCpgVaccineAdvice"></div>
-<div class="check-grid"><label class="check-item"><input id="clCpgSglt2" type="checkbox"/>Taking SGLT2 inhibitor</label><label class="check-item"><input id="clCpgMetformin" type="checkbox"/>Taking metformin</label><label class="check-item"><input id="clCpgStatin" type="checkbox"/>Taking statin</label><label class="check-item"><input id="clCpgNsaid" type="checkbox"/>Taking NSAID</label><label class="check-item"><input id="clCpgSteroid" type="checkbox"/>Taking corticosteroid</label><label class="check-item"><input id="clCpgDerangedLiver" type="checkbox"/>Liver enzymes deranged</label></div>
-<div class="helper" id="clCpgMedicationAdvice"></div>
-<label for="clCpgSteroidIndication">Context / separate indication for any recorded NSAID or corticosteroid administration</label><input id="clCpgSteroidIndication" placeholder="e.g. prior exposure or established non-dengue indication"/>
-</details>
+<div id="clCpgFieldParking"><!-- v18.242: Assessment review removed. These two controls are shown in Symptoms &amp; daily assessment. -->
 <div class="adult-cpg4 cpg-fluid-restriction" id="clCpgFluidRestriction">
 <label class="check-item"><input id="clCpgFluidRestricted" type="checkbox"/>Individualised fluid restriction</label>
 <div class="cpg-fluid-regimen hidden"><label for="clCpgFluidRegimen">Prescribed fluid regimen</label><input id="clCpgFluidRegimen" placeholder="Volume, interval and route (oral / total fluid)"/></div>
@@ -6018,14 +6009,6 @@ html,body{max-width:100%;overflow-x:hidden}
 <label for="clCpgVoids">Urination frequency / 24 hours</label><input id="clCpgVoids" type="number" min="0" step="1"/>
 <div class="grid two"><div><label for="clCpgUrineMl">Measured urine (mL)</label><input id="clCpgUrineMl" type="number" min="0" step="any"/></div><div><label for="clCpgUrineHours">Over how many hours?</label><input id="clCpgUrineHours" type="number" min="0" step="any"/></div></div>
 <div class="helper" id="clCpgUrineDisplay" aria-live="polite"></div></details>
-<details><summary>Clinician disposition rationale / override</summary>
-<label for="clCpgDispositionReason">Required if the selected plan differs from a hospital-assessment recommendation</label><textarea id="clCpgDispositionReason" rows="2" placeholder="Clinical reassessment, agreed disposition and rationale"></textarea></details>
-<div class="grid two">
-<div><label for="clCpgDxCertainty">1. Dengue — suspected / confirmed <span class="req-star" aria-hidden="true">*</span></label><select id="clCpgDxCertainty"><option value="">Select after assessment</option><option value="suspected">Suspected dengue</option><option value="confirmed">Confirmed dengue</option></select></div>
-<div class="hidden" id="clCpgDxEvidenceWrap"><label for="clCpgDxEvidence">Laboratory evidence reviewed</label><input id="clCpgDxEvidence" placeholder="e.g. NS1 positive 17/10/2026; include prior result if follow-up"/><div class="helper">Interpret the result with illness day and vaccination history. IgG alone does not establish acute dengue.</div></div>
-</div>
-<div class="helper">Confirm phase, warning signs, shock status and comorbidities/special populations. Recheck after changing clinical findings. Group A/B1/B2/C guides management and is not added to the copied diagnosis.</div>
-<a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG Fourth Edition (2026) — rules &amp; page references</a>
 </div>
 <label>Generated diagnosis</label><textarea id="clGeneratedDx" readonly=""></textarea>
 </div><div class="card" id="clDengueFluidCard">
@@ -6091,6 +6074,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="helper">This time will be included in the generated plan and referral letter.</div>
 </div>
 </div>
+<div class="cpg-disposition hidden" id="clCpgDispositionWrap"><label for="clCpgDispositionReason">Hospital assessment indicated — reason for not referring <span class="req-star" aria-hidden="true">*</span></label><textarea id="clCpgDispositionReason" rows="2" placeholder="e.g. patient declined admission (AOR) after counselling"></textarea><div class="helper">Recorded findings need hospital assessment (CPG4). Select Option 1, or record why the patient is not referred.</div></div>
 <div class="plan-subplan-panel" data-cl-plan-group="refer">
 <div class="plan-subplan-title">Choose sub-plan(s) to include</div>
 <div class="plan-subplan-list">
@@ -6359,7 +6343,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <p class="helper">Interpret findings with phase, perfusion, HCT trend and urine output. Persistent vomiting during the febrile phase alone does not establish dengue with warning signs.</p></div>
 <div class="cpg-warning-list"><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgWorse" type="checkbox"/><span>1. Not improving / getting worse as fever settles</span></label></div><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgIntensePain" type="checkbox"/><span>2. Intense abdominal pain or tenderness</span></label></div><div class="cpg-warning-item cpg-history-item"><strong>3. Persistent vomiting &gt;3 times in 24 hours</strong><div class="cpg-history-status" id="dfuCpgHistoryVomiting">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="dfuVomitLast24" aria-label="Edit vomiting in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item cpg-history-item"><strong>4. Lethargy / restlessness / irritability / confusion</strong><div class="cpg-history-status" id="dfuCpgHistoryMental">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="dfuLethargy" aria-label="Edit mental in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item combined-fluid-card"><strong class="combined-fluid-title">Clinical fluid accumulation</strong><div class="combined-fluid-symptoms" id="dfuCpgAccumulationSymptoms"><div class="helper">Related symptoms</div><label class="check-item"><input id="dfuCpgDistension" type="checkbox"/>Abdominal swelling / distension</label></div><label class="check-item combined-fluid-confirm"><input id="dfuCpgAccumulation" type="checkbox"/><span>Ascites / pleural effusion present</span></label><div class="helper">Confirm on examination / imaging. Symptoms alone do not confirm fluid accumulation.</div></div><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgPostural" type="checkbox"/><span>6. Postural hypotension</span></label><div class="helper">BP drops on standing</div></div><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgLiver" type="checkbox"/><span>7. Liver enlargement &gt;2 cm</span></label></div><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgLowUrine" type="checkbox"/><span>8. Reduced / absent urine for 4–6 hours</span></label></div><div class="cpg-warning-item cpg-history-item"><strong>9. Bleeding manifestation</strong><div class="cpg-history-status" id="dfuCpgHistoryBleeding">Read from symptoms above</div><button type="button" class="cpg-history-edit" data-cpg-history="dfuBleedingTendencies" aria-label="Edit bleeding in symptoms">Edit in symptoms ↑</button></div><div class="cpg-warning-item"><label class="check-item"><input id="dfuCpgLabTrend" type="checkbox"/><span>10. Rising HCT with rapidly falling platelets</span></label><div class="helper">Compare dated serial FBC results. Tick after clinical review; a single result cannot confirm this trend.</div></div></div>
 <p class="helper">Loose stool is a hydration concern, not a standalone adult warning sign. <a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG4: pp10,14–15,28</a></p>
-<div class="cpg-clinical-interpretation"><h3>Clinician confirmation — if needed</h3><label class="check-item"><input id="dfuCpgWarningConfirmed" type="checkbox"/>Warning signs confirmed on clinical assessment</label><div class="helper">If you confirm warning signs after assessment, record the finding and reason.</div><div class="cpg-warning-detail hidden"><label for="dfuCpgWarningDetail">Additional warning sign / clinical rationale</label><input id="dfuCpgWarningDetail" placeholder="Finding and reason for the clinical interpretation"/></div></div>
+<div class="cpg-clinical-interpretation"><h3>Clinician confirmation — if needed</h3><label class="check-item"><input id="dfuCpgWarningConfirmed" type="checkbox"/>Warning signs confirmed on clinical assessment</label><div class="helper">Choose this to count the findings recorded above as warning signs outside the critical phase. Tick the specific finding above if it is not yet recorded.</div></div>
 <h3>Current assessment</h3><div class="result-box" id="dfuCpgWarningSummary" aria-live="polite"></div>
 </div>
 <div class="card adult-cpg4 cpg-referral-panel" id="dfuCpgReferralFindings">
@@ -6597,10 +6581,15 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 </div>
+<div class="cpg-steroid-indication hidden" id="dfuCpgSteroidIndicationWrap"><label for="dfuCpgSteroidIndication">Indication for IM Voltaren / IV hydrocortisone <span class="req-star" aria-hidden="true">*</span></label><input id="dfuCpgSteroidIndication" placeholder="e.g. given before dengue was suspected; separate indication"/><div class="helper">NSAIDs and corticosteroids are not dengue treatment (CPG4).</div></div>
 </div>
 <div class="card">
 <h2>Diagnosis Builder</h2>
 <div class="grid three">
+<div>
+<label for="dfuDxType">1. Diagnosis <span class="req-star" aria-hidden="true">*</span></label>
+<select id="dfuDxType"><option selected="" value="">— Select —</option><option value="Dengue fever">Dengue fever (confirmed)</option><option value="Probable dengue fever">Probable dengue fever</option></select>
+</div>
 <div>
 <label for="dfuDxDay">2. Day of illness <span class="req-star" aria-hidden="true">*</span> — from follow-up details</label>
 <input id="dfuDxDay" placeholder="Taken from follow-up details" readonly=""/>
@@ -6621,19 +6610,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </select>
 </div>
 </div>
-<div class="adult-cpg4" id="dfuCpgReview">
-<strong>Assessment review</strong>
-<div class="helper">Assess the full clinical picture. Haemodynamic status is entered by the clinician after CCTVR, BP/pulse pressure and urine assessment; pasted vitals alone do not classify shock.</div>
-<div class="result-box" id="dfuCpgAssessment" aria-live="polite"></div>
-
-<details><summary>Vaccination and medication review</summary>
-<div class="grid two"><div><label for="dfuCpgVaccine">Dengue vaccination status</label><select id="dfuCpgVaccine"><option value="">Not recorded</option><option value="no">No</option><option value="yes">Yes</option><option value="unknown">Unknown</option></select></div>
-<div class="cpg-vaccine-date hidden"><label for="dfuCpgVaccineDate">Most recent dengue vaccination date</label><input id="dfuCpgVaccineDate" type="date"/></div></div>
-<div class="helper" id="dfuCpgVaccineAdvice"></div>
-<div class="check-grid"><label class="check-item"><input id="dfuCpgSglt2" type="checkbox"/>Taking SGLT2 inhibitor</label><label class="check-item"><input id="dfuCpgMetformin" type="checkbox"/>Taking metformin</label><label class="check-item"><input id="dfuCpgStatin" type="checkbox"/>Taking statin</label><label class="check-item"><input id="dfuCpgNsaid" type="checkbox"/>Taking NSAID</label><label class="check-item"><input id="dfuCpgSteroid" type="checkbox"/>Taking corticosteroid</label><label class="check-item"><input id="dfuCpgDerangedLiver" type="checkbox"/>Liver enzymes deranged</label></div>
-<div class="helper" id="dfuCpgMedicationAdvice"></div>
-<label for="dfuCpgSteroidIndication">Context / separate indication for any recorded NSAID or corticosteroid administration</label><input id="dfuCpgSteroidIndication" placeholder="e.g. prior exposure or established non-dengue indication"/>
-</details>
+<div id="dfuCpgFieldParking"><!-- v18.242: Assessment review removed. These two controls are shown in Symptoms &amp; daily assessment. -->
 <div class="adult-cpg4 cpg-fluid-restriction" id="dfuCpgFluidRestriction">
 <label class="check-item"><input id="dfuCpgFluidRestricted" type="checkbox"/>Individualised fluid restriction</label>
 <div class="cpg-fluid-regimen hidden"><label for="dfuCpgFluidRegimen">Prescribed fluid regimen</label><input id="dfuCpgFluidRegimen" placeholder="Volume, interval and route (oral / total fluid)"/></div>
@@ -6642,14 +6619,6 @@ html,body{max-width:100%;overflow-x:hidden}
 <label for="dfuCpgVoids">Urination frequency / 24 hours</label><input id="dfuCpgVoids" type="number" min="0" step="1"/>
 <div class="grid two"><div><label for="dfuCpgUrineMl">Measured urine (mL)</label><input id="dfuCpgUrineMl" type="number" min="0" step="any"/></div><div><label for="dfuCpgUrineHours">Over how many hours?</label><input id="dfuCpgUrineHours" type="number" min="0" step="any"/></div></div>
 <div class="helper" id="dfuCpgUrineDisplay" aria-live="polite"></div></details>
-<details><summary>Clinician disposition rationale / override</summary>
-<label for="dfuCpgDispositionReason">Required if the selected plan differs from a hospital-assessment recommendation</label><textarea id="dfuCpgDispositionReason" rows="2" placeholder="Clinical reassessment, agreed disposition and rationale"></textarea></details>
-<div class="grid two">
-<div><label for="dfuCpgDxCertainty">1. Dengue — suspected / confirmed <span class="req-star" aria-hidden="true">*</span></label><select id="dfuCpgDxCertainty"><option value="">Select after assessment</option><option value="suspected">Suspected dengue</option><option value="confirmed">Confirmed dengue</option></select></div>
-<div class="hidden" id="dfuCpgDxEvidenceWrap"><label for="dfuCpgDxEvidence">Laboratory evidence reviewed</label><input id="dfuCpgDxEvidence" placeholder="e.g. NS1 positive 17/10/2026; include prior result if follow-up"/><div class="helper">Interpret the result with illness day and vaccination history. IgG alone does not establish acute dengue.</div></div>
-</div>
-<div class="helper">Confirm phase, warning signs, shock status and comorbidities/special populations. Recheck after changing clinical findings. Group A/B1/B2/C guides management and is not added to the copied diagnosis.</div>
-<a class="ref" href="docs/dengue-cpg4-reference.html" target="_blank" rel="noopener">CPG Fourth Edition (2026) — rules &amp; page references</a>
 </div>
 <label>Generated diagnosis</label>
 <textarea id="dfuGeneratedDx" readonly=""></textarea>
@@ -6709,6 +6678,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div id="dfuNextTcaWrap"><label>Next TCA date</label><input id="dfuNextTca" type="date"/></div>
 </div>
+<div class="cpg-disposition hidden" id="dfuCpgDispositionWrap"><label for="dfuCpgDispositionReason">Hospital assessment indicated — reason for not referring <span class="req-star" aria-hidden="true">*</span></label><textarea id="dfuCpgDispositionReason" rows="2" placeholder="e.g. patient declined admission (AOR) after counselling"></textarea><div class="helper">Recorded findings need hospital assessment (CPG4). Select Option 1, or record why the patient is not referred.</div></div>
 <div class="plan-subplan-panel" data-dfu-plan-group="refer">
 <div class="plan-subplan-title">Choose sub-plan(s) to include</div>
 <div class="plan-subplan-list">
@@ -10506,6 +10476,7 @@ $("clDxOther")?.addEventListener("input",buildDiagnosis);
 $("clWarningSigns").querySelectorAll("input").forEach(x=>x.addEventListener("change",buildDiagnosis));
 const CL_DX_TO_AMS_CATEGORY={
   "Dengue fever":"dengue",
+  "Probable dengue fever":"dengue",
   "Acute upper respiratory tract infection":"urti",
   "Community-acquired pneumonia":"cap",
   "Acute pharyngitis":"pharyngitis",
@@ -10543,8 +10514,13 @@ function syncDiagnosisAmsLink(){
     }
   }
 }
+// v18.242: blank = dengue clerking with item 1 not yet chosen.
+function isDengueDxType(type){return type===""||type==="Dengue fever"||type==="Probable dengue fever";}
+window.isDengueDxType=isDengueDxType;
+function dengueDxCertainty(type){return type==="Dengue fever"?"confirmed":type==="Probable dengue fever"?"probable":"pending";}
+window.dengueDxCertainty=dengueDxCertainty;
 function syncDiagnosisBuilder(){
-  const dengue=value("clDxType")==="Dengue fever";
+  const dengue=isDengueDxType(value("clDxType"));
   const other=value("clDxType")==="Other";
 
   $("clDengueDxFields")?.classList.toggle("hidden",!dengue);
@@ -10565,10 +10541,10 @@ function clPaedsWarningList(){
 }
 window.clPaedsWarningList=clPaedsWarningList;
 function buildDiagnosis(){
-  if(value("clDxType")==="Dengue fever" && value("dfGroup")==="adult") return window.MedAssistDengueCpg4UI.diagnosis("cl");
+  if(isDengueDxType(value("clDxType")) && value("dfGroup")==="adult") return window.MedAssistDengueCpg4UI.diagnosis("cl");
   const type=value("clDxType");
 
-  if(type!=="Dengue fever"){
+  if(!isDengueDxType(type)){
     const dx=type==="Other"
       ? (value("clDxOther")||"[ENTER DIAGNOSIS]")
       : type;
@@ -10583,7 +10559,7 @@ function buildDiagnosis(){
   const dxComorbid=dengueMeaningfulText(value("clDxComorbid")) ? value("clDxComorbid") : (dengueMeaningfulText(topComorbid) ? topComorbid : "");
   const hasComorbid=value("clDxComorbidStatus")==="present" || dengueMeaningfulText(topComorbid);
   const dx=window.MedAssistDengueCpg4UI.formatDiagnosis({
-    certainty:"none",
+    certainty:dengueDxCertainty(type),
     day:value("clDxDay")||"[ENTER]",
     phase:value("clPhase"),
     warningSigns:warningList.length ? warningList : (value("clWarningStatus")==="present" ? ["clinician confirmed"] : []),
@@ -11978,7 +11954,7 @@ function buildDengueClinicalNote(planLines){
     : "NKDA";
   const interventionLines=getDengueInterventionLines();
   const diagnosis=buildDiagnosis();
-  const isDengue=value("clDxType")==="Dengue fever";
+  const isDengue=isDengueDxType(value("clDxType"));
 
   const vitalLines=[
     value("clVitalDateTime")?`Date/Time: ${formatDateTimeDisplay(value("clVitalDateTime"))}`:"",
@@ -15835,7 +15811,7 @@ function buildDengueFollowUpDiagnosis(){
 
   // v18.240: standard diagnosis sentence shared with the adult form.
   const diagnosis=window.MedAssistDengueCpg4UI.formatDiagnosis({
-    certainty:"none",
+    certainty:window.dengueDxCertainty?window.dengueDxCertainty(fv("dfuDxType")):"pending",
     day,
     phase:fv("dfuPhase"),
     warningSigns:warning.positive,
@@ -16429,6 +16405,7 @@ f$("dfuIntNebType").addEventListener(
 );
 
 [
+  "dfuDxType",
   "dfuDayIllness",
   "dfuPhase",
   "dfuHaemo",

@@ -10,7 +10,10 @@
   const cfg = p => p === "cl" ? {group:"dfGroup",basis:"dfBasis",weight:"dfSelectedWeight",state:"dfState",rate:"dfRate",rateWrap:"dfRateWrap",weightStatus:"dfWeightStatus",result:"dfResult",mode:"new",root:"dengueNewCaseTemplate"}
     : {group:"dfuGroup",basis:"dfuFluidBasis",weight:"dfuFluidSelectedWeight",state:"dfuFluidState",rate:"dfuFluidRate",rateWrap:"dfuFluidRateWrap",weightStatus:"dfuFluidWeightStatus",result:"dfuFluidResult",mode:"followup",root:"dengueFollowUpTemplate"};
   const adult = p => val(cfg(p).group) === "adult";
-  const active = p => adult(p) && (p !== "cl" || val("clDxType") === "Dengue fever");
+  const isDengueType = v => v === "" || v === "Dengue fever" || v === "Probable dengue fever";
+  // v18.242: 1. Diagnosis (Dengue fever = confirmed / Probable dengue fever) replaces the separate suspected/confirmed selector.
+  const certaintyOf = p => { const t=val(p === "cl" ? "clDxType" : "dfuDxType"); return t === "Dengue fever" ? "confirmed" : t === "Probable dengue fever" ? "suspected" : ""; };
+  const active = p => adult(p) && (p !== "cl" || isDengueType(val("clDxType")));
   const meaningful = s => !/^(?:\s*|no|nil|none|nkmi|n\/a|-|no known medical illness)$/i.test(String(s).trim());
   const checkedValues = selector => Array.from(document.querySelectorAll(selector)).map(x=>x.value);
   const urineRateText = rate => rate>0 && rate<0.005 ? "<0.01" : rate<0.5 && Number(rate.toFixed(2))>=0.5 ? "<0.50" : rate.toFixed(2);
@@ -67,14 +70,12 @@
       worseDefervescence:on(`${p}CpgWorse`),fluidAccumulation:on(`${p}CpgAccumulation`) || (Boolean(val(`${p}PA`)) && on(`${p}PAAscites`)),postural:on(`${p}CpgPostural`),
       liverGt2:on(`${p}CpgLiver`),lowUrine4h:on(`${p}CpgLowUrine`) || urine.absent4h,rapidHctPlt:on(`${p}CpgLabTrend`),
       labTrend:Boolean(window.dengueRisingHctFallingPlatelet?.(c.mode)),
-      manualWarnings: (f?on("dfuCpgWarningConfirmed"):val("clWarningStatus") === "present") && val(`${p}CpgWarningDetail`).trim() ? [val(`${p}CpgWarningDetail`).trim()] : [],
       severeBleeding:on(`${p}CpgSevereBleeding`),leakRespiratory:on(`${p}CpgSevereLeak`),
       severeOrgan:val(`${p}OrganFailure`) === "yes",seizure:val(`${p}Seizure`) === "yes",
       sob:f?val("dfuSob") === "yes":on("clSymSOB"),warningConfirmed:f?on("dfuCpgWarningConfirmed"):val("clWarningStatus") === "present",
       comorbidity:meaningful(val(`${p}DxComorbid`)) || (!f && meaningful(val("clComorbid"))),
       unstableComorbidity:on(`${p}CpgUnstableComorbid`),obese:w.bmi !== null && w.bmi !== undefined && w.bmi >27.5,
-      age:val(`${p}Age`),pregnant:val(`${p}Pregnancy`) === "yes",bloodThinner:val(`${p}BloodThinner`) === "yes",social:val(`${p}SocialLimit`) === "yes",
-      sglt2:on(`${p}CpgSglt2`),metformin:on(`${p}CpgMetformin`),statin:on(`${p}CpgStatin`),nsaid:on(`${p}CpgNsaid`),steroid:on(`${p}CpgSteroid`),derangedLiver:on(`${p}CpgDerangedLiver`)};
+      age:val(`${p}Age`),pregnant:val(`${p}Pregnancy`) === "yes",bloodThinner:val(`${p}BloodThinner`) === "yes",social:val(`${p}SocialLimit`) === "yes"};
     if(s.moderateSevereDehydration) s.dehydrated=true;
     return s;
   }
@@ -98,6 +99,7 @@
      Confirmed dengue drops "probable"; warning signs are listed whenever present. */
   function formatDiagnosis(o) {
     const severe=Boolean(o.severe);
+    if(o.certainty === "pending") return formatDiagnosis({...o,certainty:"none"}).replace(/^Treat as /,"Treat as [SELECT 1. DIAGNOSIS] ");
     const lead=`Treat as ${o.certainty === "confirmed" || o.certainty === "none" ? "" : "probable "}${severe?`severe dengue${o.severeDetails && o.severeDetails.length?` (${o.severeDetails.join("; ")})`:""}`:"dengue fever"}`;
     const day=`D${o.day} of illness`;
     const phase=o.phase ? `in ${o.phase}${o.nearCritical && o.phase !== "critical phase" ? ", approaching critical phase" : ""}` : "in [SELECT PHASE]";
@@ -110,14 +112,13 @@
   function diagnosis(p) {
     const s=state(p), a=C.assess(s), f=p === "dfu";
     const day=val(f?"dfuDayIllness":"clDxDay");
-    const certainty=val(`${p}CpgDxCertainty`);
+    const certainty=certaintyOf(p);
     const detail=val(`${p}DxComorbid`) || (!f?val("clComorbid"):"");
     const special=[s.pregnant?"pregnant":"",Number(s.age)>65?`age ${s.age} years`:"",s.obese?"obesity":""].filter(Boolean);
     const severeDetails=[s.severeBleeding?"severe bleeding":"",s.leakRespiratory?"severe plasma leakage with respiratory distress":"",s.severeOrgan?`severe organ involvement${val(`${p}OrganFailureDetails`).trim()?`: ${val(`${p}OrganFailureDetails`).trim()}`:""}`:""].filter(Boolean);
     // Mandatory diagnosis items: phase, warning-sign status, shock status and comorbidity status must be chosen.
     const comorbidStatus=val(`${p}DxComorbidStatus`);
     const complete=["suspected","confirmed"].includes(certainty) && Number.isInteger(C.number(day)) && Number(day)>0
-      && (certainty!=="confirmed" || val(`${p}CpgDxEvidence`).trim())
       && Boolean(s.phase) && Boolean(s.haemo)
       && (a.warningSigns.length>0 || val(`${p}DxWarning`) === "without")
       && (s.comorbidity || comorbidStatus === "none")
@@ -125,8 +126,7 @@
       && (!s.severeOrgan || val(`${p}OrganFailureDetails`).trim());
     // Say exactly what is still needed instead of a bare "pending".
     const pending=[
-      !["suspected","confirmed"].includes(certainty)?"1. suspected / confirmed":"",
-      certainty === "confirmed" && !val(`${p}CpgDxEvidence`).trim()?"1. laboratory evidence":"",
+      !certainty?"1. diagnosis (dengue fever / probable dengue fever)":"",
       !(Number.isInteger(C.number(day)) && Number(day)>0)?"2. day of illness":"",
       !s.phase?"3. phase":"",
       !(a.warningSigns.length>0 || val(`${p}DxWarning`) === "without")?"4. warning signs":"",
@@ -211,31 +211,18 @@
     if(["outpatient","monitoring"].includes(option)) lines.push("Daily clinical review. Monitor intake and urine output.");
     if(option === "refer") lines.push("Inform receiving hospital; send notes, results & fluid chart.");
     lines.push(...C.medicationAdvice(s).map(line=>line.replace(/ \(CPG[^)]*\)\./g,".")));
-    const override=val(`${p}CpgDispositionReason`).trim();
+    const override=a.needsHospital && option !== "refer" ? val(`${p}CpgDispositionReason`).trim() : "";
     if(override) lines.push(`Disposition rationale: ${override}`);
     else if(a.needsHospital && option !== "refer") lines.push("Review disposition: hospital assessment indicated.");
     return [...new Set(lines)];
   }
-  function dateToday(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
-  function vaccineAdvice(p) {
-    if(val(`${p}CpgVaccine`) !== "yes") return "";
-    const date=val(`${p}CpgVaccineDate`), encounter=val(`${p}VitalDateTime`).slice(0,10) || dateToday();
-    const days=C.vaccineDays(date,encounter);
-    if(days === null) return "Record vaccination date. Recent vaccination can affect dengue test interpretation (CPG p21).";
-    if(days < 0) return "Vaccination date is after the encounter date — check both dates.";
-    return days <=30 ? `Vaccinated ${days} day(s) before assessment. Within 30 days: prefer RT-qPCR (serum within 5 days of symptom onset); consider NS1 if unavailable. IgM/IgG are not standalone confirmatory tests. PCR/NS1 positivity may reflect vaccine-derived virus; interpret clinically (CPG p21).`
-      : "Vaccination was more than 30 days before this assessment; interpret tests with illness day and clinical context.";
-  }
   function recordLines(p) {
     if(!active(p)) return [];
-    const lines=[], status=val(`${p}CpgVaccine`);
-    if(val(`${p}CpgDxCertainty`) === "confirmed" && val(`${p}CpgDxEvidence`).trim()) lines.push(`Dengue confirmation: ${val(`${p}CpgDxEvidence`).trim()}.`);
+    const lines=[];
     const fluidState=state(p);
     if(fluidState.fluidRestricted) lines.push(`Fluid restriction: ${fluidState.fluidRegimen || "[DOCUMENT INDIVIDUALISED REGIMEN]"}.`);
     if(needsOralAdequacy(fluidState) && ["adequate","inadequate"].includes(fluidState.oralAdequacy)) lines.push(`Oral fluid intake assessed as ${fluidState.oralAdequacy} for current needs; oral tolerance preserved.`);
-    if(status) lines.push(`Dengue vaccination: ${status}${status === "yes"?`; date ${val(`${p}CpgVaccineDate`) || "not recorded"}`:""}.`);
-    const advice=vaccineAdvice(p); if(advice) lines.push(advice);
-    if(val(`${p}CpgSteroidIndication`).trim()) lines.push(`Context / separate indication for recorded NSAID or corticosteroid administration: ${val(`${p}CpgSteroidIndication`).trim()}`);
+    if((on(`${p}IntVoltaren`) || on(`${p}IntHydro`)) && val(`${p}CpgSteroidIndication`).trim()) lines.push(`Indication for IM Voltaren / IV hydrocortisone: ${val(`${p}CpgSteroidIndication`).trim()}.`);
     const urine=urineAssessment(p);
     if(val(`${p}CpgVoids`) !== "") lines.push(`Urination frequency: ${val(`${p}CpgVoids`)} times/24 h.`);
     if(urine.valid) lines.push(`Measured urine: ${urine.volume} mL over ${urine.hours} h${urine.rate !== null ? `; ${urineRateText(urine.rate)} mL/kg/hour using actual weight ${urine.weight} kg` : "; actual weight required for mL/kg/hour"}.`);
@@ -249,19 +236,18 @@
     const s=state(p), a=C.assess(s), errors=[], option=val(`${p}PlanOption`);
     const day=C.number(val(p === "cl"?"clDxDay":"dfuDayIllness"));
     if(!Number.isInteger(day) || day<1) errors.push("Enter a positive whole-number day of illness.");
-    if(!["suspected","confirmed"].includes(val(`${p}CpgDxCertainty`))) errors.push("Select suspected or confirmed dengue.");
-    if(val(`${p}CpgDxCertainty`) === "confirmed" && !val(`${p}CpgDxEvidence`).trim()) errors.push("Record the laboratory evidence supporting confirmed dengue (including a prior result for follow-up).");
+    if(!certaintyOf(p)) errors.push("Select 1. Diagnosis: Dengue fever (confirmed) or Probable dengue fever.");
     if(val(`${p}DxComorbidStatus`) === "present" && !s.comorbidity) errors.push("Enter the recorded comorbidity or select No comorbid after assessment.");
     if(s.severeOrgan && !val(`${p}OrganFailureDetails`).trim()) errors.push("Document the severe organ involvement.");
-    if(s.warningConfirmed && a.warningSigns.length === 1 && a.warningSigns[0] === "warning signs confirmed by clinician") errors.push("Select the specific warning finding or document it under Additional warning sign / clinical rationale.");
-    if(a.needsHospital && option !== "refer" && !val(`${p}CpgDispositionReason`).trim()) errors.push("Select ED referral or document the clinician's disposition rationale for the findings requiring hospital assessment.");
+    if(s.warningConfirmed && a.warningSigns.length === 1 && a.warningSigns[0] === "warning signs confirmed by clinician") errors.push("Warning signs confirmed: tick the specific warning sign found (Symptoms & daily assessment, liver examination or FBC trend).");
+    if(a.needsHospital && option !== "refer" && !val(`${p}CpgDispositionReason`).trim()) errors.push("Hospital assessment is indicated: select Option 1 (ED referral) or record the reason for not referring under Plan.");
     if(on(`${p}CpgFluidRestricted`) && !val(`${p}CpgFluidRegimen`).trim()) errors.push("Document the individualised fluid regimen.");
     if(option === "discharge" && !C.dischargeReady(dischargeState())) errors.push("Complete the recovery review and explicit clinician decision before stopping routine FBC monitoring.");
     if(option === "discharge" && (a.needsHospital || s.haemo !== "haemodynamically stable")) errors.push("Resolve the recorded acute findings requiring hospital assessment before selecting routine discharge / stopping FBC.");
     const fluidResult=fluid(p);
     if(option === "refer" && on(p === "cl"?"clPlanSubReferFluid":"dfuPlanSubReferFluid") && (!fluidResult.valid || fluidResult.canPrescribe === false)) errors.push("Resolve the fluid calculation, or untick Start IV fluid if no IV prescription is intended.");
-    if(on(`${p}IntVoltaren`) && !val(`${p}CpgSteroidIndication`).trim()) errors.push("IM diclofenac is inappropriate as dengue treatment. If already administered, record the prior-exposure context; this must not be interpreted as a dengue treatment recommendation.");
-    if(on(`${p}IntHydro`) && !val(`${p}CpgSteroidIndication`).trim()) errors.push("Document the separate indication for hydrocortisone; corticosteroids are not dengue treatment.");
+    if(on(`${p}IntVoltaren`) && !val(`${p}CpgSteroidIndication`).trim()) errors.push("IM Voltaren (diclofenac) is not dengue treatment. If already given, record its indication under Intervention.");
+    if(on(`${p}IntHydro`) && !val(`${p}CpgSteroidIndication`).trim()) errors.push("Record the separate indication for IV hydrocortisone under Intervention; corticosteroids are not dengue treatment.");
     for(const key of ["VomitLast24","StoolLast24","CpgVoids"]) {
       const n=C.number(val(p+key)); if(n !== null && (n<0 || !Number.isInteger(n))) errors.push("Episode / void counts must be non-negative whole numbers.");
     }
@@ -327,7 +313,6 @@
   function resetStart(p) {resetting.add(p);}
   function resetEnd(p) {
     resetting.delete(p);setValue(`${p}CpgOralAdequacy`,"");setValue(`${p}CpgOralPeriod`,"1");clearFluidResult(p);
-    setValue(`${p}CpgDxCertainty`,"");setValue(`${p}CpgDxEvidence`,"");
     for(const id of [`${p}FluidWeightDetails`,`${p}CpgQuotaDetails`,`${p}CpgUrineRecord`])if(el(id))el(id).open=false;
     setText(`${p}CpgValidation`,"");el(`${p}CpgValidation`)?.classList.add("hidden");
     if(adult(p))rates(p);refresh(p);
@@ -362,8 +347,11 @@
     const fluidLabel=el(p === "cl"?"clPlanSubOutFluid":"dfuPlanSubMonFluid")?.parentElement?.querySelector("span");
     if(fluidLabel) fluidLabel.textContent=isAdult?"Oral fluids 200 mL/hour while awake / individualised restriction":"Encourage adequate oral fluids according to age, weight and clinical tolerance";
     syncFluidDisplay(p);
-    if(!isActive) return;
+    if(!isActive){el(`${p}CpgDispositionWrap`)?.classList.add("hidden");el(`${p}CpgSteroidIndicationWrap`)?.classList.add("hidden");return;}
     const s=state(p), a=C.assess(s);
+    // v18.242: the two rationale fields show only where and when they are needed.
+    el(`${p}CpgDispositionWrap`)?.classList.toggle("hidden",!(a.needsHospital && val(`${p}PlanOption`) !== "refer"));
+    el(`${p}CpgSteroidIndicationWrap`)?.classList.toggle("hidden",!(on(`${p}IntVoltaren`) || on(`${p}IntHydro`)));
     setText(`${p}CpgHistoryVomiting`,s.vomit === null ? "History: count not recorded" : !Number.isInteger(s.vomit) || s.vomit < 0 ? "History: check the episode count" : `History: ${s.vomit} times/24 h${s.vomit > 3 ? " — meets >3 criterion" : " — does not meet >3 criterion"}`);
     setText(`${p}CpgHistoryMental`,s.lethargy ? "History: present" : "History: No — confirm on review");
     setText(`${p}CpgHistoryBleeding`,s.bleeding ? "History: bleeding recorded" : "History: no bleeding selected — confirm on review");
@@ -373,14 +361,8 @@
       : a.concerns.length ? "No warning-sign criteria recorded. Other symptoms / hydration concerns still need review before completing the diagnosis."
       : val(`${p}DxWarning`) === "without" ? "No warning signs recorded." : "Confirm the symptoms and warning-sign criteria, then select 4. Warning signs.";
     setText(`${p}CpgWarningSummary`,a.group === "C" ? `Severe dengue: ${a.urgent.join("; ")}. Urgent hospital referral.${a.warningSigns.length ? " " + warningSummary : ""}` : warningSummary);
-    el(`${p}CpgDxEvidenceWrap`)?.classList.toggle("hidden",val(`${p}CpgDxCertainty`)!=="confirmed");
-    el(`${p}CpgWarningDetail`)?.closest(".cpg-warning-detail")?.classList.toggle("hidden",!s.warningConfirmed);
     const mental=el(`${p}Lethargy`)?.parentElement?.querySelector("label");
     if(mental)mental.textContent="Lethargy / restlessness / irritability / confusion";
-    setText(`${p}CpgAssessment`,`${a.title}. ${a.summary}${a.concerns.length?" Reassessment: "+a.concerns.join("; "):""}`);
-    setText(`${p}CpgVaccineAdvice`,vaccineAdvice(p));
-    const advice=C.medicationAdvice(s);setText(`${p}CpgMedicationAdvice`,advice.join("\n") || "Review current medicines. Use paracetamol cautiously at the lowest effective dose and shortest duration; avoid/discontinue if liver enzymes are deranged (p34).");
-    el(`${p}CpgVaccineDate`)?.closest(".cpg-vaccine-date")?.classList.toggle("hidden",val(`${p}CpgVaccine`) !== "yes");
     el(`${p}CpgFluidRegimen`)?.closest(".cpg-fluid-regimen")?.classList.toggle("hidden",!on(`${p}CpgFluidRestricted`));
     el(`${p}CpgWeightReason`)?.closest(".cpg-weight-reason")?.classList.toggle("hidden",val(c.basis) === "cpg");
     if(p === "dfu") el("dfuCpgDischarge")?.classList.toggle("hidden",val("dfuPlanOption") !== "discharge");

@@ -5,10 +5,9 @@ const { INDEX_HTML: html } = require("./helpers/source-tools.js");
 
 const complete = (prefix, adult, extra = {}) => ({
   prefix, adult,
-  weight: "20", dxType: "Dengue fever", dxOther: "",
-  certainty: adult ? "suspected" : "", evidence: "",
+  weight: "20", dxType: "Probable dengue fever", dxOther: "",
   day: "4", phase: "febrile phase", warningChoice: "without", effectiveWarnings: [],
-  warningTarget: `${prefix}DxWarning`, warningDetail: "",
+  warningTarget: `${prefix}DxWarning`,
   haemo: "haemodynamically stable", comorbidStatus: "none", comorbidDetail: "", topComorbid: "",
   ...extra
 });
@@ -28,14 +27,18 @@ test("empty form lists weight and all six diagnosis items in order", () => {
   assert.deepEqual(fields({ ...empty, prefix: "dfu" }), ["dfuWeight", "dfuDayIllness", "dfuPhase", "dfuDxWarning", "dfuHaemo", "dfuDxComorbidStatus"]);
 });
 
-test("item 1: diagnosis type, other text, and adult suspected/confirmed with evidence", () => {
-  assert.deepEqual(fields(complete("cl", false, { dxType: "" })), ["clDxType"]);
+test("item 1: dengue fever / probable dengue fever on both forms; other diagnosis text", () => {
+  for (const adult of [false, true]) {
+    assert.deepEqual(fields(complete("cl", adult, { dxType: "" })), ["clDxType"]);
+    assert.deepEqual(fields(complete("dfu", adult, { dxType: "" })), ["dfuDxType"]);
+    assert.deepEqual(fields(complete("cl", adult, { dxType: "Dengue fever" })), []);
+    assert.deepEqual(fields(complete("dfu", adult, { dxType: "Dengue fever" })), []);
+  }
+  // Blank item 1 still checks the remaining dengue items.
+  assert.deepEqual(fields(complete("cl", true, { dxType: "", phase: "" })), ["clDxType", "clPhase"]);
   assert.deepEqual(fields(complete("cl", false, { dxType: "Other", dxOther: " " })), ["clDxOther"]);
   // Non-dengue diagnosis: dengue items no longer apply, weight still does.
   assert.deepEqual(fields(complete("cl", false, { dxType: "Viral fever", phase: "", haemo: "", weight: "" })), ["clWeight"]);
-  assert.deepEqual(fields(complete("cl", true, { certainty: "" })), ["clCpgDxCertainty"]);
-  assert.deepEqual(fields(complete("dfu", true, { certainty: "confirmed" })), ["dfuCpgDxEvidence"]);
-  assert.deepEqual(fields(complete("dfu", true, { certainty: "confirmed", evidence: "NS1 +ve 2/11" })), []);
 });
 
 test("item 2: day of illness must be a positive whole number", () => {
@@ -46,8 +49,9 @@ test("item 2: day of illness must be a positive whole number", () => {
 test("item 4: 'with' needs a recorded sign; adult clinician confirmation needs the specific sign", () => {
   assert.deepEqual(fields(complete("cl", false, { warningChoice: "with", warningTarget: "clWarningSigns" })), ["clWarningSigns"]);
   assert.deepEqual(fields(complete("cl", false, { warningChoice: "with", effectiveWarnings: ["persistent vomiting"] })), []);
-  assert.deepEqual(fields(complete("cl", true, { warningChoice: "with", effectiveWarnings: [R.GENERIC_CONFIRMED] })), ["clCpgWarningDetail"]);
-  assert.deepEqual(fields(complete("cl", true, { warningChoice: "with", effectiveWarnings: [R.GENERIC_CONFIRMED], warningDetail: "liver 3 cm" })), []);
+  // v18.242: no free-text rationale; the clinician ticks the specific sign in the warning panel.
+  assert.deepEqual(fields(complete("cl", true, { warningChoice: "with", effectiveWarnings: [R.GENERIC_CONFIRMED], warningTarget: "clCpgWarningPanel" })), ["clCpgWarningPanel"]);
+  assert.deepEqual(fields(complete("cl", true, { warningChoice: "with", effectiveWarnings: ["liver enlargement >2 cm"] })), []);
   assert.deepEqual(fields(complete("dfu", false, { warningChoice: "without", effectiveWarnings: ["bleeding tendency: gum bleeding"] })), ["dfuDxWarning"]);
 });
 
@@ -68,14 +72,18 @@ test("weight must be positive", () => {
 });
 
 test("form markup: blank defaults, required markers and warning-sign selectors", () => {
-  for (const id of ["clPhase", "dfuPhase", "clHaemo", "dfuHaemo", "clDxComorbidStatus", "dfuDxComorbidStatus", "clDxWarning", "dfuDxWarning"]) {
+  for (const id of ["clDxType", "dfuDxType", "clPhase", "dfuPhase", "clHaemo", "dfuHaemo", "clDxComorbidStatus", "dfuDxComorbidStatus", "clDxWarning", "dfuDxWarning"]) {
     const start = html.indexOf(`<select id="${id}">`);
     assert.ok(start > 0, `${id} must exist`);
     assert.match(html.slice(start, start + 120), /<select id="[a-zA-Z]+">\s*<option selected="" value="">— Select —<\/option>/, `${id} must default to blank`);
   }
-  for (const label of ["2. Day of illness", "3. Phase", "4. Warning signs", "5. Shock status", "6. Comorbidities"]) {
+  for (const label of ["1. Diagnosis", "2. Day of illness", "3. Phase", "4. Warning signs", "5. Shock status", "6. Comorbidities"]) {
     assert.ok(html.split(label).length - 1 >= 2, `${label} must label both modules`);
   }
-  assert.match(html, /<script src="assets\/dengue-required\.js\?v=18\.238\.0"><\/script>/);
+  assert.match(html, /<script src="assets\/dengue-required\.js\?v=18\.242\.0"><\/script>/);
+  // v18.242: probable option present; Assessment review and the free-text warning rationale are gone.
+  assert.match(html, /<option value="Probable dengue fever">Probable dengue fever<\/option>/);
+  for (const gone of ["CpgReview\"", "CpgDxCertainty", "CpgDxEvidence", "CpgWarningDetail", "CpgVaccine", "<strong>Assessment review</strong>"]) assert.ok(!html.includes(gone), `${gone} must be removed`);
+  for (const kept of ["clCpgFluidRestriction", "dfuCpgFluidRestriction", "clCpgUrineRecord", "dfuCpgUrineRecord", "clCpgDispositionReason", "dfuCpgDispositionReason", "clCpgSteroidIndication", "dfuCpgSteroidIndication"]) assert.ok(html.includes(`id="${kept}"`), `${kept} must remain`);
   assert.doesNotMatch(html, /TPC-OHCIS/);
 });

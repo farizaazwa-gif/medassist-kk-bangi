@@ -50,3 +50,11 @@ Standard diagnosis sentence for every dengue form (adult and paediatric, new cas
 
 ## v18.241.0 (9 Nov 2026)
 - Warning signs are named in the diagnosis whenever present, including severe dengue, e.g. "Treat as probable severe dengue, D5 of illness, in critical phase, with warning signs (persistent vomiting (5 episodes/24 h)), with compensated shock, without comorbid."
+
+## v18.242.0 (9 Nov 2026)
+- **1. Diagnosis** now has "Dengue fever (confirmed)" and "Probable dengue fever", and starts blank ("— Select —"). It sets the diagnosis wording on every dengue form: "Treat as dengue fever …" or "Treat as probable dengue fever …". The follow-up Diagnosis Builder gains the same item 1. Paediatric forms follow it too.
+- **Assessment review removed** from the Diagnosis Builder (new case and follow-up). That removes the separate suspected/confirmed selector and laboratory-evidence entry, the vaccination and medication review, and the management-group summary box. The urine record and fluid-restriction controls stay in Symptoms & daily assessment.
+- Two rationale fields moved to where they apply and show only when needed:
+  - Plan: "Hospital assessment indicated — reason for not referring" appears when findings need hospital assessment and the plan is not ED referral.
+  - Intervention: "Indication for IM Voltaren / IV hydrocortisone" appears when either is ticked.
+- **"Additional warning sign / clinical rationale" removed.** "Warning signs confirmed on clinical assessment" now counts the findings already recorded (red boxes, liver examination, FBC trend). If none is recorded, the form asks for the specific sign to be ticked.

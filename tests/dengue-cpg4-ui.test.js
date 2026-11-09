@@ -6,7 +6,7 @@ const vm = require('node:vm');
 const C = require('../assets/dengue-cpg4');
 
 function fixture(overrides = {}) {
-  const values = {clDxDay:'4',clCpgDxCertainty:'suspected',clCpgDxReviewed:true,dfGroup:'adult',clDxType:'Dengue fever',clPhase:'febrile phase',clHaemo:'haemodynamically stable',clPlanOption:'outpatient',clWeight:'60',clHeight:'170',clSex:'Male',dfBasis:'cpg',
+  const values = {clDxDay:'4',dfGroup:'adult',clDxType:'Probable dengue fever',dfuDxType:'Probable dengue fever',clPhase:'febrile phase',clHaemo:'haemodynamically stable',clPlanOption:'outpatient',clWeight:'60',clHeight:'170',clSex:'Male',dfBasis:'cpg',
     // v18.235: diagnosis items 4 and 6 are explicit clinician choices.
     clDxWarning:'without',clDxComorbidStatus:'none',dfuDxWarning:'without',dfuDxComorbidStatus:'none',...overrides};
   const elements = Object.fromEntries(Object.entries(values).map(([id,value])=>[id,typeof value === 'boolean'?{checked:value,value:''}:{value:String(value)}]));
@@ -21,7 +21,7 @@ function adultValues(p, extra = {}) {
     [`${p}Phase`]:'critical phase',[`${p}Haemo`]:'haemodynamically stable',
     [`${p}Weight`]:60,[`${p}Height`]:170,[`${p}Sex`]:'Male',[`${p}PA`]:'SNT',
     [p === 'cl'?'dfBasis':'dfuFluidBasis']:'cpg',
-    [p === 'cl'?'clDxDay':'dfuDayIllness']:4,[`${p}CpgDxCertainty`]:'suspected',[`${p}CpgDxReviewed`]:true,
+    [p === 'cl'?'clDxDay':'dfuDayIllness']:4,
     [p === 'cl'?'clUrine':'dfuUrine']:p === 'cl'?'no':'normal',
     [p === 'cl'?'clDrink':'dfuOralIntake']:p === 'cl'?'able':'good',...extra};
 }
@@ -63,20 +63,23 @@ test('new-case and follow-up FBC plans are concise and respect an entered review
   assert.equal(f.adjustPlan('dfu','others',['Repeat FBC at 2 pm.'])[0],'Repeat FBC at 2 pm.');
 });
 
-test('clinician warning override needs a specific documented finding',()=>{
-  assert.equal(form({clWarningStatus:'present',clPlanOption:'refer',clPlanSubReferFluid:false}).validate('cl'),false);
-  const ui=form({clWarningStatus:'present',clCpgWarningDetail:'Postural hypotension on reassessment',clPlanOption:'refer',clPlanSubReferFluid:false});
+test('clinician warning confirmation needs a specific recorded finding (no free-text rationale)',()=>{
+  const generic=form({clWarningStatus:'present',clPlanOption:'refer',clPlanSubReferFluid:false});
+  assert.equal(generic.validate('cl'),false);
+  // v18.242: the free-text rationale is gone; the old value is ignored even if a draft still holds it.
+  assert.equal(form({clWarningStatus:'present',clCpgWarningDetail:'Postural hypotension',clPlanOption:'refer',clPlanSubReferFluid:false}).validate('cl'),false);
+  const ui=form({clWarningStatus:'present',clVomitLast24:4,clPlanOption:'refer',clPlanSubReferFluid:false});
   assert.equal(ui.validate('cl'),true);
-  assert.match(ui.warningData('cl').positive.join(' '),/Postural hypotension/);
-  assert.equal(form({clWarningStatus:'none',clCpgWarningDetail:'Old finding'}).warningData('cl').positive.length,0);
+  assert.match(ui.warningData('cl').positive.join(' '),/persistent vomiting/);
+  assert.equal(form({clWarningStatus:'none',clVomitLast24:4}).warningData('cl').positive.length,0);
 });
 
 test('diagnosis follows Table 7 without management groups or invented qualifiers',()=>{
   assert.equal(form().diagnosis('cl'),'Treat as probable dengue fever, D4 of illness, in febrile phase, without warning signs, not in shock, without comorbid.');
-  const confirmed=form({clCpgDxCertainty:'confirmed',clCpgDxEvidence:'NS1 positive 17/10/2026'});
+  const confirmed=form({clDxType:'Dengue fever'});
   assert.equal(confirmed.validate('cl'),true);
   assert.equal(confirmed.diagnosis('cl'),'Treat as dengue fever, D4 of illness, in febrile phase, without warning signs, not in shock, without comorbid.');
-  assert.match(confirmed.recordLines('cl').join(' '),/Dengue confirmation: NS1 positive/);
+  assert.doesNotMatch(confirmed.recordLines('cl').join(' '),/Dengue confirmation|vaccination/i);
   assert.equal(form({clComorbid:'DM',clDxComorbidStatus:'present'}).diagnosis('cl'),'Treat as probable dengue fever, D4 of illness, in febrile phase, without warning signs, not in shock, with comorbid DM.');
   const b2=form({clPhase:'critical phase',clVomitLast24:4});
   assert.equal(b2.diagnosis('cl'),'Treat as probable dengue fever, D4 of illness, in critical phase, with warning signs (persistent vomiting (4 episodes/24 h)), not in shock, without comorbid.');
@@ -84,12 +87,13 @@ test('diagnosis follows Table 7 without management groups or invented qualifiers
 });
 
 test('diagnosis review and confirmation cannot be inferred from blank/default inputs',()=>{
-  for(const patch of [{clCpgDxCertainty:''},{clCpgDxCertainty:'confirmed'},{clDxDay:''},{clDxDay:0},{clDxDay:1.5},{clDxDay:-1},{clDxComorbidStatus:'present',clDxComorbid:''}])assert.equal(form(patch).validate('cl'),false,JSON.stringify(patch));
-  assert.doesNotMatch(form({clCpgDxCertainty:''}).diagnosis('cl'),/without warning signs|without comorbid/);
+  for(const patch of [{clDxType:''},{clDxDay:''},{clDxDay:0},{clDxDay:1.5},{clDxDay:-1},{clDxComorbidStatus:'present',clDxComorbid:''}])assert.equal(form(patch).validate('cl'),false,JSON.stringify(patch));
+  assert.doesNotMatch(form({clDxType:''}).diagnosis('cl'),/without warning signs|without comorbid/);
+  assert.match(form({clDxType:''}).diagnosis('cl'),/Still required: 1\. diagnosis \(dengue fever \/ probable dengue fever\)/);
   // v18.238: the review tick was removed; a complete form produces the diagnosis without it.
   assert.match(form({clCpgDxReviewed:false}).diagnosis('cl'),/^Treat as probable dengue fever, D4 of illness/);
-  assert.doesNotMatch(form({clCpgDxCertainty:'confirmed',clCpgDxEvidence:''}).diagnosis('cl'),/^Treat as dengue fever/);
-  assert.equal(form({clCpgDxCertainty:'confirmed',clCpgDxEvidence:'Prior positive PCR reviewed'}).validate('cl'),true);
+  // v18.242: Dengue fever (confirmed) no longer needs a separate laboratory-evidence entry.
+  assert.equal(form({clDxType:'Dengue fever'}).validate('cl'),true);
   assert.equal(form({dfGroup:'paeds',clCpgDxReviewed:false,clDxDay:''}).validate('cl'),true);
 });
 
@@ -109,7 +113,7 @@ test('special populations and follow-up retain complete diagnosis components',()
   assert.match(form({clSex:'Female',clPregnancy:'yes'}).diagnosis('cl'),/without comorbid, pregnant/);
   assert.match(form({clAge:70}).diagnosis('cl'),/age 70 years/);
   assert.match(form({clWeight:100}).diagnosis('cl'),/obesity/);
-  const followup=form({dfuGroup:'adult',dfuDayIllness:5,dfuPhase:'critical phase',dfuHaemo:'haemodynamically stable',dfuCpgDxCertainty:'confirmed',dfuCpgDxEvidence:'NS1 positive yesterday',dfuCpgDxReviewed:true});
+  const followup=form({dfuGroup:'adult',dfuDayIllness:5,dfuPhase:'critical phase',dfuHaemo:'haemodynamically stable',dfuDxType:'Dengue fever'});
   assert.equal(followup.diagnosis('dfu'),'Treat as dengue fever, D5 of illness, in critical phase, without warning signs, not in shock, without comorbid.');
 });
 
@@ -286,4 +290,48 @@ test('v18.240 standard diagnosis sentence: probable / confirmed, near-critical, 
     'Treat as dengue fever, D3 of illness, in febrile phase, approaching critical phase, without warning signs, not in shock, with comorbid DM, HPT, pregnant.');
   assert.equal(F({certainty:'none',day:3,phase:'',warningSigns:[],withoutWarning:false,haemo:'',comorbid:null}),
     'Treat as dengue fever, D3 of illness, in [SELECT PHASE], [SELECT WARNING SIGNS], [SELECT SHOCK STATUS], [SELECT COMORBIDITY STATUS].');
+});
+
+/* ---------- v18.242: 1. Diagnosis carries certainty; Assessment review removed ---------- */
+
+test('1. Diagnosis: Dengue fever = confirmed, Probable dengue fever = probable, blank = pending (both forms)',()=>{
+  for(const p of ['cl','dfu']){
+    const type=p === 'cl'?'clDxType':'dfuDxType';
+    assert.match(form(adultValues(p,{[type]:'Dengue fever'})).diagnosis(p),/^Treat as dengue fever, D4 of illness/);
+    assert.match(form(adultValues(p,{[type]:'Probable dengue fever'})).diagnosis(p),/^Treat as probable dengue fever, D4 of illness/);
+    const blank=form(adultValues(p,{[type]:''}));
+    assert.match(blank.diagnosis(p),/^Diagnosis pending/);
+    assert.equal(blank.validate(p),false);
+  }
+  // A non-dengue diagnosis switches the adult dengue module off for the new case.
+  assert.equal(form({clDxType:'Viral fever'}).active('cl'),false);
+  assert.equal(form({clDxType:''}).active('cl'),true);
+});
+
+test('paediatric diagnosis sentence follows 1. Diagnosis too',()=>{
+  const F=form().formatDiagnosis;
+  const base={day:3,phase:'febrile phase',warningSigns:[],haemo:'haemodynamically stable',comorbid:''};
+  assert.match(F({...base,certainty:'confirmed'}),/^Treat as dengue fever, D3/);
+  assert.match(F({...base,certainty:'probable'}),/^Treat as probable dengue fever, D3/);
+  assert.match(F({...base,certainty:'pending'}),/^Treat as \[SELECT 1\. DIAGNOSIS\] dengue fever, D3/);
+});
+
+test('hospital-indicated findings: refer, or record the reason under Plan',()=>{
+  const b2={clPhase:'critical phase',clVomitLast24:4};
+  assert.equal(form({...b2,clPlanOption:'outpatient'}).validate('cl'),false);
+  const reasoned=form({...b2,clPlanOption:'outpatient',clCpgDispositionReason:'Declined admission (AOR) after counselling'});
+  assert.equal(reasoned.validate('cl'),true);
+  assert.ok(reasoned.adjustPlan('cl','outpatient',[]).includes('Disposition rationale: Declined admission (AOR) after counselling'));
+  // A leftover reason is not printed once the plan is ED referral.
+  assert.ok(!reasoned.adjustPlan('cl','refer',[]).some(line=>/Disposition rationale/.test(line)));
+  assert.equal(form({...b2,clPlanOption:'refer',clPlanSubReferFluid:false}).validate('cl'),true);
+});
+
+test('IM Voltaren / IV hydrocortisone need an indication recorded under Intervention',()=>{
+  assert.equal(form({clIntVoltaren:true}).validate('cl'),false);
+  assert.equal(form({clIntHydro:true}).validate('cl'),false);
+  const ok=form({clIntVoltaren:true,clCpgSteroidIndication:'Given before dengue was suspected'});
+  assert.equal(ok.validate('cl'),true);
+  assert.match(ok.recordLines('cl').join(' '),/Indication for IM Voltaren \/ IV hydrocortisone: Given before dengue was suspected\./);
+  assert.doesNotMatch(form({clCpgSteroidIndication:'old text'}).recordLines('cl').join(' '),/Indication for IM Voltaren/);
 });
