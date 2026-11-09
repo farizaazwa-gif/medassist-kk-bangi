@@ -3047,6 +3047,43 @@ html,body{max-width:100%;overflow-x:hidden}
   }
 }
 
+
+/* V18.243 tidy drafts sidebar: two clear blocks, compact rows, max 10 drafts */
+.unified-draft-sidebar{padding:16px 14px 88px}
+.dengue-optional-sidebar,.draft-block{padding:0;border:0;background:none}
+.dengue-optional-sidebar{margin-bottom:20px}
+.dengue-optional-sidebar h3,.draft-block-head h2{margin:0;color:#173f38;font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+.dengue-optional-sidebar h3{margin-bottom:8px}
+.draft-block-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.draft-sidebar-count{min-width:0;height:22px;padding:0 9px;font-size:11px}
+.draft-sidebar-count.full{background:#fff1d6;color:#8a5a00}
+.draft-full-note{margin:-2px 0 8px;color:#8a5a00;font-size:11px;font-weight:700}
+.dengue-optional-sidebar-buttons,.unified-draft-list{display:block;border:1px solid #d3e5e0;border-radius:12px;background:#fff;overflow:hidden}
+.dengue-side-tool{border:0;border-radius:0;padding:11px 12px;background:#fff;font-size:12.5px}
+.dengue-side-tool + .dengue-side-tool{border-top:1px solid #e3efec}
+.dengue-side-tool:hover{background:#f1f8f6}
+.dengue-side-tool.active{background:#fff}
+.dengue-side-tool small{min-width:34px;padding:3px 0;border-radius:999px;background:#eef2f1;color:#6b7d79;font-size:10px;font-weight:900;text-align:center}
+.dengue-side-tool.active small{background:#17685d;color:#fff}
+.unified-draft-item{position:relative;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:9px 8px 9px 12px;border:0;border-radius:0;background:#fff}
+.unified-draft-item + .unified-draft-item{border-top:1px solid #e3efec}
+.unified-draft-item:hover{background:#f1f8f6;border-color:#e3efec}
+.unified-draft-item.active{border:0;background:#eaf6f2}
+.unified-draft-item.active::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#17685d}
+.unified-draft-item + .unified-draft-item.active{border-top:1px solid #e3efec}
+.unified-draft-item:focus-visible{outline:2px solid #17685d;outline-offset:-2px}
+.unified-draft-details{min-width:0}
+.unified-draft-item strong{font-size:13px}
+.unified-draft-item small{margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.unified-draft-delete{width:26px;height:26px;padding:0;border-radius:7px;background:none;color:#8b9a96;font-size:12px;line-height:26px}
+.unified-draft-delete:hover,.unified-draft-delete:focus-visible{background:#fdecea;color:#a1312b}
+.unified-draft-empty{padding:14px 12px;border:0;border-radius:0;font-size:12px}
+.unified-draft-privacy{margin:8px 2px 0;padding:0;border:0;background:none;color:#7a8a86;font-size:11px;line-height:1.45}
+.unified-draft-clear-all{width:auto;margin:6px 2px 0;padding:0;border:0;background:none;color:#a1312b;font-size:11px;font-weight:800;text-decoration:underline;text-underline-offset:2px}
+.unified-draft-clear-all:hover{background:none;color:#7d221d}
+.unified-draft-clear-all.hidden{display:none}
+.unified-draft-save small{min-width:0;height:22px;padding:0 8px;font-size:11px}
+.unified-draft-save small.full{background:#ffd98a;color:#5c3d00}
 </style>
 <style id="v18106-enotification-link-styles">
 /* V18.106 — manual link to the official KKM e-Notifikasi website.
@@ -19053,7 +19090,7 @@ document.addEventListener("keydown",event=>{
 
   const STORAGE_KEY = "medassistUnifiedClerkingDraftsV2";
   const LEGACY_STORAGE_KEY = "medassistUnifiedClerkingDraftsV1";
-  const MAX_DRAFTS = 60;
+  const MAX_DRAFTS = 10;
   const DRAFT_TTL_MS = 24 * 60 * 60 * 1000;
   const SENSITIVE_DRAFT_IDS = new Set([
     "clAddress", "clPhone", "dfuAddress", "dfuPhone",
@@ -19200,8 +19237,7 @@ document.addEventListener("keydown",event=>{
       const now = Date.now();
       const safeDrafts = (Array.isArray(drafts) ? drafts : [])
         .map(item => normaliseDraft(item, now))
-        .filter(Boolean)
-        .slice(0, MAX_DRAFTS);
+        .filter(Boolean);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(safeDrafts));
       localStorage.removeItem(LEGACY_STORAGE_KEY);
       return true;
@@ -19357,7 +19393,17 @@ document.addEventListener("keydown",event=>{
     const remaining = Number(timestamp) - Date.now();
     if (remaining <= 0) return "expired";
     const hours = Math.max(1, Math.ceil(remaining / (60 * 60 * 1000)));
-    return `expires in ${hours} h`;
+    return `${hours} h left`;
+  }
+
+  function shortTime(timestamp) {
+    const date = new Date(timestamp);
+    const time = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+    return date.toDateString() === new Date().toDateString() ? time : formatTime(timestamp);
+  }
+
+  function fullMessage() {
+    return `Maximum ${MAX_DRAFTS} drafts. Delete a draft you no longer need, then save again.`;
   }
 
   function makeUi() {
@@ -19392,18 +19438,16 @@ document.addEventListener("keydown",event=>{
     sidebar.id = "unifiedDraftSidebar";
     sidebar.className = "unified-draft-sidebar";
     sidebar.innerHTML = `
-      <div class="unified-draft-sidebar-head">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-          <h2>Saved patient drafts</h2>
-          <span class="draft-sidebar-count" id="unifiedDraftCount">0</span>
+      <section class="draft-block" aria-labelledby="unifiedDraftTitle">
+        <div class="draft-block-head">
+          <h2 id="unifiedDraftTitle">Saved drafts</h2>
+          <span class="draft-sidebar-count" id="unifiedDraftCount">0 / ${MAX_DRAFTS}</span>
         </div>
-        <div class="helper">Click a draft label to reopen the saved clerking.</div>
-      </div>
-      <div class="unified-draft-list" id="unifiedDraftList"></div>
-      <div class="unified-draft-privacy" id="unifiedDraftStorageNote">
-        <strong>Device-only temporary storage.</strong> Drafts expire 24 hours after the last save. Use initials / queue number only and do not treat this as the official patient record.
-      </div>
-      <button class="unified-draft-clear-all" id="unifiedDraftClearAll" type="button">Delete all drafts on this device</button>
+        <div class="draft-full-note hidden" id="unifiedDraftFullNote">Full. Delete a draft to save a new one.</div>
+        <div class="unified-draft-list" id="unifiedDraftList"></div>
+        <p class="unified-draft-privacy" id="unifiedDraftStorageNote">This device only. Deleted 24 h after the last save. Use initials / queue no. only — not the official record.</p>
+        <button class="unified-draft-clear-all hidden" id="unifiedDraftClearAll" type="button">Delete all drafts</button>
+      </section>
     `;
 
     const mobileToggle = document.createElement("button");
@@ -19455,7 +19499,12 @@ document.addEventListener("keydown",event=>{
     const type = activeType();
     if (!type) return;
 
-    const current = loadDrafts().find(draft => draft.id === currentDraftId && draft.type === type);
+    const drafts = loadDrafts();
+    const current = drafts.find(draft => draft.id === currentDraftId && draft.type === type);
+    if (!current && drafts.length >= MAX_DRAFTS) {
+      alert(fullMessage());
+      return;
+    }
     document.getElementById("unifiedDraftTypeText").textContent = CONFIGS[type].label;
     document.getElementById("unifiedDraftName").value = current?.name || "";
     document.getElementById("unifiedDraftConfirm").textContent = current ? "Update draft" : "Save draft";
@@ -19498,7 +19547,7 @@ document.addEventListener("keydown",event=>{
       draft.expiresAt = now + DRAFT_TTL_MS;
     } else {
       if (drafts.length >= MAX_DRAFTS) {
-        alert(`Maximum ${MAX_DRAFTS} drafts reached.`);
+        alert(fullMessage());
         return;
       }
 
@@ -19578,16 +19627,22 @@ document.addEventListener("keydown",event=>{
     const drafts = loadDrafts().sort((a, b) => b.updatedAt - a.updatedAt);
     const list = document.getElementById("unifiedDraftList");
     const count = String(drafts.length);
+    const full = drafts.length >= MAX_DRAFTS;
 
-    document.getElementById("unifiedDraftCount").textContent = count;
+    const countChip = document.getElementById("unifiedDraftCount");
+    countChip.textContent = `${count} / ${MAX_DRAFTS}`;
+    countChip.classList.toggle("full", full);
+    document.getElementById("unifiedDraftFullNote").classList.toggle("hidden", !full);
+    document.getElementById("unifiedDraftClearAll").classList.toggle("hidden", !drafts.length);
     document.getElementById("unifiedDraftMobileCount").textContent = count;
-    document.getElementById("unifiedDraftCountOnButton").textContent = count;
+    document.getElementById("unifiedDraftCountOnButton").textContent = `${count}/${MAX_DRAFTS}`;
+    document.getElementById("unifiedDraftCountOnButton").classList.toggle("full", full);
     list.textContent = "";
 
     if (!drafts.length) {
       const empty = document.createElement("div");
       empty.className = "unified-draft-empty";
-      empty.textContent = "No saved clerking drafts.";
+      empty.textContent = "No drafts yet.";
       list.appendChild(empty);
       return;
     }
@@ -19597,29 +19652,57 @@ document.addEventListener("keydown",event=>{
       row.className = "unified-draft-item";
       if (draft.id === currentDraftId) row.classList.add("active");
 
+      row.setAttribute("role", "button");
+      row.tabIndex = 0;
+      row.title = "Open this draft";
+
       const details = document.createElement("div");
+      details.className = "unified-draft-details";
       const name = document.createElement("strong");
       name.textContent = draft.name || "Untitled draft";
 
       const meta = document.createElement("small");
-      meta.textContent = `Updated ${formatTime(draft.updatedAt)} · ${expiryText(draft.expiresAt)}`;
+      meta.textContent = `${CONFIGS[draft.type]?.label || draft.type} · ${shortTime(draft.updatedAt)} · ${expiryText(draft.expiresAt)}`;
 
-      const type = document.createElement("span");
-      type.className = "unified-draft-type";
-      type.textContent = CONFIGS[draft.type]?.label || draft.type;
-
-      details.append(name, meta, type);
+      details.append(name, meta);
 
       const remove = document.createElement("button");
       remove.type = "button";
       remove.className = "unified-draft-delete";
-      remove.textContent = "Delete";
+      remove.textContent = "✕";
+      remove.title = "Delete draft";
+      remove.setAttribute("aria-label", `Delete draft ${draft.name || ""}`.trim());
       remove.addEventListener("click", event => deleteDraft(draft.id, event));
+      row.addEventListener("keydown", event => {
+        if (event.target === row && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          openDraft(draft.id);
+        }
+      });
 
       row.addEventListener("click", () => openDraft(draft.id));
       row.append(details, remove);
       list.appendChild(row);
     });
+  }
+
+  // A completed Reset / Clear starts a new patient, so the next save creates a new draft
+  // instead of overwriting the draft that was open. A cancelled reset changes nothing.
+  const RESET_SELECTOR = "#clReset,#dfuReset,#dmReset,#htnReset,#iucdReset,#nnjClear,#rmeClear,[data-clear-neuro]";
+  function watchResets() {
+    document.addEventListener("click", event => {
+      if (!currentDraftId || !event.target?.closest?.(RESET_SELECTOR)) return;
+      const type = activeType();
+      if (!type) return;
+      const before = JSON.stringify(captureFields(type));
+      setTimeout(() => {
+        if (activeType() === type && JSON.stringify(captureFields(type)) !== before) {
+          currentDraftId = null;
+          renderList();
+          updateVisibility();
+        }
+      }, 60);
+    }, true);
   }
 
   function observePageChanges() {
@@ -19635,6 +19718,7 @@ document.addEventListener("keydown",event=>{
     renderList();
     updateVisibility();
     observePageChanges();
+    watchResets();
   }
 
   if (document.readyState === "loading") {
@@ -19686,7 +19770,8 @@ document.addEventListener("keydown",event=>{
           ? "Previous investigations"
           : "Intervention in clinic";
       }
-      if(state) state.textContent=isOpen?"Shown":"Optional";
+      if(state) state.textContent=isOpen?"On":"Off";
+      button.setAttribute("aria-pressed",String(isOpen));
     });
   }
 
@@ -19729,16 +19814,15 @@ document.addEventListener("keydown",event=>{
     panel.id="dengueOptionalSidebar";
     panel.className="dengue-optional-sidebar hidden";
     panel.innerHTML=`
-      <h3>Optional clerking sections</h3>
-      <div class="helper">Open only when required.</div>
+      <h3>Optional sections</h3>
       <div class="dengue-optional-sidebar-buttons">
         <button class="dengue-side-tool" data-open-optional="previous-lab" type="button">
           <span data-tool-label>Previous investigations</span>
-          <small>Optional</small>
+          <small>Off</small>
         </button>
         <button class="dengue-side-tool" data-open-optional="intervention" type="button">
           <span data-tool-label>Intervention in clinic</span>
-          <small>Optional</small>
+          <small>Off</small>
         </button>
       </div>
     `;
