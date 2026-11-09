@@ -69,3 +69,6 @@ Standard diagnosis sentence for every dengue form (adult and paediatric, new cas
 
 ## v18.245.0 (9 Nov 2026)
 - Adult Abdominal pain box (new case and follow-up): the "Intense abdominal pain or tenderness" tick box now sits directly under the yes/no answer, above the site list. It carries a short note: "Abdominal pain alone is not a warning sign. Only intense abdominal pain or tenderness counts." No rule change.
+
+## v18.246.0 (9 Nov 2026)
+- Removed the referral check box at the top of both dengue forms (new case and follow-up). That box showed "Referral check active", "Clinical reassessment required" and Group A/B1/B2/C, with a "Set plan to Refer ED" button and pop-up. The top notice line is kept. Hospital-referral logic is unchanged: for adults, the Plan still asks for a reason when findings need hospital assessment and the plan is not ED referral.
