@@ -446,6 +446,7 @@ textarea{min-height:90px;resize:vertical}
 .btn.secondary{background:var(--soft);color:var(--text)}.btn.danger{background:var(--danger);color:#a1312b}
 .calc-panel{display:none}.calc-panel.active{display:block}.hidden{display:none!important}
 .helper{font-size:12px;color:var(--muted);margin-top:7px}
+.cl-area-field .helper{margin-top:5px}.cl-area-address{overflow-wrap:anywhere}.cl-area-address span{color:var(--text)}.cl-area-link a{color:var(--primary);font-weight:600;text-decoration:underline;text-underline-offset:2px}
 .ref{display:inline-block;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:999px;background:#eef6f4;color:#12665d;text-decoration:none;font-size:11px;font-weight:700;border:1px solid #cfe4df;margin:4px 5px 0 0}
 .output{min-height:380px;background:#102521;color:#edfffa;font-family:Consolas,monospace;line-height:1.55}
 .dm-page-wrap{max-width:1220px;margin:0 auto}
@@ -5674,7 +5675,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </div>
 </div>
-<div><label>Dengue-prone area / fogging</label><select id="clArea"><option>no</option><option>yes</option></select></div>
+<div class="cl-area-field"><label for="clArea">Dengue-prone area / fogging</label><select id="clArea"><option>no</option><option>yes</option></select><div class="helper cl-area-address hidden" id="clAreaAddress">Address: <span id="clAreaAddressText"></span></div><div class="helper cl-area-link"><a id="clAreaIdengueLink" href="https://idengue.mysa.gov.my/ide_v3/index.php" target="_blank" rel="noopener noreferrer" aria-label="Check dengue hotspots on iDengue (opens in a new tab)">Check hotspots on iDengue ↗</a></div></div>
 <div>
 <label for="clWeight">Weight (kg) <span class="req-star" aria-hidden="true">*</span></label>
 <input id="clWeight" required="" min="0" placeholder="e.g. 70" step="0.1" type="number"/>
@@ -12393,6 +12394,18 @@ function resetDengueNewCase(){
   window.scrollTo({top:0,behavior:"smooth"});
 }
 $("clReset").addEventListener("click",resetDengueNewCase);
+/* v18.249 — Dengue-prone area: show the patient address entered above as a reference only.
+   Display only: never stored, never used to answer yes/no — the clinician still decides. */
+function syncDengueAreaAddress(){
+  const address=$("clAddress"),wrap=$("clAreaAddress"),text=$("clAreaAddressText");
+  if(!address||!wrap||!text) return;
+  const value=String(address.value||"").replace(/\s+/g," ").trim();
+  text.textContent=value;
+  wrap.classList.toggle("hidden",!value);
+}
+$("clAddress")?.addEventListener("input",syncDengueAreaAddress);
+$("clAddress")?.addEventListener("change",syncDengueAreaAddress);
+syncDengueAreaAddress();
 initialisePreviousLabInvestigations();
 initialiseQuickFbcDetection();
 
