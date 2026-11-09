@@ -72,7 +72,6 @@
   if (typeof document === "undefined") return { view, decide, categoryLine };
 
   const shown = { new: "", followup: "" };
-  let lastFocus = null;
   let popupMode = "";
 
   const byId = id => document.getElementById(id);
@@ -89,13 +88,14 @@
     if (popup) return popup;
     popup = document.createElement("div");
     popup.id = "denguePopup";
-    popup.className = "dengue-popup-backdrop hidden";
+    popup.className = "dengue-popup-dock hidden";
     popup.innerHTML = `
-      <div class="dengue-popup" role="dialog" aria-modal="true" aria-labelledby="denguePopupTitle">
+      <div class="dengue-popup" role="alert" aria-labelledby="denguePopupTitle">
         <div class="dengue-popup-head">
           <strong id="denguePopupTitle"></strong>
           <button class="dengue-popup-x" type="button" data-popup-close aria-label="Close">✕</button>
         </div>
+        <div class="dengue-popup-label">Patient category</div>
         <div class="dengue-popup-category">
           <span class="dengue-popup-badge" id="denguePopupBadge"></span>
           <div><b id="denguePopupGroup"></b><small id="denguePopupGroupDetail"></small></div>
@@ -109,7 +109,7 @@
       </div>`;
     document.body.appendChild(popup);
     popup.addEventListener("click", event => {
-      if (event.target === popup || event.target.closest("[data-popup-close]")) close();
+      if (event.target.closest("[data-popup-close]")) close();
     });
     byId("denguePopupRefer").addEventListener("click", () => {
       if (popupMode) window.setDengueReferralPlan?.(popupMode);
@@ -142,9 +142,10 @@
     byId("denguePopupSource").textContent = v.source;
     const plan = byId(`${prefixOf(mode)}PlanOption`);
     byId("denguePopupRefer").classList.toggle("hidden", !referral || plan?.value === "refer");
-    if (popup.classList.contains("hidden")) lastFocus = document.activeElement;
-    popup.classList.remove("hidden");
-    popup.querySelector(".dengue-popup-actions [data-popup-close]")?.focus();
+    // Non-blocking notification at the top right: the clinician keeps typing; focus is not moved.
+    popup.classList.remove("hidden", "enter");
+    void popup.offsetWidth;
+    popup.classList.add("enter");
   }
 
   function close() {
@@ -152,8 +153,6 @@
     if (!popup || popup.classList.contains("hidden")) return;
     popup.classList.add("hidden");
     popupMode = "";
-    if (lastFocus && typeof lastFocus.focus === "function" && document.contains(lastFocus)) lastFocus.focus();
-    lastFocus = null;
   }
 
   function ensureLine(p) {

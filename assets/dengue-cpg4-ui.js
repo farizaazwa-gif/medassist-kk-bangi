@@ -181,7 +181,16 @@
     const prescription=r.headline.replace(/^(?:IV )?isotonic crystalloid\b/i,"IV NS");
     return {...r,plan:`${prescription}.${r.prescriptionNote ? ` ${r.prescriptionNote}` : ""}`,reassessment};
   }
-  function calculate(p){refresh(p);if(active(p) && el(cfg(p).result)){el(cfg(p).result).dataset.cpgCalculated="true";renderFluidResult(p);}}
+  function calculate(p){
+    refresh(p);
+    if(!active(p) || !el(cfg(p).result)) return;
+    el(cfg(p).result).dataset.cpgCalculated="true";renderFluidResult(p);
+    // v18.248: no rate until oral adequacy is answered (CPG pp41–42, 44) — show exactly where to answer.
+    const s=state(p), q=el(`${p}CpgOralAdequacy`);
+    const missing=needsOralAdequacy(s) && !["adequate","inadequate"].includes(s.oralAdequacy);
+    q?.classList.toggle("fluid-question-missing",missing);
+    if(missing && q){q.scrollIntoView?.({behavior:"smooth",block:"center"});q.focus?.({preventScroll:true});}
+  }
   function oralAdvice(p) {
     if(on(`${p}CpgFluidRestricted`)) return `Individualised fluid regimen: ${val(`${p}CpgFluidRegimen`).trim() || "[ENTER REGIMEN]"}.`;
     return "Oral fluids ~200 mL/hour while awake; include ORS / electrolyte fluids, not plain water alone.";
@@ -297,6 +306,7 @@
     const c=cfg(p), isAdult=adult(p), category=val(c.state);
     el(`${p}CpgOralHourlyWrap`)?.classList.toggle("hidden",!isAdult || (!window.MedAssistDengueSymptoms?.enabled(p) && category!=="febrile"));
     el(`${p}CpgOralAdequacyWrap`)?.classList.toggle("hidden",!active(p) || !needsOralAdequacy(state(p)));
+    if(["adequate","inadequate"].includes(val(`${p}CpgOralAdequacy`)))el(`${p}CpgOralAdequacy`)?.classList.remove("fluid-question-missing");
     const quota=el(`${p}CpgQuotaDetails`);
     if(quota)quota.classList.toggle("hidden",!active(p));
     // One fixed adult shock rate does not need a second dropdown; paediatric choices remain visible.

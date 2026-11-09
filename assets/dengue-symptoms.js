@@ -103,7 +103,7 @@
     }
     // A single entered oral amount is shared with the fluid calculator.
     move(byId(p+'CpgOralHourlyWrap'),oral,'oral amount');
-    move(byId(p+'CpgOralAdequacyWrap'),oral,'oral adequacy');
+    // v18.248: the oral-adequacy question stays in the fluid card, next to Calculate fluid.
     move(byId(p+'CpgFluidRestriction'),oral,'fluid restriction');
     move(byId(p+'CpgUrineRecord'),urine,'urine record');
     move(original.querySelector('.cpg-phase-context'),container('CombinedPhase'),'phase');

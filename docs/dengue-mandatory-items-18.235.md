@@ -79,3 +79,10 @@ Standard diagnosis sentence for every dengue form (adult and paediatric, new cas
   - Children: the paediatric criteria already in the app.
   The pop-up shows the category, the reasons and a "Set plan to Refer ED" button. Close it with ✕, Close, Esc or a click outside. It reopens only if the status changes, e.g. B2 → C, and again after Reset.
 - **Category pop-up for adults (Group A / B1 / B2 / C, Adult Dengue CPG 4th Ed Table 6).** Shown once when the diagnosis is complete and no referral is needed. A one-line "Category: …" also stays under Generated diagnosis. Children show referral status only: the app has no A/B1/B2/C grouping for children.
+
+## v18.248.0 (9 Nov 2026)
+- **Fluid calculation:** For an adult who is able to drink, with warning signs or in the febrile category, the IV rate depends on the clinician's answer to "Oral intake adequate for current needs?" (CPG pp41–42, 44). The rules are unchanged.
+  - That question was hidden inside Symptoms & daily assessment. It now sits in the fluid card, directly under Calculate fluid.
+  - If it is unanswered when Calculate fluid is pressed, it is outlined in red and focused.
+  - Choosing **Inadequate** shows the mL/hour at once; choosing **Adequate** states that routine IV fluid is not indicated.
+- **Referral / category pop-up** now appears as a non-blocking card at the top right of the screen, so typing continues while it is open. It is labelled **Patient category** with the group badge (A / B1 / B2 / C), and closes with ✕, Close or Esc.

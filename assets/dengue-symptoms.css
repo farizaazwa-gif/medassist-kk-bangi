@@ -75,3 +75,5 @@
 .dengue-combined .combined-field .combined-intense-pain{margin:8px 0 2px;padding:8px 10px;border:1px solid #d68787;border-radius:8px;background:#fff}
 .dengue-combined .combined-field .combined-intense-pain>.combined-qualifier{margin:0;padding:0;border:0;color:#8f2525;font-weight:800}
 .dengue-combined .combined-intense-note{margin:4px 0 0;color:#6f4b4b;font-size:12px;line-height:1.4}
+/* v18.248 oral adequacy question highlighted when Calculate fluid needs it */
+.fluid-question-missing{outline:2px solid #b42318!important;outline-offset:2px;background:#fff6f5!important}
