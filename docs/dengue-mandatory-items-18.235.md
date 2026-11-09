@@ -63,3 +63,6 @@ Standard diagnosis sentence for every dengue form (adult and paediatric, new cas
 - **Saved drafts panel tidied.** Optional sections now sit at the top as one compact block with On / Off pills. Saved drafts sit below as a single list: label on line 1, then form type, time and hours left on line 2, with a small ✕ to delete. The yellow storage box became one grey line, and "Delete all drafts" is a small link shown only when drafts exist.
 - **Maximum 10 drafts per device.** The counter shows "n / 10". When full, saving a new draft is blocked with a clear message; updating an open draft still works. Drafts already stored above 10 are never trimmed silently and expire after 24 h as before.
 - **Reset now starts a new draft.** After a completed Reset / Clear, the next save creates a new draft instead of overwriting the draft that was open. A cancelled reset changes nothing.
+
+## v18.244.0 (9 Nov 2026)
+- Saved drafts are listed oldest at the top and newest at the bottom, ordered by when each draft was first saved, so updating a draft does not move it.

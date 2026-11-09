@@ -19624,7 +19624,9 @@ document.addEventListener("keydown",event=>{
   }
 
   function renderList() {
-    const drafts = loadDrafts().sort((a, b) => b.updatedAt - a.updatedAt);
+    // Oldest at the top, newest at the bottom (by first save, so updating a draft does not move it).
+    const firstSaved = draft => Number(draft.createdAt) || Number(draft.updatedAt) || 0;
+    const drafts = loadDrafts().sort((a, b) => firstSaved(a) - firstSaved(b));
     const list = document.getElementById("unifiedDraftList");
     const count = String(drafts.length);
     const full = drafts.length >= MAX_DRAFTS;
