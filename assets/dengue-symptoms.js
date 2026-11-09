@@ -44,7 +44,15 @@
     };
     qualifier('CpgLowUrine',urine);
     const pain=mark(host(f?'dfuAbdominalPain':'clAbdPain'),true);
-    qualifier('CpgIntensePain',pain);
+    // Only intense pain / tenderness is the warning sign: keep its tick box directly under the
+    // Abdominal pain answer, with a short note, so it is not missed below the site list.
+    const intense=document.createElement('div');intense.className='combined-intense-pain';
+    intense.innerHTML='<p class="helper combined-intense-note">Abdominal pain alone is <strong>not</strong> a warning sign. Only intense abdominal pain or tenderness counts.</p>';
+    original.appendChild(intense);
+    const intenseLabel=byId(p+'CpgIntensePain').closest('label');intenseLabel.classList.add('combined-qualifier');
+    const intenseText=intenseLabel.querySelector('span');if(intenseText)intenseText.textContent=intenseText.textContent.replace(/^\d+\.\s*/, '');
+    move(intenseLabel,intense,'prepend');
+    move(intense,byId(f?'dfuAbdominalPain':'clAbdPain'),'after');
     const bleeding=mark(f?byId('dfuBleedingTendencies').closest('.dfu-bleeding-block'):host('clBleeding'),true);
     const vomiting=mark(host(f?'dfuVomitFrequency':'clVomiting'),true);
     const mental=mark(host(p+'Lethargy'),true);
@@ -121,7 +129,7 @@
       l.oldOral?.classList.toggle('combined-suppressed',active);
       l.labels.forEach(({node,old,text})=>{node.textContent=active?text:old;});
       if(active){
-        for(const {node,target,kind} of l.moves){if(kind==='panel')target.insertBefore(node,l.panelBefore);else if(kind==='hepatomegaly')target.prepend(node);else target.appendChild(node);}
+        for(const {node,target,kind} of l.moves){if(kind==='panel')target.insertBefore(node,l.panelBefore);else if(kind==='hepatomegaly'||kind==='prepend')target.prepend(node);else if(kind==='after')target.after(node);else target.appendChild(node);}
         if(p==='cl' && !byId(p+'CpgOralHourly').value && byId('clDrinkMl24').value){
           byId(p+'CpgOralHourly').value=byId('clDrinkMl24').value;byId(p+'CpgOralPeriod').value='24';
         }

@@ -66,3 +66,6 @@ Standard diagnosis sentence for every dengue form (adult and paediatric, new cas
 
 ## v18.244.0 (9 Nov 2026)
 - Saved drafts are listed oldest at the top and newest at the bottom, ordered by when each draft was first saved, so updating a draft does not move it.
+
+## v18.245.0 (9 Nov 2026)
+- Adult Abdominal pain box (new case and follow-up): the "Intense abdominal pain or tenderness" tick box now sits directly under the yes/no answer, above the site list. It carries a short note: "Abdominal pain alone is not a warning sign. Only intense abdominal pain or tenderness counts." No rule change.
