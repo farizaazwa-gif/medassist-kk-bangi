@@ -17,6 +17,7 @@
 <script src="assets/paeds-dengue-weight.js?v=18.234.0"></script>
 <script src="assets/dengue-required.js?v=18.242.0"></script>
 <script src="assets/dengue-symptoms.js?v=18.245.0"></script>
+<script src="assets/dengue-referral-popup.js?v=18.247.0"></script>
 <link rel="stylesheet" href="assets/dengue-symptoms.css?v=18.245.0"/>
 <script src="assets/clinical-safety.js"></script>
 <script src="assets/note-edits.js?v=18.233.0"></script>
@@ -3084,6 +3085,31 @@ html,body{max-width:100%;overflow-x:hidden}
 .unified-draft-clear-all.hidden{display:none}
 .unified-draft-save small{min-width:0;height:22px;padding:0 8px;font-size:11px}
 .unified-draft-save small.full{background:#ffd98a;color:#5c3d00}
+
+/* V18.247 dengue referral / category pop-up */
+.dengue-popup-backdrop{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(20,40,36,.45)}
+.dengue-popup-backdrop.hidden{display:none}
+.dengue-popup{width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;border-top:6px solid #17685d;border-radius:16px;background:#fff;box-shadow:0 24px 60px rgba(0,0,0,.25)}
+.dengue-popup-backdrop.referral .dengue-popup{border-top-color:#b42318}
+.dengue-popup-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px 6px}
+.dengue-popup-head strong{color:#173f38;font-size:19px}
+.dengue-popup-backdrop.referral .dengue-popup-head strong{color:#b42318}
+.dengue-popup-x{width:32px;height:32px;border:0;border-radius:8px;background:none;color:#6b7d79;font-size:16px;cursor:pointer}
+.dengue-popup-x:hover{background:#f1f5f4}
+.dengue-popup-category{display:flex;align-items:center;gap:12px;margin:8px 18px 0;padding:12px;border-radius:12px;background:#f1f8f6}
+.dengue-popup-backdrop.referral .dengue-popup-category{background:#fff1ef}
+.dengue-popup-badge{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;min-width:48px;height:48px;padding:0 8px;border-radius:12px;background:#17685d;color:#fff;font-size:20px;font-weight:900}
+.dengue-popup-backdrop.referral .dengue-popup-badge{background:#b42318}
+.dengue-popup-category b{display:block;color:#173f38;font-size:15px}
+.dengue-popup-category small{display:block;margin-top:2px;color:#4f625e;font-size:13px;line-height:1.35}
+.dengue-popup-reasons{margin:12px 18px 0;padding-left:20px;color:#2d3b38;font-size:13.5px;line-height:1.5}
+.dengue-popup-reasons.hidden{display:none}
+.dengue-popup-source{margin:10px 18px 0;color:#7a8a86;font-size:11.5px;line-height:1.4}
+.dengue-popup-actions{display:flex;justify-content:flex-end;gap:8px;padding:14px 18px 16px}
+.dengue-popup-actions .hidden{display:none}
+.dengue-category-line{margin-top:6px;padding:7px 10px;border-radius:8px;background:#eaf6f2;color:#17685d;font-size:12.5px;font-weight:700}
+.dengue-category-line.referral{background:#fff1ef;color:#a1312b}
+.dengue-category-line.hidden{display:none}
 </style>
 <style id="v18106-enotification-link-styles">
 /* V18.106 — manual link to the official KKM e-Notifikasi website.
@@ -19917,6 +19943,7 @@ document.addEventListener("keydown",event=>{
       if(mode){
         window.renderDengueVitalShockResult(mode);
         renderDengueReferralAlert(mode,options);
+        window.MedAssistDengueReferralPopup?.render?.(mode);
       }
     },80);
   }

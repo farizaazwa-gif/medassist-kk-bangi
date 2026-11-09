@@ -72,3 +72,10 @@ Standard diagnosis sentence for every dengue form (adult and paediatric, new cas
 
 ## v18.246.0 (9 Nov 2026)
 - Removed the referral check box at the top of both dengue forms (new case and follow-up). That box showed "Referral check active", "Clinical reassessment required" and Group A/B1/B2/C, with a "Set plan to Refer ED" button and pop-up. The top notice line is kept. Hospital-referral logic is unchanged: for adults, the Plan still asks for a reason when findings need hospital assessment and the plan is not ED referral.
+
+## v18.247.0 (9 Nov 2026)
+- **"Needs urgent referral" pop-up** (new case and follow-up). It opens when the documented findings meet hospital-referral criteria:
+  - Adults: the CPG4 engine's hospital-assessment rule, e.g. warning signs, shock / severe dengue, unable to tolerate fluids, pregnancy, unstable comorbidity.
+  - Children: the paediatric criteria already in the app.
+  The pop-up shows the category, the reasons and a "Set plan to Refer ED" button. Close it with ✕, Close, Esc or a click outside. It reopens only if the status changes, e.g. B2 → C, and again after Reset.
+- **Category pop-up for adults (Group A / B1 / B2 / C, Adult Dengue CPG 4th Ed Table 6).** Shown once when the diagnosis is complete and no referral is needed. A one-line "Category: …" also stays under Generated diagnosis. Children show referral status only: the app has no A/B1/B2/C grouping for children.
