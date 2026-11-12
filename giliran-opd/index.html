@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Giliran OPD</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky top bar with three views (kaunter, doktor, tetapan); counter view = register panel + room grid, then today's list */
+:root{
+  --bg:#F3F6F5; --surface:#FFFFFF; --ink:#13201E; --muted:#5A6A67; --line:#D8E1DE;
+  --accent:#0E7465; --accent-ink:#FFFFFF; --accent-soft:#DFF0EC;
+  --call:#A9500F; --call-soft:#FBEADB; --warn:#B42318; --warn-soft:#FDE7E5;
+  --closed:#8C9997; --closed-soft:#ECEFEE;
+  --font-sign:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1514; --surface:#172120; --ink:#E4ECEA; --muted:#93A4A1; --line:#28403B;
+  --accent:#3BBFA9; --accent-ink:#06201B; --accent-soft:#143530;
+  --call:#F09A5B; --call-soft:#3A2414; --warn:#F87A6E; --warn-soft:#3B1715;
+  --closed:#6E7C79; --closed-soft:#1D2726; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1514; --surface:#172120; --ink:#E4ECEA; --muted:#93A4A1; --line:#28403B;
+  --accent:#3BBFA9; --accent-ink:#06201B; --accent-soft:#143530;
+  --call:#F09A5B; --call-soft:#3A2414; --warn:#F87A6E; --warn-soft:#3B1715;
+  --closed:#6E7C79; --closed-soft:#1D2726; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5}
+*{box-sizing:border-box}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-family:var(--font-sign);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar-in,.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar-in{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding-block:10px}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+.brand h1{font-family:var(--font-sign);font-weight:700;font-size:22px;margin:0;letter-spacing:.02em}
+.brand .date{color:var(--muted);font-size:13px}
+.conn{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--closed)}
+.dot.ok{background:var(--accent)}
+.dot.bad{background:var(--warn)}
+nav.tabs{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px}
+nav.tabs a{padding:6px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:500;font-size:14px}
+nav.tabs a[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
+
+.wrap{padding-block:18px 48px;display:grid;gap:18px}
+.notice{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:12px 14px;font-size:14px;color:var(--muted)}
+.notice.warn{border-color:var(--warn);background:var(--warn-soft);color:var(--ink)}
+
+.grid-2{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:18px;align-items:start}
+@media (max-width:860px){.grid-2{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;min-width:0}
+.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* Register */
+.reg label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.reg .field{display:flex;gap:10px;flex-wrap:wrap}
+#noInput{flex:1 1 160px;min-width:0;font-family:var(--font-sign);font-size:34px;font-weight:600;padding:8px 14px;border:2px solid var(--line);border-radius:var(--r);background:var(--bg);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+#noInput:focus{border-color:var(--accent);outline:none}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:500}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.big{font-size:18px;padding:12px 22px}
+.btn.call{background:var(--call);border-color:var(--call);color:#fff}
+.btn.danger{color:var(--warn);border-color:var(--warn)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 8px}
+.reg .override{margin-top:12px;display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.result{margin-top:14px;border-radius:var(--r);background:var(--accent-soft);padding:14px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.result .big-no{font-family:var(--font-sign);font-size:40px;font-weight:700;line-height:1}
+.result .arrow{color:var(--muted);font-size:22px}
+.result .room{font-family:var(--font-sign);font-size:40px;font-weight:700;color:var(--accent);line-height:1}
+.result .sub{width:100%;font-size:13px;color:var(--muted)}
+.dup{margin-top:12px;border-radius:var(--r);background:var(--warn-soft);padding:12px 14px;font-size:14px;display:grid;gap:8px}
+.err{color:var(--warn);font-size:13px;margin-top:8px}
+
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:16px}
+.stat{border-top:2px solid var(--line);padding-top:6px}
+.stat b{display:block;font-family:var(--font-sign);font-size:26px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.stat.w{border-color:var(--accent)} .stat.c{border-color:var(--call)}
+@media (max-width:420px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Room grid */
+.rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.tile{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:grid;gap:2px;background:var(--surface);position:relative}
+.tile .code{font-family:var(--font-sign);font-size:24px;font-weight:700;line-height:1}
+.tile .wait{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tile .wait b{color:var(--ink);font-size:15px}
+.tile.closed{background:var(--closed-soft);border-style:dashed}
+.tile.closed .code{color:var(--closed);text-decoration:line-through}
+.switch{display:inline-flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;color:var(--muted);margin-top:4px;background:none;border:0;padding:0}
+.switch .track{width:30px;height:18px;border-radius:999px;background:var(--closed);position:relative;transition:background .15s}
+.switch .track::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .15s}
+.switch[aria-checked="true"] .track{background:var(--accent)}
+.switch[aria-checked="true"] .track::after{transform:translateX(12px)}
+
+/* Today list */
+.listhead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between;margin-bottom:10px}
+.listhead input{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg);width:180px;max-width:100%}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+td.no{font-family:var(--font-sign);font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+td.note{white-space:normal;color:var(--muted);font-size:13px;min-width:120px}
+tr.s-dipanggil td{background:var(--call-soft)}
+tr.s-selesai td,tr.s-tidak_hadir td{color:var(--muted)}
+tr.s-tidak_hadir td.no{text-decoration:line-through}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--closed-soft);color:var(--muted)}
+.chip.menunggu{background:var(--accent-soft);color:var(--accent)}
+.chip.dipanggil{background:var(--call-soft);color:var(--call)}
+.iconbtn{border:0;background:none;color:var(--muted);cursor:pointer;padding:4px 6px;border-radius:6px;font-size:16px}
+.iconbtn:hover{color:var(--warn);background:var(--warn-soft)}
+.empty{color:var(--muted);font-size:14px;padding:18px 4px;text-align:center}
+
+/* Doctor */
+.picker{display:flex;flex-wrap:wrap;gap:6px}
+.picker button{font-family:var(--font-sign);font-size:18px;font-weight:600;min-width:52px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer}
+.picker button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.picker button.closed{color:var(--closed);text-decoration:line-through}
+.now{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center}
+@media (max-width:560px){.now{grid-template-columns:minmax(0,1fr)}}
+.now .label{font-size:13px;color:var(--muted)}
+.now .current{font-family:var(--font-sign);font-size:72px;font-weight:700;line-height:1;color:var(--call);font-variant-numeric:tabular-nums}
+.now .current.none{color:var(--closed);font-size:40px}
+.now .actions{display:grid;gap:8px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.queue .q{font-family:var(--font-sign);font-size:24px;font-weight:700;border:1px solid var(--line);border-radius:8px;padding:4px 12px;font-variant-numeric:tabular-nums;background:var(--bg)}
+.queue .q:first-child{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.bcard{border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;background:var(--surface);display:grid;gap:6px;align-content:start}
+.bcard.closed{background:var(--closed-soft);border-style:dashed}
+.bcard .top{display:flex;justify-content:space-between;align-items:baseline}
+.bcard .code{font-family:var(--font-sign);font-size:26px;font-weight:700}
+.bcard.closed .code{color:var(--closed);text-decoration:line-through}
+.bcard .calling{font-size:13px;color:var(--muted)}
+.bcard .calling b{font-family:var(--font-sign);font-size:22px;color:var(--call)}
+.bcard .nexts{font-family:var(--font-sign);font-size:17px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;word-break:break-word}
+
+/* Settings */
+.rlist{display:grid;gap:6px}
+.ritem{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.ritem .code{font-family:var(--font-sign);font-size:20px;font-weight:700;min-width:44px}
+.ritem .grow{flex:1}
+.addroom{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.addroom input{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg);width:120px}
+.prose{font-size:14px;color:var(--muted);max-width:65ch}
+.prose p{margin:0 0 8px}
+.prose strong{color:var(--ink)}
+
+/* Dialog + toast */
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:18px;max-width:min(420px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(10,20,18,.45)}
+dialog h3{margin:0 0 8px;font-size:17px}
+dialog p{margin:0 0 14px;color:var(--muted);font-size:14px}
+dialog .row{justify-content:flex-end}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;max-width:calc(100vw - 32px);z-index:20}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<style>
+html{color-scheme:light}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+.login{max-width:380px;margin:12vh auto 0;display:grid;gap:14px}
+.login h2{font-family:var(--font-sign);font-size:28px;margin:0;text-transform:none;letter-spacing:.01em;color:var(--ink)}
+.login p{margin:0;color:var(--muted);font-size:14px}
+.login input{width:100%;border:2px solid var(--line);border-radius:var(--r);padding:10px 12px;background:var(--bg);font-size:16px}
+.login input:focus{border-color:var(--accent);outline:none}
+.login .btn{width:100%}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <div class="brand"><h1>Giliran OPD</h1><span class="date" id="dateLabel"></span></div>
+    <span class="conn"><span class="dot" id="connDot"></span><span id="connText">Menyambung</span></span>
+    <nav class="tabs" aria-label="Paparan" id="tabs" hidden>
+      <a href="#kaunter" data-view="kaunter">Kaunter</a>
+      <a href="#doktor" data-view="doktor">Bilik doktor</a>
+      <a href="#tetapan" data-view="tetapan">Tetapan</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="globalNote" class="notice" hidden></div>
+
+  <!-- LOG MASUK -->
+  <section id="loginView" hidden>
+    <form class="panel login" id="loginForm" autocomplete="on">
+      <h2>Log masuk</h2>
+      <p>Masukkan kata laluan klinik. Anda hanya perlu log masuk sekali pada setiap peranti.</p>
+      <label for="pwInput" class="sr" hidden>Kata laluan</label>
+      <input id="pwInput" type="password" autocomplete="current-password" placeholder="Kata laluan klinik">
+      <button class="btn primary big" type="submit" id="loginBtn">Masuk</button>
+      <div class="err" id="loginErr" hidden></div>
+    </form>
+  </section>
+
+  <!-- KAUNTER -->
+  <section id="view-kaunter" data-view-panel="kaunter" hidden>
+    <div class="grid-2">
+      <div class="panel reg">
+        <h2>Daftar nombor</h2>
+        <form id="regForm" autocomplete="off">
+          <label for="noInput">No. giliran PreQ</label>
+          <div class="field">
+            <input id="noInput" inputmode="numeric" enterkeyhint="done" placeholder="1023" aria-describedby="regErr">
+            <button class="btn primary big" type="submit" id="regBtn">Daftar</button>
+          </div>
+          <div class="override">
+            <label for="roomOverride" style="margin:0">Bilik</label>
+            <select id="roomOverride"><option value="">Auto (paling kurang menunggu)</option></select>
+          </div>
+          <div id="regErr" class="err" hidden></div>
+        </form>
+        <div id="dupBox" class="dup" hidden></div>
+        <div id="resultBox" class="result" hidden></div>
+        <div class="stats" id="stats"></div>
+      </div>
+      <div class="panel">
+        <h2>Bilik hari ini</h2>
+        <div class="rooms" id="roomGrid"></div>
+        <div id="roomsEmpty" class="empty" hidden>Belum ada bilik. Tambah bilik di tab Tetapan.</div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:18px">
+      <div class="listhead">
+        <h2 style="margin:0">Pesakit hari ini</h2>
+        <input id="search" type="search" placeholder="Cari nombor" aria-label="Cari nombor">
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>No.</th><th>Bilik</th><th>Status</th><th>Masa</th><th>Catatan</th><th></th></tr></thead>
+          <tbody id="todayBody"></tbody>
+        </table>
+      </div>
+      <div id="todayEmpty" class="empty">Belum ada pesakit didaftar hari ini. Taip nombor PreQ di atas untuk mula.</div>
+    </div>
+  </section>
+
+  <!-- DOKTOR -->
+  <section id="view-doktor" data-view-panel="doktor" hidden>
+    <div class="panel">
+      <h2>Bilik saya</h2>
+      <div class="picker" id="picker"></div>
+    </div>
+    <div class="panel" id="myRoomPanel" style="margin-top:18px" hidden>
+      <div class="now">
+        <div>
+          <div class="label" id="nowLabel">Sedang dipanggil</div>
+          <div class="current" id="nowNo">-</div>
+        </div>
+        <div class="actions">
+          <button class="btn call big" id="callNext">Panggil seterusnya</button>
+          <div class="row">
+            <button class="btn" id="markDone">Selesai</button>
+            <button class="btn" id="markAbsent">Tidak hadir</button>
+          </div>
+        </div>
+      </div>
+      <h2 style="margin-top:18px">Menunggu <span id="myWaitCount"></span></h2>
+      <div class="queue" id="myQueue"></div>
+      <div class="empty" id="myQueueEmpty" hidden>Tiada pesakit menunggu.</div>
+    </div>
+    <div class="panel" style="margin-top:18px">
+      <h2>Semua bilik</h2>
+      <div class="board" id="board"></div>
+    </div>
+  </section>
+
+  <!-- TETAPAN -->
+  <section id="view-tetapan" data-view-panel="tetapan" hidden>
+    <div class="grid-2">
+      <div class="panel">
+        <h2>Senarai bilik</h2>
+        <div class="rlist" id="rlist"></div>
+        <form class="addroom" id="addRoomForm">
+          <input id="newRoom" placeholder="cth. 5A" aria-label="Kod bilik baharu" maxlength="12">
+          <button class="btn" type="submit">Tambah bilik</button>
+        </form>
+      </div>
+      <div class="panel prose">
+        <h2>Cara ia berfungsi</h2>
+        <p><strong>Agihan automatik.</strong> Nombor baharu masuk ke bilik yang buka dengan paling sedikit pesakit menunggu. Jika sama, bilik yang paling sedikit pesakit hari ini dipilih dahulu.</p>
+        <p><strong>Bilik tutup.</strong> Tutup suis bilik di tab Kaunter. Pesakit yang masih menunggu di bilik itu dipindah ke bilik lain, dan catatan menunjukkan bilik asal.</p>
+        <p><strong>Tukar manual.</strong> Tukar bilik mana-mana pesakit terus dalam senarai, atau pilih bilik sebelum tekan Daftar.</p>
+        <p><strong>Data.</strong> Sistem ini hanya menyimpan nombor giliran, bukan nama atau No. KP pesakit. Senarai bermula kosong setiap hari.</p>
+        <div id="cleanupBox" style="margin-top:12px" class="row">
+          <button class="btn danger" id="cleanupBtn">Padam rekod lebih 30 hari</button>
+          <button class="btn" id="logoutBtn">Log keluar peranti ini</button>
+        </div>
+        <div id="cleanupMsg" style="margin-top:6px;font-size:13px"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog id="dlg">
+  <h3 id="dlgTitle"></h3>
+  <p id="dlgText"></p>
+  <div class="row">
+    <button class="btn" id="dlgCancel" type="button">Batal</button>
+    <button class="btn primary" id="dlgOk" type="button">Teruskan</button>
+  </div>
+</dialog>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
