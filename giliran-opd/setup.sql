@@ -24,17 +24,45 @@ create table if not exists public.giliran_pesakit (
 
 create index if not exists giliran_pesakit_tarikh_idx on public.giliran_pesakit (tarikh);
 
--- Hanya akaun yang log masuk (akaun klinik) boleh baca dan ubah
+-- Senarai emel akaun yang dibenarkan. Tiada akses terus dari laman (tiada polisi).
+create table if not exists public.giliran_akaun (
+  email text primary key
+);
+alter table public.giliran_akaun enable row level security;
+
+-- Semakan akses, dalam skema yang tidak didedahkan melalui API
+create schema if not exists private;
+grant usage on schema private to authenticated;
+
+create or replace function private.giliran_dibenarkan()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.giliran_akaun
+    where lower(email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+  );
+$$;
+
+revoke all on function private.giliran_dibenarkan() from public, anon;
+grant execute on function private.giliran_dibenarkan() to authenticated;
+
+-- Hanya akaun yang log masuk DAN ada dalam giliran_akaun boleh baca dan ubah
 alter table public.giliran_bilik   enable row level security;
 alter table public.giliran_pesakit enable row level security;
 
 drop policy if exists "akaun klinik urus bilik" on public.giliran_bilik;
 create policy "akaun klinik urus bilik" on public.giliran_bilik
-  for all to authenticated using (true) with check (true);
+  for all to authenticated
+  using (private.giliran_dibenarkan()) with check (private.giliran_dibenarkan());
 
 drop policy if exists "akaun klinik urus pesakit" on public.giliran_pesakit;
 create policy "akaun klinik urus pesakit" on public.giliran_pesakit
-  for all to authenticated using (true) with check (true);
+  for all to authenticated
+  using (private.giliran_dibenarkan()) with check (private.giliran_dibenarkan());
 
 -- Kemas kini live antara skrin
 do $$

@@ -10,22 +10,33 @@ Laman: `https://farizaazwa-gif.github.io/medassist-kk-bangi/giliran-opd/`
 | --- | --- |
 | `index.html` | Halaman (tab Kaunter, Bilik doktor, Tetapan) |
 | `app.js` | Antara muka dan sambungan Supabase |
-| `logic.js` | Logik agihan bilik (diuji dalam `tests/giliran-opd.test.cjs`) |
-| `config.js` | URL dan anon key Supabase, serta emel akaun klinik |
-| `setup.sql` | Jadual, Row Level Security, realtime dan 17 bilik OPD |
+| `logic.js` | Logik agihan bilik (diuji dalam `tests/giliran-opd.test.js`) |
+| `config.js` | URL dan anon key projek Supabase `giliran-opd` |
+| `setup.sql` | Jadual, Row Level Security, senarai akaun dibenarkan, realtime dan 17 bilik OPD |
 
-## Sediakan sekali
+## Pangkalan data
 
-1. **Projek Supabase.** Guna projek sedia ada atau buat projek baharu (pelan percuma).
-2. **Jadual.** Supabase > SQL Editor > New query. Tampal isi `setup.sql`, kemudian Run.
-3. **Akaun klinik.** Authentication > Users > Add user > Create new user. Isi emel (contoh emel unit) dan kata laluan klinik, tanda *Auto Confirm User*.
-4. **Sambungan.** Project Settings > API. Salin *Project URL* dan *anon public key* ke dalam `config.js`, bersama emel akaun klinik tadi.
+Projek Supabase `giliran-opd` (Singapura) sudah disediakan dengan `setup.sql`.
 
-Staf hanya perlu kata laluan klinik untuk log masuk, sekali bagi setiap peranti.
+### Tambah akaun klinik
+
+1. Supabase > Authentication > Users > Add user > Create new user. Isi emel dan kata laluan klinik, tanda *Auto Confirm User*.
+2. Benarkan emel itu. Supabase > SQL Editor:
+
+   ```sql
+   insert into public.giliran_akaun (email) values ('emel.akaun@contoh.com');
+   ```
+
+Akaun yang tiada dalam `giliran_akaun` boleh log masuk tetapi tidak nampak atau ubah apa-apa data.
+
+### Disyorkan
+
+Authentication > Sign In / Providers: matikan *Allow new users to sign up*, supaya akaun baharu hanya boleh dibuat oleh pentadbir.
 
 ## Data
 
 - Hanya nombor giliran disimpan, bukan nama atau No. KP pesakit.
 - Senarai bermula kosong setiap hari (ikut tarikh Malaysia).
 - Tab Tetapan ada butang untuk padam rekod lebih 30 hari.
+- Projek Supabase percuma dijeda selepas 7 hari tanpa digunakan. Guna harian di klinik memastikan ia kekal aktif. Jika dijeda, pulihkan di dashboard Supabase.
 - Tukar kata laluan klinik di Authentication > Users jika ia tersebar.

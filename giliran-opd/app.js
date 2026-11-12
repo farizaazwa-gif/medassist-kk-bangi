@@ -97,7 +97,8 @@
     try {
       await Promise.all([fetchRooms(), fetchPatients()]);
       setConn('ok', 'Live');
-      if (!$('globalNote').classList.contains('warn')) note('');
+      if (!rooms.length) note('Tiada bilik dipaparkan. Jika ini kali pertama akaun ini digunakan, minta pentadbir tambah emel akaun ke senarai akaun dibenarkan.', true);
+      else note('');
     } catch (e) {
       setConn('bad', 'Terputus');
       handleErr(e);
@@ -405,13 +406,19 @@
   });
 
   /* ---------- Log masuk dan mula ---------- */
+  function savedEmail() {
+    if (CFG.LOGIN_EMAIL) return CFG.LOGIN_EMAIL;
+    try { return localStorage.getItem('giliran-opd-emel') || ''; } catch (e) { return ''; }
+  }
   function showLogin() {
     started = false;
     $('tabs').hidden = true;
     $('loginView').hidden = false;
+    $('emailRow').hidden = !!CFG.LOGIN_EMAIL;
+    if (!CFG.LOGIN_EMAIL && !$('emailInput').value) $('emailInput').value = savedEmail();
     showView();
     setConn('', 'Belum log masuk');
-    setTimeout(() => $('pwInput').focus(), 50);
+    setTimeout(() => ($('emailRow').hidden || $('emailInput').value ? $('pwInput') : $('emailInput')).focus(), 50);
   }
   function startApp() {
     if (started) return;
@@ -428,15 +435,17 @@
     e.preventDefault();
     $('loginErr').hidden = true;
     $('loginBtn').disabled = true;
-    const { error } = await sb.auth.signInWithPassword({ email: CFG.LOGIN_EMAIL, password: $('pwInput').value });
+    const email = (CFG.LOGIN_EMAIL || $('emailInput').value).trim();
+    const { error } = await sb.auth.signInWithPassword({ email, password: $('pwInput').value });
     $('loginBtn').disabled = false;
-    if (error) { $('loginErr').textContent = 'Kata laluan salah. Cuba sekali lagi.'; $('loginErr').hidden = false; return; }
+    if (error) { $('loginErr').textContent = 'Emel atau kata laluan salah. Cuba sekali lagi.'; $('loginErr').hidden = false; return; }
+    try { if (!CFG.LOGIN_EMAIL) localStorage.setItem('giliran-opd-emel', email); } catch (err) { /* abaikan */ }
     $('pwInput').value = '';
     startApp();
   });
 
   function configured() {
-    const v = [CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, CFG.LOGIN_EMAIL];
+    const v = [CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY];
     return v.every(x => typeof x === 'string' && x.trim() && !x.includes('GANTI'));
   }
 

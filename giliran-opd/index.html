@@ -200,9 +200,11 @@ body{margin:0}
   <section id="loginView" hidden>
     <form class="panel login" id="loginForm" autocomplete="on">
       <h2>Log masuk</h2>
-      <p>Masukkan kata laluan klinik. Anda hanya perlu log masuk sekali pada setiap peranti.</p>
-      <label for="pwInput" class="sr" hidden>Kata laluan</label>
-      <input id="pwInput" type="password" autocomplete="current-password" placeholder="Kata laluan klinik">
+      <p>Log masuk dengan akaun klinik. Anda hanya perlu log masuk sekali pada setiap peranti.</p>
+      <div id="emailRow">
+        <input id="emailInput" type="email" autocomplete="username" placeholder="Emel akaun klinik" aria-label="Emel akaun klinik">
+      </div>
+      <input id="pwInput" type="password" autocomplete="current-password" placeholder="Kata laluan klinik" aria-label="Kata laluan klinik">
       <button class="btn primary big" type="submit" id="loginBtn">Masuk</button>
       <div class="err" id="loginErr" hidden></div>
     </form>
