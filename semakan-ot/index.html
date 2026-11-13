@@ -401,7 +401,7 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
   <section class="panel" id="step1">
     <div class="step-h"><span class="num">1</span><div><h2>Maklumat pegawai</h2></div></div>
     <div class="fields">
-      <div class="field span2"><label for="nama">Nama pegawai</label><input id="nama" type="text" autocomplete="off" placeholder="Contoh: Nur Aisyah binti Ahmad"><small class="name-note">Untuk pegawai lain, klik <b>Pegawai baharu</b> supaya rekod tidak bercampur.</small></div>
+      <div class="field span2"><label for="nama">Nama pegawai</label><input id="nama" type="text" autocomplete="off" placeholder="Contoh: Nur Aisyah binti Ahmad"><small class="name-note" id="identityHint">Untuk pegawai lain, klik <b>Pegawai baharu</b> supaya rekod tidak bercampur.</small><button type="button" id="editNamaBtn" class="ghost small" hidden>Betulkan ejaan nama</button></div>
       <div class="field span2"><label for="jawatan">Jawatan</label><select id="jawatan"></select><small class="hint">Jenis tuntutan yang layak akan keluar ikut jawatan.</small></div>
       <div class="field"><label for="fasiliti">Klinik bertugas</label><select id="fasiliti"></select></div>
       <div class="field"><label for="bulan">Bulan tuntutan</label><input id="bulan" type="month"></div>
@@ -543,6 +543,7 @@ function kurangJadual(r, label) {
   const out = [];
   if (!r.surat) out.push("Tiada surat arahan");
   if (r.ganti) {
+    if (!(r.gantiNama || "").trim()) out.push("Nama anggota yang diganti belum diisi");
     if (!r.jadualGanti) out.push("Tiada jadual dengan nama anggota yang diganti");
     if (!r.borang) out.push("Tiada borang penggantian");
   } else if (!r.jadual) out.push("Tiada nama dalam jadual " + label);
@@ -552,6 +553,7 @@ function kurangElm(r, c, clash) {
   const out = [];
   if (c.incomplete) out.push("Isi masa mula dan tamat");
   if (c.sama) out.push("Masa mula dan tamat sama");
+  if (!(r.sebab || "").trim()) out.push("Sebab OT belum diisi");
   out.push(...kurangJadual(r, "OT"));
   if (!r.thumb) out.push("Thumbprint tidak lengkap");
   if (c.gross > 480 && !r.surat8) out.push("Tiada surat pengesahan OT melebihi 8 jam");
@@ -805,6 +807,16 @@ function save() { store(KEY, state); }
 function saveSet() { store(KEYSET, set); }
 
 const $ = id => document.getElementById(id);
+let nameEditUnlocked = false;
+function hasActiveClaims() {
+  return Object.values(state.data || {}).some(period => Object.values(period || {}).some(mod => mod && mod.rows && Object.values(mod.rows).some(row => row && row.on)));
+}
+function refreshNameLock() {
+  const locked=hasActiveClaims() && !nameEditUnlocked;
+  $("nama").readOnly=locked;
+  $("editNamaBtn").hidden=!hasActiveClaims();
+  $("identityHint").textContent=locked ? "Nama dikunci kerana tuntutan telah diisi. Klik Pegawai baharu untuk staf lain." : "Gunakan Pegawai baharu untuk staf lain supaya tuntutan tidak bercampur.";
+}
 function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch])); }
 
 function monthInfo() {
@@ -879,7 +891,7 @@ function evalModule(key) {
     if (lebih && !MS.lulus13) warn.push("Melebihi 1/3 gaji pokok" + (gabung ? " (OT biasa + OT extended hours)" : "") + ", perlu kelulusan pegawai P&P Gred 12 ke atas");
     if (amar) warn.push(amar + " tarikh melebihi had jam sehari, perlu kelulusan khas Ketua Jabatan");
     if (beza != null && beza < -0.05) notes.push("Pegawai menuntut " + rmFmt(-beza) + " kurang daripada kiraan.");
-    if (dit == null) notes.push("Isi jumlah dituntut untuk banding dengan kiraan.");
+    if (dit == null) warn.push("Isi jumlah dituntut untuk banding dengan kiraan.");
     if (state.tanggungKerja) notes.push("Pegawai menanggung kerja: 2 jam 15 minit ditolak daripada OT pada hari bekerja biasa (JPA).");
   } else if (key === "etap") {
     let rm = 0, p4 = 0, p0 = 0;
@@ -891,7 +903,7 @@ function evalModule(key) {
     if (!M.jarak) bad.push("Tiada pengesahan tinggal dalam 33 km / 30 minit dari tempat bertugas");
     if (beza != null && beza > 0.05) bad.push("Jumlah dituntut melebihi kiraan sebanyak " + rmFmt(beza));
     if (beza != null && beza < -0.05) notes.push("Pegawai menuntut " + rmFmt(-beza) + " kurang daripada kiraan.");
-    if (dit == null) notes.push("Isi jumlah dituntut untuk banding dengan kiraan.");
+    if (dit == null) warn.push("Isi jumlah dituntut untuk banding dengan kiraan.");
   } else if (key === "lokum") {
     let jam = 0, rm = 0, kadarKosong = false; const lok = {};
     days.forEach(x => { jam += x.c.bayar; if (x.r.lokasi) lok[x.r.lokasi] = (lok[x.r.lokasi] || 0) + 1; if (x.c.rm == null) { if (!x.c.tutup) kadarKosong = true; } else rm += x.c.rm; });
@@ -901,6 +913,7 @@ function evalModule(key) {
     if (gagal) bad.push(gagal + " tarikh tidak lengkap (lihat setiap tarikh)");
     if (beza != null && beza > 0.05) bad.push("Jumlah dituntut melebihi kiraan sebanyak " + rmFmt(beza));
     if (kadarKosong) warn.push("Kadar sejam belum diisi dalam Tetapan (paparan Penuh)");
+    if (dit == null) warn.push("Isi jumlah dituntut untuk banding dengan kiraan.");
     if (beza != null && beza < -0.05) notes.push("Pegawai menuntut " + rmFmt(-beza) + " kurang daripada kiraan.");
   } else {
     let rm = 0, kadarKosong = false;
@@ -911,11 +924,18 @@ function evalModule(key) {
     if (gagal) bad.push(gagal + " tarikh tidak lengkap (lihat setiap tarikh)");
     if (beza != null && beza > 0.05) bad.push("Jumlah dituntut melebihi kiraan sebanyak " + rmFmt(beza));
     if (kadarKosong) warn.push("Kadar sehari belum diisi dalam Tetapan (paparan Penuh)");
+    if (dit == null) warn.push("Isi jumlah dituntut untuk banding dengan kiraan.");
+    warn.push("Syarat dan kadar Bersedia Atas Panggilan perlu pengesahan Unit Kewangan.");
     notes.push("Kadar dan syarat elaun ini belum disahkan. Semakan dokumen asas sahaja.");
   }
-  if (bad.length) { v.cls = "bad"; v.kp = "TIDAK LULUS"; v.why = bad.concat(warn); }
-  else if (warn.length) { v.cls = "warn"; v.kp = MODS[key].warn; v.why = warn; }
-  else { v.cls = "ok"; v.kp = "LULUS"; v.why = ["Semua tarikh lengkap" + (isOt(key) ? " dan tuntutan dalam had." : ".")]; }
+  if (!String(state.nama || "").trim()) bad.push("Nama pegawai belum diisi");
+  if (!state.fasiliti) bad.push("Klinik bertugas belum dipilih");
+  const yr=monthInfo().y;
+  if (yr < 2026 || yr > 2027) warn.push("Senarai cuti umum tahun " + yr + " belum dimasukkan; sahkan jenis hari secara manual.");
+  if (yr === 2027) warn.push("Cuti ganti/peristiwa 2027 perlu disemak dengan pengumuman rasmi.");
+  if (bad.length) { v.cls = "bad"; v.kp = "BELUM LENGKAP"; v.why = bad.concat(warn); }
+  else if (warn.length) { v.cls = "warn"; v.kp = "PERLU SEMAKAN"; v.why = warn; }
+  else { v.cls = "ok"; v.kp = "SEMAKAN LENGKAP"; v.why = ["Semua tarikh lengkap" + (isOt(key) ? " dan tuntutan dalam had." : ".")]; }
   v.notes = notes;
   return ev;
 }
@@ -923,10 +943,10 @@ function evalModule(key) {
 function overall() {
   const evs = mods().map(evalModule).filter(e => e.days.length);
   if (!evs.length) return { cls: "idle", kp: "Belum ada tarikh" };
-  if (evs.some(e => e.v.cls === "bad")) return { cls: "bad", kp: "TIDAK LULUS" };
+  if (evs.some(e => e.v.cls === "bad")) return { cls: "bad", kp: "BELUM LENGKAP" };
   const w = evs.find(e => e.v.cls === "warn"); if (w) return { cls: "warn", kp: w.v.kp };
   if (evs.some(e => e.v.cls === "idle")) return { cls: "idle", kp: "Belum lengkap" };
-  return { cls: "ok", kp: "LULUS" };
+  return { cls: "ok", kp: "SEMAKAN LENGKAP" };
 }
 
 /* ---------- Rendering ---------- */
@@ -935,6 +955,7 @@ function fillTop() {
     '<optgroup label="' + esc(g.g) + '">' + g.items.map(it => '<option value="' + it[0] + '">' + esc(it[1]) + "</option>").join("") + "</optgroup>").join("");
   $("fasiliti").innerHTML = FASILITI.map(f => '<option value="' + f[0] + '">' + esc(f[1]) + "</option>").join("");
   $("nama").value = state.nama || "";
+  refreshNameLock();
   $("jawatan").value = state.jawatan || "";
   $("fasiliti").value = state.fasiliti || "";
   $("bulan").value = state.bulan || thisMonth();
@@ -1003,7 +1024,7 @@ function resultHtml(key) {
   const ck = (k, label, cls) => '<label class="ck' + (cls ? " " + cls : "") + '"><input type="checkbox" data-mk="' + k + '"' + (MS[k] ? " checked" : "") + "> " + label + "</label>";
   const dd = (label, id, cls) => "<dt" + (cls ? ' class="' + cls + '"' : "") + ">" + label + '</dt><dd id="' + id + '"' + (cls ? ' class="' + cls + '"' : "") + "></dd>";
   // Jumlah dituntut dan beza: paparan Penuh sahaja, kecuali sudah diisi (supaya keputusan tidak merujuk medan yang tersorok).
-  const ditAdv = (M.dituntut === "" || M.dituntut == null) ? "adv" : "";
+  const ditAdv = ""; // Amaun tuntutan mesti kelihatan dalam mod Ringkas dan Penuh.
   const dit = '<div class="field ' + ditAdv + '"><label for="s-dit">Jumlah yang dituntut pegawai</label><div class="money"><span>RM</span><input id="s-dit" data-mk="dituntut" type="number" inputmode="decimal" step="0.01" min="0" placeholder="Ikut borang tuntutan" value="' + esc(M.dituntut) + '"></div></div>';
   let facts = "", checks = "";
   if (isOt(key)) {
@@ -1360,9 +1381,9 @@ function updateItem(key, x) {
   i1.textContent = x.k.length ? (x.k.length > 1 ? x.k.length + " perkara belum lengkap: " : "") + x.k[0] : (x.a[0] || "");
   i1.className = "iiss " + (x.k.length ? "k" : "a");
   const pill = el.querySelector("[data-pill]");
-  if (x.k.length) { pill.className = "pill bad"; pill.textContent = "TIDAK LULUS"; }
-  else if (x.a.length) { pill.className = "pill warn"; pill.textContent = "AMARAN"; }
-  else { pill.className = "pill ok"; pill.textContent = "LULUS"; }
+  if (x.k.length) { pill.className = "pill bad"; pill.textContent = "BELUM LENGKAP"; }
+  else if (x.a.length) { pill.className = "pill warn"; pill.textContent = "PERLU SEMAK"; }
+  else { pill.className = "pill ok"; pill.textContent = "LENGKAP"; }
   el.querySelector("[data-issues]").innerHTML = x.k.length || x.a.length ? '<div class="iss-h">Perlu dibetulkan:</div>' +
     x.k.map(t => '<span class="k">• ' + esc(t) + "</span>").join("") + x.a.map(t => '<span class="a">• ' + esc(t) + "</span>").join("") : "";
 }
@@ -1486,6 +1507,7 @@ function refresh() {
   const byDay = {};
   ev.days.forEach(x => { byDay[x.d] = x; updateItem(key, x); });
   updateSheet(key, ev);
+  refreshNameLock();
   document.querySelectorAll("#cal button[data-day]").forEach(b => {
     const x = byDay[b.dataset.day];
     b.dataset.st = x ? (x.k.length ? "bad" : x.a.length ? "warn" : "ok") : "";
@@ -1515,7 +1537,11 @@ document.querySelector(".modesw").addEventListener("click", e => {
 });
 
 /* ---------- Events ---------- */
-$("nama").addEventListener("input", e => { state.nama = e.target.value; save(); });
+$("nama").addEventListener("input", e => { if ($("nama").readOnly) return; state.nama = e.target.value; save(); });
+$("editNamaBtn").addEventListener("click", () => {
+  if (!window.confirm("Ini hanya untuk membetulkan ejaan nama pegawai yang sama. Untuk pegawai lain gunakan Pegawai baharu. Teruskan?")) return;
+  nameEditUnlocked=true; refreshNameLock(); $("nama").focus();
+});
 $("gaji").addEventListener("input", e => { state.gaji = e.target.value; save(); refresh(); });
 $("tanggung").addEventListener("change", e => { state.tanggungKerja = e.target.checked; save(); refresh(); });
 $("jawatan").addEventListener("change", e => { state.jawatan = e.target.value; state.tab = ""; openDay = null; save(); renderTabs(); renderModule(); refresh(); });
@@ -1609,7 +1635,7 @@ $("yesBtn").addEventListener("click", () => {
   $("confirm").hidden = true; $("btns").hidden = false;
   $("msg").textContent = "Borang dikosongkan. Sedia untuk pegawai seterusnya.";
   $("nama").focus();
-  rowFilter="all"; extraDay=null;
+  rowFilter="all"; extraDay=null; nameEditUnlocked=false; refreshNameLock();
 });
 
 /* ---------- PDF ---------- */
@@ -1665,7 +1691,7 @@ function pdfOverview(doc, y) {
     didParseCell: h => {
       if (h.section !== "body") return;
       if (h.row.index === last) { h.cell.styles.fontStyle = "bold"; h.cell.styles.fillColor = [238, 243, 245]; }
-      if (h.column.index === 4) h.cell.styles.textColor = h.cell.raw === "LULUS" ? [29, 122, 70] : h.cell.raw === "TIDAK LULUS" ? [179, 38, 30] : h.cell.raw === "-" ? [60, 60, 60] : [138, 90, 0];
+      if (h.column.index === 4) h.cell.styles.textColor = h.cell.raw === "SEMAKAN LENGKAP" ? [29, 122, 70] : h.cell.raw === "BELUM LENGKAP" ? [179, 38, 30] : h.cell.raw === "-" ? [60, 60, 60] : [138, 90, 0];
     } });
   let ny = doc.lastAutoTable.finalY;
   doc.setFont("helvetica", "normal"); doc.setFontSize(8.5);
@@ -1693,7 +1719,7 @@ function pdfOncallEh(doc, y) {
   y = doc.lastAutoTable.finalY + 2;
   y = pdfVerdict(doc, y, "ETAP", e1.v);
   y = pdfVerdict(doc, y - 1, "EXTENDED HOURS", e2.v);
-  const st = x => x.k.length ? "TIDAK LULUS" : "LULUS";
+  const st = x => x.k.length ? "BELUM LENGKAP" : x.a.length ? "PERLU SEMAK" : "LENGKAP";
   const issues = x => x.k.concat(x.a).join("; ");
   const rows = [];
   e2.days.forEach(x => rows.push({ d: x.d, o: 0, c: [x.d + " " + HARI[x.wd] + (x.r.am ? " (KA)" : ""), "Extended hours", EH_L[x.r.lokasi] || "-", masa(x.r.mula, x.r.tamat),
@@ -1709,7 +1735,7 @@ function pdfOncallEh(doc, y) {
     margin: { left: 14, right: 14 },
     didParseCell: h => {
       if (h.section !== "body") return;
-      if (h.column.index === 6) h.cell.styles.textColor = h.cell.raw === "LULUS" ? [29, 122, 70] : [179, 38, 30];
+      if (h.column.index === 6) h.cell.styles.textColor = h.cell.raw === "LENGKAP" ? [29, 122, 70] : h.cell.raw === "PERLU SEMAK" ? [138, 90, 0] : [179, 38, 30];
       if (h.column.index === 7) h.cell.styles.textColor = [150, 40, 30];
     }
   });
@@ -1756,7 +1782,7 @@ function pdfModule(doc, key, y) {
 
   y = pdfVerdict(doc, y, "KEPUTUSAN", ev.v);
 
-  const st = x => x.k.length ? "TIDAK LULUS" : "LULUS";
+  const st = x => x.k.length ? "BELUM LENGKAP" : x.a.length ? "PERLU SEMAK" : "LENGKAP";
   const issues = x => x.k.concat(x.a).join("; ");
   let head, body, cs;
   if (key === "elm") {
@@ -1790,7 +1816,7 @@ function pdfModule(doc, key, y) {
     columnStyles: cs, margin: { left: 14, right: 14 },
     didParseCell: h => {
       if (h.section !== "body") return;
-      if (h.column.index === stCol) h.cell.styles.textColor = h.cell.raw === "LULUS" ? [29, 122, 70] : [179, 38, 30];
+      if (h.column.index === stCol) h.cell.styles.textColor = h.cell.raw === "LENGKAP" ? [29, 122, 70] : h.cell.raw === "PERLU SEMAK" ? [138, 90, 0] : [179, 38, 30];
       if (h.column.index === lastCol) h.cell.styles.textColor = [150, 40, 30];
     }
   });
@@ -1827,7 +1853,10 @@ function buildPdf() {
       ["Jawatan", P(j ? j.l : "-"), "Fasiliti", P(fasLabel())],
       ["Gaji pokok", num(state.gaji) > 0 ? "RM " + rmP(num(state.gaji)) : "-", "", ""]],
     columnStyles: { 0: { fontStyle: "bold", cellWidth: 36 }, 1: { cellWidth: 96 }, 2: { fontStyle: "bold", cellWidth: 46 } }, margin: { left: 14, right: 14 } });
-  let y = doc.lastAutoTable.finalY + 6;
+  let y = doc.lastAutoTable.finalY + 5;
+  doc.setFont("helvetica","italic"); doc.setFontSize(8); doc.setTextColor(100,100,100);
+  doc.text(P("Status adalah semakan awal automatik, bukan kelulusan rasmi. Sahkan dokumen dan kelayakan dengan penyelia / Unit Kewangan."), 14, y);
+  doc.setFont("helvetica","normal"); doc.setTextColor(30,30,30); y += 7;
   const keys = mods().filter(k => evalModule(k).days.length);
   // Ringkasan semua tuntutan dahulu (jika lebih dari satu jenis), kemudian bahagian setiap jenis tuntutan.
   if (keys.length >= 2) {
@@ -1850,6 +1879,7 @@ function buildPdf() {
 $("pdfBtn").addEventListener("click", () => {
   if (!window.jspdf || !window.jspdf.jsPDF) { $("msg").textContent = "PDF belum sedia. Cuba lagi sebentar."; return; }
   if (!mods().some(k => evalModule(k).days.length)) { $("msg").textContent = "Tiada tarikh untuk dimasukkan dalam PDF."; return; }
+  if (!String(state.nama || "").trim() || !state.fasiliti) { $("msg").textContent = "Isi nama pegawai dan klinik sebelum jana PDF."; return; }
   let doc;
   try { doc = buildPdf(); } catch (e) { $("msg").textContent = "PDF gagal dijana. Cuba lagi."; return; }
   const blob = doc.output("blob"), mo = monthInfo();
