@@ -401,8 +401,8 @@
   });
   $('cleanupBtn').addEventListener('click', cleanup);
   $('logoutBtn').addEventListener('click', async () => {
-    if (!(await ask('Log keluar?', 'Peranti ini perlu kata laluan klinik untuk masuk semula.', 'Log keluar'))) return;
-    await sb.auth.signOut();
+    if (!(await ask('Log keluar?', 'Hanya peranti ini dilog keluar. Peranti lain yang guna akaun sama tidak terjejas.', 'Log keluar'))) return;
+    await sb.auth.signOut({ scope: 'local' });
   });
 
   /* ---------- Log masuk dan mula ---------- */

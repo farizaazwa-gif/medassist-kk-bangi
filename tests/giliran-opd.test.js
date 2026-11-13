@@ -93,3 +93,10 @@ test("giliran OPD: page loads its scripts and keeps patient identifiers out of t
     assert.doesNotMatch(sql, new RegExp("\\b" + col + "\\b\\s+text"), col + " must not be stored");
   });
 });
+
+test("giliran OPD: log out signs out only this device, so a shared clinic account stays in on other screens", () => {
+  const app = fs.readFileSync(path.join(DIR, "app.js"), "utf8");
+  const calls = app.match(/signOut\([^)]*\)/g) || [];
+  assert.ok(calls.length > 0, "app.js signs out somewhere");
+  calls.forEach(c => assert.match(c, /scope:\s*'local'/, c + " must use local scope"));
+});
