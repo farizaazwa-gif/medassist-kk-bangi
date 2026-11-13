@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Semakan Tuntutan OT &amp; Elaun</title>
+<meta name="description" content="Semak tuntutan kerja lebih masa (OT), elaun atas panggilan (ETAP) dan extended hours (Elaun Lokum) staf Klinik Kesihatan PKD Hulu Langat sebelum dihantar.">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:title" content="Semakan Tuntutan OT &amp; Elaun">
+<meta property="og:description" content="Semak tuntutan OT, ETAP dan extended hours staf KK PKD Hulu Langat sebelum dihantar.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* One working column: officer details, claim-type tabs, then for the active claim type a summary + verdict,
+   a month calendar to add dates, and one card per date. Actions sit in a sticky bottom bar. */
+:root {
+  --bg: #f4f6f8; --surface: #ffffff; --fg: #16202a; --muted: #5c6b78; --line: #d9e0e6;
+  --accent: #0f5c6e; --accent-soft: #e2eff2;
+  --ok: #1d7a46; --ok-soft: #e3f3ea;
+  --bad: #b3261e; --bad-soft: #fbe6e4;
+  --warn: #8a5a00; --warn-soft: #fbf0d9;
+  --we-bg: #dfe5ea; --cu: #7b3fa8; --cu-soft: #f2e9fa;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11171c; --surface: #182129; --fg: #e5ebf0; --muted: #96a5b2; --line: #2b3843;
+    --accent: #5cb8cc; --accent-soft: #19323a; --ok: #5fcf8d; --ok-soft: #153325;
+    --bad: #f28b82; --bad-soft: #3a1d1b; --warn: #e3b55a; --warn-soft: #3a2e14; --we-bg: #222d36; --cu: #c9a0ee; --cu-soft: #2f2339;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11171c; --surface: #182129; --fg: #e5ebf0; --muted: #96a5b2; --line: #2b3843;
+  --accent: #5cb8cc; --accent-soft: #19323a; --ok: #5fcf8d; --ok-soft: #153325;
+  --bad: #f28b82; --bad-soft: #3a1d1b; --warn: #e3b55a; --warn-soft: #3a2e14; --we-bg: #222d36; --cu: #c9a0ee; --cu-soft: #2f2339;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14.5px; line-height: 1.4;
+  padding-top: max(14px, env(safe-area-inset-top, 0px));
+  padding-left: max(12px, env(safe-area-inset-left, 0px));
+  padding-right: max(12px, env(safe-area-inset-right, 0px));
+  padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
+}
+.wrap { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+h1 { font-size: 1.25rem; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 0.95rem; margin: 0; }
+.sub { color: var(--muted); font-size: 0.82rem; margin: 2px 0 0; }
+.muted { color: var(--muted); font-weight: 400; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; min-width: 0; }
+
+.fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 10px; }
+.span2 { grid-column: 1 / -1; }
+.field, .f { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.field > label, .f > span { font-size: 0.68rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+input, select { font: inherit; font-size: 0.92rem; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 6px 8px; width: 100%; min-width: 0; min-height: 36px; }
+@supports (-webkit-touch-callout: none) { input, select { font-size: 16px; } }
+select { padding-right: 4px; }
+input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.money { position: relative; }
+.money span { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.82rem; pointer-events: none; }
+.money input { padding-left: 34px; font-family: var(--font-num); }
+.row-f { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 10px; }
+.f.wide { grid-column: 1 / -1; }
+
+/* Tabs */
+.tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.tabs:empty { display: none; }
+.tabs button {
+  flex: none; display: inline-flex; align-items: center; gap: 7px; font: inherit; font-weight: 600; font-size: 0.84rem;
+  border-radius: 999px; padding: 6px 12px; cursor: pointer; background: var(--surface); color: var(--fg); border: 1px solid var(--line);
+}
+.tabs button[aria-selected="true"] { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); flex: none; }
+.dot[data-st="ok"] { background: var(--ok); }
+.dot[data-st="bad"] { background: var(--bad); }
+.dot[data-st="warn"] { background: var(--warn); }
+.tabs button[aria-selected="true"] .dot { box-shadow: 0 0 0 2px var(--surface); }
+
+/* Module: summary + verdict */
+#module { display: flex; flex-direction: column; gap: 10px; }
+.vstrip { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 10px; border-radius: 8px; padding: 8px 10px; background: var(--bg); }
+.vstrip .label { font-size: 0.66rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.vstrip .big { font-size: 1.12rem; font-weight: 700; line-height: 1.2; }
+.vstrip .stats { margin-left: auto; font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.vstrip.ok { background: var(--ok-soft); } .vstrip.ok .big { color: var(--ok); }
+.vstrip.bad { background: var(--bad-soft); } .vstrip.bad .big { color: var(--bad); }
+.vstrip.warn { background: var(--warn-soft); } .vstrip.warn .big { color: var(--warn); }
+.vstrip.idle .big { color: var(--muted); font-size: 0.98rem; }
+.why { margin: 6px 0 0; padding-left: 18px; font-size: 0.82rem; }
+.why:empty, .notes:empty { display: none; }
+.notes { color: var(--muted); font-size: 0.78rem; margin-top: 4px; }
+.top-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 16px; margin-top: 10px; align-items: start; }
+@media (max-width: 640px) { .top-grid { grid-template-columns: minmax(0, 1fr); } }
+.facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 2px 12px; margin: 0; font-size: 0.82rem; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; font-variant-numeric: tabular-nums; }
+.facts dd.bad { color: var(--bad); font-weight: 600; }
+.facts dd.ok { color: var(--ok); font-weight: 600; }
+.facts dd.warn { color: var(--warn); font-weight: 600; }
+.mchk { margin-top: 6px; border-top: 1px solid var(--line); padding-top: 4px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+
+.rule { font-size: 0.8rem; color: var(--muted); padding: 10px 12px; }
+.rule summary { cursor: pointer; font-weight: 600; color: var(--fg); font-size: 0.84rem; }
+.rule b { color: var(--fg); }
+.rule p { margin: 6px 0 0; }
+
+/* Calendar + list */
+.work { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: start; }
+@media (min-width: 760px) { .work { grid-template-columns: 300px minmax(0, 1fr); } .work > .calp { position: sticky; top: 10px; } }
+.cal-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.cal-head .muted { font-size: 0.76rem; }
+.cal-head { flex-wrap: wrap; }
+.cal-head h2 { white-space: nowrap; }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; max-width: 420px; }
+.cal .wd { text-align: center; font-size: 0.62rem; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+.cal button {
+  position: relative; font: inherit; font-size: 0.86rem; font-weight: 500; font-variant-numeric: tabular-nums; height: 32px; border-radius: 6px; cursor: pointer;
+  background: var(--bg); color: var(--fg); border: 1px solid var(--line); padding: 0;
+}
+.cal button.we { background: var(--we-bg); color: var(--muted); }
+.cal button.cu { background: var(--cu-soft); color: var(--cu); border-color: color-mix(in srgb, var(--cu) 45%, transparent); font-weight: 700; }
+.cal button.on { box-shadow: inset 0 0 0 2px var(--accent); font-weight: 700; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.72rem; color: var(--muted); margin-top: 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 11px; height: 11px; border-radius: 3px; border: 1px solid var(--line); background: var(--bg); }
+.legend i.we { background: var(--we-bg); }
+.legend i.cu { background: var(--cu-soft); border-color: var(--cu); }
+.legend i.on { box-shadow: inset 0 0 0 2px var(--accent); border-color: var(--accent); }
+.cu-list { font-size: 0.74rem; color: var(--cu); margin-top: 6px; line-height: 1.35; }
+.idate.cu b, .idate.cu small { color: var(--cu); }
+.cal button::after { content: ""; position: absolute; left: 50%; bottom: 2px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; }
+.cal button[data-st="ok"]::after { background: var(--ok); }
+.cal button[data-st="bad"]::after { background: var(--bad); }
+.cal button[data-st="warn"]::after { background: var(--warn); }
+
+.list { padding: 8px 12px; }
+.list-head { display: flex; justify-content: space-between; align-items: baseline; padding: 2px 0 4px; }
+.list-head .muted { font-size: 0.78rem; }
+.list .empty { margin: 6px 0 4px; font-size: 0.84rem; }
+.item { border-top: 1px solid var(--line); scroll-margin-top: 8px; }
+.item-head {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr) 14px; align-items: center; gap: 8px; width: 100%;
+  background: none; border: 0; border-radius: 0; padding: 8px 0; text-align: left; color: var(--fg); font-weight: 400; cursor: pointer;
+}
+.idate { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+.idate b { font-size: 1rem; font-variant-numeric: tabular-nums; }
+.idate small { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+.imain { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+.isum { font-size: 0.86rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.iline { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.iiss { font-size: 0.74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+.iiss.k { color: var(--bad); } .iiss.a { color: var(--warn); }
+.iiss:empty, .item.open .iiss { display: none; }
+.chev { color: var(--muted); }
+.item.open .chev { transform: rotate(90deg); }
+.item-body { display: none; flex-direction: column; gap: 8px; padding: 0 0 12px 42px; }
+@media (max-width: 480px) { .item-body { padding-left: 0; } }
+.item.open .item-body { display: flex; }
+.g2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px 8px; align-items: end; }
+.calc { font-size: 0.8rem; background: var(--bg); border-radius: 6px; padding: 6px 8px; font-variant-numeric: tabular-nums; }
+.calc b { font-family: var(--font-num); }
+.clist { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 0 10px; }
+.clist .f.wide { padding: 2px 0 4px; }
+.ck { display: flex; align-items: center; gap: 7px; padding: 4px 0; font-size: 0.83rem; line-height: 1.25; cursor: pointer; min-width: 0; }
+.ck input { width: 17px; height: 17px; min-height: 0; margin: 0; padding: 0; accent-color: var(--accent); flex: none; }
+.g2 .ck { min-height: 36px; }
+.issues { font-size: 0.78rem; display: flex; flex-direction: column; gap: 1px; }
+.issues:empty { display: none; }
+.issues .k { color: var(--bad); }
+.issues .a { color: var(--warn); }
+.ifoot { display: flex; justify-content: flex-end; }
+
+/* Settings-style pill checkboxes */
+.chks { display: flex; flex-wrap: wrap; gap: 6px; }
+.chk { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px 5px 8px; font-size: 0.84rem; cursor: pointer; background: var(--surface); }
+.chk input { width: 17px; height: 17px; min-height: 0; margin: 0; accent-color: var(--accent); flex: none; padding: 0; }
+.chk:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+
+.pill { display: inline-block; font-size: 0.64rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; white-space: nowrap; letter-spacing: 0.02em; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.idle { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+
+/* Overview across claim types */
+.overview { display: flex; flex-direction: column; gap: 6px; }
+.ov-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ov-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; align-items: center; gap: 2px 12px; width: 100%; text-align: left;
+  background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font-weight: 500; font-size: 0.86rem;
+}
+.ov-row[aria-current="true"] { border-color: var(--accent); }
+.ov-row .ov-name { font-weight: 600; }
+.ov-row .ov-n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.ov-row .ov-rm { font-variant-numeric: tabular-nums; text-align: right; }
+.ov-row .pill { justify-self: end; }
+@media (max-width: 520px) {
+  .ov-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .ov-row .ov-name { grid-area: 1 / 1; }
+  .ov-row .pill { grid-area: 1 / 2; }
+  .ov-row .ov-n { grid-area: 2 / 1; }
+  .ov-row .ov-rm { grid-area: 2 / 2; }
+}
+.ov-tot { display: flex; flex-wrap: wrap; gap: 2px 16px; font-size: 0.84rem; }
+.ov-tot b { font-variant-numeric: tabular-nums; }
+.okt { color: var(--ok); } .warnt { color: var(--warn); font-weight: 600; }
+.empty { color: var(--muted); }
+
+/* Conditional fields */
+.item.has-ganti .dep-noganti,
+.item:not(.has-ganti) .dep-ganti,
+.item:not(.need8) .dep-8,
+.item:not(.panggil) .dep-panggil,
+.top:not(.lebih) .dep-lebih { display: none; }
+
+/* Steps */
+.step-h { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.step-h.out { margin: 4px 2px 8px; }
+.step-h h2 { font-size: 1rem; line-height: 1.5; }
+.step-h .sub { margin: 0; }
+.num { flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--surface); font-weight: 700; font-size: 0.82rem; display: inline-flex; align-items: center; justify-content: center; margin-top: 1px; }
+#step2 { display: flex; flex-direction: column; gap: 8px; }
+.modwrap { display: flex; flex-direction: column; gap: 10px; }
+.hint { color: var(--muted); font-size: 0.74rem; }
+h3 { font-size: 0.92rem; margin: 0; }
+.fields.one { grid-template-columns: minmax(0, 1fr); }
+.modnote { font-size: 0.84rem; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+.modnote b { color: var(--fg); }
+.modnote .ck { color: var(--fg); }
+.q { font-weight: 600; }
+.clist .q { grid-column: 1 / -1; border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 2px; }
+.docbox .clist { grid-template-columns: minmax(0, 1fr); }
+
+/* Date editor sections */
+.sec { display: flex; flex-direction: column; gap: 6px; }
+.sec + .sec { border-top: 1px dashed var(--line); padding-top: 8px; }
+.sec-h { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.docn { font-size: 0.72rem; text-transform: none; letter-spacing: 0; font-weight: 700; padding: 1px 7px; border-radius: 999px; }
+.docn.ok { background: var(--ok-soft); color: var(--ok); }
+.docn.bad { background: var(--bad-soft); color: var(--bad); }
+.cu-tag { text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--cu); background: var(--cu-soft); border-radius: 999px; padding: 1px 7px; font-size: 0.72rem; }
+.link { background: none; border: 0; padding: 2px 0; color: var(--accent); font-weight: 600; font-size: 0.82rem; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; text-align: left; }
+.sec-h .link { margin-left: auto; text-transform: none; letter-spacing: 0; font-size: 0.78rem; }
+.more summary { cursor: pointer; font-size: 0.8rem; color: var(--accent); font-weight: 600; padding: 2px 0; }
+.more[open] summary { margin-bottom: 6px; }
+.iss-h { font-weight: 700; color: var(--bad); }
+.ifoot { gap: 8px; }
+
+/* Result */
+#result .top-grid { margin-top: 10px; }
+.docbox { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; }
+#result .rule { margin-top: 10px; border-top: 1px solid var(--line); padding: 8px 0 0; }
+#overview .overview { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+
+/* Bottom bar status */
+.bstat { display: flex; align-items: center; gap: 8px; background: none; border: 0; padding: 2px 0; font-weight: 600; font-size: 0.84rem; color: var(--fg); flex: 1 1 auto; min-width: 0; text-align: left; cursor: pointer; }
+.bstat span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar.hasmsg .bstat { display: none; }
+@media (max-width: 640px) { .bstat, .bar .msg { flex: 1 1 100%; } }
+
+/* Settings */
+.tetapan summary { cursor: pointer; font-weight: 600; }
+.tetapan h3 { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 14px 0 6px; }
+.tetapan .row-f { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.tetapan .hint { font-size: 0.84rem; color: var(--muted); margin: 6px 0 0; }
+
+button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px; padding: 9px 16px; cursor: pointer; border: 1px solid transparent; }
+.primary { background: var(--accent); color: var(--surface); }
+.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+.ghost:hover { background: var(--accent-soft); }
+.danger { background: var(--bad); color: var(--surface); }
+.small { font-size: 0.82rem; padding: 5px 10px; }
+.icon { display: inline-flex; align-items: center; justify-content: center; padding: 9px 11px; }
+
+.bar {
+  position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); z-index: 5;
+  padding: 8px max(12px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+}
+.bar .in { max-width: 900px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; justify-content: space-between; }
+.bar .msg { font-size: 0.82rem; color: var(--muted); min-width: 0; flex: 1 1 100%; }
+.bar .msg:empty { display: none; }
+.btns, .confirm { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.confirm { font-size: 0.9rem; }
+@media (prefers-reduced-motion: no-preference) { button { transition: filter .15s, background .15s; } .chev { transition: transform .2s; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Semakan Tuntutan OT &amp; Elaun</h1>
+    <p class="sub">Isi ikut langkah 1, 2 dan 3. Semua isian disimpan automatik dalam pelayar ini sahaja, tidak dihantar ke mana-mana pelayan.</p>
+  </header>
+
+  <section class="panel" id="step1">
+    <div class="step-h"><span class="num">1</span><div><h2>Maklumat pegawai</h2></div></div>
+    <div class="fields">
+      <div class="field span2"><label for="nama">Nama pegawai</label><input id="nama" type="text" autocomplete="off" placeholder="Contoh: Nur Aisyah binti Ahmad"></div>
+      <div class="field span2"><label for="jawatan">Jawatan</label><select id="jawatan"></select><small class="hint">Jenis tuntutan yang layak akan keluar ikut jawatan.</small></div>
+      <div class="field"><label for="fasiliti">Klinik bertugas</label><select id="fasiliti"></select></div>
+      <div class="field"><label for="bulan">Bulan tuntutan</label><input id="bulan" type="month"></div>
+      <div class="field span2" id="gajiField" hidden><label for="gaji">Gaji pokok</label><div class="money"><span>RM</span><input id="gaji" type="number" inputmode="decimal" step="0.01" min="0" placeholder="Rujuk penyata gaji"></div><small class="hint" id="gajiHint"></small></div>
+      <label class="ck span2" id="tkField" hidden><input type="checkbox" id="tanggung"> Pegawai sedang menanggung kerja (terima Elaun Penanggungan Kerja)</label>
+    </div>
+  </section>
+
+  <section id="step2">
+    <div class="step-h out"><span class="num">2</span><div><h2>Tarikh dan dokumen</h2><p class="sub">Tekan tarikh pada kalendar, isi masa dan tick dokumen, kemudian tekan <b>Selesai</b>.</p></div></div>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Jenis tuntutan"></nav>
+    <div id="module"></div>
+  </section>
+
+  <section class="panel" id="step3">
+    <div class="step-h"><span class="num">3</span><div><h2>Keputusan</h2></div></div>
+    <div id="result"></div>
+  </section>
+
+  <details class="panel tetapan" id="tetapan">
+    <summary>Tetapan kadar &amp; cuti <span class="muted">· untuk penyelia, isi bila dapat pengesahan Unit Kewangan</span></summary>
+    <h3>Extended hours (Lokum)</h3>
+    <p class="hint">Kadar lalai ikut JPA (Lampiran SR.8.1.2, A68): Pegawai Perubatan RM80 sejam; Pegawai Farmasi dan Juru X-Ray (P&amp;P) RM25 sejam.</p>
+    <div class="row-f">
+      <label class="f"><span>Kadar sejam, Pegawai Perubatan (RM)</span><input type="number" data-set="kadarMO" min="0" step="0.01" inputmode="decimal"></label>
+      <label class="f"><span>Kadar sejam, Pegawai Farmasi (RM)</span><input type="number" data-set="kadarPF" min="0" step="0.01" inputmode="decimal"></label>
+      <label class="f"><span>Kadar sejam, Juru X-Ray (RM)</span><input type="number" data-set="kadarJXR" min="0" step="0.01" inputmode="decimal"></label>
+      <label class="f"><span>Had jam dibayar sehari</span><input type="number" data-set="lokumHad" min="0" step="0.5" inputmode="decimal"></label>
+    </div>
+
+    <h3>Bersedia atas panggilan (paramedik)</h3>
+    <div class="row-f">
+      <label class="f"><span>Kadar sehari (RM)</span><input type="number" data-set="bapKadar" min="0" step="0.01" inputmode="decimal"></label>
+    </div>
+    <h3>Cuti umum tambahan</h3>
+    <div class="row-f">
+      <label class="f wide"><span>Tarikh (cth 2027-02-08, 2027-08-16)</span><input type="text" data-set="cutiTambahan" placeholder="2027-02-08, 2027-08-16"></label>
+    </div>
+    <p class="hint">Senarai cuti umum Selangor 2026 dan 2027 sudah dimasukkan. Tambah di sini cuti peristiwa atau cuti ganti baharu yang diumumkan kemudian.</p>
+    <p class="hint">Tetapan disimpan dalam pelayar ini dan tidak terpadam bila borang dikosongkan.</p>
+  </details>
+</div>
+
+<div class="bar" id="bar">
+  <div class="in">
+    <button type="button" class="bstat" id="bstat"><span class="dot" id="bdot"></span><span id="btxt">Pilih jawatan untuk mula</span></button>
+    <span class="msg" id="msg" role="status"></span>
+    <div class="btns" id="btns">
+      <button class="primary" id="pdfBtn" type="button">Muat turun PDF</button>
+      <button class="ghost icon" id="refreshBtn" type="button" aria-label="Muat semula" title="Muat semula"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></button>
+      <button class="ghost" id="resetBtn" type="button">Kosongkan</button>
+    </div>
+    <div class="confirm" id="confirm" hidden>
+      <span>Padam semua isian pegawai ini?</span>
+      <button class="danger" id="yesBtn" type="button">Ya, kosongkan</button>
+      <button class="ghost" id="noBtn" type="button">Batal</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+(function () {
+"use strict";
+
+/*CALC-START*/
+const HARI = ["Ahd", "Isn", "Sel", "Rab", "Kha", "Jum", "Sab"];
+const BULAN = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
+
+// Pekali ELM (JPA, SSPA). kecemasan1 = dipanggil semasa bertugas (baki giliran);
+// kecemasan2 = dipanggil semasa tidak bertugas atau selepas tamat giliran (bayaran minimum 2 jam).
+const PEK = {
+  biasa:      { siang: { biasa: 1.125, rehat: 1.25, am: 1.75 }, malam: { biasa: 1.25, rehat: 1.5,  am: 2 } },
+  kecemasan1: { siang: { biasa: 1.5,   rehat: 1.5,  am: 1.75 }, malam: { biasa: 1.75, rehat: 1.75, am: 2 } },
+  kecemasan2: { siang: { biasa: 1.75,  rehat: 1.75, am: 1.75 }, malam: { biasa: 2,    rehat: 2,    am: 2 } }
+};
+// Kadar ETAP mulai 1 Oktober 2025 (RM sekali tugas). p4 = pasif dipanggil 4 jam atau lebih; p0 = kurang 4 jam / tidak dipanggil.
+const ETAP_RATE = {
+  mo:    { aktif: { biasa: 280, rehat: 300 }, p4: { biasa: 180, rehat: 190 }, p0: { biasa: 110, rehat: 120 } },
+  pakar: { aktif: { biasa: 325, rehat: 350 }, p4: { biasa: 200, rehat: 220 }, p0: { biasa: 135, rehat: 150 } }
+};
+// Waktu operasi KK untuk Elaun Lokum (minit dari tengah malam). Ahad dan kelepasan am: tutup.
+// Surat Edaran KKM 10 Dis 2025, Lampiran C: hari bekerja 5-9 malam, Sabtu 9 pagi-1 petang; Ahad dan kelepasan am tutup,
+// kecuali KK pasca projek rintis STAR (termasuk KK Ampang) yang buka 9 pagi-1 petang pada Ahad dan kelepasan am.
+const LOKUM_WIN = { 1: [1020, 1260], 2: [1020, 1260], 3: [1020, 1260], 4: [1020, 1260], 5: [1020, 1260], 6: [540, 780] };
+const LOKUM_STAR = { ampang: true };
+
+function num(v) { const n = parseFloat(v); return isFinite(n) ? n : 0; }
+function numOrNull(v) { if (v === "" || v == null) return null; const n = parseFloat(v); return isFinite(n) ? n : null; }
+function tmin(s) { if (!s || !/^\d{1,2}:\d{2}/.test(s)) return null; const p = s.split(":"); return (+p[0]) * 60 + (+p[1]); }
+function isSiang(t) { const x = ((t % 1440) + 1440) % 1440; return x >= 360 && x < 1320; }
+function splitSM(a, b) { let s = 0, m = 0; for (let t = a; t < b; t++) { if (isSiang(t)) s++; else m++; } return { s, m }; }
+function autoJenis(wd) { return (wd === 0 || wd === 6) ? "rehat" : "biasa"; }
+function fmtJ(min) { min = Math.round(min); const h = Math.floor(min / 60), m = min % 60; return !m ? h + "j" : !h ? m + "m" : h + "j " + m + "m"; }
+function rmFmt(n) { return "RM " + (Math.round(n * 100) / 100).toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+function calcElm(r, wd, gaji, set) {
+  const c = { jenis: r.jenis || autoJenis(wd), kerja: r.kerja || "biasa", cg: r.bayar === "cg",
+    incomplete: false, sama: false, gross: 0, s: 0, m: 0, rehat: 0, potong: 0, topup: 0, net: 0,
+    cgMin: 0, bawah1: false, min2: false, ps: 0, pm: 0, rm: 0 };
+  const tbl = PEK[c.kerja] || PEK.biasa;
+  c.ps = tbl.siang[c.jenis] || tbl.siang.biasa;
+  c.pm = tbl.malam[c.jenis] || tbl.malam.biasa;
+  const a = tmin(r.mula); let b = tmin(r.tamat);
+  if (a == null || b == null) { c.incomplete = true; return c; }
+  if (a === b) { c.sama = true; return c; }
+  if (b < a) b += 1440;
+  // Masa dikira dalam gandaan 15 minit: mula dibundar ke atas, tamat ke bawah.
+  const a15 = Math.ceil(a / 15) * 15, b15 = Math.floor(b / 15) * 15;
+  const gross = Math.max(0, b15 - a15);
+  c.gross = gross;
+  let s = 0, m = 0;
+  if (gross) { const sp = splitSM(a15, b15); s = sp.s; m = sp.m; }
+  // 1 jam rehat ditolak bagi setiap 8 jam.
+  const rehat = Math.floor(gross / 480) * 60;
+  if (rehat) { const rs = Math.round(rehat * s / gross); s -= rs; m -= (rehat - rs); }
+  c.rehat = rehat;
+  c.min2 = c.kerja === "kecemasan2" || (c.kerja === "biasa" && c.jenis === "am");
+  if (c.cg) { c.s = s; c.m = m; c.net = s + m; c.cgMin = s + m; return c; }
+  if (set.tolak215 && c.jenis === "biasa" && c.kerja === "biasa") {
+    let p = 135; const ds = Math.min(s, p); s -= ds; p -= ds; const dm = Math.min(m, p); m -= dm; c.potong = ds + dm;
+  }
+  let net = s + m;
+  if (c.min2 && net < 120) {
+    const add = 120 - net;
+    if (s > m || (s === m && isSiang(a15))) s += add; else m += add;
+    c.topup = add; net = 120;
+  } else if (!c.min2 && net < 60) {
+    c.bawah1 = true;
+  }
+  c.s = s; c.m = m; c.net = net;
+  const asas = gaji * 12 / 2504;
+  c.rm = c.bawah1 ? 0 : asas * (c.ps * s + c.pm * m) / 60;
+  return c;
+}
+// Setiap tarikh: surat arahan, dan sama ada nama dalam jadual atau (jika ganti orang) jadual dengan nama orang yang diganti + borang penggantian.
+function kurangJadual(r, label) {
+  const out = [];
+  if (!r.surat) out.push("Tiada surat arahan");
+  if (r.ganti) {
+    if (!r.jadualGanti) out.push("Tiada jadual dengan nama orang yang diganti");
+    if (!r.borang) out.push("Tiada borang penggantian");
+  } else if (!r.jadual) out.push("Tiada nama dalam jadual " + label);
+  return out;
+}
+function kurangElm(r, c) {
+  const out = [];
+  if (c.incomplete) out.push("Isi masa mula dan tamat");
+  if (c.sama) out.push("Masa mula dan tamat sama");
+  out.push(...kurangJadual(r, "OT"));
+  if (!r.thumb) out.push("Thumbprint tidak lengkap");
+  if (c.gross > 480 && !r.surat8) out.push("Tiada surat pengesahan OT melebihi 8 jam");
+  if (c.bawah1 && !c.incomplete && !c.sama) out.push("Kurang 1 jam selepas potongan, tidak boleh dituntut");
+  return out;
+}
+function amaranElm(c, set) {
+  const out = [];
+  if (set.hadHarian && !c.cg && !c.incomplete && !c.sama) {
+    const had = num(c.jenis === "biasa" ? set.hadBiasa : set.hadRehat);
+    if (had > 0 && c.net > had * 60) out.push("Melebihi had " + had + " jam sehari, perlu kelulusan khas Ketua Jabatan");
+  }
+  return out;
+}
+
+function calcEtap(r, wd, grade) {
+  const c = { jenis: r.jenis || autoJenis(wd), kat: "p0", dur: 0, incomplete: false, rm: 0 };
+  if (r.dipanggil) {
+    const a = tmin(r.masuk); let b = tmin(r.keluar);
+    if (a == null || b == null || a === b) c.incomplete = true;
+    else { if (b < a) b += 1440; c.dur = b - a; if (c.dur >= 240) c.kat = "p4"; }
+  }
+  const t = ETAP_RATE[grade] || ETAP_RATE.mo;
+  c.rm = t[c.kat][c.jenis === "biasa" ? "biasa" : "rehat"];
+  return c;
+}
+function kurangEtap(r, c, clash) {
+  const out = [];
+  if (r.dipanggil && c.incomplete) out.push("Isi masa masuk dan keluar");
+  out.push(...kurangJadual(r, "on-call"));
+  if (!r.tiadacuti) out.push("Tiada pengesahan tidak bercuti, MC atau kuarantin");
+  if (!r.thumb) out.push("Tiada bukti thumbprint");
+  if (clash) out.push("Bertindih dengan tuntutan Lokum pada tarikh sama");
+  return out;
+}
+
+function calcLokum(r, wd, set, grade) {
+  const c = { tutup: false, incomplete: false, sama: false, gross: 0, dalam: 0, luar: 0, bayar: 0, dihad: false, kadar: null, rm: null, win: null };
+  const star = !!LOKUM_STAR[r.lokasi];
+  const win = (r.am || wd === 0) ? (star ? [540, 780] : null) : (LOKUM_WIN[wd] || null);
+  c.win = win;
+  c.kadar = numOrNull(set["kadar" + grade]);
+  if (!win) { c.tutup = true; return c; }
+  const a = tmin(r.mula); let b = tmin(r.tamat);
+  if (a == null || b == null) { c.incomplete = true; return c; }
+  if (a === b) { c.sama = true; return c; }
+  if (b < a) b += 1440;
+  const a15 = Math.ceil(a / 15) * 15, b15 = Math.floor(b / 15) * 15;
+  c.gross = Math.max(0, b15 - a15);
+  c.dalam = Math.max(0, Math.min(b15, win[1]) - Math.max(a15, win[0]));
+  c.luar = c.gross - c.dalam;
+  const had = num(set.lokumHad) * 60;
+  c.bayar = had > 0 ? Math.min(c.dalam, had) : c.dalam;
+  c.dihad = had > 0 && c.dalam > had;
+  c.rm = c.kadar != null ? c.bayar / 60 * c.kadar : null;
+  return c;
+}
+function kurangLokum(r, c, clash) {
+  const out = [];
+  if (!r.lokasi) out.push("Pilih lokasi KK extended hours");
+  if (c.tutup) out.push("Tiada extended hours di lokasi ini pada " + (r.am ? "kelepasan am" : "hari Ahad") + ", tiada bayaran");
+  else if (c.incomplete) out.push("Isi masa mula dan tamat");
+  else if (c.sama) out.push("Masa mula dan tamat sama");
+  else if (c.dalam === 0) out.push("Tiada jam dalam waktu operasi");
+  out.push(...kurangJadual(r, "extended hours"));
+  if (!r.thumb) out.push("Thumbprint tidak lengkap");
+  if (clash) out.push("Bertindih dengan tuntutan ETAP pada tarikh sama");
+  return out;
+}
+function amaranLokum(c, set) {
+  const out = [];
+  if (c.luar > 0) out.push(fmtJ(c.luar) + " di luar waktu operasi tidak dikira");
+  if (c.dihad) out.push("Dihadkan kepada " + num(set.lokumHad) + " jam sehari");
+  return out;
+}
+
+function calcBap(r, set) {
+  const c = { incomplete: false, dur: 0, kadar: numOrNull(set.bapKadar), rm: null };
+  if (r.dipanggil) {
+    const a = tmin(r.masuk); let b = tmin(r.keluar);
+    if (a == null || b == null || a === b) c.incomplete = true;
+    else { if (b < a) b += 1440; c.dur = b - a; }
+  }
+  c.rm = c.kadar;
+  return c;
+}
+function kurangBap(r, c) {
+  const out = [];
+  if (r.dipanggil && c.incomplete) out.push("Isi masa masuk dan keluar");
+  out.push(...kurangJadual(r, "on-call"));
+  if (r.dipanggil && !r.ketik) out.push("Tiada rekod ketik masuk dan keluar");
+  return out;
+}
+/*CALC-END*/
+
+const JAWATAN = [
+  { g: "Kumpulan Pelaksana", items: [
+    ["ppp", "Penolong Pegawai Perubatan (PPP)", ["elm", "bap"]],
+    ["jururawat", "Jururawat (JK / JM / JKM)", ["elm", "bap"]],
+    ["ppf", "Penolong Pegawai Farmasi (PPF)", ["elm"]],
+    ["ppk", "Pembantu Perawatan Kesihatan (PPK)", ["elm"]],
+    ["jtmp", "Juruteknologi Makmal Perubatan (JTMP)", ["elm"]],
+    ["ppkp", "Penolong Pegawai Kesihatan Persekitaran", ["elm"]],
+    ["jxrp", "Juru X-Ray (Kumpulan Pelaksana)", ["elm"]],
+    ["pemandu", "Pemandu", ["elm"]],
+    ["admin", "Pembantu Tadbir / PRA / pentadbiran", ["elm"]],
+    ["lainp", "Lain-lain Kumpulan Pelaksana", ["elm"]]
+  ] },
+  { g: "Pengurusan dan Profesional", items: [
+    ["mo", "Pegawai Perubatan", ["etap", "lokum"], { etap: "mo", lokum: "MO" }],
+    ["pakar", "Pegawai Perubatan Pakar (FMS)", ["etap"], { etap: "pakar" }],
+    ["pg", "Pegawai Pergigian", ["etap"], { etap: "mo" }],
+    ["pgpakar", "Pakar Pergigian", ["etap"], { etap: "pakar" }],
+    ["pf", "Pegawai Farmasi", ["lokum"], { lokum: "PF" }],
+    ["jxrpp", "Juru X-Ray (Pengurusan dan Profesional)", ["lokum"], { lokum: "JXR" }]
+  ] }
+];
+const JW = {};
+JAWATAN.forEach(g => g.items.forEach(it => { const x = it[3] || {}; JW[it[0]] = { v: it[0], l: it[1], m: it[2], etap: x.etap, lokum: x.lokum }; }));
+
+const MODS = {
+  elm:   { tab: "OT (ELM)", title: "Kerja lebih masa (ELM)", unit: "Hari OT", warn: "PERLU KELULUSAN" },
+  etap:  { tab: "On-call (ETAP)", title: "Elaun Tugas Atas Panggilan (ETAP)", unit: "Hari on-call", warn: "PERLU SEMAKAN" },
+  lokum: { tab: "Extended hours (Lokum)", title: "Elaun Bertugas Selepas Waktu Pejabat (Lokum)", unit: "Hari bertugas", warn: "PERLU TETAPAN" },
+  bap:   { tab: "Bersedia atas panggilan", title: "Elaun Bersedia Atas Panggilan", unit: "Hari bersedia", warn: "PERLU TETAPAN" }
+};
+const FASILITI = [["", "Pilih klinik kesihatan"],
+  ["ampang", "KK Ampang"], ["balakong", "KK Balakong"], ["bsp", "KK Bandar Seri Putra"], ["btho", "KK Bandar Tun Hussein Onn"],
+  ["bangi", "KK Bangi"], ["bt9", "KK Batu 9"], ["bt14", "KK Batu 14"], ["beranang", "KK Beranang"],
+  ["kajang", "KK Kajang"], ["rinching", "KK Rinching Tengah"], ["semenyih", "KK Semenyih"],
+  ["sgchua", "KK Sungai Chua"], ["sgsekamat", "KK Sungai Sekamat"], ["nirwana", "KK Taman Nirwana"],
+  ["kkiacb", "KKIA Cheras Baru"]];
+const WARTA = { kajang: true, ampang: true };
+const EH_L = { ampang: "KK Ampang", kajang: "KK Kajang" };
+function lokTxt(lok) { return Object.keys(EH_L).filter(k => lok && lok[k]).map(k => EH_L[k] + " " + lok[k] + " hari").join(" · ") || "–"; }
+// Hari kelepasan am yang terpakai di Selangor (termasuk cuti ganti dan cuti peristiwa negeri yang diumumkan).
+// 2027: tarikh utama sahaja; cuti ganti belum disahkan - tambah dalam Tetapan jika perlu.
+const CUTI = {
+  "2026-01-01": "Tahun Baharu", "2026-02-01": "Thaipusam", "2026-02-02": "Cuti ganti Thaipusam",
+  "2026-02-17": "Tahun Baharu Cina", "2026-02-18": "Tahun Baharu Cina (hari kedua)", "2026-03-07": "Nuzul Al-Quran",
+  "2026-03-21": "Hari Raya Aidilfitri", "2026-03-22": "Hari Raya Aidilfitri (hari kedua)", "2026-03-23": "Cuti ganti Hari Raya Aidilfitri",
+  "2026-05-01": "Hari Pekerja", "2026-05-27": "Hari Raya Haji", "2026-05-31": "Hari Wesak", "2026-06-01": "Hari Keputeraan YDP Agong / cuti ganti Wesak",
+  "2026-06-17": "Awal Muharram", "2026-08-25": "Maulidur Rasul", "2026-08-31": "Hari Kebangsaan", "2026-09-01": "Cuti peristiwa SUKMA Selangor",
+  "2026-09-16": "Hari Malaysia", "2026-10-25": "Cuti peristiwa Jubli Perak Sultan Selangor", "2026-10-26": "Cuti ganti Jubli Perak Sultan Selangor",
+  "2026-11-08": "Deepavali", "2026-11-09": "Cuti ganti Deepavali", "2026-12-11": "Hari Keputeraan Sultan Selangor", "2026-12-25": "Hari Krismas",
+  "2027-01-01": "Tahun Baharu", "2027-01-22": "Thaipusam", "2027-02-06": "Tahun Baharu Cina", "2027-02-07": "Tahun Baharu Cina (hari kedua)",
+  "2027-02-24": "Nuzul Al-Quran", "2027-03-10": "Hari Raya Aidilfitri", "2027-03-11": "Hari Raya Aidilfitri (hari kedua)", "2027-05-01": "Hari Pekerja",
+  "2027-05-17": "Hari Raya Haji", "2027-05-20": "Hari Wesak", "2027-06-06": "Awal Muharram", "2027-06-07": "Hari Keputeraan YDP Agong",
+  "2027-08-15": "Maulidur Rasul", "2027-08-31": "Hari Kebangsaan", "2027-09-16": "Hari Malaysia", "2027-10-28": "Deepavali",
+  "2027-12-11": "Hari Keputeraan Sultan Selangor", "2027-12-25": "Hari Krismas"
+};
+function pad2(n) { return String(n).padStart(2, "0"); }
+function extraCuti() {
+  const out = {}, txt = String(set.cutiTambahan || "");
+  const re = /(\d{4})-(\d{1,2})-(\d{1,2})|(\d{1,2})[\/.](\d{1,2})[\/.](\d{4})/g; let m;
+  while ((m = re.exec(txt))) { const k = m[1] ? m[1] + "-" + pad2(m[2]) + "-" + pad2(m[3]) : m[6] + "-" + pad2(m[5]) + "-" + pad2(m[4]); out[k] = "Cuti umum (tambahan)"; }
+  return out;
+}
+function cuName(d) { const mo = monthInfo(), k = mo.y + "-" + pad2(mo.m) + "-" + pad2(d); return CUTI[k] || extraCuti()[k] || ""; }
+// Lalai jenis hari ikut kalendar; pilihan yang pegawai buat sendiri dikekalkan.
+function rowView(key, r, d) {
+  const v = Object.assign({}, r);
+  if (cuName(d)) {
+    if (!r.jenis && (key === "elm" || key === "etap")) v.jenis = key === "elm" ? "am" : "rehat";
+    if (key === "lokum" && r.am === undefined) v.am = true;
+  }
+  return v;
+}
+// Waktu operasi extended hours bagi lokasi + hari (minit), atau null jika tiada EH.
+function ehWindow(lokasi, wd, am) {
+  if (am || wd === 0) return LOKUM_STAR[lokasi] ? [540, 780] : null;
+  return LOKUM_WIN[wd] || null;
+}
+function toHHMM(m) { return pad2(Math.floor(m / 60)) + ":" + pad2(m % 60); }
+// Isi masa mula/tamat ikut waktu operasi, kecuali pegawai sudah ubah sendiri.
+function autoFillEh(r, d) {
+  if (!r.lokasi) return;
+  const v = rowView("lokum", r, d), w = ehWindow(r.lokasi, weekday(d), v.am);
+  const blank = !r.mula && !r.tamat;
+  if (!blank && !r.autoMasa) return;
+  if (w) { r.mula = toHHMM(w[0]); r.tamat = toHHMM(w[1]); r.autoMasa = true; }
+  else if (r.autoMasa) { r.mula = ""; r.tamat = ""; r.autoMasa = false; }
+}
+function lastLokasi(rows) { const ds = Object.keys(rows).map(Number).sort((a, b) => b - a); for (const d of ds) if (rows[d] && rows[d].lokasi) return rows[d].lokasi; return ""; }
+function fasLabel() { const f = FASILITI.find(x => x[0] === state.fasiliti); return state.fasiliti && f ? f[1].replace(" (extended hours)", "") : "-"; }
+const JENIS_L = { biasa: "Hari bekerja", rehat: "Hari rehat", am: "Kelepasan am" };
+const KERJA_L = { biasa: "Diarah", kecemasan1: "Kecemasan, semasa bertugas", kecemasan2: "Kecemasan, tidak bertugas" };
+const KAT_L = { p4: "Pasif, dipanggil 4 jam atau lebih", p0: "Pasif, kurang 4 jam / tidak dipanggil" };
+const LOKUM_GRADE_L = { MO: "Pegawai Perubatan", PF: "Pegawai Farmasi", JXR: "Juru X-Ray" };
+
+const KEY = "semakan-ot-v2", KEYSET = "semakan-ot-tetapan-v1";
+const SET_DEFAULT = { tolak215: false, hadHarian: false, hadBiasa: "3", hadRehat: "5", lokumHad: "4", kadarMO: "80", kadarPF: "25", kadarJXR: "25", bapKadar: "", cutiTambahan: "" };
+
+function thisMonth() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); }
+function blankForm(bulan) { return { nama: "", jawatan: "", fasiliti: "", bulan: bulan || thisMonth(), gaji: "", tab: "", data: {} }; }
+function load(k) { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+let state = load(KEY);
+if (!state || typeof state !== "object" || !state.data) state = blankForm();
+const set = Object.assign({}, SET_DEFAULT, load(KEYSET) || {});
+["kadarMO", "kadarPF", "kadarJXR"].forEach(k => { if (set[k] === "" || set[k] == null) set[k] = SET_DEFAULT[k]; });
+// Ikut garis panduan ELM JPA terkini: potongan 2j 15m hanya untuk pegawai menanggung kerja (pilihan pegawai, langkah 1); tiada had jam sehari.
+set.tolak215 = false; set.hadHarian = false;
+function save() { store(KEY, state); }
+function saveSet() { store(KEYSET, set); }
+
+const $ = id => document.getElementById(id);
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch])); }
+
+function monthInfo() {
+  const p = (state.bulan || thisMonth()).split("-"); const y = +p[0], m = +p[1];
+  return { y, m, n: new Date(y, m, 0).getDate() };
+}
+function weekday(d) { const mo = monthInfo(); return new Date(mo.y, mo.m - 1, d).getDay(); }
+function jw() { return JW[state.jawatan] || null; }
+function mods() { const j = jw(); return j ? j.m : []; }
+function activeTab() { const ms = mods(); return ms.indexOf(state.tab) >= 0 ? state.tab : (ms[0] || ""); }
+function md(key) {
+  const b = state.data[state.bulan] || (state.data[state.bulan] = {});
+  return b[key] || (b[key] = { rows: {}, dituntut: "" });
+}
+function peekRows(key) { const b = state.data[state.bulan]; return (b && b[key] && b[key].rows) || {}; }
+
+/* ---------- Evaluation ---------- */
+function evalModule(key) {
+  const mo = monthInfo(), M = md(key), j = jw() || {};
+  const ms = mods();
+  const otherKey = key === "etap" ? "lokum" : key === "lokum" ? "etap" : null;
+  const other = otherKey && ms.indexOf(otherKey) >= 0 ? peekRows(otherKey) : {};
+  const days = [];
+  for (let d = 1; d <= mo.n; d++) {
+    const r0 = M.rows[d];
+    if (!r0 || !r0.on) continue;
+    const r = rowView(key, r0, d);
+    const wd = weekday(d);
+    const clash = !!(other[d] && other[d].on);
+    let c, k, a = [];
+    if (key === "elm") { const st = { tolak215: !!state.tanggungKerja }; c = calcElm(r, wd, num(state.gaji), st); k = kurangElm(r, c); a = amaranElm(c, st); }
+    else if (key === "etap") { c = calcEtap(r, wd, j.etap); k = kurangEtap(r, c, clash); }
+    else if (key === "lokum") { c = calcLokum(r, wd, set, j.lokum); k = kurangLokum(r, c, clash); a = amaranLokum(c, set); }
+    else { c = calcBap(r, set); k = kurangBap(r, c); }
+    days.push({ d, wd, r, c, k, a });
+  }
+  const gagal = days.filter(x => x.k.length).length;
+  const ev = { key, days, gagal, sum: {}, v: { cls: "idle", kp: "", why: [], notes: [] } };
+  const dit = numOrNull(M.dituntut);
+  const bad = [], warn = [], notes = [];
+  const v = ev.v;
+
+  if (key === "elm") {
+    const gaji = num(state.gaji);
+    let s = 0, m = 0, rm = 0, cg = 0, amar = 0;
+    days.forEach(x => { const c = x.c; if (c.cg) cg += c.cgMin; else if (!c.bawah1) { s += c.s; m += c.m; } rm += c.rm; if (x.a.length) amar++; });
+    const basis = dit != null ? dit : rm, had = gaji / 3, lebih = gaji > 0 && basis > had + 0.005;
+    const beza = dit != null ? dit - rm : null;
+    Object.assign(ev.sum, { gaji, asas: gaji * 12 / 2504, s, m, rm, cg, dit, beza, had, lebih, amar });
+    if (!days.length) { v.kp = "Belum ada tarikh OT"; v.why = ["Tekan tarikh pada kalendar untuk tambah."]; return ev; }
+    if (gaji <= 0) { v.kp = "Isi gaji pokok"; v.why = ["Kiraan RM perlukan gaji pokok."]; return ev; }
+    if (gagal) bad.push(gagal + " tarikh tidak lengkap (lihat setiap tarikh)");
+    if (!M.penyata) bad.push("Tiada salinan penyata gaji terkini");
+    if (beza != null && beza > 0.05) bad.push("Jumlah dituntut melebihi kiraan sebanyak " + rmFmt(beza));
+    if (lebih && !M.lulus13) warn.push("Melebihi 1/3 gaji pokok, perlu kelulusan pegawai P&P Gred 12 ke atas");
+    if (amar) warn.push(amar + " tarikh melebihi had jam sehari, perlu kelulusan khas Ketua Jabatan");
+    if (beza != null && beza < -0.05) notes.push("Pegawai menuntut " + rmFmt(-beza) + " kurang daripada kiraan.");
+    if (dit == null) notes.push("Isi jumlah dituntut untuk banding dengan kiraan.");
+    if (state.tanggungKerja) notes.push("Pegawai menanggung kerja: 2 jam 15 minit ditolak daripada OT pada hari bekerja biasa (JPA).");
+  } else if (key === "etap") {
+    let rm = 0, p4 = 0, p0 = 0;
+    days.forEach(x => { rm += x.c.rm; if (x.c.kat === "p4") p4++; else p0++; });
+    const beza = dit != null ? dit - rm : null;
+    Object.assign(ev.sum, { rm, p4, p0, dit, beza });
+    if (!days.length) { v.kp = "Belum ada tarikh on-call"; v.why = ["Tekan tarikh pada kalendar untuk tambah."]; return ev; }
+    if (gagal) bad.push(gagal + " tarikh tidak lengkap (lihat setiap tarikh)");
+    if (!M.jarak) bad.push("Tiada pengesahan tinggal dalam 33 km / 30 minit dari tempat bertugas");
+    if (beza != null && beza > 0.05) bad.push("Jumlah dituntut melebihi kiraan sebanyak " + rmFmt(beza));
+    if (beza != null && beza < -0.05) notes.push("Pegawai menuntut " + rmFmt(-beza) + " kurang daripada kiraan.");
+    if (dit == null) notes.push("Isi jumlah dituntut untuk banding dengan kiraan.");
+  } else if (key === "lokum") {
+    let jam = 0, rm = 0, kadarKosong = false; const lok = {};
+    days.forEach(x => { jam += x.c.bayar; if (x.r.lokasi) lok[x.r.lokasi] = (lok[x.r.lokasi] || 0) + 1; if (x.c.rm == null) { if (!x.c.tutup) kadarKosong = true; } else rm += x.c.rm; });
+    const beza = dit != null && !kadarKosong ? dit - rm : null;
+    Object.assign(ev.sum, { jam, rm, kadarKosong, lok, dit, beza });
+    if (!days.length) { v.kp = "Belum ada tarikh bertugas"; v.why = ["Tekan tarikh pada kalendar untuk tambah."]; return ev; }
+    if (gagal) bad.push(gagal + " tarikh tidak lengkap (lihat setiap tarikh)");
+    if (beza != null && beza > 0.05) bad.push("Jumlah dituntut melebihi kiraan sebanyak " + rmFmt(beza));
+    if (kadarKosong) warn.push("Kadar sejam belum diisi dalam Tetapan");
+    if (beza != null && beza < -0.05) notes.push("Pegawai menuntut " + rmFmt(-beza) + " kurang daripada kiraan.");
+  } else {
+    let rm = 0, kadarKosong = false;
+    days.forEach(x => { if (x.c.rm == null) kadarKosong = true; else rm += x.c.rm; });
+    const beza = dit != null && !kadarKosong ? dit - rm : null;
+    Object.assign(ev.sum, { rm, kadarKosong, dit, beza });
+    if (!days.length) { v.kp = "Belum ada tarikh"; v.why = ["Tekan tarikh pada kalendar untuk tambah."]; return ev; }
+    if (gagal) bad.push(gagal + " tarikh tidak lengkap (lihat setiap tarikh)");
+    if (beza != null && beza > 0.05) bad.push("Jumlah dituntut melebihi kiraan sebanyak " + rmFmt(beza));
+    if (kadarKosong) warn.push("Kadar sehari belum diisi dalam Tetapan");
+    notes.push("Kadar dan syarat elaun ini belum disahkan. Semakan dokumen asas sahaja.");
+  }
+  if (bad.length) { v.cls = "bad"; v.kp = "TIDAK LULUS"; v.why = bad.concat(warn); }
+  else if (warn.length) { v.cls = "warn"; v.kp = MODS[key].warn; v.why = warn; }
+  else { v.cls = "ok"; v.kp = "LULUS"; v.why = ["Semua tarikh lengkap" + (key === "elm" ? " dan tuntutan dalam had." : ".")]; }
+  v.notes = notes;
+  return ev;
+}
+
+function overall() {
+  const evs = mods().map(evalModule).filter(e => e.days.length);
+  if (!evs.length) return { cls: "idle", kp: "Belum ada tarikh" };
+  if (evs.some(e => e.v.cls === "bad")) return { cls: "bad", kp: "TIDAK LULUS" };
+  const w = evs.find(e => e.v.cls === "warn"); if (w) return { cls: "warn", kp: w.v.kp };
+  if (evs.some(e => e.v.cls === "idle")) return { cls: "idle", kp: "Belum lengkap" };
+  return { cls: "ok", kp: "LULUS" };
+}
+
+/* ---------- Rendering ---------- */
+function fillTop() {
+  $("jawatan").innerHTML = '<option value="">Pilih jawatan</option>' + JAWATAN.map(g =>
+    '<optgroup label="' + esc(g.g) + '">' + g.items.map(it => '<option value="' + it[0] + '">' + esc(it[1]) + "</option>").join("") + "</optgroup>").join("");
+  $("fasiliti").innerHTML = FASILITI.map(f => '<option value="' + f[0] + '">' + esc(f[1]) + "</option>").join("");
+  $("nama").value = state.nama || "";
+  $("jawatan").value = state.jawatan || "";
+  $("fasiliti").value = state.fasiliti || "";
+  $("bulan").value = state.bulan || thisMonth();
+  $("gaji").value = state.gaji || "";
+  $("tanggung").checked = !!state.tanggungKerja;
+  document.querySelectorAll("[data-set]").forEach(el => {
+    const k = el.dataset.set;
+    if (el.type === "checkbox") el.checked = !!set[k]; else el.value = set[k] == null ? "" : set[k];
+  });
+}
+
+function renderTabs() {
+  const ms = mods(), cur = activeTab();
+  $("gajiField").hidden = !ms.length;
+  $("tkField").hidden = ms.indexOf("elm") < 0;
+  $("gajiHint").textContent = ms.indexOf("elm") >= 0 ? "Untuk kira bayaran OT dan semak had 1/3 gaji pokok."
+    : "Untuk perbandingan sahaja. On-call dan extended hours dibayar ikut kadar tetap, bukan gaji.";
+  $("tabs").innerHTML = ms.length < 2 ? "" : ms.map(k =>
+    '<button type="button" role="tab" data-tab="' + k + '" aria-selected="' + (k === cur) + '"><span class="dot"></span>' + esc(MODS[k].tab) + "</button>").join("");
+}
+
+const MOD_NOTE = {
+  elm: "<b>OT (kerja lebih masa).</b> Bayaran dikira sendiri dari gaji pokok dan masa OT.",
+  etap: "<b>On-call di KK (ETAP).</b> Hanya on-call pasif. Kadar tetap mengikut kategori, mulai 1 Okt 2025.",
+  lokum: "<b>Extended hours (Lokum).</b> Di KK Ampang atau KK Kajang. Bayaran dikira sendiri: jam dalam waktu operasi × kadar sejam (RM80 Pegawai Perubatan, RM25 Pegawai Farmasi / Juru X-Ray).",
+  bap: "<b>Bersedia atas panggilan.</b> Kadar dan syarat belum disahkan, jadi semakan dokumen asas sahaja."
+};
+
+function ruleHtml(key) {
+  const j = jw() || {};
+  let body;
+  if (key === "elm") body = "<p><b>Kiraan:</b> gaji pokok × 12 ÷ (313 × 8) × pekali × jam. Siang 6 pagi–10 malam, malam 10 malam–6 pagi.</p>" +
+    "<p><b>Pekali siang / malam:</b> hari bekerja 1.125 / 1.25 · hari rehat 1.25 / 1.5 · kelepasan am 1.75 / 2. Kecemasan: 1.5 hingga 2.</p>" +
+    "<p><b>Lulus bila ada:</b> surat arahan, nama dalam jadual OT (atau jika ganti orang: jadual dengan nama orang yang diganti dan borang penggantian), thumbprint lengkap, dan surat pengesahan jika OT melebihi 8 jam. Masa dibundar ke 15 minit; 1 jam rehat ditolak bagi setiap 8 jam.</p>" +
+    "<p><b>Ikut garis panduan ELM JPA (SSPA):</b> had tuntutan sebulan 1/3 gaji pokok; lebih daripada itu perlu kelulusan pegawai P&amp;P Gred 12 ke atas. Pegawai yang menanggung kerja: 2 jam 15 minit ditolak daripada OT pada hari bekerja biasa. Pegawai syif (waktu bekerja bukan pejabat): ELM hanya bila melebihi 45 jam seminggu. 9 jam OT = 1 hari cuti gantian.</p>";
+  else if (key === "etap") body = "<p><b>Kadar ETAP mulai 1 Okt 2025</b> (" + (j.etap === "pakar" ? "pakar" : "pegawai") + "). Panggilan aktif hanya untuk hospital dan institusi perubatan, jadi tidak dibuka untuk KK.</p>" +
+    "<p><b>Lulus bila ada:</b> surat arahan, nama dalam jadual on-call (atau jika ganti orang: jadual dengan nama orang yang diganti dan borang penggantian), tidak bercuti atau MC, dan bukti thumbprint bagi setiap tarikh. Jarak rumah disahkan sekali sahaja.</p>";
+  else if (key === "lokum") body = "<p><b>Layak:</b> Pegawai Perubatan, Pegawai Farmasi dan Juru X-Ray (P&amp;P) yang bertugas extended hours di KK yang diwartakan. Dalam PKD HL: KK Ampang dan KK Kajang.</p>" +
+    "<p><b>Kadar (JPA, Lampiran SR.8.1.2 A68):</b> Pegawai Perubatan RM80 sejam; Pegawai Farmasi dan Juru X-Ray (P&amp;P) RM25 sejam.</p>" +
+    "<p><b>Waktu operasi (Surat Edaran KKM 10 Dis 2025):</b> hari bekerja 5–9 malam, Sabtu 9 pagi–1 tengah hari. Ahad dan kelepasan am: KK Ampang (KK pasca projek rintis STAR) buka 9 pagi–1 tengah hari; KK Kajang tiada extended hours. Hanya jam dalam waktu operasi dikira.</p>" +
+    "<p><b>Lulus bila ada:</b> surat arahan, nama dalam jadual extended hours (atau jika ganti orang: jadual dengan nama orang yang diganti dan borang penggantian), dan thumbprint lengkap.</p>";
+  else body = "<p><b>Belum disahkan:</b> kadar dan syarat Elaun Bersedia Atas Panggilan di KK dan KD. Isi kadar dalam Tetapan bila dapat pengesahan Unit Kewangan.</p>";
+  return '<details class="rule"><summary>Cara kira dan syarat lulus</summary>' + body + "</details>";
+}
+
+function resultHtml(key) {
+  const M = md(key);
+  const ck = (k, label, cls) => '<label class="ck' + (cls ? " " + cls : "") + '"><input type="checkbox" data-mk="' + k + '"' + (M[k] ? " checked" : "") + "> " + label + "</label>";
+  const dd = (label, id) => "<dt>" + label + '</dt><dd id="' + id + '"></dd>';
+  const dit = '<div class="field"><label for="s-dit">Jumlah yang dituntut pegawai</label><div class="money"><span>RM</span><input id="s-dit" data-mk="dituntut" type="number" inputmode="decimal" step="0.01" min="0" placeholder="Ikut borang tuntutan" value="' + esc(M.dituntut) + '"></div></div>';
+  let facts = "", checks = "";
+  if (key === "elm") {
+    facts = dd("Kadar sejam asas", "f-asas") + dd("Jam dibayar", "f-jam") + dd("Jumlah dikira", "f-rm") + dd("Beza dengan tuntutan", "f-beza") + dd("Had 1/3 gaji pokok", "f-had") + dd("Cuti gantian", "f-cg");
+    checks = ck("penyata", "Salinan penyata gaji terkini dilampirkan") + ck("lulus13", "Ada kelulusan pegawai P&amp;P Gred 12 ke atas (melebihi 1/3)", "dep-lebih");
+  } else if (key === "etap") {
+    facts = dd("Kategori", "f-kat") + dd("Jumlah dikira", "f-rm") + dd("Beza dengan tuntutan", "f-beza") + dd("Berbanding gaji pokok", "f-pct");
+  } else if (key === "lokum") {
+    facts = dd("Lokasi", "f-lok") + dd("Kadar sejam", "f-kadar") + dd("Jam dibayar", "f-jam") + dd("Jumlah dikira", "f-rm") + dd("Beza dengan tuntutan", "f-beza") + dd("Berbanding gaji pokok", "f-pct");
+  } else {
+    facts = dd("Kadar sehari", "f-kadar") + dd("Jumlah dikira", "f-rm") + dd("Beza dengan tuntutan", "f-beza") + dd("Berbanding gaji pokok", "f-pct");
+  }
+  return '<div class="top" id="sumPanel"><div class="vstrip idle" id="verdict"><span class="label">' + esc(MODS[key].tab) + '</span><span class="big" id="v-kp"></span><span class="stats" id="v-stats"></span></div>' +
+    '<ul class="why" id="v-why"></ul><div class="notes" id="v-notes"></div>' +
+    '<div class="top-grid"><div class="fields one">' + dit + '</div><dl class="facts">' + facts + "</dl></div>" +
+    (checks ? '<div class="docbox"><div class="sec-h">Dokumen tuntutan</div><div class="clist">' + checks + "</div></div>" : "") + "</div>" +
+    '<div id="overview"></div>' + ruleHtml(key);
+}
+
+function calHtml(key) {
+  const mo = monthInfo(), rows = md(key).rows;
+  const off = (new Date(mo.y, mo.m - 1, 1).getDay() + 6) % 7;
+  let h = ["Isn", "Sel", "Rab", "Kha", "Jum", "Sab", "Ahd"].map(x => '<div class="wd">' + x + "</div>").join("");
+  for (let i = 0; i < off; i++) h += "<div></div>";
+  const cuList = [];
+  for (let d = 1; d <= mo.n; d++) {
+    const wd = weekday(d), on = rows[d] && rows[d].on, cu = cuName(d), we = wd === 0 || wd === 6;
+    if (cu) cuList.push(d + " " + BULAN[mo.m - 1].slice(0, 3) + " · " + cu);
+    const cls = [on ? "on" : "", cu ? "cu" : we ? "we" : ""].filter(Boolean).join(" ");
+    const lbl = d + " " + BULAN[mo.m - 1] + (cu ? ", cuti umum: " + cu : we ? ", hujung minggu" : "") + (on ? ", ada tuntutan" : "");
+    h += '<button type="button" data-day="' + d + '" class="' + cls + '" aria-label="' + esc(lbl) + '"' + (cu ? ' title="' + esc(cu) + '"' : "") + ">" + d + "</button>";
+  }
+  return '<section class="panel calp" id="calp"><div class="cal-head"><h3>' + BULAN[mo.m - 1] + " " + mo.y + '</h3><span class="muted">Tekan tarikh untuk tambah</span></div><div class="cal" id="cal">' + h + "</div>" +
+    '<div class="legend"><span><i></i>Hari biasa</span><span><i class="we"></i>Hujung minggu</span><span><i class="cu"></i>Cuti umum</span><span><i class="on"></i>Ada tuntutan</span></div>' +
+    (cuList.length ? '<div class="cu-list">' + cuList.map(esc).join("<br>") + "</div>" : "") + "</section>";
+}
+
+function timeF(k, label, r, cls) { return '<label class="f' + (cls ? " " + cls : "") + '"><span>' + label + '</span><input type="time" data-k="' + k + '" value="' + esc(r[k] || "") + '"></label>'; }
+function selF(k, label, opts, val) {
+  return '<label class="f"><span>' + label + '</span><select data-k="' + k + '">' + opts.map(o => '<option value="' + o[0] + '"' + (o[0] === val ? " selected" : "") + ">" + esc(o[1]) + "</option>").join("") + "</select></label>";
+}
+function chkF(k, label, r, cls) { return '<label class="ck' + (cls ? " " + cls : "") + '"><input type="checkbox" data-k="' + k + '"' + (r[k] ? " checked" : "") + "> " + label + "</label>"; }
+
+// Dokumen wajib bagi satu tarikh (ikut modul dan pilihan semasa).
+function reqDocs(key, r, c) {
+  const out = ["surat"].concat(r.ganti ? ["jadualGanti", "borang"] : ["jadual"]);
+  if (key === "elm") { out.push("thumb"); if (c && c.gross > 480) out.push("surat8"); }
+  else if (key === "etap") out.push("tiadacuti", "thumb");
+  else if (key === "lokum") out.push("thumb");
+  else if (r.dipanggil) out.push("ketik");
+  return out;
+}
+
+function docsHtml(key, r) {
+  const jl = key === "elm" ? "OT" : key === "lokum" ? "extended hours" : "on-call";
+  let h = chkF("ganti", "Bertugas ganti orang lain", r, "q") +
+    chkF("surat", "Surat arahan", r) + chkF("jadual", "Nama dalam jadual " + jl, r, "dep-noganti") +
+    chkF("jadualGanti", "Jadual ada nama orang yang diganti", r, "dep-ganti") + chkF("borang", "Borang penggantian", r, "dep-ganti");
+  if (key === "elm") h += chkF("thumb", "Thumbprint lengkap", r) + chkF("surat8", "Surat pengesahan OT melebihi 8 jam", r, "dep-8");
+  else if (key === "etap") h += chkF("tiadacuti", "Tidak bercuti, MC atau kuarantin", r) + chkF("thumb", "Bukti thumbprint", r);
+  else if (key === "lokum") h += chkF("thumb", "Thumbprint lengkap", r);
+  else h += chkF("ketik", "Ketik masuk dan keluar", r, "dep-panggil");
+  h += '<label class="f wide dep-ganti"><span>Nama orang yang diganti (pilihan)</span><input type="text" data-k="gantiNama" value="' + esc(r.gantiNama || "") + '"></label>';
+  return '<div class="sec"><div class="sec-h">Dokumen <span class="docn" data-docn></span><button type="button" class="link" data-act="tickall">Tick semua</button></div><div class="clist">' + h + "</div></div>";
+}
+
+// Tarikh lain dalam modul ini yang sudah ada masa (untuk butang "guna masa sama").
+function prevTimes(key, d) {
+  const rows = md(key).rows, a = key === "etap" || key === "bap" ? "masuk" : "mula", b = key === "etap" || key === "bap" ? "keluar" : "tamat";
+  const ds = Object.keys(rows).map(Number).filter(x => x !== d && rows[x] && rows[x].on && rows[x][a] && rows[x][b]);
+  if (!ds.length) return null;
+  const before = ds.filter(x => x < d), pick = before.length ? Math.max(...before) : Math.min(...ds);
+  return { d: pick, a: rows[pick][a], b: rows[pick][b], ka: a, kb: b, lokasi: rows[pick].lokasi };
+}
+
+const CHEV = '<svg class="chev" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+let openDay = null;
+
+function itemHtml(key, d) {
+  const raw = md(key).rows[d], r = rowView(key, raw, d), wd = weekday(d), cu = cuName(d);
+  const pv = prevTimes(key, d);
+  const copyBtn = (k1, k2) => (!r[k1] && !r[k2] && pv) ? '<button type="button" class="link" data-act="salin">Guna masa sama seperti ' + pv.d + " hb (" + esc(pv.a) + "–" + esc(pv.b) + ")</button>" : "";
+  let masa = "", more = "";
+  if (key === "elm") {
+    masa = '<div class="g2">' + timeF("mula", "Mula", r) + timeF("tamat", "Tamat", r) + "</div>" + copyBtn("mula", "tamat") +
+      '<label class="f wide"><span>Sebab OT</span><input type="text" data-k="sebab" placeholder="Contoh: kempen imunisasi" value="' + esc(r.sebab || "") + '"></label>';
+    more = '<div class="g2">' + selF("jenis", "Jenis hari", [["biasa", "Hari bekerja"], ["rehat", "Hari rehat"], ["am", "Kelepasan am"]], r.jenis || autoJenis(wd)) +
+      selF("kerja", "Jenis kerja", [["biasa", "Diarah (biasa)"], ["kecemasan1", "Kecemasan, semasa bertugas"], ["kecemasan2", "Kecemasan, tak bertugas"]], r.kerja || "biasa") +
+      selF("bayar", "Tuntut sebagai", [["bayaran", "Bayaran"], ["cg", "Cuti gantian"]], r.bayar || "bayaran") + "</div>";
+  } else if (key === "etap") {
+    masa = chkF("dipanggil", "Dipanggil masuk ke klinik", r, "q") + '<div class="g2 dep-panggil">' + timeF("masuk", "Masa masuk", r) + timeF("keluar", "Masa keluar", r) + "</div>" +
+      (r.dipanggil ? copyBtn("masuk", "keluar") : "");
+    more = '<div class="g2">' + selF("jenis", "Jenis hari", [["biasa", "Hari bekerja"], ["rehat", "Hari rehat / kelepasan"]], r.jenis || autoJenis(wd)) + "</div>";
+  } else if (key === "lokum") {
+    masa = '<div class="g2">' + selF("lokasi", "Lokasi extended hours", [["", "Pilih lokasi"], ["ampang", "KK Ampang"], ["kajang", "KK Kajang"]], r.lokasi || "") +
+      timeF("mula", "Mula", r) + timeF("tamat", "Tamat", r) + "</div>" +
+      (r.autoMasa ? '<span class="hint">Masa diisi ikut waktu operasi ' + esc(EH_L[r.lokasi] || "") + ". Tukar jika masa sebenar pegawai berbeza.</span>" : "");
+    more = chkF("am", "Hari kelepasan am", r);
+  } else {
+    masa = chkF("dipanggil", "Dipanggil masuk ke klinik", r, "q") + '<div class="g2 dep-panggil">' + timeF("masuk", "Masa masuk", r) + timeF("keluar", "Masa keluar", r) + "</div>";
+  }
+  const open = openDay === d;
+  return '<article class="item' + (open ? " open" : "") + '" id="c-' + d + '" data-d="' + d + '">' +
+    '<button type="button" class="item-head" data-act="toggle" aria-expanded="' + open + '"><span class="idate' + (cu ? " cu" : "") + '"' + (cu ? ' title="' + esc(cu) + '"' : "") + "><b>" + d + "</b><small>" + HARI[wd] + "</small></span>" +
+    '<span class="imain"><span class="isum" data-sum></span><span class="iline"><span class="pill" data-pill></span><span class="iiss" data-iss1></span></span></span>' + CHEV + "</button>" +
+    '<div class="item-body">' +
+      '<div class="sec"><div class="sec-h">' + (key === "etap" || key === "bap" ? "Panggilan" : "Masa") + (cu ? ' <span class="cu-tag">' + esc(cu) + "</span>" : "") + "</div>" + masa + '<div class="calc" data-calc></div></div>' +
+      docsHtml(key, r) +
+      (more ? '<details class="more"><summary>Lagi pilihan' + (key === "elm" ? " (jenis hari, kecemasan, cuti gantian)" : key === "etap" ? " (jenis hari)" : " (kelepasan am)") + "</summary>" + more + "</details>" : "") +
+      '<div class="issues" data-issues></div>' +
+      '<div class="ifoot"><button type="button" class="ghost small" data-act="buang">Buang tarikh</button><button type="button" class="primary small" data-act="selesai">Selesai</button></div>' +
+    "</div></article>";
+}
+
+function renderModule() {
+  const key = activeTab(), box = $("module"), res = $("result");
+  if (!key) {
+    box.innerHTML = '<div class="panel empty">Pilih jawatan dalam langkah 1 dahulu.</div>';
+    res.innerHTML = '<p class="empty">Keputusan akan keluar di sini selepas tarikh diisi.</p>';
+    return;
+  }
+  const rows = md(key).rows, mo = monthInfo(), M = md(key);
+  const ds = []; for (let d = 1; d <= mo.n; d++) if (rows[d] && rows[d].on) ds.push(d);
+  if (key === "lokum") { ds.forEach(d => { if (!rows[d].mula && !rows[d].tamat) autoFillEh(rows[d], d); }); save(); }
+  if (ds.indexOf(openDay) < 0) openDay = null;
+  const extra = key === "etap" ? '<label class="ck q"><input type="checkbox" data-mk="jarak"' + (M.jarak ? " checked" : "") + "> Rumah pegawai dalam 33 km / 30 minit dari tempat bertugas</label>" : "";
+  box.innerHTML = '<div class="modwrap" data-key="' + key + '"><div class="panel modnote">' + MOD_NOTE[key] + extra + "</div>" +
+    '<div class="work">' + calHtml(key) +
+    '<section class="panel list"><div class="list-head"><h3>Tarikh dituntut</h3><span class="muted" id="listCount"></span></div>' +
+    (ds.length ? '<div class="items" id="items">' + ds.map(d => itemHtml(key, d)).join("") + "</div>"
+      : '<p class="empty">Belum ada tarikh. Tekan tarikh pada kalendar untuk tambah.</p>') +
+    "</section></div></div>";
+  res.innerHTML = '<div data-key="' + key + '">' + resultHtml(key) + "</div>";
+}
+
+function calcText(key, x) {
+  const c = x.c;
+  if (key === "elm") {
+    if (c.incomplete) return "Isi masa mula dan tamat untuk kira bayaran.";
+    if (c.sama) return "Masa mula dan tamat sama.";
+    const p = [];
+    if (c.s) p.push("Siang " + fmtJ(c.s) + " × " + c.ps);
+    if (c.m) p.push("Malam " + fmtJ(c.m) + " × " + c.pm);
+    if (!c.s && !c.m) p.push("0 jam");
+    if (c.rehat) p.push("tolak rehat " + fmtJ(c.rehat));
+    if (c.potong) p.push("tolak " + fmtJ(c.potong) + " (menanggung kerja)");
+    if (c.topup) p.push("bayaran minimum 2 jam");
+    if (c.cg) return p.join(" · ") + " → <b>Cuti gantian " + fmtJ(c.cgMin) + "</b>";
+    if (c.bawah1) return p.join(" · ") + " → <b>Tiada bayaran</b> (kurang 1 jam)";
+    return p.join(" · ") + " → " + (num(state.gaji) > 0 ? "<b>" + rmFmt(c.rm) + "</b>" : "isi gaji pokok dalam langkah 1");
+  }
+  if (key === "etap") {
+    const durTxt = x.r.dipanggil ? (c.incomplete ? "Isi masa masuk dan keluar · " : "Dipanggil " + fmtJ(c.dur) + " · ") : "Tidak dipanggil · ";
+    return durTxt + KAT_L[c.kat] + ", " + (c.jenis === "biasa" ? "hari bekerja" : "hari rehat / kelepasan") + " → <b>" + rmFmt(c.rm) + "</b>";
+  }
+  if (key === "lokum") {
+    if (c.tutup) return (EH_L[x.r.lokasi] || "Lokasi ini") + " tiada extended hours pada " + (x.r.am ? "kelepasan am" : "hari Ahad") + ". Hanya KK Ampang buka 9 pagi–1 tgh hari pada hari tersebut.";
+    const w = c.win[0] === 1020 ? "5:00–9:00 malam" : "9:00 pagi–1:00 tgh hari";
+    if (c.incomplete) return "Waktu operasi " + w + ". Isi masa mula dan tamat.";
+    if (c.sama) return "Masa mula dan tamat sama.";
+    return "Waktu operasi " + w + " · dikira " + fmtJ(c.bayar) + " → " + (c.rm != null ? "<b>" + rmFmt(c.rm) + "</b>" : "kadar sejam belum diisi (Tetapan)");
+  }
+  const durTxt = x.r.dipanggil ? (c.incomplete ? "Isi masa masuk dan keluar · " : "Dipanggil " + fmtJ(c.dur) + " · ") : "Tidak dipanggil · ";
+  return durTxt + (c.rm != null ? "<b>" + rmFmt(c.rm) + "</b>" : "kadar sehari belum diisi (Tetapan)");
+}
+
+function hhmm(a, b) { return (a || "--:--") + "–" + (b || "--:--"); }
+function sumText(key, x) {
+  const r = x.r, c = x.c, p = [];
+  if (key === "elm") {
+    if (c.incomplete || c.sama) p.push("Belum isi masa");
+    else { p.push(hhmm(r.mula, r.tamat)); p.push(fmtJ(c.cg ? c.cgMin : c.net)); p.push(c.cg ? "Cuti gantian" : c.bawah1 ? "Tiada bayaran" : num(state.gaji) > 0 ? rmFmt(c.rm) : "RM –"); }
+    if (c.jenis !== "biasa") p.push(c.jenis === "am" ? "Kelepasan am" : "Hari rehat");
+    if (c.kerja !== "biasa") p.push("Kecemasan");
+  } else if (key === "etap") {
+    p.push(r.dipanggil ? (c.incomplete ? "Dipanggil" : "Dipanggil " + hhmm(r.masuk, r.keluar)) : "Tidak dipanggil");
+    p.push(rmFmt(c.rm));
+    if (c.jenis !== "biasa") p.push(cuName(x.d) ? "Cuti umum" : "Hari rehat");
+  } else if (key === "lokum") {
+    p.push(EH_L[r.lokasi] || "Lokasi belum dipilih");
+    if (c.tutup) p.push("Tiada EH pada " + (r.am ? "kelepasan am" : "Ahad"));
+    else if (c.incomplete || c.sama) p.push("Belum isi masa");
+    else { p.push(hhmm(r.mula, r.tamat)); p.push(fmtJ(c.bayar)); if (c.rm != null) p.push(rmFmt(c.rm)); }
+  } else {
+    p.push(r.dipanggil ? (c.incomplete ? "Dipanggil" : "Dipanggil " + hhmm(r.masuk, r.keluar)) : "Tidak dipanggil");
+    if (c.rm != null) p.push(rmFmt(c.rm));
+  }
+  if (r.ganti) p.push("Ganti" + (r.gantiNama ? " " + r.gantiNama : ""));
+  return p.join(" · ");
+}
+
+function updateItem(key, x) {
+  const el = document.getElementById("c-" + x.d);
+  if (!el) return;
+  const r = x.r, c = x.c;
+  el.classList.toggle("has-ganti", !!r.ganti);
+  el.classList.toggle("need8", key === "elm" && c.gross > 480);
+  el.classList.toggle("panggil", !!r.dipanggil);
+  el.querySelector("[data-calc]").innerHTML = calcText(key, x);
+  el.querySelector("[data-sum]").textContent = sumText(key, x);
+  const req = reqDocs(key, r, c), have = req.filter(k => r[k]).length;
+  const dn = el.querySelector("[data-docn]");
+  dn.textContent = have + "/" + req.length + (have === req.length ? " lengkap" : "");
+  dn.className = "docn " + (have === req.length ? "ok" : "bad");
+  const i1 = el.querySelector("[data-iss1]");
+  i1.textContent = x.k.length ? (x.k.length > 1 ? x.k.length + " perkara belum lengkap: " : "") + x.k[0] : (x.a[0] || "");
+  i1.className = "iiss " + (x.k.length ? "k" : "a");
+  const pill = el.querySelector("[data-pill]");
+  if (x.k.length) { pill.className = "pill bad"; pill.textContent = "TIDAK LULUS"; }
+  else if (x.a.length) { pill.className = "pill warn"; pill.textContent = "AMARAN"; }
+  else { pill.className = "pill ok"; pill.textContent = "LULUS"; }
+  el.querySelector("[data-issues]").innerHTML = x.k.length || x.a.length ? '<div class="iss-h">Perlu dibetulkan:</div>' +
+    x.k.map(t => '<span class="k">• ' + esc(t) + "</span>").join("") + x.a.map(t => '<span class="a">• ' + esc(t) + "</span>").join("") : "";
+}
+
+// Perbandingan dengan gaji pokok dan had 1/3 (maklumat sahaja untuk ETAP / extended hours).
+// Had 1/3 gaji pokok (JPA) hanya untuk ELM. Untuk ETAP / extended hours, tunjuk peratus sebagai maklumat sahaja.
+function pctInfo(rm) {
+  const g = num(state.gaji);
+  if (!(g > 0)) return { txt: "Isi gaji pokok (langkah 1)", cls: "warn" };
+  return { txt: Math.round(rm / g * 100) + "% daripada gaji pokok (" + rmFmt(g) + ") · had 1/3 tidak terpakai (hanya untuk OT / ELM)", cls: "" };
+}
+function gajiNote(tot) {
+  const g = num(state.gaji);
+  if (!(g > 0)) return "";
+  let t = "Jumlah ini " + Math.round(tot / g * 100) + "% daripada gaji pokok.";
+  if (mods().indexOf("elm") >= 0) { const S = evalModule("elm").sum; t += " Had 1/3 gaji (" + rmFmt(g / 3) + ") untuk OT sahaja: " + (S.lebih ? "MELEBIHI" : "dalam had") + "."; }
+  else t += " Had 1/3 gaji tidak terpakai untuk ETAP / extended hours (JPA: untuk ELM sahaja).";
+  return t;
+}
+function setPct(rm) { const p = pctInfo(rm); setDD("f-pct", p.txt, p.cls); }
+function setDD(id, text, cls) { const el = $(id); if (!el) return; el.textContent = text; el.className = cls || ""; }
+
+function updateSummary(key, ev) {
+  const S = ev.sum;
+  const bezaTxt = S.beza == null ? "–" : Math.abs(S.beza) <= 0.05 ? "Sepadan" : (S.beza > 0 ? "Lebih " : "Kurang ") + rmFmt(Math.abs(S.beza));
+  const bezaCls = S.beza == null ? "" : Math.abs(S.beza) <= 0.05 ? "ok" : S.beza > 0 ? "bad" : "warn";
+  if (key === "elm") {
+    setDD("f-asas", S.gaji > 0 ? rmFmt(S.asas) + " sejam" : "Isi gaji pokok (langkah 1)", S.gaji > 0 ? "" : "warn");
+    setDD("f-jam", (S.s || !S.m ? "Siang " + fmtJ(S.s) : "") + (S.s && S.m ? " · " : "") + (S.m ? "Malam " + fmtJ(S.m) : ""));
+    setDD("f-rm", S.gaji > 0 ? rmFmt(S.rm) : "–");
+    setDD("f-beza", S.gaji > 0 ? bezaTxt : "–", S.gaji > 0 ? bezaCls : "");
+    const basis = S.dit != null ? S.dit : S.rm;
+    setDD("f-had", S.gaji > 0 ? rmFmt(basis) + " daripada had " + rmFmt(S.had) + " (" + Math.round(basis / S.had * 100) + "%) · " + (S.lebih ? "MELEBIHI" : "dalam had") : "Isi gaji pokok (langkah 1)", S.gaji > 0 ? (S.lebih ? "bad" : "ok") : "warn");
+    setDD("f-cg", S.cg ? fmtJ(S.cg) + " = " + (Math.floor(S.cg / 540)) + " hari" + (S.cg % 540 ? " + " + fmtJ(S.cg % 540) : "") : "–");
+    const p = $("sumPanel"); if (p) p.classList.toggle("lebih", !!S.lebih);
+  } else if (key === "etap") {
+    setPct(S.rm);
+    setDD("f-kat", S.p4 + " × ≥4 jam · " + S.p0 + " × <4 jam / tak dipanggil");
+    setDD("f-rm", rmFmt(S.rm));
+    setDD("f-beza", bezaTxt, bezaCls);
+  } else if (key === "lokum") {
+    const j = jw() || {};
+    setDD("f-lok", lokTxt(S.lok));
+    if (S.kadarKosong) setDD("f-pct", "–"); else setPct(S.rm);
+    const k = numOrNull(set["kadar" + j.lokum]);
+    setDD("f-kadar", k != null ? rmFmt(k) + " (" + LOKUM_GRADE_L[j.lokum] + ")" : "Belum diisi dalam Tetapan", k != null ? "" : "warn");
+    setDD("f-jam", fmtJ(S.jam));
+    setDD("f-rm", S.kadarKosong ? "–" : rmFmt(S.rm));
+    setDD("f-beza", bezaTxt, bezaCls);
+  } else {
+    const k = numOrNull(set.bapKadar);
+    if (S.kadarKosong) setDD("f-pct", "–"); else setPct(S.rm);
+    setDD("f-kadar", k != null ? rmFmt(k) : "Belum diisi dalam Tetapan", k != null ? "" : "warn");
+    setDD("f-rm", S.kadarKosong ? "–" : rmFmt(S.rm));
+    setDD("f-beza", bezaTxt, bezaCls);
+  }
+}
+
+function renderOverview() {
+  const ms = mods(), box = $("overview");
+  if (!box) return;
+  if (ms.length < 2) { box.innerHTML = ""; return; }
+  let tot = 0, totDit = 0, anyDit = false, unknown = false;
+  const cur = activeTab();
+  const rows = ms.map(k => {
+    const ev = evalModule(k), S = ev.sum, n = ev.days.length;
+    let calc = "–";
+    if (n) {
+      if ((k === "lokum" || k === "bap") && S.kadarKosong) { calc = "kadar belum diisi"; unknown = true; }
+      else if (k === "elm" && !(S.gaji > 0)) { calc = "isi gaji pokok"; unknown = true; }
+      else { calc = rmFmt(S.rm); tot += S.rm; }
+    }
+    if (S.dit != null) { totDit += S.dit; anyDit = true; }
+    const pill = n ? '<span class="pill ' + ev.v.cls + '">' + esc(ev.v.kp) + "</span>" : '<span class="pill idle">Tiada</span>';
+    return '<button type="button" class="ov-row" data-tab="' + k + '"' + (k === cur ? ' aria-current="true"' : "") + '><span class="ov-name">' + esc(MODS[k].tab) + "</span>" +
+      '<span class="ov-n">' + n + " hari</span>" + '<span class="ov-rm">' + esc(calc) + "</span>" + pill + "</button>";
+  }).join("");
+  const o = overall();
+  box.innerHTML = '<div class="overview"><div class="ov-head"><h3>Semua tuntutan pegawai ini</h3><span class="pill ' + o.cls + '">' + esc(o.kp) + "</span></div>" + rows +
+    '<div class="ov-tot"><span>Jumlah dikira <b>' + rmFmt(tot) + "</b>" + (unknown ? ' <span class="muted">(belum termasuk yang belum lengkap)</span>' : "") +
+    "</span>" + (gajiNote(tot) ? '<span class="muted">' + esc(gajiNote(tot)) + "</span>" : "") +
+    (anyDit ? "<span>Jumlah dituntut <b>" + rmFmt(totDit) + "</b></span>" : "") + "</div></div>";
+}
+
+function updateBar(key, ev) {
+  const dot = $("bdot"), txt = $("btxt");
+  if (!key) { dot.dataset.st = ""; txt.textContent = "Pilih jawatan untuk mula"; return; }
+  const multi = mods().length > 1;
+  const o = multi ? overall() : ev.v;
+  dot.dataset.st = o.cls === "idle" ? "" : o.cls;
+  let t = (multi ? "Keseluruhan: " : "Keputusan: ") + o.kp;
+  if (!multi && ev.gagal) t += " · " + ev.gagal + " tarikh belum lengkap";
+  else if (!multi && ev.days.length && !ev.gagal && o.cls !== "idle") t += " · " + ev.days.length + " tarikh";
+  txt.textContent = t;
+}
+
+function refresh() {
+  const ms = mods();
+  ms.forEach(k => {
+    const ev = evalModule(k);
+    const dot = document.querySelector('#tabs [data-tab="' + k + '"] .dot');
+    if (dot) dot.dataset.st = ev.v.cls;
+  });
+  const key = activeTab();
+  if (!key) { updateBar(null); return; }
+  renderOverview();
+  const ev = evalModule(key);
+  const byDay = {};
+  ev.days.forEach(x => { byDay[x.d] = x; updateItem(key, x); });
+  document.querySelectorAll("#cal button[data-day]").forEach(b => {
+    const x = byDay[b.dataset.day];
+    b.dataset.st = x ? (x.k.length ? "bad" : x.a.length ? "warn" : "ok") : "";
+  });
+  const lc = $("listCount");
+  if (lc) lc.textContent = ev.days.length ? (ev.days.length - ev.gagal) + " / " + ev.days.length + " lulus" : "";
+  updateSummary(key, ev);
+  const v = ev.v;
+  $("verdict").className = "vstrip " + v.cls;
+  $("v-kp").textContent = v.kp;
+  $("v-why").innerHTML = (v.cls === "ok" ? [] : v.why).map(t => "<li>" + esc(t) + "</li>").join("");
+  $("v-notes").innerHTML = v.notes.map(t => "<div>" + esc(t) + "</div>").join("");
+  $("v-stats").textContent = ev.days.length + " tarikh" + (ev.gagal ? " · " + ev.gagal + " tidak lulus" : "");
+  updateBar(key, ev);
+}
+
+function renderAll() { fillTop(); renderTabs(); renderModule(); refresh(); }
+
+/* ---------- Events ---------- */
+$("nama").addEventListener("input", e => { state.nama = e.target.value; save(); });
+$("gaji").addEventListener("input", e => { state.gaji = e.target.value; save(); refresh(); });
+$("tanggung").addEventListener("change", e => { state.tanggungKerja = e.target.checked; save(); refresh(); });
+$("jawatan").addEventListener("change", e => { state.jawatan = e.target.value; state.tab = ""; openDay = null; save(); renderTabs(); renderModule(); refresh(); });
+$("fasiliti").addEventListener("change", e => { state.fasiliti = e.target.value; save(); refresh(); });
+$("bulan").addEventListener("change", e => { if (!e.target.value) return; state.bulan = e.target.value; openDay = null; save(); renderModule(); refresh(); });
+
+function switchTab(k) { state.tab = k; openDay = null; save(); renderTabs(); renderModule(); refresh(); }
+$("result").addEventListener("click", e => {
+  const b = e.target.closest(".ov-row[data-tab]"); if (!b) return;
+  switchTab(b.dataset.tab);
+  $("step2").scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+});
+$("tabs").addEventListener("click", e => {
+  const b = e.target.closest("[data-tab]"); if (!b) return;
+  switchTab(b.dataset.tab);
+});
+$("bstat").addEventListener("click", () => { $("step3").scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" }); });
+
+function onModuleInput(e) {
+  // Ambil jenis tuntutan dari elemen itu sendiri, supaya nilai tidak tersilap masuk ke tab lain bila skrin dilukis semula.
+  const t = e.target, host = t.closest("[data-key]"), key = host && host.dataset.key; if (!key) return;
+  if (t.dataset.k) {
+    const item = t.closest(".item"); if (!item) return;
+    const r = md(key).rows[+item.dataset.d]; if (!r) return;
+    r[t.dataset.k] = t.type === "checkbox" ? t.checked : t.value;
+    if (t.dataset.k === "dipanggil" && e.type === "change" && t.isConnected) { save(); renderModule(); refresh(); return; }
+    if (key === "lokum" && (t.dataset.k === "mula" || t.dataset.k === "tamat")) r.autoMasa = false;
+    if (key === "lokum" && (t.dataset.k === "lokasi" || t.dataset.k === "am") && e.type === "change" && t.isConnected) {
+      autoFillEh(r, +item.dataset.d); save(); renderModule(); refresh(); return;
+    }
+  } else if (t.dataset.mk) {
+    md(key)[t.dataset.mk] = t.type === "checkbox" ? t.checked : t.value;
+  } else return;
+  save(); refresh();
+}
+["module", "result"].forEach(id => { $(id).addEventListener("input", onModuleInput); $(id).addEventListener("change", onModuleInput); });
+
+const smooth = !window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function setOpen(d) {
+  openDay = d;
+  document.querySelectorAll("#items .item").forEach(it => {
+    const on = +it.dataset.d === d;
+    it.classList.toggle("open", on);
+    const h = it.querySelector(".item-head"); if (h) h.setAttribute("aria-expanded", String(on));
+  });
+}
+function showItem(d, block) {
+  const it = document.getElementById("c-" + d); if (!it) return;
+  it.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: block || "nearest" });
+}
+const sideBySide = () => window.matchMedia && window.matchMedia("(min-width: 760px)").matches;
+$("module").addEventListener("click", e => {
+  const key = activeTab(); if (!key) return;
+  const day = e.target.closest("button[data-day]");
+  if (day) {
+    const d = +day.dataset.day, rows = md(key).rows;
+    if (!(rows[d] && rows[d].on)) {
+      const add = { on: true };
+      if (key === "lokum") add.lokasi = lastLokasi(rows) || (WARTA[state.fasiliti] ? state.fasiliti : "");
+      rows[d] = Object.assign(rows[d] || {}, add);
+      if (key === "lokum") autoFillEh(rows[d], d);
+      openDay = d; save(); renderModule(); refresh();
+      $("msg").textContent = d + " " + BULAN[monthInfo().m - 1] + " ditambah. Isi butiran di bawah.";
+    } else setOpen(d);
+    showItem(d, "start"); return;
+  }
+  const act = e.target.closest("[data-act]");
+  if (!act) return;
+  const item = act.closest(".item"), d = item ? +item.dataset.d : null;
+  const a = act.dataset.act;
+  if (a === "toggle") {
+    setOpen(openDay === d ? null : d);
+    if (openDay === d) showItem(d);
+  } else if (a === "selesai") {
+    setOpen(null);
+    if (!sideBySide()) $("calp").scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+    else showItem(d);
+  } else if (a === "tickall") {
+    const r = md(key).rows[d], ev = evalModule(key), x = ev.days.find(y => y.d === d);
+    reqDocs(key, x ? x.r : r, x ? x.c : null).forEach(k => { r[k] = true; });
+    save(); renderModule(); refresh();
+  } else if (a === "salin") {
+    const r = md(key).rows[d], pv = prevTimes(key, d);
+    if (pv) { r[pv.ka] = pv.a; r[pv.kb] = pv.b; if (key === "lokum" && !r.lokasi && pv.lokasi) r.lokasi = pv.lokasi; }
+    save(); renderModule(); refresh();
+  } else if (a === "buang") {
+    if (act.dataset.arm !== "1") {
+      act.dataset.arm = "1"; act.textContent = "Tekan lagi untuk buang"; act.classList.add("danger"); act.classList.remove("ghost");
+      setTimeout(() => { if (act.isConnected) { act.dataset.arm = ""; act.textContent = "Buang tarikh"; act.classList.remove("danger"); act.classList.add("ghost"); } }, 3000);
+      return;
+    }
+    delete md(key).rows[d]; if (openDay === d) openDay = null; save(); renderModule(); refresh();
+  }
+});
+
+function onSet(e) {
+  const t = e.target; if (!t.dataset.set) return;
+  set[t.dataset.set] = t.type === "checkbox" ? t.checked : t.value;
+  saveSet();
+  if (t.dataset.set === "cutiTambahan") renderModule();
+  refresh();
+}
+$("tetapan").addEventListener("input", onSet);
+$("tetapan").addEventListener("change", onSet);
+
+$("refreshBtn").addEventListener("click", () => {
+  save(); saveSet();
+  $("msg").textContent = "Memuat semula…";
+  try { location.reload(); } catch (e) { renderAll(); $("msg").textContent = "Dimuat semula."; }
+  setTimeout(() => { renderAll(); $("msg").textContent = "Dimuat semula."; }, 1500);
+});
+$("resetBtn").addEventListener("click", () => { $("btns").hidden = true; $("confirm").hidden = false; $("yesBtn").focus(); });
+$("noBtn").addEventListener("click", () => { $("confirm").hidden = true; $("btns").hidden = false; });
+$("yesBtn").addEventListener("click", () => {
+  state = blankForm(state.bulan); save(); renderAll();
+  $("confirm").hidden = true; $("btns").hidden = false;
+  $("msg").textContent = "Borang dikosongkan. Sedia untuk pegawai seterusnya.";
+  $("nama").focus();
+});
+
+/* ---------- PDF ---------- */
+// Dalam Claude: guna keupayaan "downloads". Di laman web biasa (cth GitHub Pages): muat turun terus dari pelayar.
+const inClaude = !!(window.claude && window.claude.use);
+const downloadsP = inClaude ? window.claude.use("downloads").catch(() => null) : Promise.resolve(null);
+downloadsP.then(dl => { if (!dl && inClaude) $("pdfBtn").hidden = true; });
+
+function P(s) { return String(s == null ? "" : s).replace(/[–—]/g, "-").replace(/→/g, "->").replace(/[•·]/g, "-").replace(/[^\x00-\xFF]/g, ""); }
+function rmP(n) { return (Math.round(n * 100) / 100).toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function gt(r) { return r.ganti ? "Ganti " + (r.gantiNama || "orang") : ""; }
+function withGt(txt, r) { const g = gt(r); return g ? (txt ? txt + "; " + g : g) : txt; }
+function masa(a, b) { return (!a && !b) ? "-" : (a || "--:--") + "-" + (b || "--:--"); }
+
+function pdfVerdict(doc, y, label, v) {
+  const W = doc.internal.pageSize.getWidth();
+  const col = v.cls === "ok" ? [227, 243, 234, 29, 122, 70] : v.cls === "bad" ? [251, 230, 228, 179, 38, 30] : v.cls === "warn" ? [251, 240, 217, 138, 90, 0] : [238, 238, 238, 60, 60, 60];
+  doc.setFont("helvetica", "normal"); doc.setFontSize(8.6);
+  const lines = doc.splitTextToSize(P(v.why.join("; ")), W - 112);
+  const hBar = Math.max(10, 4 + lines.length * 3.8);
+  doc.setFillColor(col[0], col[1], col[2]); doc.rect(14, y, W - 28, hBar, "F");
+  doc.setFont("helvetica", "bold"); doc.setFontSize(10.5); doc.setTextColor(col[3], col[4], col[5]);
+  doc.text(P(label + ": " + v.kp), 17, y + 6.5);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(8.6); doc.setTextColor(30, 30, 30);
+  doc.text(lines, 96, y + 6);
+  return y + hBar + 3;
+}
+
+function pdfOverview(doc, y) {
+  const ms = mods();
+  let tot = 0, totDit = 0, anyDit = false, unknown = false, hari = 0;
+  const body = ms.map(k => {
+    const ev = evalModule(k), S = ev.sum, n = ev.days.length; hari += n;
+    let calc = "-";
+    if (n) {
+      if ((k === "lokum" || k === "bap") && S.kadarKosong) { calc = "Kadar belum diisi"; unknown = true; }
+      else if (k === "elm" && !(S.gaji > 0)) { calc = "Gaji belum diisi"; unknown = true; }
+      else { calc = "RM " + rmP(S.rm); tot += S.rm; }
+    }
+    if (S.dit != null) { totDit += S.dit; anyDit = true; }
+    return [MODS[k].tab, String(n), calc, S.dit != null ? "RM " + rmP(S.dit) : "-", n ? ev.v.kp : "-"];
+  });
+  const o = overall();
+  body.push(["Jumlah", String(hari), "RM " + rmP(tot) + (unknown ? " *" : ""), anyDit ? "RM " + rmP(totDit) : "-", o.kp]);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(11.5); doc.setTextColor(15, 92, 110);
+  doc.text("RINGKASAN SEMUA TUNTUTAN", 14, y); doc.setTextColor(30, 30, 30);
+  const last = body.length - 1;
+  doc.autoTable({ startY: y + 3, head: [["Jenis tuntutan", "Hari", "Jumlah dikira", "Jumlah dituntut", "Keputusan"]], body: body.map(r => r.map(P)), theme: "grid",
+    styles: { fontSize: 9, cellPadding: 1.4, lineColor: [200, 208, 214], lineWidth: 0.15 },
+    headStyles: { fillColor: [15, 92, 110], textColor: 255, fontStyle: "bold" },
+    columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 18, halign: "right" }, 2: { cellWidth: 45, halign: "right" }, 3: { cellWidth: 45, halign: "right" }, 4: { fontStyle: "bold" } },
+    margin: { left: 14, right: 14 },
+    didParseCell: h => {
+      if (h.section !== "body") return;
+      if (h.row.index === last) { h.cell.styles.fontStyle = "bold"; h.cell.styles.fillColor = [238, 243, 245]; }
+      if (h.column.index === 4) h.cell.styles.textColor = h.cell.raw === "LULUS" ? [29, 122, 70] : h.cell.raw === "TIDAK LULUS" ? [179, 38, 30] : h.cell.raw === "-" ? [60, 60, 60] : [138, 90, 0];
+    } });
+  let ny = doc.lastAutoTable.finalY;
+  doc.setFont("helvetica", "normal"); doc.setFontSize(8.5);
+  if (gajiNote(tot)) { ny += 4.5; doc.text(P(gajiNote(tot)), 14, ny); }
+  if (unknown) { ny += 4; doc.setFontSize(8); doc.text("* Belum termasuk tuntutan yang kadar atau gajinya belum diisi.", 14, ny); }
+  return ny;
+}
+
+function pdfOncallEh(doc, y) {
+  const e1 = evalModule("etap"), e2 = evalModule("lokum"), S1 = e1.sum, S2 = e2.sum, j = jw() || {}, M1 = md("etap");
+  const bz = S => S.beza == null ? "-" : Math.abs(S.beza) <= 0.05 ? "Sepadan" : (S.beza > 0 ? "Lebih RM " : "Kurang RM ") + rmP(Math.abs(S.beza));
+  const k = numOrNull(set["kadar" + j.lokum]);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(11.5); doc.setTextColor(15, 92, 110);
+  doc.text("ON-CALL (ETAP) DAN EXTENDED HOURS (LOKUM)", 14, y); doc.setTextColor(30, 30, 30);
+  const info = [
+    ["ETAP dikira", "RM " + rmP(S1.rm) + " (" + (j.etap === "pakar" ? "kadar pakar" : "kadar pegawai") + ", 1 Okt 2025)", "ETAP dituntut", S1.dit != null ? "RM " + rmP(S1.dit) + " (" + bz(S1) + ")" : "-"],
+    ["Kategori ETAP", S1.p4 + " x dipanggil 4 jam atau lebih, " + S1.p0 + " x kurang 4 jam / tidak dipanggil", "", ""],
+    ["Extended hours dikira", S2.kadarKosong ? "- (kadar belum diisi)" : "RM " + rmP(S2.rm), "Extended hours dituntut", S2.dit != null ? "RM " + rmP(S2.dit) + " (" + bz(S2) + ")" : "-"],
+    ["Lokasi", lokTxt(S2.lok), "Kadar / jam dibayar", (k != null ? "RM " + rmP(k) + " sejam" : "Kadar belum diisi") + " / " + fmtJ(S2.jam)],
+    ["Jarak rumah (on-call)", M1.jarak ? "Dalam 33 km / 30 minit" : "Belum disahkan", "", ""],
+    ["Berbanding gaji pokok", pctInfo(S1.rm + (S2.kadarKosong ? 0 : S2.rm)).txt, "", ""]
+  ];
+  doc.autoTable({ startY: y + 3, body: info.map(r => r.map(P)), theme: "plain", styles: { fontSize: 9, cellPadding: 1.1 },
+    columnStyles: { 0: { fontStyle: "bold", cellWidth: 40 }, 1: { cellWidth: 96 }, 2: { fontStyle: "bold", cellWidth: 42 } }, margin: { left: 14, right: 14 } });
+  y = doc.lastAutoTable.finalY + 2;
+  y = pdfVerdict(doc, y, "ETAP", e1.v);
+  y = pdfVerdict(doc, y - 1, "EXTENDED HOURS", e2.v);
+  const st = x => x.k.length ? "TIDAK LULUS" : "LULUS";
+  const issues = x => x.k.concat(x.a).join("; ");
+  const rows = [];
+  e2.days.forEach(x => rows.push({ d: x.d, o: 0, c: [x.d + " " + HARI[x.wd] + (x.r.am ? " (KA)" : ""), "Extended hours", EH_L[x.r.lokasi] || "-", masa(x.r.mula, x.r.tamat),
+    withGt("Dikira " + fmtJ(x.c.bayar) + (x.c.luar ? ", " + fmtJ(x.c.luar) + " di luar waktu" : ""), x.r), x.c.rm != null ? rmP(x.c.rm) : "-", st(x), issues(x)] }));
+  e1.days.forEach(x => rows.push({ d: x.d, o: 1, c: [x.d + " " + HARI[x.wd], "On-call", fasLabel(), x.r.dipanggil ? masa(x.r.masuk, x.r.keluar) : "Tidak dipanggil",
+    withGt(KAT_L[x.c.kat] + (x.c.jenis === "biasa" ? ", hari bekerja" : ", rehat / kelepasan"), x.r), rmP(x.c.rm), st(x), issues(x)] }));
+  rows.sort((a, b) => a.d - b.d || a.o - b.o);
+  doc.autoTable({
+    startY: y, head: [["Tarikh", "Jenis", "Lokasi", "Masa", "Butiran", "RM", "Status", "Kekurangan / amaran"].map(P)], body: rows.map(r => r.c.map(P)), theme: "grid",
+    styles: { fontSize: 7.6, cellPadding: 1, valign: "middle", lineColor: [200, 208, 214], lineWidth: 0.15 },
+    headStyles: { fillColor: [15, 92, 110], textColor: 255, fontStyle: "bold", fontSize: 7.4 },
+    columnStyles: { 0: { cellWidth: 17 }, 1: { cellWidth: 22 }, 2: { cellWidth: 30 }, 3: { cellWidth: 24 }, 4: { cellWidth: 58 }, 5: { cellWidth: 16, halign: "right" }, 6: { cellWidth: 21, fontStyle: "bold" } },
+    margin: { left: 14, right: 14 },
+    didParseCell: h => {
+      if (h.section !== "body") return;
+      if (h.column.index === 6) h.cell.styles.textColor = h.cell.raw === "LULUS" ? [29, 122, 70] : [179, 38, 30];
+      if (h.column.index === 7) h.cell.styles.textColor = [150, 40, 30];
+    }
+  });
+  return doc.lastAutoTable.finalY;
+}
+
+function pdfModule(doc, key, y) {
+  const ev = evalModule(key), S = ev.sum, W = doc.internal.pageSize.getWidth(), j = jw() || {};
+  doc.setFont("helvetica", "bold"); doc.setFontSize(11.5); doc.setTextColor(15, 92, 110);
+  doc.text(P(MODS[key].title.toUpperCase()), 14, y); doc.setTextColor(30, 30, 30);
+  const bz = S.beza == null ? "-" : Math.abs(S.beza) <= 0.05 ? "Sepadan" : (S.beza > 0 ? "Lebih RM " : "Kurang RM ") + rmP(Math.abs(S.beza));
+  const ditT = S.dit != null ? "RM " + rmP(S.dit) : "-";
+  let info;
+  if (key === "elm") info = [
+    ["Gaji pokok", S.gaji > 0 ? "RM " + rmP(S.gaji) : "-", "Kadar sejam asas", S.gaji > 0 ? "RM " + rmP(S.asas) : "-"],
+    ["Jam dibayar", "Siang " + fmtJ(S.s) + ", malam " + fmtJ(S.m), "Cuti gantian", S.cg ? fmtJ(S.cg) : "-"],
+    ["Jumlah dikira", S.gaji > 0 ? "RM " + rmP(S.rm) : "-", "Jumlah dituntut", ditT],
+    ["Beza", bz, "Had 1/3 gaji pokok", S.gaji > 0 ? "RM " + rmP(S.had) + (S.lebih ? " (melebihi)" : " (dalam had)") : "-"],
+    ["Penyata gaji", md(key).penyata ? "Ada" : "Tiada", "Kelulusan Gred 12+", S.lebih ? (md(key).lulus13 ? "Ada" : "Tiada") : "Tidak perlu"],
+    ["Menanggung kerja", state.tanggungKerja ? "Ya (tolak 2j 15m pada hari bekerja biasa)" : "Tidak", "", ""]
+  ];
+  else if (key === "etap") info = [
+    ["Kadar", j.etap === "pakar" ? "Pakar (mulai 1 Okt 2025)" : "Pegawai (mulai 1 Okt 2025)", "Kategori", S.p4 + " x dipanggil 4 jam atau lebih, " + S.p0 + " x kurang 4 jam / tidak dipanggil"],
+    ["Jumlah dikira", "RM " + rmP(S.rm), "Jumlah dituntut", ditT],
+    ["Beza", bz, "Jarak rumah", md(key).jarak ? "Dalam 33 km / 30 minit" : "Belum disahkan"],
+    ["Berbanding gaji pokok", pctInfo(S.rm).txt, "", ""]
+  ];
+  else if (key === "lokum") {
+    const k = numOrNull(set["kadar" + j.lokum]);
+    info = [
+      ["Lokasi", lokTxt(S.lok), "Kadar sejam", k != null ? "RM " + rmP(k) : "Belum diisi"],
+      ["Jam dibayar", fmtJ(S.jam), "Had jam sehari", num(set.lokumHad) ? set.lokumHad + " jam" : "-"],
+      ["Jumlah dikira", S.kadarKosong ? "-" : "RM " + rmP(S.rm), "Jumlah dituntut", ditT],
+      ["Beza", bz, "Berbanding gaji pokok", S.kadarKosong ? "-" : pctInfo(S.rm).txt]
+    ];
+  } else {
+    const k = numOrNull(set.bapKadar);
+    info = [["Kadar sehari", k != null ? "RM " + rmP(k) : "Belum diisi", "Jumlah dikira", S.kadarKosong ? "-" : "RM " + rmP(S.rm)], ["Jumlah dituntut", ditT, "Beza", bz]];
+  }
+  doc.autoTable({ startY: y + 3, body: info.map(r => r.map(P)), theme: "plain", styles: { fontSize: 9, cellPadding: 1.1 },
+    columnStyles: { 0: { fontStyle: "bold", cellWidth: 36 }, 1: { cellWidth: 96 }, 2: { fontStyle: "bold", cellWidth: 46 } }, margin: { left: 14, right: 14 } });
+  y = doc.lastAutoTable.finalY + 2;
+
+  y = pdfVerdict(doc, y, "KEPUTUSAN", ev.v);
+
+  const st = x => x.k.length ? "TIDAK LULUS" : "LULUS";
+  const issues = x => x.k.concat(x.a).join("; ");
+  let head, body, cs;
+  if (key === "elm") {
+    head = ["Tarikh", "Jenis hari", "Masa", "Jenis kerja", "Siang", "Malam", "Tuntut", "RM / CG", "Sebab OT", "Status", "Kekurangan / amaran"];
+    body = ev.days.map(x => [x.d + " " + HARI[x.wd], JENIS_L[x.c.jenis], masa(x.r.mula, x.r.tamat), KERJA_L[x.c.kerja], fmtJ(x.c.s), fmtJ(x.c.m),
+      x.c.cg ? "Cuti gantian" : "Bayaran", x.c.cg ? fmtJ(x.c.cgMin) : rmP(x.c.rm), withGt(x.r.sebab || "", x.r), st(x), issues(x)]);
+    cs = { 0: { cellWidth: 15 }, 1: { cellWidth: 19 }, 2: { cellWidth: 20 }, 3: { cellWidth: 26 }, 4: { cellWidth: 13 }, 5: { cellWidth: 13 }, 6: { cellWidth: 17 }, 7: { cellWidth: 16, halign: "right" }, 8: { cellWidth: 36 }, 9: { cellWidth: 20, fontStyle: "bold" } };
+  } else if (key === "etap") {
+    head = ["Tarikh", "Jenis hari", "Dipanggil", "Kategori", "RM", "Status", "Kekurangan"];
+    body = ev.days.map(x => [x.d + " " + HARI[x.wd], x.c.jenis === "biasa" ? "Hari bekerja" : "Rehat / kelepasan", x.r.dipanggil ? masa(x.r.masuk, x.r.keluar) : "Tidak", withGt(KAT_L[x.c.kat], x.r), rmP(x.c.rm), st(x), issues(x)]);
+    cs = { 0: { cellWidth: 16 }, 1: { cellWidth: 26 }, 2: { cellWidth: 22 }, 3: { cellWidth: 56 }, 4: { cellWidth: 16, halign: "right" }, 5: { cellWidth: 22, fontStyle: "bold" } };
+  } else if (key === "lokum") {
+    head = ["Tarikh", "Lokasi", "Masa", "Dalam waktu operasi", "Jam dibayar", "RM", "Status", "Kekurangan / amaran"];
+    body = ev.days.map(x => [x.d + " " + HARI[x.wd] + (x.r.am ? " (KA)" : ""), withGt(EH_L[x.r.lokasi] || "-", x.r), masa(x.r.mula, x.r.tamat), fmtJ(x.c.dalam), fmtJ(x.c.bayar), x.c.rm != null ? rmP(x.c.rm) : "-", st(x), issues(x)]);
+    cs = { 0: { cellWidth: 20 }, 1: { cellWidth: 22 }, 2: { cellWidth: 22 }, 3: { cellWidth: 26 }, 4: { cellWidth: 20 }, 5: { cellWidth: 18, halign: "right" }, 6: { cellWidth: 22, fontStyle: "bold" } };
+  } else {
+    head = ["Tarikh", "Dipanggil", "RM", "Status", "Kekurangan"];
+    body = ev.days.map(x => [x.d + " " + HARI[x.wd], withGt(x.r.dipanggil ? masa(x.r.masuk, x.r.keluar) : "Tidak", x.r), x.c.rm != null ? rmP(x.c.rm) : "-", st(x), issues(x)]);
+    cs = { 0: { cellWidth: 18 }, 1: { cellWidth: 26 }, 2: { cellWidth: 18, halign: "right" }, 3: { cellWidth: 24, fontStyle: "bold" } };
+  }
+  const stCol = head.indexOf("Status"), lastCol = head.length - 1;
+  doc.autoTable({
+    startY: y, head: [head.map(P)], body: body.map(r => r.map(P)), theme: "grid",
+    styles: { fontSize: 7.6, cellPadding: 1, valign: "middle", lineColor: [200, 208, 214], lineWidth: 0.15 },
+    headStyles: { fillColor: [15, 92, 110], textColor: 255, fontStyle: "bold", fontSize: 7.4 },
+    columnStyles: cs, margin: { left: 14, right: 14 },
+    didParseCell: h => {
+      if (h.section !== "body") return;
+      if (h.column.index === stCol) h.cell.styles.textColor = h.cell.raw === "LULUS" ? [29, 122, 70] : [179, 38, 30];
+      if (h.column.index === lastCol) h.cell.styles.textColor = [150, 40, 30];
+    }
+  });
+  return doc.lastAutoTable.finalY;
+}
+
+function pdfSign(doc, y) {
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+  let fy = y + 14;
+  if (fy > H - 12) { doc.addPage(); fy = pdfMiniHeader(doc) + 14; }
+  doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(30, 30, 30); doc.setDrawColor(120, 120, 120); doc.setLineWidth(0.2);
+  doc.line(14, fy, 84, fy); doc.text("Disemak oleh (nama & cop)", 14, fy + 4);
+  doc.line(W - 84, fy, W - 14, fy); doc.text("Tarikh", W - 84, fy + 4);
+  return fy + 6;
+}
+
+// Tajuk kecil di atas halaman sambungan.
+function pdfMiniHeader(doc) {
+  const mo = monthInfo(), j = jw();
+  doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(90, 90, 90);
+  doc.text(P("Semakan Tuntutan - " + (state.nama || "-") + " - " + (j ? j.l : "-") + " - " + fasLabel() + " - " + BULAN[mo.m - 1] + " " + mo.y), 14, 11);
+  doc.setTextColor(30, 30, 30);
+  return 18;
+}
+
+function buildPdf() {
+  const jsPDF = window.jspdf.jsPDF;
+  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const mo = monthInfo(), j = jw();
+  doc.setFont("helvetica", "bold"); doc.setFontSize(14);
+  doc.text("SEMAKAN TUNTUTAN KERJA LEBIH MASA DAN ELAUN", 14, 15);
+  doc.autoTable({ startY: 19, theme: "plain", styles: { fontSize: 9.5, cellPadding: 1.1 },
+    body: [["Nama pegawai", P(state.nama || "-"), "Bulan", BULAN[mo.m - 1] + " " + mo.y],
+      ["Jawatan", P(j ? j.l : "-"), "Fasiliti", P(fasLabel())],
+      ["Gaji pokok", num(state.gaji) > 0 ? "RM " + rmP(num(state.gaji)) : "-", "", ""]],
+    columnStyles: { 0: { fontStyle: "bold", cellWidth: 36 }, 1: { cellWidth: 96 }, 2: { fontStyle: "bold", cellWidth: 46 } }, margin: { left: 14, right: 14 } });
+  let y = doc.lastAutoTable.finalY + 6;
+  const keys = mods().filter(k => evalModule(k).days.length);
+  // Ringkasan semua tuntutan dahulu (jika lebih dari satu jenis), kemudian bahagian setiap jenis tuntutan.
+  if (keys.length >= 2) {
+    y = pdfOverview(doc, y);
+  }
+  // Setiap jenis tuntutan ada ringkasan dan jadual sendiri, disusun berturutan. Halaman baharu hanya bila ruang tidak cukup.
+  const H = doc.internal.pageSize.getHeight();
+  keys.forEach((k, i) => {
+    if (keys.length >= 2 || i > 0) {
+      y += 7;
+      if (y > H - 55) { doc.addPage(); y = pdfMiniHeader(doc); }
+    }
+    y = pdfModule(doc, k, y);
+  });
+  pdfSign(doc, y);
+  return doc;
+}
+
+$("pdfBtn").addEventListener("click", () => {
+  if (!window.jspdf || !window.jspdf.jsPDF) { $("msg").textContent = "PDF belum sedia. Cuba lagi sebentar."; return; }
+  if (!mods().some(k => evalModule(k).days.length)) { $("msg").textContent = "Tiada tarikh untuk dimasukkan dalam PDF."; return; }
+  let doc;
+  try { doc = buildPdf(); } catch (e) { $("msg").textContent = "PDF gagal dijana. Cuba lagi."; return; }
+  const blob = doc.output("blob"), mo = monthInfo();
+  const nm = (state.nama || "Pegawai").trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, " ").slice(0, 60) || "Pegawai";
+  const filename = "Semakan Tuntutan - " + nm + " - " + BULAN[mo.m - 1] + " " + mo.y + ".pdf";
+  downloadsP.then(dl => {
+    if (!dl) {
+      if (!inClaude) { try { doc.save(filename); $("msg").textContent = "PDF dimuat turun. Buka fail tu dan cetak."; } catch (e) { $("msg").textContent = "Muat turun gagal. Cuba lagi."; } return; }
+      $("msg").textContent = "Muat turun tidak tersedia di paparan ini."; return;
+    }
+    return dl.save({ filename, data: blob }).then(() => { $("msg").textContent = "PDF disimpan. Buka fail tu dan cetak."; },
+      err => { const c = err && err.code; $("msg").textContent = c === "declined" ? "Muat turun dibatalkan." : c === "rate_limited" ? "Tunggu sebentar, kemudian cuba lagi." : "Muat turun tidak dapat dibuat di paparan ini."; });
+  });
+});
+
+(() => { const m = $("msg"); let t; new MutationObserver(() => { clearTimeout(t); $("bar").classList.toggle("hasmsg", !!m.textContent); if (m.textContent) t = setTimeout(() => { m.textContent = ""; }, 5000); }).observe(m, { childList: true, characterData: true, subtree: true }); })();
+renderAll();
+})();
+</script>
+</body>
+</html>
