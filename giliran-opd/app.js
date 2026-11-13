@@ -97,7 +97,7 @@
     try {
       await Promise.all([fetchRooms(), fetchPatients()]);
       setConn('ok', 'Live');
-      if (!rooms.length) note('Tiada bilik dipaparkan. Jika ini kali pertama akaun ini digunakan, minta pentadbir tambah emel akaun ke senarai akaun dibenarkan.', true);
+      if (!rooms.length) note('Tiada bilik dipaparkan. Jika ini kali pertama akaun ini digunakan, minta pentadbir tambah akaun ini di Tetapan → Akaun pengguna.', true);
       else note('');
     } catch (e) {
       setConn('bad', 'Terputus');
@@ -327,6 +327,164 @@
     finally { $('cleanupBtn').disabled = false; }
   }
 
+  /* ---------- Akaun pengguna ---------- */
+  let me = { email: '', admin: false };
+  let acctRows = [], acctLoading = false;
+
+  function fmtWhen(iso) {
+    try { return new Intl.DateTimeFormat('ms-MY', { timeZone: TZ, day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(iso)); }
+    catch (e) { return String(iso).slice(0, 16).replace('T', ' '); }
+  }
+  function showErr(id, msg) { const el = $(id); el.textContent = msg || ''; el.hidden = !msg; }
+
+  // Semua tindakan akaun melalui Edge Function "urus-akaun" (kunci service role kekal di pelayan)
+  async function akaunApi(body) {
+    const { data, error } = await sb.functions.invoke('urus-akaun', { body });
+    if (!error) return data || {};
+    let msg = 'Tidak dapat hubungi pelayan akaun. Semak sambungan dan cuba lagi.';
+    try { const j = await error.context.json(); if (j && j.ralat) msg = j.ralat; } catch (e) { /* kekal mesej umum */ }
+    throw new Error(msg);
+  }
+  function passwordMessage(error) {
+    const code = error && error.code;
+    if (code === 'same_password') return 'Kata laluan baharu sama dengan yang lama.';
+    if (code === 'weak_password') return 'Kata laluan terlalu lemah. Guna sekurang-kurangnya 8 aksara.';
+    if (code === 'reauthentication_needed') return 'Sila log keluar dan log masuk semula, kemudian cuba lagi.';
+    return 'Tidak dapat tukar kata laluan. Cuba sekali lagi.';
+  }
+
+  async function loadMe() {
+    try {
+      const { data } = await sb.auth.getSession();
+      const email = L.normEmail(data && data.session && data.session.user && data.session.user.email);
+      const { data: row } = await sb.from('giliran_akaun').select('admin').eq('email', email).maybeSingle();
+      me = { email, admin: !!(row && row.admin) };
+    } catch (e) { /* papar sebagai staf biasa */ }
+    renderMe();
+    if (me.admin && currentView() === 'tetapan') loadAccounts();
+  }
+  function renderMe() {
+    $('meEmail').textContent = me.email || '-';
+    $('meRole').hidden = !me.admin;
+    $('adminBox').hidden = !me.admin;
+  }
+  async function loadAccounts() {
+    if (!started || !me.admin || acctLoading) return;
+    acctLoading = true;
+    try {
+      const r = await akaunApi({ tindakan: 'senarai' });
+      acctRows = r.akaun || [];
+      showErr('acctErr', '');
+    } catch (e) { showErr('acctErr', e.message); }
+    finally { acctLoading = false; }
+    renderAccounts();
+  }
+  function renderAccounts() {
+    const list = $('acctList');
+    if (!acctRows.length) { list.innerHTML = '<div class="empty">Belum ada akaun.</div>'; return; }
+    list.innerHTML = acctRows.map(a => {
+      const self = a.email === me.email;
+      const status = !a.ada_akaun ? 'Belum ada kata laluan'
+        : a.log_masuk_terakhir ? 'Log masuk terakhir ' + fmtWhen(a.log_masuk_terakhir) : 'Belum pernah log masuk';
+      const e = esc(a.email);
+      return '<div class="aitem"><div class="who"><b>' + e + (self ? ' (anda)' : '') + '</b>' +
+        '<span>' + (a.admin ? 'Pentadbir' : 'Staf') + ' · ' + status + '</span></div><div class="acts">' +
+        (self ? '' :
+          '<button class="btn sm" type="button" data-acct="pw" data-email="' + e + '">' + (a.ada_akaun ? 'Set semula kata laluan' : 'Cipta kata laluan') + '</button>' +
+          '<button class="btn sm" type="button" data-acct="role" data-email="' + e + '">' + (a.admin ? 'Jadikan staf' : 'Jadikan pentadbir') + '</button>' +
+          '<button class="btn sm danger" type="button" data-acct="rm" data-email="' + e + '">Buang</button>') +
+        '</div></div>';
+    }).join('');
+  }
+
+  // Dialog kata laluan sendiri, supaya kata laluan ditaip dalam medan tersembunyi
+  function askPassword(title, text) {
+    return new Promise(resolve => {
+      const d = $('pwDlg'), input = $('pwDlgInput');
+      $('pwDlgTitle').textContent = title;
+      $('pwDlgText').textContent = text;
+      input.value = ''; input.type = 'password'; $('pwDlgShow').checked = false;
+      showErr('pwDlgErr', '');
+      const done = v => { d.close(); $('pwDlgOk').onclick = null; $('pwDlgCancel').onclick = null; input.onkeydown = null; resolve(v); };
+      $('pwDlgOk').onclick = () => {
+        const problem = L.accountProblem(undefined, input.value);
+        if (problem) { showErr('pwDlgErr', problem); return; }
+        done(input.value);
+      };
+      $('pwDlgCancel').onclick = () => done(null);
+      input.onkeydown = ev => { if (ev.key === 'Enter') { ev.preventDefault(); $('pwDlgOk').click(); } };
+      d.oncancel = ev => { ev.preventDefault(); done(null); };
+      try { d.showModal(); setTimeout(() => input.focus(), 30); } catch (e) { resolve(null); }
+    });
+  }
+  $('pwDlgShow').addEventListener('change', e => { $('pwDlgInput').type = e.target.checked ? 'text' : 'password'; });
+  $('newAcctShow').addEventListener('change', e => { $('newAcctPw').type = e.target.checked ? 'text' : 'password'; });
+
+  $('addAcctForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = L.normEmail($('newAcctEmail').value);
+    const password = $('newAcctPw').value;
+    const problem = L.accountProblem(email, password);
+    if (problem) { showErr('acctErr', problem); return; }
+    showErr('acctErr', '');
+    $('addAcctBtn').disabled = true;
+    try {
+      const r = await akaunApi({ tindakan: 'tambah', email, password, admin: $('newAcctAdmin').checked });
+      toast(r.sedia_ada ? 'Akaun ' + email + ' sudah wujud dan kini dibenarkan. Kata laluannya tidak diubah.'
+        : 'Akaun ' + email + ' ditambah. Beri staf emel dan kata laluan ini.');
+      $('newAcctEmail').value = ''; $('newAcctPw').value = ''; $('newAcctAdmin').checked = false;
+      $('newAcctShow').checked = false; $('newAcctPw').type = 'password';
+    } catch (err) { showErr('acctErr', err.message); }
+    finally { $('addAcctBtn').disabled = false; }
+    await loadAccounts();
+  });
+
+  $('acctList').addEventListener('click', async e => {
+    const b = e.target.closest('[data-acct]');
+    if (!b) return;
+    const a = acctRows.find(x => x.email === b.dataset.email);
+    if (!a) return;
+    try {
+      if (b.dataset.acct === 'pw') {
+        const pw = await askPassword(a.ada_akaun ? 'Set semula kata laluan' : 'Cipta kata laluan',
+          'Kata laluan baharu untuk ' + a.email + '. Beritahu pengguna akaun ini selepas disimpan.');
+        if (pw == null) return;
+        await akaunApi(a.ada_akaun ? { tindakan: 'kata_laluan', email: a.email, password: pw }
+          : { tindakan: 'tambah', email: a.email, password: pw, admin: a.admin });
+        toast('Kata laluan ' + a.email + ' disimpan.');
+      } else if (b.dataset.acct === 'role') {
+        const toAdmin = !a.admin;
+        if (!(await ask(toAdmin ? 'Jadikan pentadbir?' : 'Jadikan staf?', toAdmin
+          ? a.email + ' akan boleh tambah, buang dan set semula kata laluan akaun lain.'
+          : a.email + ' tidak lagi boleh urus akaun. Akaun masih boleh guna sistem giliran.', toAdmin ? 'Jadikan pentadbir' : 'Jadikan staf'))) return;
+        await akaunApi({ tindakan: 'admin', email: a.email, admin: toAdmin });
+        toast(a.email + (toAdmin ? ' kini pentadbir.' : ' kini staf.'));
+      } else if (b.dataset.acct === 'rm') {
+        if (!(await ask('Buang akaun ' + a.email + '?', 'Akaun ini tidak boleh log masuk lagi, dan peranti yang sedang guna akaun ini hilang akses kepada senarai giliran.', 'Buang akaun'))) return;
+        await akaunApi({ tindakan: 'buang', email: a.email });
+        toast('Akaun ' + a.email + ' dibuang.');
+      }
+      showErr('acctErr', '');
+    } catch (err) { showErr('acctErr', err.message); }
+    await loadAccounts();
+  });
+
+  $('pwForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const pw = $('myPw').value;
+    const problem = L.accountProblem(undefined, pw, $('myPw2').value);
+    if (problem) { showErr('myPwErr', problem); return; }
+    showErr('myPwErr', '');
+    $('myPwBtn').disabled = true;
+    const { error } = await sb.auth.updateUser({ password: pw });
+    $('myPwBtn').disabled = false;
+    if (error) { showErr('myPwErr', passwordMessage(error)); return; }
+    $('myPw').value = ''; $('myPw2').value = '';
+    toast('Kata laluan anda ditukar.');
+  });
+
+  window.addEventListener('hashchange', () => { if (currentView() === 'tetapan') loadAccounts(); });
+
   /* ---------- Acara ---------- */
   $('regForm').addEventListener('submit', e => {
     e.preventDefault();
@@ -412,8 +570,12 @@
   }
   function showLogin() {
     started = false;
+    me = { email: '', admin: false };
+    acctRows = [];
     $('tabs').hidden = true;
     $('loginView').hidden = false;
+    $('loginForm').hidden = false;
+    $('firstForm').hidden = true;
     $('emailRow').hidden = !!CFG.LOGIN_EMAIL;
     if (!CFG.LOGIN_EMAIL && !$('emailInput').value) $('emailInput').value = savedEmail();
     showView();
@@ -430,6 +592,7 @@
     render();
     subscribe();
     refresh();
+    loadMe();
   }
   $('loginForm').addEventListener('submit', async e => {
     e.preventDefault();
@@ -442,6 +605,38 @@
     try { if (!CFG.LOGIN_EMAIL) localStorage.setItem('giliran-opd-emel', email); } catch (err) { /* abaikan */ }
     $('pwInput').value = '';
     startApp();
+  });
+
+  // Kali pertama: pentadbir yang disenaraikan cipta kata laluan sendiri
+  $('firstLink').addEventListener('click', () => {
+    $('loginForm').hidden = true;
+    $('firstForm').hidden = false;
+    showErr('firstErr', '');
+    if (!$('firstEmail').value) $('firstEmail').value = $('emailInput').value || savedEmail();
+    setTimeout(() => ($('firstEmail').value ? $('firstPw') : $('firstEmail')).focus(), 30);
+  });
+  $('firstBack').addEventListener('click', () => {
+    $('firstForm').hidden = true;
+    $('loginForm').hidden = false;
+  });
+  $('firstForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = L.normEmail($('firstEmail').value);
+    const password = $('firstPw').value;
+    const problem = L.accountProblem(email, password, $('firstPw2').value);
+    if (problem) { showErr('firstErr', problem); return; }
+    showErr('firstErr', '');
+    $('firstBtn').disabled = true;
+    try {
+      await akaunApi({ tindakan: 'mula', email, password });
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) throw new Error('Kata laluan dicipta. Sila log masuk.');
+      try { if (!CFG.LOGIN_EMAIL) localStorage.setItem('giliran-opd-emel', email); } catch (err) { /* abaikan */ }
+      $('firstPw').value = ''; $('firstPw2').value = '';
+      startApp();
+      toast('Akaun anda sedia. Tambah akaun staf di Tetapan.');
+    } catch (err) { showErr('firstErr', err.message); }
+    finally { $('firstBtn').disabled = false; }
   });
 
   function configured() {

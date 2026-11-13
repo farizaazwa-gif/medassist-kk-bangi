@@ -65,7 +65,19 @@
     }).format(date || new Date());
   }
 
-  const api = { ST, loadMap, pickRoom, planClose, roomState, addNote, dayKey };
+  // Semakan akaun baharu sebelum dihantar ke pelayan (pelayan menyemak semula)
+  const MIN_PW = 8;
+  function normEmail(v) {
+    return typeof v === 'string' ? v.trim().toLowerCase() : '';
+  }
+  function accountProblem(email, pw, pw2) {
+    if (email !== undefined && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normEmail(email))) return 'Masukkan emel yang sah (cth. kaunter@kkbangi.my).';
+    if (!pw || pw.length < MIN_PW) return 'Kata laluan sekurang-kurangnya ' + MIN_PW + ' aksara.';
+    if (pw2 !== undefined && pw !== pw2) return 'Kedua-dua kata laluan tidak sama.';
+    return '';
+  }
+
+  const api = { ST, loadMap, pickRoom, planClose, roomState, addNote, dayKey, normEmail, accountProblem };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.GiliranLogic = api;
 })(typeof window !== 'undefined' ? window : globalThis);

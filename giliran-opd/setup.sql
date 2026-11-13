@@ -24,11 +24,19 @@ create table if not exists public.giliran_pesakit (
 
 create index if not exists giliran_pesakit_tarikh_idx on public.giliran_pesakit (tarikh);
 
--- Senarai emel akaun yang dibenarkan. Tiada akses terus dari laman (tiada polisi).
+-- Senarai emel akaun yang dibenarkan (huruf kecil). admin = boleh urus akaun di tab Tetapan.
+-- Laman hanya boleh baca baris akaun sendiri. Tambah, buang dan tukar peranan dibuat oleh
+-- Edge Function urus-akaun (supabase/functions/urus-akaun) dengan kunci service role.
 create table if not exists public.giliran_akaun (
-  email text primary key
+  email text primary key,
+  admin boolean not null default false
 );
+alter table public.giliran_akaun add column if not exists admin boolean not null default false;
 alter table public.giliran_akaun enable row level security;
+drop policy if exists "baca akaun sendiri" on public.giliran_akaun;
+create policy "baca akaun sendiri" on public.giliran_akaun
+  for select to authenticated
+  using (email = lower(auth.jwt() ->> 'email'));
 
 -- Semakan akses, dalam skema yang tidak didedahkan melalui API
 create schema if not exists private;
