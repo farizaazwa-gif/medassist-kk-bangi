@@ -423,6 +423,20 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
  .sheet-extra-inner .clist,.sheet-extra-inner .g2 { grid-template-columns:1fr; }
 }
 
+
+@media(max-width:760px) {
+  .sheet-mobile-docs { width:100%; }
+  .sheet-mobile-docs .g2 { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px; }
+  .sheet-mobile-docs .f input, .sheet-mobile-docs .f select { max-width:100%; }
+  .sheet-mobile-docs .sec .clist { gap:3px 8px; }
+  .sheet-extra .sheet-extra-inner { gap:12px; }
+  .sheet-extra-inner .issues { padding:4px 2px; }
+  #step1 .fields .officer-more { grid-column:1/-1; }
+}
+@media(max-width:400px) {
+  .sheet-mobile-docs .g2 { grid-template-columns:1fr; }
+}
+
 </style>
 </head>
 <body>
@@ -1248,7 +1262,11 @@ function sheetExtraHtml(key,d,r,x,colSpan) {
   if (key === "etap") fields = selF("jenis","Jenis hari",[["biasa","Hari bekerja"],["rehat","Hari rehat / kelepasan am"]],r.jenis || autoJenis(weekday(d)));
   if (key === "lokum") fields = '<label class="ck wide"><input type="checkbox" data-k="am"' + (r.am ? " checked" : "") + '> Hari kelepasan am</label>';
   if (r.ganti) fields += '<label class="f wide"><span>Nama anggota diganti (untuk laporan)</span><input type="text" data-k="gantiNama" value="' + esc(r.gantiNama || "") + '" placeholder="Nama anggota diganti"></label>';
-  const docs = '<div class="sheet-mobile-docs"><strong>Semakan dokumen</strong>' + docsHtml(key,r) + '</div>';
+  let primary = "";
+  if (key === "elm") primary = '<label class="f wide"><span>Sebab OT</span><input type="text" data-k="sebab" placeholder="Contoh: program kesihatan" value="' + esc(r.sebab || "") + '"></label>';
+  if (isEh(key)) primary = selF("lokasi","Lokasi extended hours",[["","Pilih KK"],["ampang","KK Ampang"],["kajang","KK Kajang"]],r.lokasi || "");
+  if (key === "etap" || key === "bap") primary = chkF("dipanggil","Dipanggil masuk ke klinik",r) + (r.dipanggil ? timeF("masuk","Masa masuk",r) + timeF("keluar","Masa keluar",r) : "");
+  const docs = '<div class="sheet-mobile-docs"><strong>Butiran utama</strong><div class="g2">' + primary + '</div><strong>Semakan dokumen</strong>' + docsHtml(key,r) + '</div>';
   const issues = x && (x.k.length || x.a.length) ? '<div class="issues">' + x.k.map(y => '<span class="k">• ' + esc(y) + "</span>").join("") + x.a.map(y => '<span class="a">• ' + esc(y) + "</span>").join("") + "</div>" : '<span class="hint">Tiada masalah pada tarikh ini dikesan oleh sistem.</span>';
   return '<tr class="sheet-extra" data-d="' + d + '"><td colspan="' + colSpan + '"><div class="sheet-extra-inner"><strong>Butiran tambahan · ' + d + " " + BULAN[monthInfo().m - 1] + '</strong><div class="g2">' + docs + fields + '</div>' + issues + "</div></td></tr>";
 }
