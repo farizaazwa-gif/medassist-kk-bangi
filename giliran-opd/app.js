@@ -557,6 +557,10 @@
     }
   });
   $('cleanupBtn').addEventListener('click', cleanup);
+  $('reloadBtn').addEventListener('click', async () => {
+    if (!(await ask('Refresh halaman?', 'Anda pasti mahu refresh? Halaman akan dimuat semula dengan data dan versi terkini. Tiada nombor dipadam.', 'Ya, refresh'))) return;
+    location.reload();
+  });
   $('logoutBtn').addEventListener('click', async () => {
     if (!(await ask('Log keluar?', 'Hanya peranti ini dilog keluar. Peranti lain yang guna akaun sama tidak terjejas.', 'Log keluar'))) return;
     await sb.auth.signOut({ scope: 'local' });
