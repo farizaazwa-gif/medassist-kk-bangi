@@ -75,6 +75,22 @@
     }));
   }
 
+  // Agihan disusun ikut kedudukan bilik: kod "1A" = blok 1, lajur A.
+  // Blok ikut turutan bilik dalam senarai; lajur ikut abjad; petak kosong = null.
+  // Bilik yang kodnya bukan nombor+huruf (cth. "TRIAJ") masuk ke "other".
+  function allocationRows(rooms, patients) {
+    const rows = [], byBlock = {}, letters = [], other = [];
+    allocation(rooms, patients).forEach(a => {
+      const m = /^(\d+)([A-Z])$/.exec(String(a.name).toUpperCase());
+      if (!m) { other.push(a); return; }
+      if (!letters.includes(m[2])) letters.push(m[2]);
+      if (!byBlock[m[1]]) { byBlock[m[1]] = { block: m[1], cells: {} }; rows.push(byBlock[m[1]]); }
+      byBlock[m[1]].cells[m[2]] = a;
+    });
+    const cols = letters.sort();
+    return { cols, rows: rows.map(r => ({ block: r.block, cells: cols.map(c => r.cells[c] || null) })), other };
+  }
+
   // Semakan akaun baharu sebelum dihantar ke pelayan (pelayan menyemak semula)
   const MIN_PW = 8;
   function normEmail(v) {
@@ -87,7 +103,7 @@
     return '';
   }
 
-  const api = { ST, loadMap, pickRoom, planClose, roomState, addNote, dayKey, normEmail, accountProblem, allocation };
+  const api = { ST, loadMap, pickRoom, planClose, roomState, addNote, dayKey, normEmail, accountProblem, allocation, allocationRows };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.GiliranLogic = api;
 })(typeof window !== 'undefined' ? window : globalThis);

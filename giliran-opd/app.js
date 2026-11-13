@@ -209,13 +209,17 @@
       $('markDone').disabled = !s.current;
       $('markAbsent').disabled = !s.current;
     }
-    // Agihan hari ini: setiap bilik dengan semua nombor yang masuk ke bilik itu, ikut turutan daftar
-    $('board').innerHTML = L.allocation(rooms, patients).map(a =>
-      '<div class="arow' + (a.open ? '' : ' closed') + '">' +
-      '<div><span class="code">' + esc(a.name) + '</span>' + (a.open ? '' : '<span class="tag">Tutup</span>') + '</div>' +
-      '<div class="anos">' + (a.nos.length ? a.nos.map(n => '<span class="ano">' + esc(n) + '</span>').join('') : '<span class="none">Belum ada pesakit</span>') + '</div>' +
-      '<div class="acount">' + (a.nos.length ? a.nos.length + ' pesakit' : '') + '</div></div>'
-    ).join('') || '<div class="empty">Belum ada bilik.</div>';
+    // Agihan hari ini dalam grid: baris = blok bilik (1, 2, 3...), lajur = A, B, C
+    const g = L.allocationRows(rooms, patients);
+    const card = a => !a ? '<div class="acard empty" aria-hidden="true"></div>' :
+      '<div class="acard' + (a.open ? '' : ' closed') + '"><div class="top"><span class="code">' + esc(a.name) + '</span>' +
+      '<span class="cnt">' + (a.open ? '' : '<span class="tag">Tutup</span>') + '<b>' + a.nos.length + '</b> pesakit</span></div>' +
+      '<div class="anos">' + (a.nos.length ? a.nos.map(n => '<span class="ano" title="' + esc(n) + '">' + esc(n) + '</span>').join('') : '<span class="none">Belum ada pesakit</span>') + '</div></div>';
+    let html = g.rows.length ? '<div class="agrid" style="--cols:' + g.cols.length + '">' + g.rows.map(r => r.cells.map(card).join('')).join('') + '</div>' : '';
+    if (g.other.length) html += (html ? '<div class="agrid-sub">Bilik lain</div>' : '') + '<div class="agrid">' + g.other.map(card).join('') + '</div>';
+    $('board').innerHTML = html || '<div class="empty">Belum ada bilik.</div>';
+    const open = rooms.filter(r => r.open).length;
+    $('allocTotal').innerHTML = '<b>' + patients.length + '</b> pesakit hari ini · <b>' + open + '</b>/' + rooms.length + ' bilik buka';
   }
   function renderSettings() {
     $('rlist').innerHTML = rooms.map((r, i) =>

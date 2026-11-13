@@ -136,19 +136,27 @@ tr.s-tidak_hadir td.no{text-decoration:line-through}
 .queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
 .queue .q{font-family:var(--font-sign);font-size:24px;font-weight:700;border:1px solid var(--line);border-radius:8px;padding:4px 12px;font-variant-numeric:tabular-nums;background:var(--bg)}
 .queue .q:first-child{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
-/* Agihan: satu baris setiap bilik, nombor giliran ikut turutan daftar */
-.alloc{display:grid}
-.arow{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line)}
-.arow:last-child{border-bottom:0}
-.arow .code{font-family:var(--font-sign);font-size:26px;font-weight:700;line-height:1}
-.arow .tag{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
-.arow.closed{background:var(--closed-soft)}
-.arow.closed .code{color:var(--closed);text-decoration:line-through}
-.anos{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
-.ano{font-family:var(--font-sign);font-size:20px;font-weight:600;line-height:1.3;padding:1px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-variant-numeric:tabular-nums}
-.anos .none{color:var(--muted);font-size:13px}
-.acount{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-@media (max-width:480px){.arow{grid-template-columns:56px minmax(0,1fr)}.acount{grid-column:2}}
+/* Agihan: grid ikut susunan fizikal (baris = blok 1,2,3..., lajur = A,B,C); nombor ikut turutan daftar */
+.ahead-row{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;margin-bottom:12px}
+.ahead-row h2{margin:0}
+.ahead-row .total{font-size:13px;color:var(--muted)}
+.ahead-row .total b{color:var(--ink);font-variant-numeric:tabular-nums}
+.agrid{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));gap:10px}
+.acard{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);display:flex;flex-direction:column;min-width:0}
+.acard.empty{border:1px dashed transparent;background:none}
+.acard .top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--bg);border-radius:var(--r) var(--r) 0 0}
+.acard .code{font-family:var(--font-sign);font-size:24px;font-weight:700;line-height:1}
+.acard .cnt{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.acard .cnt b{font-family:var(--font-sign);font-size:18px;color:var(--ink);font-weight:700}
+.acard.closed{border-style:dashed;background:var(--closed-soft)}
+.acard.closed .top{background:var(--closed-soft)}
+.acard.closed .code{color:var(--closed);text-decoration:line-through}
+.acard .tag{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--closed);margin-right:6px}
+.anos{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;padding:10px 12px;min-height:52px;align-content:start}
+.ano{font-family:var(--font-sign);font-size:19px;font-weight:600;text-align:center;line-height:1.35;padding:2px 4px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.anos .none{grid-column:1/-1;color:var(--muted);font-size:13px;align-self:center}
+.agrid-sub{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 8px}
+@media (max-width:640px){.agrid{grid-template-columns:minmax(0,1fr)}.acard.empty{display:none}}
 
 /* Settings */
 .rlist{display:grid;gap:6px}
@@ -315,8 +323,11 @@ dialog .check{margin-bottom:14px}
       <div class="empty" id="myQueueEmpty" hidden>Tiada pesakit menunggu.</div>
     </div>
     <div class="panel" style="margin-top:18px">
-      <h2>Agihan pesakit mengikut bilik</h2>
-      <div class="alloc" id="board"></div>
+      <div class="ahead-row">
+        <h2>Agihan pesakit mengikut bilik</h2>
+        <span class="total" id="allocTotal"></span>
+      </div>
+      <div id="board"></div>
     </div>
   </section>
 
