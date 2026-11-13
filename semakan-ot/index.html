@@ -381,6 +381,48 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
 }
 :root[data-theme="dark"] .ot-sheet th, :root[data-theme="dark"] .ot-sheet thead .sticky-date, :root[data-theme="dark"] .ot-sheet thead .sticky-on { background: #214a44; }
 
+
+.officer-more { grid-column:1/-1; border-top:1px solid var(--line);padding-top:9px; }
+.officer-more summary { color:var(--accent);font-size:.85rem;font-weight:600;cursor:pointer; }
+.officer-more .ck { margin-top:9px; }
+.quick-summary { display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:.78rem; }
+.quick-summary b { margin-right:auto;font-size:.87rem; }
+.quick-summary span { padding:5px 8px;border-radius:7px;background:var(--bg); }
+.quick-summary span:nth-child(3) { background:var(--ok-soft);color:var(--ok); }
+.quick-summary.needs-attention span:nth-child(4) { background:var(--warn-soft);color:var(--warn); }
+.sheet-mobile-docs { display:none; }
+@media(max-width:760px) {
+ .sheet-scroll { max-height:none;overflow-x:auto; }
+ .ot-sheet { min-width:0;width:100%;font-size:.77rem; }
+ .ot-sheet .sticky-date,.ot-sheet .sticky-on { position:static;min-width:0; }
+ .ot-sheet .sticky-date { width:auto; }
+ .ot-sheet .sticky-on { width:43px; }
+ .ot-sheet th { position:sticky;top:0;z-index:2;padding:8px 4px;font-size:.7rem;white-space:normal; }
+ .ot-sheet td { padding:6px 4px; }
+ .ot-sheet .datecell b { font-size:.78rem; }
+ .ot-sheet .datecell small { font-size:.63rem; }
+ .ot-sheet .time-cell { min-width:0; }
+ .ot-sheet .time-pair { display:flex;flex-wrap:wrap;gap:2px;max-width:96px; }
+ .ot-sheet .time-pair input { width:100%;min-width:76px;max-width:96px;font-size:14px;min-height:32px; }
+ .ot-sheet .time-pair em { display:none; }
+ .ot-sheet .col-surat,.ot-sheet .col-jadual,.ot-sheet .col-ganti,.ot-sheet .col-borang,
+ .ot-sheet .col-thumb,.ot-sheet .col-tiadacuti,.ot-sheet .col-ketik,.ot-sheet .col-sebab,
+ .ot-sheet .col-lokasi,.ot-sheet .col-calltime,.ot-sheet .col-dipanggil,.ot-sheet .col-nilai,
+ .ot-sheet .col-jam,.ot-sheet .col-issue { display:none; }
+ .ot-sheet .status-cell { width:86px;white-space:normal; }
+ .ot-sheet .sh-status { white-space:normal;font-size:.66rem;line-height:1.1; }
+ .ot-sheet .sh-more { padding:7px 6px;font-size:.74rem; }
+ .sheet-mobile-docs { display:flex;flex-direction:column;gap:7px;grid-column:1/-1; }
+ .sheet-mobile-docs .sec { background:var(--surface);border-radius:8px;padding:9px; }
+ .sheet-extra-inner .clist,.sheet-extra-inner .g2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .sheet-toolbar { padding:9px; }
+ #step3 .top-grid { grid-template-columns:1fr; }
+}
+@media(max-width:400px) {
+ .ot-sheet .time-pair input { max-width:83px;min-width:70px; }
+ .sheet-extra-inner .clist,.sheet-extra-inner .g2 { grid-template-columns:1fr; }
+}
+
 </style>
 </head>
 <body>
@@ -402,25 +444,17 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
     <div class="step-h"><span class="num">1</span><div><h2>Maklumat pegawai</h2></div></div>
     <div class="fields">
       <div class="field span2"><label for="nama">Nama pegawai</label><input id="nama" type="text" autocomplete="off" placeholder="Contoh: Nur Aisyah binti Ahmad"><small class="name-note" id="identityHint">Untuk pegawai lain, klik <b>Pegawai baharu</b> supaya rekod tidak bercampur.</small><button type="button" id="editNamaBtn" class="ghost small" hidden>Betulkan ejaan nama</button></div>
-      <div class="field span2"><label for="jawatan">Jawatan</label><select id="jawatan"></select><small class="hint">Jenis tuntutan yang layak akan keluar ikut jawatan.</small></div>
+      <div class="field span2"><label for="jawatan">Jawatan</label><select id="jawatan"></select></div>
       <div class="field"><label for="fasiliti">Klinik bertugas</label><select id="fasiliti"></select></div>
       <div class="field"><label for="bulan">Bulan tuntutan</label><input id="bulan" type="month"></div>
       <div class="field span2" id="gajiField" hidden><label for="gaji">Gaji pokok</label><div class="money"><span>RM</span><input id="gaji" type="number" inputmode="decimal" step="0.01" min="0" placeholder="Rujuk penyata gaji"></div><small class="hint" id="gajiHint"></small></div>
-      <label class="ck span2" id="tkField" hidden><input type="checkbox" id="tanggung"> Pegawai sedang menanggung kerja (terima Elaun Penanggungan Kerja)</label>
+      <details class="officer-more span2"><summary>Pilihan tambahan <span class="muted">· jika berkaitan sahaja</span></summary><label class="ck" id="tkField" hidden><input type="checkbox" id="tanggung"> Terima Elaun Penanggungan Kerja (EPK)</label><p class="hint">Tandakan jika menerima EPK melalui arahan rasmi. Potongan OT hari bekerja biasa dikira jika berkenaan.</p></details>
     </div>
   </section>
 
-  <section class="panel" id="step3">
-    <div class="step-h"><span class="num">2</span><div><h2>Ringkasan &amp; keputusan semakan</h2></div></div>
-    <div id="result"></div>
-    <p class="top-note">Semakan automatik ini bukan kelulusan rasmi tuntutan. Penyelia / Unit Kewangan perlu mengesahkan dokumen dan kelayakan sebenar.</p>
-  </section>
-
-  <section id="step2">
-    <div class="step-h out"><span class="num">3</span><div><h2>Senarai tarikh tuntutan</h2><p class="sub">Tanda hari bertugas, isi masa dan semak dokumen terus pada baris yang sama. Klik <b>Butiran</b> hanya untuk pilihan tambahan.</p></div></div>
-    <nav class="tabs" id="tabs" role="tablist" aria-label="Jenis tuntutan"></nav>
-    <div id="module"></div>
-  </section>
+  <div class="quick-summary" id="quickSummary" role="status"><b>Ringkasan bulan ini</b><span id="quickClaim">0 tarikh</span><span id="quickDone">0 lengkap</span><span id="quickIssue">0 perlu semak</span></div>
+  <section id="step2"><div class="step-h out"><span class="num">2</span><div><h2>Isi tarikh tuntutan</h2><p class="sub">Tandakan tarikh, isi masa dan tekan <b>Semak</b> untuk dokumen serta pilihan tambahan.</p></div></div><nav class="tabs" id="tabs" role="tablist" aria-label="Jenis tuntutan"></nav><div id="module"></div></section>
+  <section class="panel" id="step3"><div class="step-h"><span class="num">3</span><div><h2>Keputusan akhir</h2></div></div><div id="result"></div><p class="top-note">Semakan automatik bukan kelulusan rasmi. Dokumen dan kelayakan perlu disahkan oleh penyelia / Unit Kewangan.</p></section>
 
   <details class="panel tetapan adv" id="tetapan">
     <summary>Tetapan kadar &amp; cuti <span class="muted">· untuk penyelia, isi bila dapat pengesahan Unit Kewangan</span></summary>
@@ -883,7 +917,7 @@ function evalModule(key) {
     const had = gaji / 3, lebih = gaji > 0 && basisTot > had + 0.005;
     const beza = dit != null ? dit - rm : null;
     Object.assign(ev.sum, { gaji, asas: gaji * 12 / 2504, s, m, rm, cg, dit, beza, had, lebih, amar, lok, basis, basisTot, othBasis, gabung });
-    if (!days.length) { v.kp = key === "elm" ? "Belum ada tarikh OT" : "Belum ada tarikh extended hours"; v.why = ["Tekan tarikh pada kalendar untuk tambah."]; return ev; }
+    if (!days.length) { v.kp = key === "elm" ? "Belum ada tarikh OT" : "Belum ada tarikh extended hours"; v.why = ["Tandakan tarikh dalam jadual untuk mula."]; return ev; }
     if (gaji <= 0) { v.kp = "Isi gaji pokok"; v.why = ["Kiraan RM perlukan gaji pokok."]; return ev; }
     if (gagal) bad.push(gagal + " tarikh tidak lengkap (lihat setiap tarikh)");
     if (!MS.penyata) bad.push("Tiada salinan penyata gaji terkini");
@@ -898,7 +932,7 @@ function evalModule(key) {
     days.forEach(x => { rm += x.c.rm; if (x.c.kat === "p4") p4++; else p0++; });
     const beza = dit != null ? dit - rm : null;
     Object.assign(ev.sum, { rm, p4, p0, dit, beza });
-    if (!days.length) { v.kp = "Belum ada tarikh on-call"; v.why = ["Tekan tarikh pada kalendar untuk tambah."]; return ev; }
+    if (!days.length) { v.kp = "Belum ada tarikh on-call"; v.why = ["Tandakan tarikh dalam jadual untuk mula."]; return ev; }
     if (gagal) bad.push(gagal + " tarikh tidak lengkap (lihat setiap tarikh)");
     if (!M.jarak) bad.push("Tiada pengesahan tinggal dalam 33 km / 30 minit dari tempat bertugas");
     if (beza != null && beza > 0.05) bad.push("Jumlah dituntut melebihi kiraan sebanyak " + rmFmt(beza));
@@ -909,7 +943,7 @@ function evalModule(key) {
     days.forEach(x => { jam += x.c.bayar; if (x.r.lokasi) lok[x.r.lokasi] = (lok[x.r.lokasi] || 0) + 1; if (x.c.rm == null) { if (!x.c.tutup) kadarKosong = true; } else rm += x.c.rm; });
     const beza = dit != null && !kadarKosong ? dit - rm : null;
     Object.assign(ev.sum, { jam, rm, kadarKosong, lok, dit, beza });
-    if (!days.length) { v.kp = "Belum ada tarikh bertugas"; v.why = ["Tekan tarikh pada kalendar untuk tambah."]; return ev; }
+    if (!days.length) { v.kp = "Belum ada tarikh bertugas"; v.why = ["Tandakan tarikh dalam jadual untuk mula."]; return ev; }
     if (gagal) bad.push(gagal + " tarikh tidak lengkap (lihat setiap tarikh)");
     if (beza != null && beza > 0.05) bad.push("Jumlah dituntut melebihi kiraan sebanyak " + rmFmt(beza));
     if (kadarKosong) warn.push("Kadar sejam belum diisi dalam Tetapan (paparan Penuh)");
@@ -920,7 +954,7 @@ function evalModule(key) {
     days.forEach(x => { if (x.c.rm == null) kadarKosong = true; else rm += x.c.rm; });
     const beza = dit != null && !kadarKosong ? dit - rm : null;
     Object.assign(ev.sum, { rm, kadarKosong, dit, beza });
-    if (!days.length) { v.kp = "Belum ada tarikh"; v.why = ["Tekan tarikh pada kalendar untuk tambah."]; return ev; }
+    if (!days.length) { v.kp = "Belum ada tarikh"; v.why = ["Tandakan tarikh dalam jadual untuk mula."]; return ev; }
     if (gagal) bad.push(gagal + " tarikh tidak lengkap (lihat setiap tarikh)");
     if (beza != null && beza > 0.05) bad.push("Jumlah dituntut melebihi kiraan sebanyak " + rmFmt(beza));
     if (kadarKosong) warn.push("Kadar sehari belum diisi dalam Tetapan (paparan Penuh)");
@@ -1214,8 +1248,9 @@ function sheetExtraHtml(key,d,r,x,colSpan) {
   if (key === "etap") fields = selF("jenis","Jenis hari",[["biasa","Hari bekerja"],["rehat","Hari rehat / kelepasan am"]],r.jenis || autoJenis(weekday(d)));
   if (key === "lokum") fields = '<label class="ck wide"><input type="checkbox" data-k="am"' + (r.am ? " checked" : "") + '> Hari kelepasan am</label>';
   if (r.ganti) fields += '<label class="f wide"><span>Nama anggota diganti (untuk laporan)</span><input type="text" data-k="gantiNama" value="' + esc(r.gantiNama || "") + '" placeholder="Nama anggota diganti"></label>';
+  const docs = '<div class="sheet-mobile-docs"><strong>Semakan dokumen</strong>' + docsHtml(key,r) + '</div>';
   const issues = x && (x.k.length || x.a.length) ? '<div class="issues">' + x.k.map(y => '<span class="k">• ' + esc(y) + "</span>").join("") + x.a.map(y => '<span class="a">• ' + esc(y) + "</span>").join("") + "</div>" : '<span class="hint">Tiada masalah pada tarikh ini dikesan oleh sistem.</span>';
-  return '<tr class="sheet-extra" data-d="' + d + '"><td colspan="' + colSpan + '"><div class="sheet-extra-inner"><strong>Butiran tambahan · ' + d + " " + BULAN[monthInfo().m - 1] + '</strong><div class="g2">' + fields + '</div>' + issues + "</div></td></tr>";
+  return '<tr class="sheet-extra" data-d="' + d + '"><td colspan="' + colSpan + '"><div class="sheet-extra-inner"><strong>Butiran tambahan · ' + d + " " + BULAN[monthInfo().m - 1] + '</strong><div class="g2">' + docs + fields + '</div>' + issues + "</div></td></tr>";
 }
 function sheetTableHtml(key) {
   const cols = SHEET_COLS[key], mo = monthInfo(), rows = md(key).rows;
@@ -1231,13 +1266,13 @@ function sheetTableHtml(key) {
     out.push('<tr class="sheet-row' + (active ? " on" : "") + '" data-d="' + d + '" data-status="' + status[0] + '">' +
       '<td class="sticky-date"><div class="datecell"><b>' + d + " " + BULAN[mo.m - 1].slice(0,3) + '</b><small>' + dow + (cu ? ' · Cuti umum' : "") + '</small>' + (cu ? '<span class="cuti" title="' + esc(cu) + '">' + esc(cu) + '</span>' : "") + '</div></td>' +
       '<td class="sticky-on"><label class="sh-check"><input type="checkbox" data-on="1" aria-label="' + label + " " + esc(dateName) + '"' + (active ? " checked" : "") + '></label></td>' +
-      cols.map(([c]) => '<td class="' + (c === "masa" || c === "calltime" ? "time-cell" : c === "sebab" ? "reason-cell" : ["surat","jadual","ganti","borang","thumb","dipanggil","tiadacuti","ketik"].includes(c) ? "doc-cell" : "") + '">' + (active ? sheetCell(key,c,r,d,x) : '<span class="sheet-dash">–</span>') + "</td>").join("") +
+      cols.map(([c]) => '<td class="col-' + c + ' ' + (c === "masa" || c === "calltime" ? "time-cell" : c === "sebab" ? "reason-cell" : ["surat","jadual","ganti","borang","thumb","dipanggil","tiadacuti","ketik"].includes(c) ? "doc-cell" : "") + '">' + (active ? sheetCell(key,c,r,d,x) : '<span class="sheet-dash">–</span>') + "</td>").join("") +
       '<td class="status-cell"><span class="sh-status ' + status[0] + '">' + status[1] + '</span></td>' +
-      '<td class="issue-cell"><span class="sh-issue ' + status[0] + '">' + esc(sheetIssue(x)) + '</span></td>' +
-      '<td>' + (active ? '<button type="button" class="ghost sh-more" data-act="detail" data-d="' + d + '" aria-expanded="' + (extraDay === d) + '">' + (extraDay === d ? "Tutup" : "Butiran") + '</button>' : '<span class="sheet-dash">–</span>') + '</td></tr>');
+      '<td class="issue-cell col-issue"><span class="sh-issue ' + status[0] + '">' + esc(sheetIssue(x)) + '</span></td>' +
+      '<td>' + (active ? '<button type="button" class="ghost sh-more" data-act="detail" data-d="' + d + '" aria-expanded="' + (extraDay === d) + '">' + (extraDay === d ? "Tutup" : "Semak") + '</button>' : '<span class="sheet-dash">–</span>') + '</td></tr>');
     if (active && extraDay === d) out.push(sheetExtraHtml(key,d,r,x,cols.length+5));
   }
-  const head = '<th class="sticky-date">Tarikh</th><th class="sticky-on">' + (isOt(key) ? "Buat OT" : "Bertugas") + '</th>' + cols.map(([,label]) => "<th>" + label + "</th>").join("") + "<th>Status</th><th>Kekurangan</th><th>Lain-lain</th>";
+  const head = '<th class="sticky-date">Tarikh</th><th class="sticky-on">' + (isOt(key) ? "Buat OT" : "Bertugas") + '</th>' + cols.map(([c,label]) => '<th class="col-' + c + '">' + label + "</th>").join("") + "<th>Status</th><th class=\"col-issue\">Kekurangan</th><th>Semak</th>";
   const filters = [["all","Semua tarikh"],["claimed","Dituntut"],["issues","Isu tarikh"]].map(f => '<button type="button" data-filter="' + f[0] + '" aria-pressed="' + (rowFilter === f[0]) + '">' + f[1] + "</button>").join("");
   const warn = mo.y > 2027 || mo.y < 2026 ? "Senarai cuti umum untuk tahun ini belum dimasukkan. Sahkan jenis hari secara manual." : mo.y === 2027 ? "Cuti ganti / cuti peristiwa 2027 mungkin berubah mengikut warta rasmi." : "";
   return '<div class="sheet-shell"><div class="sheet-toolbar"><div><strong>Jadual ' + BULAN[mo.m - 1] + " " + mo.y + '</strong><div class="sheet-stats" id="sheetStats"></div></div><div class="sheet-filters">' + filters + '</div></div>' +
@@ -1481,6 +1516,14 @@ function renderOverview() {
     (anyDit ? "<span>Jumlah dituntut <b>" + rmFmt(totDit) + "</b></span>" : "") + "</div></div>";
 }
 
+function updateQuickSummary() {
+  const evs=mods().map(evalModule), total=evs.reduce((n,e)=>n+e.days.length,0);
+  const done=evs.reduce((n,e)=>n+e.days.filter(x=>!x.k.length&&!x.a.length).length,0);
+  $("quickClaim").textContent=total+" tarikh";
+  $("quickDone").textContent=done+" lengkap";
+  $("quickIssue").textContent=(total-done)+" perlu semak";
+  $("quickSummary").classList.toggle("needs-attention",total>done);
+}
 function updateBar(key, ev) {
   const dot = $("bdot"), txt = $("btxt");
   if (!key) { dot.dataset.st = ""; txt.textContent = "Pilih jawatan untuk mula"; return; }
@@ -1501,12 +1544,13 @@ function refresh() {
     if (dot) dot.dataset.st = ev.v.cls;
   });
   const key = activeTab();
-  if (!key) { updateBar(null); return; }
+  if (!key) { updateQuickSummary(); updateBar(null); return; }
   renderOverview();
   const ev = evalModule(key);
   const byDay = {};
   ev.days.forEach(x => { byDay[x.d] = x; });
   updateSheet(key, ev);
+  updateQuickSummary();
   refreshNameLock();
   document.querySelectorAll("#cal button[data-day]").forEach(b => {
     const x = byDay[b.dataset.day];
@@ -1585,7 +1629,7 @@ function onModuleInput(e) {
     if (t.dataset.k==="ganti" && t.checked) extraDay=d;
     save();
     const redrawKeys=["ganti","dipanggil","lokasi","am","jenis","bayar","kerja"];
-    if (redrawKeys.includes(t.dataset.k) && e.type==="change") redrawSheet();
+    if ((redrawKeys.includes(t.dataset.k) || t.type==="checkbox") && e.type==="change") redrawSheet();
     else refresh();
   } else if (t.dataset.mk) {
     const tk = isOt(key) && (t.dataset.mk==="penyata" || t.dataset.mk==="lulus13") ? "elm" : key;
