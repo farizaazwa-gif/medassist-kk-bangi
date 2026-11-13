@@ -3455,6 +3455,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </script>
 <script id="medassist-pregnancy-dates-script">
 /* v18.250 — Pregnancy dates: LMP (POA + EDD) and USOD dating scan (POG + REDD).
+   v18.251 — gestational age shown as "X weeks Y days" (not X+Y/52), per user request.
    EDD = LMP + 280 days (Naegele). REDD = scan date + (280 − GA at scan).
    POG = GA at scan + days elapsed since the scan. Output is plain lines for notes. */
 (() => {
@@ -3466,8 +3467,10 @@ html,body{max-width:100%;overflow-x:hidden}
   const SCAN_MAX_WEEKS = 42;
 
   function gaLabel(totalDays) {
-    const days = Math.trunc(Number(totalDays));
-    return `${Math.floor(days / 7)}+${days % 7}/52`;
+    const total = Math.trunc(Number(totalDays));
+    const weeks = Math.floor(total / 7);
+    const days = total % 7;
+    return `${weeks} ${weeks === 1 ? "week" : "weeks"} ${days} ${days === 1 ? "day" : "days"}`;
   }
 
   function wholeNumber(raw) {

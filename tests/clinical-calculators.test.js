@@ -50,9 +50,12 @@ test("pregnancy LMP output lists LMP, POA and EDD in note order", () => {
   assert.equal(result.edd, "2027-08-08");
   assert.deepEqual(Array.from(ob.lmpLines(result)), [
     "LMP: 01/11/2026",
-    "POA: 1+5/52",
+    "POA: 1 week 5 days",
     "EDD: 08/08/2027"
   ]);
+  assert.equal(ob.gaLabel(0), "0 weeks 0 days");
+  assert.equal(ob.gaLabel(8), "1 week 1 day");
+  assert.equal(ob.gaLabel(20), "2 weeks 6 days");
   assert.equal(ob.fromLmp("2026-11-01", "2026-11-01").gaDays, 0);
   assert.match(ob.fromLmp("2026-11-14", "2026-11-13").error, /before LMP/);
   assert.match(ob.fromLmp("", "2026-11-13").error, /LMP/);
@@ -67,8 +70,8 @@ test("pregnancy USOD scan output gives POG and REDD from scan dating", () => {
   assert.equal(result.redd, "2027-05-30");
   assert.deepEqual(Array.from(ob.scanLines(result)), [
     "USOD",
-    "Scan 20/10/2026: c/w 8+2/52",
-    "POG: 11+5/52",
+    "Scan 20/10/2026: c/w 8 weeks 2 days",
+    "POG: 11 weeks 5 days",
     "REDD: 30/05/2027"
   ]);
 
