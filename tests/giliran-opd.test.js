@@ -125,10 +125,25 @@ test("giliran OPD: Malaysian date key rolls over at local midnight", () => {
   assert.equal(L.dayKey(new Date("2026-11-12T16:01:00Z")), "2026-11-13");
 });
 
+test("giliran OPD: script links carry a version that changes with the scripts, so browsers never mix old and new files", () => {
+  const crypto = require("node:crypto");
+  const html = fs.readFileSync(path.join(DIR, "index.html"), "utf8");
+  const files = ["config.js", "logic.js", "app.js"];
+  const want = crypto.createHash("sha256")
+    .update(Buffer.concat(files.map(f => fs.readFileSync(path.join(DIR, f)))))
+    .digest("hex").slice(0, 10);
+  files.forEach(f => {
+    const m = html.match(new RegExp('<script src="' + f.replace(".", "\\.") + '\\?v=([0-9a-f]+)">'));
+    assert.ok(m, f + " is loaded with ?v=");
+    assert.equal(m[1], want, "Update giliran-opd/index.html: " + f + "?v=" + want +
+      " (run: cd giliran-opd && cat config.js logic.js app.js | sha256sum | cut -c1-10)");
+  });
+});
+
 test("giliran OPD: page loads its scripts and keeps patient identifiers out of the schema", () => {
   const html = fs.readFileSync(path.join(DIR, "index.html"), "utf8");
   ["config.js", "logic.js", "app.js"].forEach(src => {
-    assert.match(html, new RegExp('<script src="' + src.replace(".", "\\.") + '">'));
+    assert.match(html, new RegExp('<script src="' + src.replace(".", "\\.") + '\\?v=[0-9a-f]{10}">'));
     assert.equal(fs.existsSync(path.join(DIR, src)), true, src + " must exist");
   });
   const sql = fs.readFileSync(path.join(DIR, "setup.sql"), "utf8").toLowerCase();

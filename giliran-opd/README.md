@@ -36,6 +36,14 @@ Akaun yang tiada dalam `giliran_akaun` boleh log masuk tetapi tidak nampak atau 
 
 Authentication > Sign In / Providers: matikan *Allow new users to sign up*. Akaun dari tab Tetapan tetap boleh dibuat kerana ia dicipta oleh Edge Function.
 
+## Kemas kini skrip
+
+`index.html` memuat `config.js`, `logic.js` dan `app.js` dengan `?v=<hash>`, supaya pelayar tidak campur fail lama dan baharu selepas kemas kini. Selepas ubah mana-mana fail itu, kemas kini nilai `v` (ujian `npm test` akan beri nilai yang betul):
+
+```sh
+cd giliran-opd && cat config.js logic.js app.js | sha256sum | cut -c1-10
+```
+
 ## Data
 
 - Hanya nombor giliran disimpan, bukan nama atau No. KP pesakit.
