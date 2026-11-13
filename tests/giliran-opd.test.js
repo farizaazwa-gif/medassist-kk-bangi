@@ -91,10 +91,22 @@ test("giliran OPD: allocation lists every number sent to each room, in registrat
   ]);
 });
 
+test("giliran OPD: allocation grid places rooms by block and letter, with gaps kept and odd codes set aside", () => {
+  const rooms = ["1A", "1B", "1C", "9A", "9B", "Triaj"].map(name => ({ name, open: true }));
+  const g = L.allocationRows(rooms, [{ id: "x", no: "W1", room: "9B", status: L.ST.W, t: 1 }]);
+  assert.deepEqual(g.cols, ["A", "B", "C"]);
+  assert.deepEqual(g.rows.map(r => r.block), ["1", "9"]);
+  assert.deepEqual(g.rows[1].cells.map(c => c && c.name), ["9A", "9B", null], "9C does not exist, so its cell stays empty");
+  assert.deepEqual(g.rows[1].cells[1].nos, ["W1"]);
+  assert.deepEqual(g.other.map(a => a.name), ["Triaj"]);
+});
+
 test("giliran OPD: the room board shows allocation only, not waiting or called status", () => {
   const app = fs.readFileSync(path.join(DIR, "app.js"), "utf8");
-  const board = app.slice(app.indexOf("$('board').innerHTML"), app.indexOf("function renderSettings"));
-  assert.match(board, /L\.allocation\(rooms, patients\)/);
+  const start = app.indexOf("// Agihan hari ini");
+  assert.ok(start > 0, "board render block exists");
+  const board = app.slice(start, app.indexOf("function renderSettings"));
+  assert.match(board, /L\.allocationRows\(rooms, patients\)/);
   assert.doesNotMatch(board, /menunggu|Dipanggil/i);
 });
 
