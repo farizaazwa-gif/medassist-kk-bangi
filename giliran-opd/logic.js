@@ -65,6 +65,16 @@
     }).format(date || new Date());
   }
 
+  // Agihan hari ini: setiap bilik (ikut susunan) dengan semua nombor yang diagih ke bilik itu,
+  // ikut masa daftar, tanpa mengira status
+  function allocation(rooms, patients) {
+    return rooms.map(r => ({
+      name: r.name,
+      open: r.open,
+      nos: patients.filter(p => p.room === r.name).sort((a, b) => a.t - b.t).map(p => p.no)
+    }));
+  }
+
   // Semakan akaun baharu sebelum dihantar ke pelayan (pelayan menyemak semula)
   const MIN_PW = 8;
   function normEmail(v) {
@@ -77,7 +87,7 @@
     return '';
   }
 
-  const api = { ST, loadMap, pickRoom, planClose, roomState, addNote, dayKey, normEmail, accountProblem };
+  const api = { ST, loadMap, pickRoom, planClose, roomState, addNote, dayKey, normEmail, accountProblem, allocation };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.GiliranLogic = api;
 })(typeof window !== 'undefined' ? window : globalThis);

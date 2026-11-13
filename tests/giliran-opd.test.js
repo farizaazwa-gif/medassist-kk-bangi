@@ -76,6 +76,28 @@ test("giliran OPD: room state lists the next patient first", () => {
   assert.deepEqual(s.waiting.map(p => p.id), ["2", "1"]);
 });
 
+test("giliran OPD: allocation lists every number sent to each room, in registration order, whatever its status", () => {
+  const rooms = [{ name: "1A", open: true }, { name: "1B", open: true }, { name: "3A", open: false }];
+  const patients = [
+    { id: "a", no: "W5", room: "1A", status: L.ST.W, t: 50 },
+    { id: "b", no: "W1", room: "1B", status: L.ST.D, t: 10 },
+    { id: "c", no: "W2", room: "1A", status: L.ST.C, t: 20 },
+    { id: "d", no: "W3", room: "1A", status: L.ST.N, t: 30 }
+  ];
+  assert.deepEqual(L.allocation(rooms, patients), [
+    { name: "1A", open: true, nos: ["W2", "W3", "W5"] },
+    { name: "1B", open: true, nos: ["W1"] },
+    { name: "3A", open: false, nos: [] }
+  ]);
+});
+
+test("giliran OPD: the room board shows allocation only, not waiting or called status", () => {
+  const app = fs.readFileSync(path.join(DIR, "app.js"), "utf8");
+  const board = app.slice(app.indexOf("$('board').innerHTML"), app.indexOf("function renderSettings"));
+  assert.match(board, /L\.allocation\(rooms, patients\)/);
+  assert.doesNotMatch(board, /menunggu|Dipanggil/i);
+});
+
 test("giliran OPD: Malaysian date key rolls over at local midnight", () => {
   assert.equal(L.dayKey(new Date("2026-11-12T15:59:00Z")), "2026-11-12");
   assert.equal(L.dayKey(new Date("2026-11-12T16:01:00Z")), "2026-11-13");
