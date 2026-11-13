@@ -209,14 +209,13 @@
       $('markDone').disabled = !s.current;
       $('markAbsent').disabled = !s.current;
     }
-    $('board').innerHTML = rooms.map(r => {
-      const s = L.roomState(patients, r.name);
-      const nexts = s.waiting.slice(0, 6).map(p => esc(p.no)).join(' · ');
-      return '<div class="bcard' + (r.open ? '' : ' closed') + '"><div class="top"><span class="code">' + esc(r.name) + '</span>' +
-        '<span class="chip' + (r.open ? ' menunggu' : '') + '">' + (r.open ? s.waiting.length + ' menunggu' : 'Tutup') + '</span></div>' +
-        '<div class="calling">Dipanggil: <b>' + (s.current ? esc(s.current.no) : '-') + '</b></div>' +
-        '<div class="nexts">' + (nexts || '<span style="color:var(--muted);font-family:var(--font-body);font-size:13px;font-weight:400">Tiada menunggu</span>') + '</div></div>';
-    }).join('');
+    // Agihan hari ini: setiap bilik dengan semua nombor yang masuk ke bilik itu, ikut turutan daftar
+    $('board').innerHTML = L.allocation(rooms, patients).map(a =>
+      '<div class="arow' + (a.open ? '' : ' closed') + '">' +
+      '<div><span class="code">' + esc(a.name) + '</span>' + (a.open ? '' : '<span class="tag">Tutup</span>') + '</div>' +
+      '<div class="anos">' + (a.nos.length ? a.nos.map(n => '<span class="ano">' + esc(n) + '</span>').join('') : '<span class="none">Belum ada pesakit</span>') + '</div>' +
+      '<div class="acount">' + (a.nos.length ? a.nos.length + ' pesakit' : '') + '</div></div>'
+    ).join('') || '<div class="empty">Belum ada bilik.</div>';
   }
   function renderSettings() {
     $('rlist').innerHTML = rooms.map((r, i) =>
