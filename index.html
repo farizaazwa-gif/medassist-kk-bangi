@@ -440,6 +440,7 @@ textarea{min-height:90px;resize:vertical}
 .notice{background:#fff8e7;border:1px solid #ecd7a5;border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:16px}
 .normal-box{background:var(--soft);border-radius:10px;padding:12px 14px;font-family:Consolas,monospace;margin-bottom:14px}
 .result-box{background:var(--soft);border-radius:12px;padding:16px;margin-top:14px;line-height:1.6}
+.ob-usod{margin-top:18px;padding-top:14px;border-top:1px dashed var(--border)}.ob-usod h3{margin:0 0 2px;font-size:15px}.ob-result-block+.ob-result-block{margin-top:10px}.ob-result-error{color:#a1312b}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .btn{border:0;border-radius:10px;padding:11px 15px;font-weight:800;cursor:pointer}
 .btn.primary{background:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary-dark)}
@@ -3449,6 +3450,86 @@ html,body{max-width:100%;overflow-x:hidden}
     diffDays,
     display,
     malaysiaToday
+  });
+})();
+</script>
+<script id="medassist-pregnancy-dates-script">
+/* v18.250 — Pregnancy dates: LMP (POA + EDD) and USOD dating scan (POG + REDD).
+   EDD = LMP + 280 days (Naegele). REDD = scan date + (280 − GA at scan).
+   POG = GA at scan + days elapsed since the scan. Output is plain lines for notes. */
+(() => {
+  "use strict";
+
+  const dates = window.MedAssistDateOnly;
+  const TERM_DAYS = 280;
+  const SCAN_MIN_WEEKS = 4;
+  const SCAN_MAX_WEEKS = 42;
+
+  function gaLabel(totalDays) {
+    const days = Math.trunc(Number(totalDays));
+    return `${Math.floor(days / 7)}+${days % 7}/52`;
+  }
+
+  function wholeNumber(raw) {
+    const text = String(raw ?? "").trim();
+    if (!/^\d+$/.test(text)) return null;
+    return Number(text);
+  }
+
+  function fromLmp(lmp, assessment) {
+    if (!dates.parse(lmp)) return { error: "Enter a valid LMP date." };
+    if (!dates.parse(assessment)) return { error: "Enter a valid assessment date." };
+    const gaDays = dates.diffDays(lmp, assessment);
+    if (gaDays < 0) return { error: "Assessment date cannot be before LMP." };
+    return { lmp, assessment, gaDays, edd: dates.addDays(lmp, TERM_DAYS) };
+  }
+
+  function fromScan(scanDate, weeksRaw, daysRaw, assessment) {
+    if (!dates.parse(scanDate)) return { error: "Enter a valid scan date." };
+    if (!dates.parse(assessment)) return { error: "Enter a valid assessment date." };
+    const weeks = wholeNumber(weeksRaw);
+    if (weeks === null || weeks < SCAN_MIN_WEEKS || weeks > SCAN_MAX_WEEKS) {
+      return { error: `Enter GA at scan in weeks (${SCAN_MIN_WEEKS}–${SCAN_MAX_WEEKS}).` };
+    }
+    const blankDays = String(daysRaw ?? "").trim() === "";
+    const days = blankDays ? 0 : wholeNumber(daysRaw);
+    if (days === null || days > 6) return { error: "Enter GA at scan days as 0–6." };
+    const elapsed = dates.diffDays(scanDate, assessment);
+    if (elapsed < 0) return { error: "Assessment date cannot be before the scan date." };
+    const scanGaDays = weeks * 7 + days;
+    return {
+      scanDate,
+      assessment,
+      scanGaDays,
+      gaDays: scanGaDays + elapsed,
+      redd: dates.addDays(scanDate, TERM_DAYS - scanGaDays)
+    };
+  }
+
+  function lmpLines(result) {
+    return [
+      `LMP: ${dates.display(result.lmp)}`,
+      `POA: ${gaLabel(result.gaDays)}`,
+      `EDD: ${dates.display(result.edd)}`
+    ];
+  }
+
+  function scanLines(result) {
+    return [
+      "USOD",
+      `Scan ${dates.display(result.scanDate)}: c/w ${gaLabel(result.scanGaDays)}`,
+      `POG: ${gaLabel(result.gaDays)}`,
+      `REDD: ${dates.display(result.redd)}`
+    ];
+  }
+
+  window.MedAssistPregnancyDates = Object.freeze({
+    TERM_DAYS,
+    gaLabel,
+    fromLmp,
+    fromScan,
+    lmpLines,
+    scanLines
   });
 })();
 </script>
@@ -9157,7 +9238,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <button type="button" class="calc-option" data-calc="maintenance"><span>💧</span><strong>Paeds maintenance</strong><small>100/50/20 and 4/2/1</small></button>
 <button type="button" class="calc-option" data-calc="vitals"><span>🩺</span><strong>Paeds vital signs</strong><small>Age-based interpretation</small></button>
 <button type="button" class="calc-option" data-calc="preeclampsia"><span>🤰</span><strong>PE prophylaxis</strong><small>MOH Handbook 2024</small></button>
-<button type="button" class="calc-option" data-calc="pregnancy"><span>📅</span><strong>Pregnancy dates</strong><small>EDD and gestational age</small></button>
+<button type="button" class="calc-option" data-calc="pregnancy"><span>📅</span><strong>Pregnancy dates</strong><small>POA/EDD and USOD REDD</small></button>
 <button type="button" class="calc-option" data-calc="stopbang"><span>😴</span><strong>STOP-BANG</strong><small>OSA risk screening</small></button>
 <button type="button" class="calc-option" data-calc="endocrine"><span>🌡️</span><strong>Thyroid storm</strong><small>Burch-Wartofsky score</small></button>
 </div>
@@ -9532,7 +9613,9 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 <div class="calc-panel" id="calc-pregnancy">
 <button class="btn secondary calc-back" type="button">← Back</button>
-<div class="card"><h2>Pregnancy Date Calculator</h2><div class="grid three"><div><label>LMP date</label><input id="obLmp" type="date"/></div><div><label>Assessment date</label><input id="obAssess" type="date"/></div><div><label> </label><button class="btn primary" id="obCalculate" type="button">Calculate</button></div></div><div class="result-box" id="obResult">Calculates EDD and gestational age.</div></div>
+<div class="card"><h2>Pregnancy Date Calculator</h2><div class="grid two"><div><label for="obLmp">LMP date</label><input id="obLmp" type="date"/></div><div><label for="obAssess">Assessment date</label><input id="obAssess" type="date"/></div></div>
+<div class="ob-usod"><h3>Unsure of date (USOD) — dating scan</h3><div class="helper">Fill in only if LMP is unsure. POG and REDD are calculated from the scan.</div><div class="grid three"><div><label for="obScanDate">Scan date</label><input id="obScanDate" type="date"/></div><div><label for="obScanWeeks">GA at scan — weeks</label><input id="obScanWeeks" inputmode="numeric" max="42" min="4" step="1" type="number"/></div><div><label for="obScanDays">GA at scan — days</label><input id="obScanDays" inputmode="numeric" max="6" min="0" placeholder="0" step="1" type="number"/></div></div></div>
+<div class="actions"><button class="btn primary" id="obCalculate" type="button">Calculate</button><button class="btn secondary" id="obCopy" type="button">Copy result</button></div><div aria-live="polite" class="result-box" id="obResult" role="status">Enter LMP for POA and EDD, or USOD scan details for POG and REDD.</div></div>
 </div>
 </section>
 </main>
@@ -15267,27 +15350,81 @@ $("sbCalc").addEventListener("click",()=>{
   $("sbResult").innerHTML=`STOP-BANG: <strong>${assessment.score}/8</strong> — <strong>${assessment.risk}</strong> risk of obstructive sleep apnoea.${explanation}`;
 });
 
-// Pregnancy
+// Pregnancy — v18.250: LMP block (LMP/POA/EDD) and USOD dating-scan block (POG/REDD), copy-ready.
 const pregnancyDates=window.MedAssistDateOnly;
+const pregnancyCalc=window.MedAssistPregnancyDates;
 if($("obAssess") && !value("obAssess")) $("obAssess").value=pregnancyDates.malaysiaToday();
-$("obCalculate").addEventListener("click",()=>{
-  const lmp=value("obLmp");
+let pregnancyResultText="";
+let pregnancyCalculated=false;
+function renderPregnancyDates(){
+  pregnancyCalculated=true;
+  pregnancyResultText="";
+  const box=$("obResult");
   const assessment=value("obAssess")||pregnancyDates.malaysiaToday();
-  if(!pregnancyDates.parse(lmp)){
-    $("obResult").textContent="Enter a valid LMP date.";
+  const hasLmp=value("obLmp")!=="";
+  const hasScan=["obScanDate","obScanWeeks","obScanDays"].some(id=>value(id)!=="");
+  if(!hasLmp && !hasScan){
+    box.textContent="Enter a valid LMP date, or USOD scan details for POG and REDD.";
     return;
   }
-  if(!pregnancyDates.parse(assessment)){
-    $("obResult").textContent="Enter a valid assessment date.";
-    return;
+  const blocks=[],errors=[];
+  if(hasLmp){
+    const lmpResult=pregnancyCalc.fromLmp(value("obLmp"),assessment);
+    if(lmpResult.error) errors.push(lmpResult.error);
+    else blocks.push(pregnancyCalc.lmpLines(lmpResult));
   }
-  const days=pregnancyDates.diffDays(lmp,assessment);
-  if(days<0){
-    $("obResult").textContent="Assessment date cannot be before LMP. Gestational age has been cleared.";
-    return;
+  if(hasScan){
+    const scanResult=pregnancyCalc.fromScan(value("obScanDate"),value("obScanWeeks"),value("obScanDays"),assessment);
+    if(scanResult.error) errors.push(`USOD: ${scanResult.error}`);
+    else blocks.push(pregnancyCalc.scanLines(scanResult));
   }
-  const edd=pregnancyDates.addDays(lmp,280);
-  $("obResult").innerHTML=`EDD: <strong>${pregnancyDates.display(edd)}</strong><br>Gestational age: <strong>${Math.floor(days/7)} weeks ${days%7} days</strong>`;
+  pregnancyResultText=blocks.map(lines=>lines.join("\n")).join("\n\n");
+  box.replaceChildren();
+  blocks.forEach(lines=>{
+    const block=document.createElement("div");
+    block.className="ob-result-block";
+    lines.forEach((line,index)=>{
+      if(index) block.appendChild(document.createElement("br"));
+      const split=line.indexOf(": ");
+      if(split<0){block.appendChild(document.createTextNode(line));return;}
+      block.appendChild(document.createTextNode(line.slice(0,split+2)));
+      const strong=document.createElement("strong");
+      strong.textContent=line.slice(split+2);
+      block.appendChild(strong);
+    });
+    box.appendChild(block);
+  });
+  errors.forEach(message=>{
+    const block=document.createElement("div");
+    block.className="ob-result-block ob-result-error";
+    block.textContent=message;
+    box.appendChild(block);
+  });
+}
+$("obCalculate").addEventListener("click",renderPregnancyDates);
+["obLmp","obAssess","obScanDate","obScanWeeks","obScanDays"].forEach(id=>{
+  ["input","change"].forEach(type=>$(id)?.addEventListener(type,()=>{if(pregnancyCalculated) renderPregnancyDates();}));
+});
+$("obCopy")?.addEventListener("click",async()=>{
+  if(!pregnancyResultText) return alert("Calculate dulu.");
+  const button=$("obCopy");
+  let copied=false;
+  try{
+    if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(pregnancyResultText);copied=true;}
+  }catch{}
+  if(!copied){
+    const area=document.createElement("textarea");
+    area.value=pregnancyResultText;
+    area.setAttribute("readonly","");
+    area.style.position="fixed";
+    area.style.opacity="0";
+    document.body.appendChild(area);
+    area.select();
+    try{copied=document.execCommand("copy");}catch{}
+    area.remove();
+  }
+  button.textContent=copied?"Copied ✓":"Copy failed";
+  setTimeout(()=>{button.textContent="Copy result";},1500);
 });
 
 ["clVomiting","clDiarrhoea"].forEach(id=>{
