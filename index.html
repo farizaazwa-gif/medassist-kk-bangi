@@ -3523,7 +3523,7 @@ html,body{max-width:100%;overflow-x:hidden}
   function scanLines(result) {
     return [
       "USOD",
-      `Scan ${dates.display(result.scanDate)}: c/w ${gaLabel(result.scanGaDays)}`,
+      `Scan ${dates.display(result.scanDate)}: corresponds to ${gaLabel(result.scanGaDays)}`,
       `POG: ${gaLabel(result.gaDays)}`,
       `REDD: ${dates.display(result.redd)}`
     ];

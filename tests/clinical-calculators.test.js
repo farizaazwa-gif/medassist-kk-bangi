@@ -70,7 +70,7 @@ test("pregnancy USOD scan output gives POG and REDD from scan dating", () => {
   assert.equal(result.redd, "2027-05-30");
   assert.deepEqual(Array.from(ob.scanLines(result)), [
     "USOD",
-    "Scan 20/10/2026: c/w 8 weeks 2 days",
+    "Scan 20/10/2026: corresponds to 8 weeks 2 days",
     "POG: 11 weeks 5 days",
     "REDD: 30/05/2027"
   ]);

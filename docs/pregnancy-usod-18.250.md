@@ -12,7 +12,7 @@ POA: 1 week 5 days
 EDD: 08/08/2027
 
 USOD
-Scan 20/10/2026: c/w 8 weeks 2 days
+Scan 20/10/2026: corresponds to 8 weeks 2 days
 POG: 11 weeks 5 days
 REDD: 30/05/2027
 ```
