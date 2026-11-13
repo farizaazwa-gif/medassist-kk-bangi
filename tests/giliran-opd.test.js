@@ -120,6 +120,17 @@ test("giliran OPD: the counter shows only how many were registered, overall and 
   assert.doesNotMatch(tiles, /menunggu/i);
 });
 
+test("giliran OPD: the counter's Refresh button asks first and only reloads the page", () => {
+  const html = fs.readFileSync(path.join(DIR, "index.html"), "utf8");
+  assert.match(html, /id="reloadBtn"[^>]*>[^<]*Refresh/);
+  const app = fs.readFileSync(path.join(DIR, "app.js"), "utf8");
+  const start = app.indexOf("$('reloadBtn')");
+  assert.ok(start > 0, "reloadBtn has a handler");
+  const handler = app.slice(start, app.indexOf("});", start));
+  assert.ok(handler.indexOf("await ask(") >= 0 && handler.indexOf("await ask(") < handler.indexOf("location.reload()"), "asks before reloading");
+  assert.doesNotMatch(handler, /delete\(|\.from\(/, "refresh never touches data");
+});
+
 test("giliran OPD: Malaysian date key rolls over at local midnight", () => {
   assert.equal(L.dayKey(new Date("2026-11-12T15:59:00Z")), "2026-11-12");
   assert.equal(L.dayKey(new Date("2026-11-12T16:01:00Z")), "2026-11-13");

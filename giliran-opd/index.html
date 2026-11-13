@@ -82,8 +82,9 @@ select{border:1px solid var(--line);background:var(--surface);border-radius:8px;
 .dup{margin-top:12px;border-radius:var(--r);background:var(--warn-soft);padding:12px 14px;font-size:14px;display:grid;gap:8px}
 .err{color:var(--warn);font-size:13px;margin-top:8px}
 
-.stats{margin-top:16px}
-.stat{display:flex;align-items:baseline;gap:10px;border-top:2px solid var(--accent);padding-top:8px}
+.statrow{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:16px;border-top:2px solid var(--accent);padding-top:8px}
+.stats{flex:1 1 auto;min-width:0}
+.stat{display:flex;align-items:baseline;gap:10px}
 .stat b{font-family:var(--font-sign);font-size:32px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
 .stat span{font-size:14px;color:var(--muted)}
 
@@ -273,7 +274,10 @@ dialog .check{margin-bottom:14px}
         </form>
         <div id="dupBox" class="dup" hidden></div>
         <div id="resultBox" class="result" hidden></div>
-        <div class="stats" id="stats"></div>
+        <div class="statrow">
+          <div class="stats" id="stats"></div>
+          <button class="btn" type="button" id="reloadBtn" title="Muat semula halaman dengan data terkini">&#8635; Refresh</button>
+        </div>
       </div>
       <div class="panel">
         <h2>Bilik hari ini</h2>
@@ -403,9 +407,9 @@ dialog .check{margin-bottom:14px}
 </dialog>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-<script src="config.js?v=dedf5753a0"></script>
+<script src="config.js?v=421e99600f"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="logic.js?v=dedf5753a0"></script>
-<script src="app.js?v=dedf5753a0"></script>
+<script src="logic.js?v=421e99600f"></script>
+<script src="app.js?v=421e99600f"></script>
 </body>
 </html>
