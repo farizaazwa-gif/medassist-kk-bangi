@@ -49,7 +49,7 @@ body {
   padding-right: max(12px, env(safe-area-inset-right, 0px));
   padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
 }
-.wrap { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.wrap { max-width: 1480px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
 h1 { font-size: 1.25rem; margin: 0; letter-spacing: -0.01em; }
 h2 { font-size: 0.95rem; margin: 0; }
 .sub { color: var(--muted); font-size: 0.82rem; margin: 2px 0 0; }
@@ -300,12 +300,87 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
   position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); z-index: 5;
   padding: 8px max(12px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
 }
-.bar .in { max-width: 900px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; justify-content: space-between; }
+.bar .in { max-width: 1480px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; justify-content: space-between; }
 .bar .msg { font-size: 0.82rem; color: var(--muted); min-width: 0; flex: 1 1 100%; }
 .bar .msg:empty { display: none; }
 .btns, .confirm { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .confirm { font-size: 0.9rem; }
 @media (prefers-reduced-motion: no-preference) { button { transition: filter .15s, background .15s; } .chev { transition: transform .2s; } }
+
+/* Jadual semakan: semua tarikh dalam satu paparan, tanpa kad berulang. */
+#step1 .fields { grid-template-columns: repeat(4, minmax(0,1fr)); }
+#step1 .fields .span2 { grid-column: span 2; }
+#step3 { scroll-margin-top: 10px; }
+#step2 .step-h.out { margin-top: 3px; }
+.sheet-shell { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
+.sheet-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 7px 14px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.sheet-toolbar strong { font-size: 0.94rem; }
+.sheet-stats { font-size: 0.79rem; color: var(--muted); margin-top: 2px; }
+.sheet-filters { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.sheet-filters button { padding: 5px 11px; font-size: 0.78rem; border: 1px solid var(--line); color: var(--muted); background: var(--surface); border-radius: 7px; }
+.sheet-filters button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.sheet-scroll { max-height: min(65vh, 740px); overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.ot-sheet { border-collapse: separate; border-spacing: 0; min-width: 1030px; width: 100%; table-layout: auto; font-size: 0.82rem; line-height: 1.25; }
+.ot-sheet th { position: sticky; top: 0; z-index: 3; padding: 9px 7px; background: #275f54; color: #fff; text-align: left; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.ot-sheet td { padding: 5px 6px; border-bottom: 1px solid var(--line); vertical-align: middle; min-width: 0; }
+.ot-sheet tbody tr.sheet-row:nth-child(4n+1), .ot-sheet tbody tr.sheet-row:nth-child(4n+2) { background: var(--bg); }
+.ot-sheet tbody tr.sheet-row[data-status="bad"] { box-shadow: inset 3px 0 var(--bad); }
+.ot-sheet tbody tr.sheet-row[data-status="warn"] { box-shadow: inset 3px 0 var(--warn); }
+.ot-sheet tbody tr.sheet-row:not(.on) { color: var(--muted); }
+.ot-sheet tbody tr.sheet-row:hover { background: var(--accent-soft); }
+.ot-sheet .sticky-date { position: sticky; left: 0; z-index: 2; background: var(--surface); min-width: 100px; width: 112px; }
+.ot-sheet tbody tr.sheet-row:not(.on) .sticky-date { background: var(--bg); }
+.ot-sheet thead .sticky-date { z-index: 5; background: #275f54; }
+.ot-sheet .sticky-on { position: sticky; left: 112px; z-index: 2; background: var(--surface); min-width: 65px; text-align: center; }
+.ot-sheet tbody tr.sheet-row:not(.on) .sticky-on { background: var(--bg); }
+.ot-sheet thead .sticky-on { z-index: 5; background: #275f54; }
+.ot-sheet .datecell { display: flex; flex-direction: column; gap: 2px; white-space: nowrap; }
+.ot-sheet .datecell small { color: var(--muted); font-size: 0.72rem; }
+.ot-sheet .datecell .cuti { font-size: 0.68rem; color: var(--cu); max-width: 110px; overflow: hidden; text-overflow: ellipsis; }
+.ot-sheet .doc-cell { width: 68px; text-align: center; }
+.ot-sheet .reason-cell { min-width: 155px; max-width: 230px; }
+.ot-sheet .time-cell { min-width: 192px; }
+.ot-sheet .issue-cell { min-width: 150px; max-width: 280px; }
+.ot-sheet .status-cell { white-space: nowrap; }
+.ot-sheet .sh-check { display: inline-flex; justify-content: center; align-items: center; cursor: pointer; min-width: 30px; min-height: 32px; }
+.ot-sheet .sh-check input { width: 18px; height: 18px; min-height: 0; margin: 0; padding: 0; accent-color: var(--accent); cursor: pointer; }
+.ot-sheet input[type="text"], .ot-sheet select, .ot-sheet input[type="time"] { padding: 5px 6px; min-height: 33px; border-radius: 6px; font-size: 0.82rem; }
+.ot-sheet input[type="text"] { min-width: 142px; }
+.ot-sheet select { min-width: 112px; }
+.ot-sheet .time-pair { display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+.ot-sheet .time-pair input { width: 88px; min-width: 88px; max-width: 88px; }
+.ot-sheet .time-pair em { font-size: 0.72rem; color: var(--muted); font-style: normal; }
+.ot-sheet .amount, .ot-sheet .hours { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; }
+.ot-sheet .sh-status { font-size: 0.71rem; font-weight: 700; border-radius: 6px; padding: 4px 7px; display: inline-block; white-space: nowrap; }
+.ot-sheet .sh-status.ok { color: var(--ok); background: var(--ok-soft); }
+.ot-sheet .sh-status.bad { color: var(--bad); background: var(--bad-soft); }
+.ot-sheet .sh-status.warn { color: var(--warn); background: var(--warn-soft); }
+.ot-sheet .sh-status.idle { color: var(--muted); background: var(--bg); }
+.ot-sheet .sh-issue { display: block; font-size: 0.73rem; line-height: 1.28; color: var(--muted); max-width: 275px; }
+.ot-sheet .sh-issue.bad { color: var(--bad); }
+.ot-sheet .sh-issue.warn { color: var(--warn); }
+.ot-sheet .sh-more { padding: 5px 7px; font-size: 0.76rem; white-space: nowrap; background: var(--surface); color: var(--accent); border-color: var(--line); }
+.ot-sheet .sheet-extra td { padding: 11px 13px 13px; background: var(--accent-soft); border-bottom: 1px solid var(--line); }
+.sheet-extra-inner { display: flex; flex-direction: column; gap: 10px; }
+.sheet-extra-inner .g2 { grid-template-columns: repeat(auto-fit,minmax(168px,1fr)); max-width: 1000px; }
+.sheet-extra-inner .f > span { font-size: 0.72rem; }
+.sheet-dash { color: var(--muted); opacity: .6; }
+.sheet-help { padding: 8px 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.77rem; }
+.sheet-help b { color: var(--fg); }
+.sheet-empty { text-align: center; padding: 23px 16px !important; color: var(--muted); }
+.name-note { font-size: 0.77rem; color: var(--muted); }
+.top-note { color: var(--muted); font-size: 0.8rem; padding: 2px 1px 0; }
+@media (max-width: 760px) {
+  #step1 .fields { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  #step1 .fields .span2 { grid-column: 1 / -1; }
+  .sheet-scroll { max-height: min(61vh,680px); }
+  .ot-sheet th, .ot-sheet td { padding-left: 5px; padding-right: 5px; }
+}
+@media (prefers-color-scheme:dark) {
+  :root:not([data-theme="light"]) .ot-sheet th, :root:not([data-theme="light"]) .ot-sheet thead .sticky-date, :root:not([data-theme="light"]) .ot-sheet thead .sticky-on { background: #214a44; }
+}
+:root[data-theme="dark"] .ot-sheet th, :root[data-theme="dark"] .ot-sheet thead .sticky-date, :root[data-theme="dark"] .ot-sheet thead .sticky-on { background: #214a44; }
+
 </style>
 </head>
 <body>
@@ -313,7 +388,7 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
   <header>
     <div class="ht">
       <h1>Semakan Tuntutan OT &amp; Elaun</h1>
-      <p class="sub">Isi ikut langkah 1, 2 dan 3. Semua isian disimpan automatik dalam pelayar ini sahaja, tidak dihantar ke mana-mana pelayan.</p>
+      <p class="sub">Senarai satu baris bagi setiap tarikh · kiraan automatik · semakan dokumen · PDF. Isian disimpan dalam pelayar peranti ini sahaja.</p>
     </div>
     <div class="modesw">
       <div class="seg" role="group" aria-label="Paparan">
@@ -326,7 +401,7 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
   <section class="panel" id="step1">
     <div class="step-h"><span class="num">1</span><div><h2>Maklumat pegawai</h2></div></div>
     <div class="fields">
-      <div class="field span2"><label for="nama">Nama pegawai</label><input id="nama" type="text" autocomplete="off" placeholder="Contoh: Nur Aisyah binti Ahmad"></div>
+      <div class="field span2"><label for="nama">Nama pegawai</label><input id="nama" type="text" autocomplete="off" placeholder="Contoh: Nur Aisyah binti Ahmad"><small class="name-note">Untuk pegawai lain, klik <b>Pegawai baharu</b> supaya rekod tidak bercampur.</small></div>
       <div class="field span2"><label for="jawatan">Jawatan</label><select id="jawatan"></select><small class="hint">Jenis tuntutan yang layak akan keluar ikut jawatan.</small></div>
       <div class="field"><label for="fasiliti">Klinik bertugas</label><select id="fasiliti"></select></div>
       <div class="field"><label for="bulan">Bulan tuntutan</label><input id="bulan" type="month"></div>
@@ -335,15 +410,16 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
     </div>
   </section>
 
-  <section id="step2">
-    <div class="step-h out"><span class="num">2</span><div><h2>Tarikh dan dokumen</h2><p class="sub">Tekan tarikh pada kalendar, isi masa dan tick dokumen, kemudian tekan <b>Selesai</b>.</p></div></div>
-    <nav class="tabs" id="tabs" role="tablist" aria-label="Jenis tuntutan"></nav>
-    <div id="module"></div>
+  <section class="panel" id="step3">
+    <div class="step-h"><span class="num">2</span><div><h2>Ringkasan &amp; keputusan semakan</h2></div></div>
+    <div id="result"></div>
+    <p class="top-note">Semakan automatik ini bukan kelulusan rasmi tuntutan. Penyelia / Unit Kewangan perlu mengesahkan dokumen dan kelayakan sebenar.</p>
   </section>
 
-  <section class="panel" id="step3">
-    <div class="step-h"><span class="num">3</span><div><h2>Keputusan</h2></div></div>
-    <div id="result"></div>
+  <section id="step2">
+    <div class="step-h out"><span class="num">3</span><div><h2>Senarai tarikh tuntutan</h2><p class="sub">Tanda hari bertugas, isi masa dan semak dokumen terus pada baris yang sama. Klik <b>Butiran</b> hanya untuk pilihan tambahan.</p></div></div>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Jenis tuntutan"></nav>
+    <div id="module"></div>
   </section>
 
   <details class="panel tetapan adv" id="tetapan">
@@ -376,10 +452,10 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
     <span class="msg" id="msg" role="status"></span>
     <div class="btns" id="btns">
       <button class="primary" id="pdfBtn" type="button">Muat turun PDF</button>
-      <button class="ghost risky" id="resetBtn" type="button" title="Padam semua isian dan mula borang baru untuk pegawai lain. Tetapan kekal.">Kosongkan borang</button>
+      <button class="ghost risky" id="resetBtn" type="button" title="Padam semua isian dan mula borang baru untuk pegawai lain. Tetapan kekal.">Pegawai baharu</button>
     </div>
     <div class="confirm" id="confirm" hidden>
-      <span>Padam semua isian pegawai ini dan mula borang baru? Tak boleh diundur.</span>
+      <span>Kosongkan data tuntutan pegawai ini untuk mulakan pegawai baharu? Tindakan ini tidak boleh diundur.</span>
       <button class="danger" id="yesBtn" type="button">Ya, kosongkan</button>
       <button class="ghost" id="noBtn" type="button">Batal</button>
     </div>
@@ -1049,6 +1125,130 @@ function itemHtml(key, d) {
     "</div></article>";
 }
 
+
+/* Paparan jadual berasaskan satu baris bagi setiap hari. Data kekal dalam struktur asal untuk PDF dan kiraan. */
+let rowFilter = "all", extraDay = null;
+const SHEET_COLS = {
+  elm:   [["masa","Masa mula–tamat"],["jam","Jam OT"],["sebab","Sebab OT"],["surat","Surat arahan"],["jadual","Jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["thumb","Thumbprint"]],
+  elmeh: [["lokasi","Lokasi EH"],["masa","Masa mula–tamat"],["jam","Jam OT"],["surat","Surat arahan"],["jadual","Jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["thumb","Thumbprint"]],
+  etap:  [["dipanggil","Dipanggil?"],["calltime","Masa masuk–keluar"],["nilai","Anggaran (RM)"],["surat","Surat arahan"],["jadual","Jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["tiadacuti","Tiada cuti / MC"],["thumb","Thumbprint"]],
+  lokum: [["lokasi","Lokasi EH"],["masa","Masa mula–tamat"],["jam","Jam bayar"],["nilai","Anggaran (RM)"],["surat","Surat arahan"],["jadual","Jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["thumb","Thumbprint"]],
+  bap:   [["dipanggil","Dipanggil?"],["calltime","Masa masuk–keluar"],["nilai","Anggaran (RM)"],["surat","Surat arahan"],["jadual","Jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["ketik","Ketik masuk/keluar"]]
+};
+function sheetStatus(x) {
+  if (!x) return ["idle","–"];
+  if (x.k.length) return ["bad","BELUM LENGKAP"];
+  if (x.a.length) return ["warn","PERLU SEMAK"];
+  return ["ok","LENGKAP"];
+}
+function sheetHours(key,x) {
+  if (!x || x.c.incomplete || x.c.sama || x.c.tutup) return "–";
+  if (isOt(key)) return fmtJ(x.c.cg ? x.c.cgMin : x.c.net);
+  if (key === "lokum") return fmtJ(x.c.bayar);
+  return "–";
+}
+function sheetAmount(key,x) {
+  if (!x || x.c.incomplete || x.c.sama || x.c.tutup) return "–";
+  if (isOt(key) && num(state.gaji) <= 0) return "–";
+  if (x.c.rm == null) return "–";
+  return rmFmt(x.c.rm);
+}
+function sheetIssue(x) {
+  if (!x) return "";
+  const problems = x.k.concat(x.a);
+  if (!problems.length) return "Tiada isu dikesan";
+  return problems[0] + (problems.length > 1 ? " (+" + (problems.length - 1) + " lagi)" : "");
+}
+function sheetCheck(r,k,label,enabled) {
+  if (enabled === false) return '<span class="sheet-dash" title="Tidak berkenaan">–</span>';
+  return '<label class="sh-check" title="' + esc(label) + '"><input type="checkbox" data-k="' + k + '" aria-label="' + esc(label) + '"' + (r[k] ? " checked" : "") + '></label>';
+}
+function sheetPair(r,a,b,day,labels) {
+  return '<div class="time-pair"><input type="time" data-k="' + a + '" aria-label="' + esc(labels[0] + " " + day) + '" value="' + esc(r[a] || "") + '"><em>–</em><input type="time" data-k="' + b + '" aria-label="' + esc(labels[1] + " " + day) + '" value="' + esc(r[b] || "") + '"></div>';
+}
+function sheetCell(key,col,r,d,x) {
+  const day = d + " " + BULAN[monthInfo().m - 1];
+  if (col === "masa") return sheetPair(r,"mula","tamat",day,["Masa mula","Masa tamat"]);
+  if (col === "calltime") return r.dipanggil ? sheetPair(r,"masuk","keluar",day,["Masa masuk","Masa keluar"]) : '<span class="sheet-dash">Tidak dipanggil</span>';
+  if (col === "jam") return '<span class="hours" data-show="jam">' + sheetHours(key,x) + "</span>";
+  if (col === "nilai") return '<span class="amount" data-show="nilai">' + sheetAmount(key,x) + "</span>";
+  if (col === "sebab") return '<input type="text" data-k="sebab" placeholder="Sebab OT" aria-label="Sebab OT ' + esc(day) + '" value="' + esc(r.sebab || "") + '">';
+  if (col === "lokasi") return '<select data-k="lokasi" aria-label="Lokasi EH ' + esc(day) + '"><option value="">Pilih KK</option><option value="ampang"' + (r.lokasi === "ampang" ? " selected" : "") + '>KK Ampang</option><option value="kajang"' + (r.lokasi === "kajang" ? " selected" : "") + '>KK Kajang</option></select>';
+  if (col === "ganti") return sheetCheck(r,"ganti","Menggantikan anggota lain pada " + day);
+  if (col === "borang") return sheetCheck(r,"borang","Borang penggantian " + day,!!r.ganti);
+  if (col === "jadual") return sheetCheck(r,r.ganti ? "jadualGanti" : "jadual",(r.ganti ? "Jadual ada nama anggota diganti " : "Nama dalam jadual ") + day);
+  if (col === "dipanggil") return sheetCheck(r,"dipanggil","Dipanggil masuk " + day);
+  if (col === "ketik") return sheetCheck(r,"ketik","Rekod ketik masuk dan keluar " + day,!!r.dipanggil);
+  const labels = { surat:"Surat arahan",thumb:"Thumbprint lengkap",tiadacuti:"Pengesahan tidak bercuti / MC" };
+  return sheetCheck(r,col,(labels[col] || col) + " " + day);
+}
+function sheetExtraHtml(key,d,r,x,colSpan) {
+  let fields = "";
+  if (key === "elm") fields = selF("jenis","Jenis hari",[["biasa","Hari bekerja"],["rehat","Hari rehat"],["am","Kelepasan am"]],r.jenis || autoJenis(weekday(d))) +
+    selF("kerja","Jenis kerja",[["biasa","Diarah (biasa)"],["kecemasan1","Kecemasan, semasa bertugas"],["kecemasan2","Kecemasan, tidak bertugas"]],r.kerja || "biasa") +
+    selF("bayar","Tuntut sebagai",[["bayaran","Bayaran"],["cg","Cuti gantian"]],r.bayar || "bayaran") +
+    '<label class="ck wide"><input type="checkbox" data-k="surat8"' + (r.surat8 ? " checked" : "") + '> Surat pengesahan OT melebihi 8 jam (jika berkenaan)</label>';
+  if (key === "elmeh") fields = selF("jenis","Jenis hari",[["biasa","Hari bekerja"],["rehat","Hari rehat"],["am","Kelepasan am"]],r.jenis || autoJenis(weekday(d))) +
+    selF("bayar","Tuntut sebagai",[["bayaran","Bayaran"],["cg","Cuti gantian"]],r.bayar || "bayaran");
+  if (key === "etap") fields = selF("jenis","Jenis hari",[["biasa","Hari bekerja"],["rehat","Hari rehat / kelepasan am"]],r.jenis || autoJenis(weekday(d)));
+  if (key === "lokum") fields = '<label class="ck wide"><input type="checkbox" data-k="am"' + (r.am ? " checked" : "") + '> Hari kelepasan am</label>';
+  if (r.ganti) fields += '<label class="f wide"><span>Nama anggota diganti (untuk laporan)</span><input type="text" data-k="gantiNama" value="' + esc(r.gantiNama || "") + '" placeholder="Nama anggota diganti"></label>';
+  const issues = x && (x.k.length || x.a.length) ? '<div class="issues">' + x.k.map(y => '<span class="k">• ' + esc(y) + "</span>").join("") + x.a.map(y => '<span class="a">• ' + esc(y) + "</span>").join("") + "</div>" : '<span class="hint">Tiada masalah pada tarikh ini dikesan oleh sistem.</span>';
+  return '<tr class="sheet-extra" data-d="' + d + '"><td colspan="' + colSpan + '"><div class="sheet-extra-inner"><strong>Butiran tambahan · ' + d + " " + BULAN[monthInfo().m - 1] + '</strong><div class="g2">' + fields + '</div>' + issues + "</div></td></tr>";
+}
+function sheetTableHtml(key) {
+  const cols = SHEET_COLS[key], mo = monthInfo(), rows = md(key).rows;
+  const ev = evalModule(key), byDay = {};
+  ev.days.forEach(x => { byDay[x.d] = x; });
+  const out = [];
+  for (let d=1; d<=mo.n; d++) {
+    const raw = rows[d] || {}, active = !!raw.on, x = byDay[d] || null, r = active ? rowView(key,raw,d) : raw;
+    if (rowFilter === "claimed" && !active) continue;
+    if (rowFilter === "issues" && (!active || !x || !(x.k.length || x.a.length))) continue;
+    const status = sheetStatus(x), cu = cuName(d), dow=HARI[weekday(d)], dateName=d + " " + BULAN[mo.m - 1];
+    const label = key === "elm" || key === "elmeh" ? "Buat OT" : key === "etap" ? "Bertugas on-call" : key === "lokum" ? "Bertugas extended hours" : "Bersedia atas panggilan";
+    out.push('<tr class="sheet-row' + (active ? " on" : "") + '" data-d="' + d + '" data-status="' + status[0] + '">' +
+      '<td class="sticky-date"><div class="datecell"><b>' + d + " " + BULAN[mo.m - 1].slice(0,3) + '</b><small>' + dow + (cu ? ' · Cuti umum' : "") + '</small>' + (cu ? '<span class="cuti" title="' + esc(cu) + '">' + esc(cu) + '</span>' : "") + '</div></td>' +
+      '<td class="sticky-on"><label class="sh-check"><input type="checkbox" data-on="1" aria-label="' + label + " " + esc(dateName) + '"' + (active ? " checked" : "") + '></label></td>' +
+      cols.map(([c]) => '<td class="' + (c === "masa" || c === "calltime" ? "time-cell" : c === "sebab" ? "reason-cell" : ["surat","jadual","ganti","borang","thumb","dipanggil","tiadacuti","ketik"].includes(c) ? "doc-cell" : "") + '">' + (active ? sheetCell(key,c,r,d,x) : '<span class="sheet-dash">–</span>') + "</td>").join("") +
+      '<td class="status-cell"><span class="sh-status ' + status[0] + '">' + status[1] + '</span></td>' +
+      '<td class="issue-cell"><span class="sh-issue ' + status[0] + '">' + esc(sheetIssue(x)) + '</span></td>' +
+      '<td>' + (active ? '<button type="button" class="ghost sh-more" data-act="detail" data-d="' + d + '" aria-expanded="' + (extraDay === d) + '">' + (extraDay === d ? "Tutup" : "Butiran") + '</button>' : '<span class="sheet-dash">–</span>') + '</td></tr>');
+    if (active && extraDay === d) out.push(sheetExtraHtml(key,d,r,x,cols.length+5));
+  }
+  const head = '<th class="sticky-date">Tarikh</th><th class="sticky-on">' + (isOt(key) ? "Buat OT" : "Bertugas") + '</th>' + cols.map(([,label]) => "<th>" + label + "</th>").join("") + "<th>Status</th><th>Kekurangan</th><th>Lain-lain</th>";
+  const filters = [["all","Semua tarikh"],["claimed","Dituntut"],["issues","Perlu tindakan"]].map(f => '<button type="button" data-filter="' + f[0] + '" aria-pressed="' + (rowFilter === f[0]) + '">' + f[1] + "</button>").join("");
+  const warn = mo.y > 2027 || mo.y < 2026 ? "Senarai cuti umum untuk tahun ini belum dimasukkan. Sahkan jenis hari secara manual." : mo.y === 2027 ? "Cuti ganti / cuti peristiwa 2027 mungkin berubah mengikut warta rasmi." : "";
+  return '<div class="sheet-shell"><div class="sheet-toolbar"><div><strong>Jadual ' + BULAN[mo.m - 1] + " " + mo.y + '</strong><div class="sheet-stats" id="sheetStats"></div></div><div class="sheet-filters">' + filters + '</div></div>' +
+    '<div class="sheet-scroll" id="sheetScroll" role="region" tabindex="0" aria-label="Jadual semakan tuntutan"><table class="ot-sheet"><thead><tr>' + head + '</tr></thead><tbody>' +
+    (out.length ? out.join("") : '<tr><td colspan="' + (cols.length + 5) + '" class="sheet-empty">Tiada tarikh untuk paparan ini. Pilih <b>Semua tarikh</b> atau tandakan hari bertugas.</td></tr>') +
+    '</tbody></table></div><div class="sheet-help"><b>Tip:</b> Klik kotak di lajur kedua untuk aktifkan tarikh. Tandakan dokumen hanya selepas melihat bukti sebenar.' +
+    (warn ? '<div style="margin-top:4px;color:var(--warn)">' + esc(warn) + '</div>' : "") +
+    ' <span class="muted">Jadual boleh ditatal ke kanan jika skrin kecil.</span></div></div>';
+}
+function updateSheet(key,ev) {
+  const stats = $("sheetStats");
+  if (stats) {
+    const done = ev.days.filter(x => !x.k.length && !x.a.length).length;
+    stats.textContent = ev.days.length + " tarikh ditandakan · " + done + " lengkap · " + (ev.days.length-done) + " perlu tindakan";
+  }
+  const byDay={}; ev.days.forEach(x => { byDay[x.d]=x; });
+  document.querySelectorAll(".sheet-row[data-d]").forEach(row => {
+    const x=byDay[+row.dataset.d] || null, st=sheetStatus(x);
+    row.dataset.status=st[0];
+    const badge=row.querySelector(".sh-status"), iss=row.querySelector(".sh-issue");
+    if (badge) { badge.className="sh-status " + st[0]; badge.textContent=st[1]; }
+    if (iss) { iss.className="sh-issue " + st[0]; iss.textContent=sheetIssue(x); }
+    const jam=row.querySelector('[data-show="jam"]'); if (jam) jam.textContent=sheetHours(key,x);
+    const val=row.querySelector('[data-show="nilai"]'); if (val) val.textContent=sheetAmount(key,x);
+  });
+}
+function redrawSheet() {
+  const old=$("sheetScroll"), top=old ? old.scrollTop : 0, left=old ? old.scrollLeft : 0;
+  renderModule(); refresh();
+  const next=$("sheetScroll");
+  if (next) { next.scrollTop=top; next.scrollLeft=left; }
+}
 function renderModule() {
   const key = activeTab(), box = $("module"), res = $("result");
   if (!key) {
@@ -1056,20 +1256,13 @@ function renderModule() {
     res.innerHTML = '<p class="empty">Keputusan akan keluar di sini selepas tarikh diisi.</p>';
     return;
   }
-  const rows = md(key).rows, mo = monthInfo(), M = md(key);
-  const ds = []; for (let d = 1; d <= mo.n; d++) if (rows[d] && rows[d].on) ds.push(d);
-  if (isEh(key)) { ds.forEach(d => { if (!rows[d].mula && !rows[d].tamat) autoFillEh(rows[d], d, key); }); save(); }
-  if (ds.indexOf(openDay) < 0) openDay = null;
-  const ehHint = key === "elm" && mods().indexOf("elmeh") >= 0 ? '<div class="muted">Bertugas extended hours di KK Ampang atau KK Kajang? Guna tab <b>' + esc(tabL("elmeh")) + "</b>.</div>" : "";
-  const extra = ehHint + (key === "etap" ? '<label class="ck q"><input type="checkbox" data-mk="jarak"' + (M.jarak ? " checked" : "") + "> Rumah pegawai dalam 33 km / 30 minit dari tempat bertugas</label>" : "");
-  box.innerHTML = '<div class="modwrap" data-key="' + key + '"><div class="panel modnote"><div>' + (isSimple() ? MOD_NOTE_S : MOD_NOTE)[key] + "</div>" + extra + "</div>" +
-    '<div class="work">' + calHtml(key) +
-    '<section class="panel list"><div class="list-head"><h3>Tarikh dituntut</h3><span class="muted" id="listCount"></span></div>' +
-    (ds.length ? '<div class="items" id="items">' + ds.map(d => itemHtml(key, d)).join("") + "</div>"
-      : '<p class="empty">Belum ada tarikh. Tekan tarikh pada kalendar untuk tambah.</p>') +
-    "</section></div></div>";
+  const M=md(key), rows=M.rows, mo=monthInfo();
+  if (isEh(key)) { for (let d=1; d<=mo.n;d++) if (rows[d] && rows[d].on && !rows[d].mula && !rows[d].tamat) autoFillEh(rows[d],d,key); save(); }
+  const extra = key==="etap" ? '<label class="ck q"><input type="checkbox" data-mk="jarak"' + (M.jarak ? " checked" : "") + '> Rumah pegawai dalam 33 km / 30 minit dari tempat bertugas</label>' : "";
+  box.innerHTML = '<div class="modwrap" data-key="' + key + '"><div class="panel modnote"><div>' + (isSimple()?MOD_NOTE_S:MOD_NOTE)[key] + '</div>' + extra + '</div>' + sheetTableHtml(key) + '</div>';
   res.innerHTML = '<div data-key="' + key + '">' + resultHtml(key) + "</div>";
 }
+
 
 function calcText(key, x) {
   const c = x.c;
@@ -1292,6 +1485,7 @@ function refresh() {
   const ev = evalModule(key);
   const byDay = {};
   ev.days.forEach(x => { byDay[x.d] = x; updateItem(key, x); });
+  updateSheet(key, ev);
   document.querySelectorAll("#cal button[data-day]").forEach(b => {
     const x = byDay[b.dataset.day];
     b.dataset.st = x ? (x.k.length ? "bad" : x.a.length ? "warn" : "ok") : "";
@@ -1340,25 +1534,39 @@ $("tabs").addEventListener("click", e => {
 });
 $("bstat").addEventListener("click", () => { $("step3").scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" }); });
 
+
 function onModuleInput(e) {
-  // Ambil jenis tuntutan dari elemen itu sendiri, supaya nilai tidak tersilap masuk ke tab lain bila skrin dilukis semula.
-  const t = e.target, host = t.closest("[data-key]"), key = host && host.dataset.key; if (!key) return;
-  if (t.dataset.k) {
-    const item = t.closest(".item"); if (!item) return;
-    const r = md(key).rows[+item.dataset.d]; if (!r) return;
-    r[t.dataset.k] = t.type === "checkbox" ? t.checked : t.value;
-    if (t.dataset.k === "dipanggil" && e.type === "change" && t.isConnected) { save(); renderModule(); refresh(); return; }
-    if (isEh(key) && (t.dataset.k === "mula" || t.dataset.k === "tamat")) r.autoMasa = false;
-    const ehKey = key === "lokum" ? ["lokasi", "am"] : key === "elmeh" ? ["lokasi", "jenis"] : [];
-    if (ehKey.indexOf(t.dataset.k) >= 0 && e.type === "change" && t.isConnected) {
-      autoFillEh(r, +item.dataset.d, key); save(); renderModule(); refresh(); return;
+  const t=e.target, host=t.closest("[data-key]"), key=host && host.dataset.key; if (!key) return;
+  if ((t.type==="checkbox" || t.tagName==="SELECT") && e.type==="input") return;
+  if (t.hasAttribute("data-on")) {
+    const line=t.closest(".sheet-row"), d=line && +line.dataset.d; if (!d) return;
+    const rows=md(key).rows, r=rows[d] || (rows[d]={});
+    r.on=t.checked;
+    if (r.on && isEh(key)) {
+      if (!r.lokasi && WARTA[state.fasiliti]) r.lokasi=state.fasiliti;
+      autoFillEh(r,d,key);
     }
+    if (!r.on && extraDay===d) extraDay=null;
+    save(); redrawSheet(); return;
+  }
+  if (t.dataset.k) {
+    const line=t.closest("[data-d]"), d=line && +line.dataset.d; if (!d) return;
+    const r=md(key).rows[d]; if (!r || !r.on) return;
+    r[t.dataset.k]=t.type==="checkbox" ? t.checked : t.value;
+    if (isEh(key) && ["mula","tamat"].includes(t.dataset.k)) r.autoMasa=false;
+    if (isEh(key) && (key==="lokum" ? ["lokasi","am"] : ["lokasi","jenis"]).includes(t.dataset.k) && e.type==="change") autoFillEh(r,d,key);
+    if (t.dataset.k==="ganti" && t.checked) extraDay=d;
+    save();
+    const redrawKeys=["ganti","dipanggil","lokasi","am","jenis","bayar","kerja"];
+    if (redrawKeys.includes(t.dataset.k) && e.type==="change") redrawSheet();
+    else refresh();
   } else if (t.dataset.mk) {
-    const tk = isOt(key) && (t.dataset.mk === "penyata" || t.dataset.mk === "lulus13") ? "elm" : key;
-    md(tk)[t.dataset.mk] = t.type === "checkbox" ? t.checked : t.value;
-  } else return;
-  save(); refresh();
+    const tk = isOt(key) && (t.dataset.mk==="penyata" || t.dataset.mk==="lulus13") ? "elm" : key;
+    md(tk)[t.dataset.mk]=t.type==="checkbox" ? t.checked : t.value;
+    save(); refresh();
+  }
 }
+
 ["module", "result"].forEach(id => { $(id).addEventListener("input", onModuleInput); $(id).addEventListener("change", onModuleInput); });
 
 const smooth = !window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1375,49 +1583,14 @@ function showItem(d, block) {
   it.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: block || "nearest" });
 }
 const sideBySide = () => window.matchMedia && window.matchMedia("(min-width: 760px)").matches;
+
 $("module").addEventListener("click", e => {
-  const key = activeTab(); if (!key) return;
-  const day = e.target.closest("button[data-day]");
-  if (day) {
-    const d = +day.dataset.day, rows = md(key).rows;
-    if (!(rows[d] && rows[d].on)) {
-      const add = { on: true };
-      if (isEh(key)) add.lokasi = lastLokasi(rows) || (WARTA[state.fasiliti] ? state.fasiliti : "");
-      rows[d] = Object.assign(rows[d] || {}, add);
-      if (isEh(key)) autoFillEh(rows[d], d, key);
-      openDay = d; save(); renderModule(); refresh();
-      $("msg").textContent = d + " " + BULAN[monthInfo().m - 1] + " ditambah. Isi butiran di bawah.";
-    } else setOpen(d);
-    showItem(d, "start"); return;
-  }
-  const act = e.target.closest("[data-act]");
-  if (!act) return;
-  const item = act.closest(".item"), d = item ? +item.dataset.d : null;
-  const a = act.dataset.act;
-  if (a === "toggle") {
-    setOpen(openDay === d ? null : d);
-    if (openDay === d) showItem(d);
-  } else if (a === "selesai") {
-    setOpen(null);
-    if (!sideBySide()) $("calp").scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
-    else showItem(d);
-  } else if (a === "tickall") {
-    const r = md(key).rows[d], ev = evalModule(key), x = ev.days.find(y => y.d === d);
-    reqDocs(key, x ? x.r : r, x ? x.c : null).forEach(k => { r[k] = true; });
-    save(); renderModule(); refresh();
-  } else if (a === "salin") {
-    const r = md(key).rows[d], pv = prevTimes(key, d);
-    if (pv) { r[pv.ka] = pv.a; r[pv.kb] = pv.b; if (isEh(key) && !r.lokasi && pv.lokasi) r.lokasi = pv.lokasi; }
-    save(); renderModule(); refresh();
-  } else if (a === "buang") {
-    if (act.dataset.arm !== "1") {
-      act.dataset.arm = "1"; act.textContent = "Tekan lagi untuk buang"; act.classList.add("danger"); act.classList.remove("ghost");
-      setTimeout(() => { if (act.isConnected) { act.dataset.arm = ""; act.textContent = "Buang tarikh"; act.classList.remove("danger"); act.classList.add("ghost"); } }, 3000);
-      return;
-    }
-    delete md(key).rows[d]; if (openDay === d) openDay = null; save(); renderModule(); refresh();
-  }
+  const filter=e.target.closest("[data-filter]");
+  if (filter) { rowFilter=filter.dataset.filter; extraDay=null; redrawSheet(); return; }
+  const detail=e.target.closest('[data-act="detail"]');
+  if (detail) { const d=+detail.dataset.d; extraDay=extraDay===d ? null : d; redrawSheet(); return; }
 });
+
 
 function onSet(e) {
   const t = e.target; if (!t.dataset.set) return;
@@ -1436,6 +1609,7 @@ $("yesBtn").addEventListener("click", () => {
   $("confirm").hidden = true; $("btns").hidden = false;
   $("msg").textContent = "Borang dikosongkan. Sedia untuk pegawai seterusnya.";
   $("nama").focus();
+  rowFilter="all"; extraDay=null;
 });
 
 /* ---------- PDF ---------- */
