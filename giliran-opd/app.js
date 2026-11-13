@@ -141,7 +141,7 @@
     return c;
   }
   function roomOptions(selected, withAuto) {
-    let h = withAuto ? '<option value="">Auto (paling kurang menunggu)</option>' : '';
+    let h = withAuto ? '<option value="">Auto (sistem pilih)</option>' : '';
     const names = rooms.map(r => r.name);
     if (selected && !names.includes(selected)) names.push(selected);
     names.forEach(n => {
@@ -154,11 +154,7 @@
   function renderStats() {
     const c = counts();
     $('stats').innerHTML =
-      '<div class="stat"><b>' + c.tot + '</b><span>Didaftar</span></div>' +
-      '<div class="stat w"><b>' + c.w + '</b><span>Menunggu</span></div>' +
-      '<div class="stat c"><b>' + c.c + '</b><span>Dipanggil</span></div>' +
-      '<div class="stat"><b>' + c.d + '</b><span>Selesai</span></div>' +
-      '<div class="stat"><b>' + c.n + '</b><span>Tidak hadir</span></div>';
+      '<div class="stat"><b>' + c.tot + '</b><span>Didaftar hari ini</span></div>';
   }
   function renderRoomGrid() {
     const m = L.loadMap(rooms, patients);
@@ -167,7 +163,7 @@
       const x = m[r.name];
       return '<div class="tile' + (r.open ? '' : ' closed') + '">' +
         '<span class="code">' + esc(r.name) + '</span>' +
-        '<span class="wait"><b>' + x.w + '</b> menunggu · ' + x.tot + ' hari ini</span>' +
+        '<span class="wait"><b>' + x.tot + '</b> didaftar</span>' +
         '<button class="switch" role="switch" aria-checked="' + r.open + '" data-room="' + esc(r.name) + '" aria-label="Bilik ' + esc(r.name) + ' buka"><span class="track"></span>' + (r.open ? 'Buka' : 'Tutup') + '</button>' +
         '</div>';
     }).join('');
