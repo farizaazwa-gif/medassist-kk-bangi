@@ -178,6 +178,28 @@ body{margin:0}
 .login input{width:100%;border:2px solid var(--line);border-radius:var(--r);padding:10px 12px;background:var(--bg);font-size:16px}
 .login input:focus{border-color:var(--accent);outline:none}
 .login .btn{width:100%}
+.linkbtn{background:none;border:0;padding:2px 0;color:var(--accent);cursor:pointer;font-size:14px;text-decoration:underline;text-underline-offset:3px;justify-self:start}
+.hint{font-size:13px;color:var(--muted);margin:0;max-width:72ch}
+
+/* Akaun pengguna */
+.acct{display:grid;gap:12px}
+.acct h3{font-size:15px;margin:0}
+.acct-me{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
+.acct-me b{word-break:break-all}
+.acct-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.acct-form input[type=email],.acct-form input[type=password],.acct-form input[type=text]{flex:1 1 200px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg)}
+.check{display:inline-flex;gap:6px;align-items:center;font-size:14px;color:var(--muted);cursor:pointer}
+.alist{display:grid;gap:6px}
+.aitem{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.aitem .who{flex:1 1 220px;min-width:0;display:grid;gap:2px}
+.aitem .who b{font-weight:600;word-break:break-all}
+.aitem .who span{font-size:12px;color:var(--muted)}
+.aitem .acts{display:flex;flex-wrap:wrap;gap:6px}
+.btn.sm{padding:5px 10px;font-size:13px}
+.chip.admin{background:var(--accent-soft);color:var(--accent)}
+.divider{border:0;border-top:1px solid var(--line);margin:4px 0;width:100%}
+dialog input[type=password],dialog input[type=text]{width:100%;border:2px solid var(--line);border-radius:8px;padding:9px 11px;background:var(--bg);font-size:16px;margin-bottom:8px}
+dialog .check{margin-bottom:14px}
 </style>
 </head>
 <body>
@@ -207,6 +229,18 @@ body{margin:0}
       <input id="pwInput" type="password" autocomplete="current-password" placeholder="Kata laluan klinik" aria-label="Kata laluan klinik">
       <button class="btn primary big" type="submit" id="loginBtn">Masuk</button>
       <div class="err" id="loginErr" hidden></div>
+      <button type="button" class="linkbtn" id="firstLink">Kali pertama? Cipta kata laluan</button>
+    </form>
+    <form class="panel login" id="firstForm" autocomplete="on" hidden>
+      <h2>Cipta kata laluan</h2>
+      <p>Untuk pentadbir yang emelnya sudah didaftar tetapi belum ada kata laluan. Staf lain: minta pentadbir tambah akaun anda di Tetapan.</p>
+      <input id="firstEmail" type="email" autocomplete="username" placeholder="Emel" aria-label="Emel">
+      <input id="firstPw" type="password" autocomplete="new-password" placeholder="Kata laluan baharu (min. 8 aksara)" aria-label="Kata laluan baharu">
+      <input id="firstPw2" type="password" autocomplete="new-password" placeholder="Taip semula kata laluan" aria-label="Taip semula kata laluan">
+      <p class="hint">Jangan guna kata laluan Gmail anda. Cipta kata laluan khas untuk sistem giliran.</p>
+      <button class="btn primary big" type="submit" id="firstBtn">Cipta dan masuk</button>
+      <div class="err" id="firstErr" hidden></div>
+      <button type="button" class="linkbtn" id="firstBack">Kembali ke log masuk</button>
     </form>
   </section>
 
@@ -306,6 +340,32 @@ body{margin:0}
         <div id="cleanupMsg" style="margin-top:6px;font-size:13px"></div>
       </div>
     </div>
+    <div class="panel acct" style="margin-top:18px" id="acctPanel">
+      <h2 style="margin:0">Akaun pengguna</h2>
+      <div class="acct-me">Log masuk sebagai <b id="meEmail">-</b><span class="chip admin" id="meRole" hidden>Pentadbir</span></div>
+      <form class="acct-form" id="pwForm" autocomplete="on">
+        <input id="myPw" type="password" autocomplete="new-password" placeholder="Kata laluan baharu" aria-label="Kata laluan baharu">
+        <input id="myPw2" type="password" autocomplete="new-password" placeholder="Taip semula" aria-label="Taip semula kata laluan baharu">
+        <button class="btn" type="submit" id="myPwBtn">Tukar kata laluan saya</button>
+      </form>
+      <p class="hint">Jika akaun ini dikongsi, beritahu staf lain kata laluan baharu untuk log masuk seterusnya.</p>
+      <div class="err" id="myPwErr" hidden></div>
+
+      <div id="adminBox" class="acct" hidden>
+        <hr class="divider">
+        <h3>Urus akaun</h3>
+        <p class="hint">Satu akaun boleh dikongsi semua staf kaunter dan dibuka di banyak peranti serentak, atau buat satu akaun untuk setiap staf. Emel hanya digunakan sebagai ID log masuk; tiada emel dihantar. Pentadbir boleh tambah dan buang akaun.</p>
+        <form class="acct-form" id="addAcctForm" autocomplete="off">
+          <input id="newAcctEmail" type="email" autocomplete="off" placeholder="Emel / ID log masuk" aria-label="Emel akaun baharu">
+          <input id="newAcctPw" type="password" autocomplete="new-password" placeholder="Kata laluan sementara (min. 8)" aria-label="Kata laluan sementara">
+          <label class="check"><input type="checkbox" id="newAcctShow"> Tunjuk</label>
+          <label class="check"><input type="checkbox" id="newAcctAdmin"> Pentadbir</label>
+          <button class="btn primary" type="submit" id="addAcctBtn">Tambah akaun</button>
+        </form>
+        <div class="err" id="acctErr" hidden></div>
+        <div class="alist" id="acctList"><div class="empty">Memuatkan akaun...</div></div>
+      </div>
+    </div>
   </section>
 </main>
 
@@ -315,6 +375,17 @@ body{margin:0}
   <div class="row">
     <button class="btn" id="dlgCancel" type="button">Batal</button>
     <button class="btn primary" id="dlgOk" type="button">Teruskan</button>
+  </div>
+</dialog>
+<dialog id="pwDlg">
+  <h3 id="pwDlgTitle">Set kata laluan</h3>
+  <p id="pwDlgText"></p>
+  <input id="pwDlgInput" type="password" autocomplete="new-password" placeholder="Kata laluan baharu (min. 8)" aria-label="Kata laluan baharu">
+  <label class="check"><input type="checkbox" id="pwDlgShow"> Tunjuk kata laluan</label>
+  <div class="err" id="pwDlgErr" hidden></div>
+  <div class="row">
+    <button class="btn" id="pwDlgCancel" type="button">Batal</button>
+    <button class="btn primary" id="pwDlgOk" type="button">Simpan</button>
   </div>
 </dialog>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
