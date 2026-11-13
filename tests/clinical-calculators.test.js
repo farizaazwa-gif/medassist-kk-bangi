@@ -35,6 +35,71 @@ test("date-only engine rejects impossible calendar dates", () => {
   assert.equal(dates.addDays("2026-02-29", 280), "");
 });
 
+function loadPregnancyDates() {
+  const window = {};
+  runInlineScript("medassist-date-only-script", { window });
+  runInlineScript("medassist-pregnancy-dates-script", { window });
+  return window.MedAssistPregnancyDates;
+}
+
+test("pregnancy LMP output lists LMP, POA and EDD in note order", () => {
+  const ob = loadPregnancyDates();
+  const result = ob.fromLmp("2026-11-01", "2026-11-13");
+
+  assert.equal(result.gaDays, 12);
+  assert.equal(result.edd, "2027-08-08");
+  assert.deepEqual(Array.from(ob.lmpLines(result)), [
+    "LMP: 01/11/2026",
+    "POA: 1+5/52",
+    "EDD: 08/08/2027"
+  ]);
+  assert.equal(ob.fromLmp("2026-11-01", "2026-11-01").gaDays, 0);
+  assert.match(ob.fromLmp("2026-11-14", "2026-11-13").error, /before LMP/);
+  assert.match(ob.fromLmp("", "2026-11-13").error, /LMP/);
+});
+
+test("pregnancy USOD scan output gives POG and REDD from scan dating", () => {
+  const ob = loadPregnancyDates();
+  const result = ob.fromScan("2026-10-20", "8", "2", "2026-11-13");
+
+  assert.equal(result.scanGaDays, 58);
+  assert.equal(result.gaDays, 82);
+  assert.equal(result.redd, "2027-05-30");
+  assert.deepEqual(Array.from(ob.scanLines(result)), [
+    "USOD",
+    "Scan 20/10/2026: c/w 8+2/52",
+    "POG: 11+5/52",
+    "REDD: 30/05/2027"
+  ]);
+
+  // A scan that agrees with the LMP gives the same date as Naegele's EDD.
+  assert.equal(ob.fromScan("2026-12-27", "8", "0", "2027-01-05").redd, ob.fromLmp("2026-11-01", "2027-01-05").edd);
+  // Scan on the assessment date: POG equals GA at scan; blank days count as 0.
+  assert.equal(ob.fromScan("2026-11-13", "12", "", "2026-11-13").gaDays, 84);
+});
+
+test("pregnancy USOD scan input boundaries are enforced", () => {
+  const ob = loadPregnancyDates();
+
+  assert.equal(ob.fromScan("2026-11-01", "4", "0", "2026-11-13").error, undefined);
+  assert.equal(ob.fromScan("2026-11-01", "42", "6", "2026-11-13").error, undefined);
+  assert.match(ob.fromScan("2026-11-01", "3", "6", "2026-11-13").error, /weeks/);
+  assert.match(ob.fromScan("2026-11-01", "43", "0", "2026-11-13").error, /weeks/);
+  assert.match(ob.fromScan("2026-11-01", "8.5", "0", "2026-11-13").error, /weeks/);
+  assert.match(ob.fromScan("2026-11-01", "8", "7", "2026-11-13").error, /0–6/);
+  assert.match(ob.fromScan("", "8", "2", "2026-11-13").error, /scan date/);
+  assert.match(ob.fromScan("2026-11-14", "8", "2", "2026-11-13").error, /before the scan date/);
+});
+
+test("pregnancy calculator page wires LMP and USOD inputs to the copy-ready result", () => {
+  const html = require("./helpers/source-tools.js").INDEX_HTML;
+  ["obLmp", "obAssess", "obScanDate", "obScanWeeks", "obScanDays", "obCalculate", "obCopy", "obResult"].forEach(id => {
+    assert.match(html, new RegExp(`id="${id}"`), `${id} must exist`);
+  });
+  assert.match(html, /pregnancyCalc\.fromScan\(value\("obScanDate"\),value\("obScanWeeks"\),value\("obScanDays"\),assessment\)/);
+  assert.match(html, /pregnancyCalc\.lmpLines\(lmpResult\)/);
+});
+
 test("HPT CKD-EPI 2021 calculation and G-stage boundaries remain stable", () => {
   const { document } = createFieldDocument();
   const { exports: hpt } = runScriptPrefix(
