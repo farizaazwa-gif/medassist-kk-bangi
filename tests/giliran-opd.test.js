@@ -110,6 +110,16 @@ test("giliran OPD: the room board shows allocation only, not waiting or called s
   assert.doesNotMatch(board, /menunggu|Dipanggil/i);
 });
 
+test("giliran OPD: the counter shows only how many were registered, overall and per room", () => {
+  const app = fs.readFileSync(path.join(DIR, "app.js"), "utf8");
+  const stats = app.slice(app.indexOf("function renderStats"), app.indexOf("function renderRoomGrid"));
+  assert.match(stats, /Didaftar/);
+  assert.doesNotMatch(stats, /Menunggu|Dipanggil|Selesai|Tidak hadir/);
+  const tiles = app.slice(app.indexOf("function renderRoomGrid"), app.indexOf("function renderToday"));
+  assert.match(tiles, /didaftar/);
+  assert.doesNotMatch(tiles, /menunggu/i);
+});
+
 test("giliran OPD: Malaysian date key rolls over at local midnight", () => {
   assert.equal(L.dayKey(new Date("2026-11-12T15:59:00Z")), "2026-11-12");
   assert.equal(L.dayKey(new Date("2026-11-12T16:01:00Z")), "2026-11-13");
