@@ -381,7 +381,7 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
 .sheet-scroll { max-height: min(65vh, 740px); overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
 .ot-sheet { border-collapse: separate; border-spacing: 0; min-width: 1030px; width: 100%; table-layout: auto; font-size: 0.82rem; line-height: 1.25; }
 .ot-sheet th { position: sticky; top: 0; z-index: 3; padding: 8px 7px; background: #275f54; color: #fff; text-align: left; font-size: 0.75rem; font-weight: 600; white-space: nowrap; vertical-align: bottom; line-height: 1.2; }
-@media (min-width: 761px) { .ot-sheet th { white-space: normal; min-width: 58px; } .ot-sheet th.sticky-date { min-width: 100px; } }
+@media (min-width: 761px) { .ot-sheet th { white-space: normal; min-width: 58px; } .ot-sheet th.sticky-date { min-width: 100px; } .ot-sheet th.col-jadual { min-width: 118px; } }
 .ot-sheet td { padding: 5px 6px; border-bottom: 1px solid var(--line); vertical-align: middle; min-width: 0; }
 .ot-sheet tbody tr.sheet-row:nth-child(4n+1), .ot-sheet tbody tr.sheet-row:nth-child(4n+2) { background: var(--bg); }
 .ot-sheet tbody tr.sheet-row[data-status="bad"] { box-shadow: inset 3px 0 var(--bad); }
@@ -1272,11 +1272,11 @@ function itemHtml(key, d) {
 /* Paparan jadual berasaskan satu baris bagi setiap hari. Data kekal dalam struktur asal untuk PDF dan kiraan. */
 let rowFilter = "all", extraDay = null;
 const SHEET_COLS = {
-  elm:   [["masa","Masa mula–tamat"],["jam","Jam OT"],["sebab","Sebab OT"],["surat","Surat arahan"],["jadual","Jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["thumb","Thumbprint"]],
-  elmeh: [["lokasi","Lokasi EH"],["masa","Masa mula–tamat"],["jam","Jam OT"],["surat","Surat arahan"],["jadual","Jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["thumb","Thumbprint"]],
-  etap:  [["dipanggil","Dipanggil?"],["calltime","Masa masuk–keluar"],["nilai","Anggaran (RM)"],["surat","Surat arahan"],["jadual","Jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["tiadacuti","Tiada cuti / MC"],["thumb","Thumbprint"]],
-  lokum: [["lokasi","Lokasi EH"],["masa","Masa mula–tamat"],["jam","Jam bayar"],["nilai","Anggaran (RM)"],["surat","Surat arahan"],["jadual","Jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["thumb","Thumbprint"]],
-  bap:   [["dipanggil","Dipanggil?"],["calltime","Masa masuk–keluar"],["nilai","Anggaran (RM)"],["surat","Surat arahan"],["jadual","Jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["ketik","Ketik masuk/keluar"]]
+  elm:   [["masa","Masa mula–tamat"],["jam","Jam OT"],["sebab","Sebab OT"],["surat","Surat arahan"],["jadual","Nama ada dalam senarai jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["thumb","Thumbprint lengkap"]],
+  elmeh: [["lokasi","Lokasi EH"],["masa","Masa mula–tamat"],["jam","Jam OT"],["surat","Surat arahan"],["jadual","Nama ada dalam senarai jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["thumb","Thumbprint lengkap"]],
+  etap:  [["dipanggil","Dipanggil?"],["calltime","Masa masuk–keluar"],["nilai","Anggaran (RM)"],["surat","Surat arahan"],["jadual","Nama ada dalam senarai jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["tiadacuti","Tiada cuti / MC"],["thumb","Thumbprint lengkap"]],
+  lokum: [["lokasi","Lokasi EH"],["masa","Masa mula–tamat"],["jam","Jumlah jam"],["nilai","Anggaran (RM)"],["surat","Surat arahan"],["jadual","Nama ada dalam senarai jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["thumb","Thumbprint lengkap"]],
+  bap:   [["dipanggil","Dipanggil?"],["calltime","Masa masuk–keluar"],["nilai","Anggaran (RM)"],["surat","Surat arahan"],["jadual","Nama ada dalam senarai jadual kerja"],["ganti","Ganti orang?"],["borang","Borang ganti"],["ketik","Ketik masuk/keluar"]]
 };
 function sheetStatus(x) {
   if (!x) return ["idle","–"];
@@ -1376,7 +1376,7 @@ function sheetTableHtml(key) {
     ' <span class="muted">Jadual boleh ditatal ke kanan jika skrin kecil.</span></div></div>';
 }
 // Tandakan dokumen yang sama untuk semua tarikh dituntut sekali gus (cth satu jadual tugas untuk sebulan).
-const BULK = { surat: "Surat arahan", jadual: "Jadual kerja", tiadacuti: "Tiada cuti / MC", thumb: "Thumbprint", ketik: "Ketik masuk/keluar" };
+const BULK = { surat: "Surat arahan", jadual: "Nama dalam jadual kerja", tiadacuti: "Tiada cuti / MC", thumb: "Thumbprint lengkap", ketik: "Ketik masuk/keluar" };
 const bulkField = (k, r) => k === "jadual" ? (r.ganti ? "jadualGanti" : "jadual") : k;
 function bulkTargets(key, k) {
   const rows = md(key).rows, n = monthInfo().n, out = [];
