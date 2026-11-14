@@ -251,6 +251,8 @@ input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-v
 .docref .ds.ok { color: var(--ok); background: var(--ok-soft); }
 .docref .ds.bad { color: var(--bad); background: var(--bad-soft); }
 .docref .ds.man { color: var(--muted); background: var(--accent-soft); }
+.docref .dr-g + .dr-g { margin-top: 9px; padding-top: 7px; border-top: 1px dashed var(--line); }
+.docref .dr-gh { font-weight: 700; font-size: 0.76rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 4px; }
 .docref .dr-foot { margin: 8px 0 0; padding-top: 6px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.72rem; }
 @media (max-width: 900px) {
   .toprow { grid-template-columns: minmax(0, 1fr); }
@@ -1540,40 +1542,93 @@ function updateSummary(key, ev) {
   }
 }
 
-// Dokumen yang wajib dilampirkan bersama tuntutan ELM (OT biasa + OT extended hours).
-// Asas: Perintah Am Bab G; MyPPSM Ceraian SR.4.3.1 dan Garis Panduan Lampiran SR.4.3.1(A) (18 Dis 2025);
-// senarai semak Unit Kewangan fasiliti KKM. Format borang dan tarikh akhir ikut Unit Kewangan PKD.
+// Dokumen yang wajib dilampirkan bersama setiap jenis tuntutan.
+// OT (ELM): Perintah Am Bab G; MyPPSM Ceraian SR.4.3.1 & Lampiran SR.4.3.1(A); senarai semak Unit Kewangan KKM.
+// ETAP: Penyata Tuntutan ETAP (BA.KKM/ETAP), Bahagian E: Senarai Semak.
+// Elaun Lokum: format KKM LOKUM UD/UF/U_2025 (Lampiran SR.8.1.2 A68), Bahagian E: Senarai Semak.
+// Bersedia atas panggilan: tiada format pusat ditemui; ikut keperluan Unit Kewangan PKD.
+function docCtx(keys) {
+  const ks = keys.filter(k => mods().indexOf(k) >= 0 && evalModule(k).days.length), has = ks.length > 0;
+  const days = has ? [].concat(...ks.map(k => evalModule(k).days)) : [];
+  const cnt = f => days.filter(x => f(x.r, x.c)).length;
+  const st = (have, need) => have >= need ? ["ok", "Lengkap", "✓"] : ["bad", have + "/" + need + " tarikh", have + "/" + need];
+  return { ks, has, n: days.length, cnt, st, man: t => has ? ["man", t || "Sediakan", "•"] : null };
+}
+const docJadual = (C, sh, t, d) => ({ t, sh, d, s: C.has ? C.st(C.cnt(r => r.ganti ? r.jadualGanti : r.jadual), C.n) : null });
+const docSurat = (C, sh, t, d, c) => ({ t, sh, c, d, s: C.has ? C.st(C.cnt(r => r.surat), C.n) : null });
+const docHadir = (C, sh, t, d) => ({ t, sh, d, s: C.has ? C.st(C.cnt(r => r.thumb), C.n) : null });
+const docGanti = C => { const g = C.cnt(r => r.ganti); return { t: "Borang penggantian tugas", sh: "Borang penggantian", c: "jika ganti anggota lain", d: "Bagi tarikh menggantikan anggota lain, dengan nama anggota yang diganti.", app: C.has ? g > 0 : null, s: C.has && g ? C.st(C.cnt(r => r.ganti && r.borang), g) : null }; };
 function otDocList() {
-  const otk = mods().filter(k => isOt(k) && evalModule(k).days.length), has = otk.length > 0;
-  const days = has ? [].concat(...otk.map(k => evalModule(k).days)) : [];
-  const n = days.length, cnt = f => days.filter(x => f(x.r, x.c)).length;
-  const MS = md("elm"), S = has ? evalModule(otk[0]).sum : {}, adaEh = otk.indexOf("elmeh") >= 0, bolehEh = mods().indexOf("elmeh") >= 0 || !state.jawatan;
-  const st = (have, need) => have >= need ? ["ok", "Lengkap", "\u2713"] : ["bad", have + "/" + need + " tarikh", have + "/" + need];
-  const g = cnt(r => r.ganti), lapan = cnt((r, c) => c && c.gross > 480);
+  const C = docCtx(["elm", "elmeh"]), MS = md("elm"), S = C.has ? evalModule(C.ks[0]).sum : {};
+  const adaEh = C.ks.indexOf("elmeh") >= 0, bolehEh = mods().indexOf("elmeh") >= 0;
+  const lapan = C.cnt((r, c) => c && c.gross > 480);
+  const J = docJadual(C, "Jadual tugas" + (adaEh ? " + jadual EH" : ""), "Jadual tugas (roster) yang disahkan" + (adaEh ? ", termasuk jadual extended hours" : ""), "Nama pegawai ada pada tarikh tuntutan. Hari rehat dan cuti umum ditanda jelas.");
+  if (!adaEh && bolehEh) J.c = "+ jadual EH bagi OT extended hours";
   return [
-    { t: "Borang / penyata tuntutan Elaun Lebih Masa", sh: "Borang tuntutan ELM", d: "Lengkap, ditandatangan dan dicop oleh pegawai, penyemak dan Ketua Jabatan. Ikut format Unit Kewangan PKD.", s: has ? ["man", "Sediakan", "\u2022"] : null },
-    { t: "Salinan rekod kehadiran (thumbprint / laporan kehadiran elektronik)", sh: "Rekod kehadiran / thumbprint", d: "Disahkan, menunjukkan masa masuk dan keluar bagi setiap tarikh OT.", s: has ? st(cnt(r => r.thumb), n) : null },
-    { t: "Surat arahan kerja lebih masa", sh: "Surat arahan OT", c: "dikeluarkan sebelum OT", d: "Dikeluarkan sebelum OT dibuat. Ada nama, tarikh, masa, tugas, tandatangan dan cop Ketua Jabatan.", s: has ? st(cnt(r => r.surat), n) : null },
-    { t: "Jadual tugas (roster) yang disahkan" + (adaEh ? ", termasuk jadual extended hours" : ""), sh: "Jadual tugas" + (adaEh ? " + jadual EH" : ""), c: !adaEh && bolehEh ? "+ jadual EH bagi OT extended hours" : "", d: "Nama pegawai ada pada tarikh tuntutan. Hari rehat dan cuti umum ditanda jelas.", s: has ? st(cnt(r => r.ganti ? r.jadualGanti : r.jadual), n) : null },
-    { t: "Borang penggantian tugas", sh: "Borang penggantian", c: "jika ganti anggota lain", d: "Bagi tarikh menggantikan anggota lain, dengan nama anggota yang diganti.", app: has ? g > 0 : null, s: has && g ? st(cnt(r => r.ganti && r.borang), g) : null },
-    { t: "Surat pengesahan OT melebihi 8 jam", sh: "Surat OT melebihi 8 jam", c: "jika berkenaan", d: "Bagi tarikh yang OT melebihi 8 jam berturut-turut.", app: has ? lapan > 0 : null, s: has && lapan ? st(cnt((r, c) => c && c.gross > 480 && r.surat8), lapan) : null },
-    { t: "Surat kelulusan tuntutan melebihi 1/3 gaji pokok", sh: "Kelulusan melebihi 1/3 gaji", c: "jika melebihi had", d: "Oleh Ketua Jabatan / pegawai P&P Gred 12 ke atas" + (S.gabung ? " (OT biasa + OT extended hours dikira bersama)." : "."), app: has ? !!S.lebih : null, s: has && S.lebih ? (MS.lulus13 ? ["ok", "Ada", "\u2713"] : ["bad", "Belum ada", "Belum"]) : null },
-    { t: "Salinan penyata gaji bagi bulan tuntutan", sh: "Penyata gaji bulan tuntutan", d: "Gaji pokok dalam penyata ini digunakan untuk kiraan.", s: has ? (MS.penyata ? ["ok", "Ada", "\u2713"] : ["bad", "Belum ada", "Belum"]) : null },
-    { t: "Salinan penyata akaun bank", sh: "Penyata akaun bank", c: "tuntutan kali pertama", d: "Tuntutan kali pertama sahaja (jika diminta Unit Kewangan).", s: has ? ["man", "Jika berkenaan", "\u2022"] : null }
+    { t: "Borang / penyata tuntutan Elaun Lebih Masa", sh: "Borang tuntutan ELM", d: "Lengkap, ditandatangan dan dicop oleh pegawai, penyemak dan Ketua Jabatan. Ikut format Unit Kewangan PKD.", s: C.man() },
+    docHadir(C, "Rekod kehadiran / thumbprint", "Salinan rekod kehadiran (thumbprint / laporan kehadiran elektronik)", "Disahkan, menunjukkan masa masuk dan keluar bagi setiap tarikh OT."),
+    docSurat(C, "Surat arahan OT", "Surat arahan kerja lebih masa", "Dikeluarkan sebelum OT dibuat. Ada nama, tarikh, masa, tugas, tandatangan dan cop Ketua Jabatan.", "dikeluarkan sebelum OT"),
+    J,
+    docGanti(C),
+    { t: "Surat pengesahan OT melebihi 8 jam", sh: "Surat OT melebihi 8 jam", c: "jika berkenaan", d: "Bagi tarikh yang OT melebihi 8 jam berturut-turut.", app: C.has ? lapan > 0 : null, s: C.has && lapan ? C.st(C.cnt((r, c) => c && c.gross > 480 && r.surat8), lapan) : null },
+    { t: "Surat kelulusan tuntutan melebihi 1/3 gaji pokok", sh: "Kelulusan melebihi 1/3 gaji", c: "jika melebihi had", d: "Oleh Ketua Jabatan / pegawai P&P Gred 12 ke atas" + (S.gabung ? " (OT biasa + OT extended hours dikira bersama)." : "."), app: C.has ? !!S.lebih : null, s: C.has && S.lebih ? (MS.lulus13 ? ["ok", "Ada", "✓"] : ["bad", "Belum ada", "Belum"]) : null },
+    { t: "Salinan penyata gaji bagi bulan tuntutan", sh: "Penyata gaji bulan tuntutan", d: "Gaji pokok dalam penyata ini digunakan untuk kiraan.", s: C.has ? (MS.penyata ? ["ok", "Ada", "✓"] : ["bad", "Belum ada", "Belum"]) : null },
+    { t: "Salinan penyata akaun bank", sh: "Penyata akaun bank", c: "tuntutan kali pertama", d: "Tuntutan kali pertama sahaja (jika diminta Unit Kewangan).", s: C.man("Jika berkenaan") }
   ];
+}
+function etapDocList() {
+  const C = docCtx(["etap"]);
+  return [
+    { t: "Penyata Tuntutan ETAP (borang BA.KKM/ETAP)", sh: "Penyata tuntutan ETAP", d: "Bahagian C ditandatangan dan dicop pegawai; Bahagian D disahkan Ketua Jabatan.", s: C.man() },
+    docHadir(C, "Rekod kehadiran / thumbprint", "Salinan kad perakam waktu / laporan kehadiran elektronik yang disahkan", "Lengkap dengan masa mula dan akhir bertugas, disahkan."),
+    docJadual(C, "Jadual on-call (ETAP)", "Salinan jadual tugas atas panggilan (ETAP) yang disahkan", "Nama pegawai ada pada tarikh on-call."),
+    docSurat(C, "Surat arahan on-call", "Surat arahan bertugas atas panggilan", "Arahan Ketua Jabatan bagi tarikh on-call (keperluan PKD)."),
+    docGanti(C),
+    { t: "Salinan kad pengenalan dan buku / penyata bank", sh: "Salinan KP + buku bank", c: "tuntutan kali pertama", d: "Untuk tuntutan pertama sahaja.", s: C.man("Jika berkenaan") }
+  ];
+}
+function lokumDocList() {
+  const C = docCtx(["lokum"]);
+  return [
+    { t: "Penyata Tuntutan Elaun Lokum (format KKM LOKUM UD/UF/U_2025)", sh: "Borang tuntutan Lokum", d: "Ditandatangan dan dicop pegawai; disahkan Ketua Jabatan. Jam tuntutan maksimum 8 jam sehari.", s: C.man() },
+    docJadual(C, "Jadual bertugas Elaun Lokum (EH)", "Jadual bertugas Elaun Lokum (jadual extended hours) yang disahkan", "Nama pegawai ada pada tarikh EH di KK Ampang / KK Kajang."),
+    docHadir(C, "Rekod kehadiran / thumbprint", "Salinan kad perakam waktu / buku daftar kedatangan / sistem kehadiran yang disahkan", "Menunjukkan masa masuk dan keluar bagi setiap sesi EH."),
+    docSurat(C, "Surat arahan / memo EH", "Surat arahan atau memo extended hours", "Arahan bertugas extended hours bagi tarikh dituntut (keperluan PKD)."),
+    docGanti(C),
+    { t: "Pengesahan Ketua Jabatan pada dokumen sokongan", sh: "Cop sah Ketua Jabatan", c: "pada setiap salinan", d: "Setiap salinan dokumen sokongan disahkan Ketua Jabatan.", s: C.man("Pastikan") }
+  ];
+}
+function bapDocList() {
+  const C = docCtx(["bap"]), p = C.cnt(r => r.dipanggil);
+  return [
+    { t: "Borang tuntutan Elaun Bersedia Atas Panggilan", sh: "Borang tuntutan BAP", c: "format Unit Kewangan PKD", d: "Ditandatangan pegawai dan disahkan Ketua Jabatan.", s: C.man() },
+    docJadual(C, "Jadual bersedia atas panggilan", "Jadual bersedia atas panggilan yang disahkan", "Nama pegawai ada pada tarikh tuntutan."),
+    docSurat(C, "Surat arahan", "Surat arahan bersedia atas panggilan", "Arahan Ketua Jabatan bagi tarikh tuntutan."),
+    { t: "Rekod ketik masuk dan keluar", sh: "Rekod ketik masuk / keluar", c: "jika dipanggil", d: "Bagi tarikh pegawai dipanggil masuk ke klinik.", app: C.has ? p > 0 : null, s: C.has && p ? C.st(C.cnt(r => r.dipanggil && r.ketik), p) : null },
+    docGanti(C)
+  ];
+}
+function docGroups() {
+  const ms = mods(), G = [];
+  if (ms.some(isOt)) G.push({ nm: "Kerja lebih masa (OT)", L: otDocList() });
+  if (ms.indexOf("etap") >= 0) G.push({ nm: "On-call (ETAP)", L: etapDocList() });
+  if (ms.indexOf("lokum") >= 0) G.push({ nm: "Extended hours (Elaun Lokum)", L: lokumDocList() });
+  if (ms.indexOf("bap") >= 0) G.push({ nm: "Bersedia atas panggilan", L: bapDocList() });
+  return G;
 }
 let docRefInit = false;
 function renderDocRef() {
   const box = $("docRef"); if (!box) return;
-  const ms = mods(), show = !state.jawatan || ms.some(isOt);
-  box.hidden = !show; if (!show) return;
+  box.hidden = false;
   if (!docRefInit) { docRefInit = true; if (window.matchMedia && window.matchMedia("(max-width: 900px)").matches) box.open = false; }
-  const L = otDocList(), has = L.some(i => i.s);
-  box.innerHTML = "<summary>Dokumen wajib tuntutan OT</summary>" +
-    '<p class="dr-sub">' + (has ? "Status ikut isian bulan ini. Lampirkan ikut turutan." : "Lampirkan bersama borang tuntutan, ikut turutan.") + "</p><ol>" +
-    L.map(i => '<li class="' + (i.app === false ? "na" : "") + '" title="' + esc(i.d) + '"><span>' + esc(i.sh) + (i.c ? "<em>" + esc(i.app === false ? "tidak perlu bulan ini" : i.c) + "</em>" : "") + "</span>" +
-      (i.s ? '<span class="ds ' + i.s[0] + '">' + esc(i.s[2]) + "</span>" : "<span></span>") + "</li>").join("") +
-    '</ol><p class="dr-foot">Semua salinan perlu disahkan. Hantar ikut tarikh akhir Unit Kewangan PKD.</p>';
+  const G = docGroups(), has = G.some(g => g.L.some(i => i.s));
+  const li = i => '<li class="' + (i.app === false ? "na" : "") + '" title="' + esc(i.d) + '"><span>' + esc(i.sh) + (i.c ? "<em>" + esc(i.app === false ? "tidak perlu bulan ini" : i.c) + "</em>" : "") + "</span>" +
+    (i.s ? '<span class="ds ' + i.s[0] + '">' + esc(i.s[2]) + "</span>" : "<span></span>") + "</li>";
+  box.innerHTML = "<summary>Dokumen wajib dilampirkan</summary>" +
+    (G.length ? '<p class="dr-sub">' + (has ? "Status ikut isian bulan ini. Lampirkan ikut turutan." : "Lampirkan bersama borang tuntutan, ikut turutan.") + "</p>" +
+      G.map(g => '<div class="dr-g"><div class="dr-gh">' + esc(g.nm) + "</div><ol>" + g.L.map(li).join("") + "</ol></div>").join("")
+      : '<p class="dr-sub">Pilih jawatan dalam Langkah 1 untuk lihat senarai dokumen bagi setiap jenis tuntutan (OT, on-call, extended hours).</p>') +
+    '<p class="dr-foot">Semua salinan perlu disahkan Ketua Jabatan. Hantar ikut tarikh akhir Unit Kewangan PKD.</p>';
 }
 function renderOverview() {
   const ms = mods(), box = $("overview");
@@ -1967,22 +2022,30 @@ function pdfModule(doc, key, y) {
   return doc.lastAutoTable.finalY;
 }
 
-function pdfOtDocs(doc, y) {
-  const L = otDocList().filter(i => i.s && i.app !== false); if (!L.length) return y;
+function pdfDocs(doc, y) {
+  const G = docGroups().map(g => ({ nm: g.nm, L: g.L.filter(i => i.s && i.app !== false) })).filter(g => g.L.length);
+  if (!G.length) return y;
   const H = doc.internal.pageSize.getHeight();
   y += 7;
-  if (y + 18 + L.length * 7 > H - 25) { doc.addPage(); y = pdfMiniHeader(doc); }
+  if (y + 20 + G[0].L.length * 7 > H - 25) { doc.addPage(); y = pdfMiniHeader(doc); }
   doc.setFont("helvetica", "bold"); doc.setFontSize(11.5); doc.setTextColor(15, 92, 110);
-  doc.text("SENARAI SEMAK DOKUMEN DILAMPIRKAN (TUNTUTAN OT)", 14, y); doc.setTextColor(30, 30, 30);
-  doc.autoTable({ startY: y + 3, theme: "grid", head: [["Bil", "Dokumen", "Keterangan", "Semakan sistem", "Disemak"]],
-    body: L.map((i, n) => [String(n + 1), P(i.t), P(i.d), P(i.s[1]), ""]),
-    styles: { fontSize: 8.5, cellPadding: 1.4, lineColor: [200, 208, 214], lineWidth: 0.15, valign: "middle" },
-    headStyles: { fillColor: [15, 92, 110], textColor: 255, fontStyle: "bold" },
-    columnStyles: { 0: { cellWidth: 10, halign: "center" }, 1: { cellWidth: 80, fontStyle: "bold" }, 3: { cellWidth: 32 }, 4: { cellWidth: 20 } },
-    margin: { left: 14, right: 14 },
-    didParseCell: h => { if (h.section === "body" && h.column.index === 3) { const k = L[h.row.index].s[0]; h.cell.styles.textColor = k === "ok" ? [27, 127, 75] : k === "bad" ? [180, 35, 24] : [90, 90, 90]; h.cell.styles.fontStyle = "bold"; } },
-    didDrawCell: h => { if (h.section === "body" && h.column.index === 4) { const s = 3.6, cx = h.cell.x + h.cell.width / 2 - s / 2, cy = h.cell.y + h.cell.height / 2 - s / 2; h.doc.setDrawColor(90, 90, 90); h.doc.setLineWidth(0.25); h.doc.rect(cx, cy, s, s); } } });
-  return doc.lastAutoTable.finalY;
+  doc.text("SENARAI SEMAK DOKUMEN DILAMPIRKAN", 14, y); doc.setTextColor(30, 30, 30);
+  G.forEach((g, gi) => {
+    y += gi ? 6 : 1;
+    if (y + 16 + g.L.length * 7 > H - 25) { doc.addPage(); y = pdfMiniHeader(doc); }
+    y += 4; doc.setFont("helvetica", "bold"); doc.setFontSize(9.5); doc.setTextColor(15, 92, 110);
+    doc.text(P(g.nm.toUpperCase()), 14, y); doc.setTextColor(30, 30, 30);
+    doc.autoTable({ startY: y + 1.5, theme: "grid", head: [["Bil", "Dokumen", "Keterangan", "Semakan sistem", "Disemak"]],
+      body: g.L.map((i, n) => [String(n + 1), P(i.t), P(i.d), P(i.s[1]), ""]),
+      styles: { fontSize: 8.5, cellPadding: 1.4, lineColor: [200, 208, 214], lineWidth: 0.15, valign: "middle" },
+      headStyles: { fillColor: [15, 92, 110], textColor: 255, fontStyle: "bold" },
+      columnStyles: { 0: { cellWidth: 10, halign: "center" }, 1: { cellWidth: 80, fontStyle: "bold" }, 3: { cellWidth: 32 }, 4: { cellWidth: 20 } },
+      margin: { left: 14, right: 14 },
+      didParseCell: h => { if (h.section === "body" && h.column.index === 3) { const k = g.L[h.row.index].s[0]; h.cell.styles.textColor = k === "ok" ? [27, 127, 75] : k === "bad" ? [180, 35, 24] : [90, 90, 90]; h.cell.styles.fontStyle = "bold"; } },
+      didDrawCell: h => { if (h.section === "body" && h.column.index === 4) { const sz = 3.6, cx = h.cell.x + h.cell.width / 2 - sz / 2, cy = h.cell.y + h.cell.height / 2 - sz / 2; h.doc.setDrawColor(90, 90, 90); h.doc.setLineWidth(0.25); h.doc.rect(cx, cy, sz, sz); } } });
+    y = doc.lastAutoTable.finalY;
+  });
+  return y;
 }
 function pdfSign(doc, y) {
   const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
@@ -2033,7 +2096,7 @@ function buildPdf() {
     if (y > 40 && y + need > H) { doc.addPage(); y = pdfMiniHeader(doc); }
     y = pdfModule(doc, k, y);
   });
-  y = pdfOtDocs(doc, y);
+  y = pdfDocs(doc, y);
   pdfSign(doc, y);
   return doc;
 }
