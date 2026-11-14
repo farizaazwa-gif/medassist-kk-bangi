@@ -234,18 +234,28 @@ input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-v
 /* Steps */
 .step-h { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
 .step-h .refresh-sec { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; font-size: 0.8rem; }
-.wajib { margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--surface); }
-.wajib h3 { font-size: 0.92rem; margin: 0 0 2px; }
-.wajib .sub { margin: 0 0 8px; font-size: 0.8rem; }
-.wajib ol { margin: 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; counter-reset: wj; }
-.wajib li { counter-increment: wj; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 8px; align-items: start; font-size: 0.86rem; }
-.wajib li::before { content: counter(wj) "."; color: var(--muted); font-variant-numeric: tabular-nums; }
-.wajib li small { display: block; color: var(--muted); font-size: 0.76rem; }
-.wajib .wst { font-size: 0.72rem; font-weight: 700; border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
-.wajib .wst.ok { color: var(--ok, #1b7f4b); background: var(--ok-soft, #e6f4ec); }
-.wajib .wst.bad { color: var(--bad); background: var(--bad-soft); }
-.wajib .wst.man { color: var(--muted); background: var(--accent-soft); }
-.wajib .wfoot { margin-top: 8px; font-size: 0.76rem; color: var(--muted); }
+.toprow { display: grid; grid-template-columns: minmax(0, 1fr) 272px; gap: 10px; align-items: start; }
+.toprow > #step1 { min-width: 0; }
+.docref { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 10px 12px; font-size: 0.82rem; position: sticky; top: 8px; }
+.docref > summary { cursor: pointer; font-weight: 700; font-size: 0.86rem; list-style: none; display: flex; align-items: center; gap: 6px; }
+.docref > summary::-webkit-details-marker { display: none; }
+.docref > summary::after { content: "▾"; margin-left: auto; color: var(--muted); font-size: 0.8rem; }
+.docref:not([open]) > summary::after { content: "▸"; }
+.docref .dr-sub { margin: 4px 0 6px; color: var(--muted); font-size: 0.74rem; }
+.docref ol { margin: 0; padding: 0; list-style: none; counter-reset: dr; display: flex; flex-direction: column; gap: 5px; }
+.docref li { counter-increment: dr; display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 6px; align-items: baseline; line-height: 1.3; }
+.docref li::before { content: counter(dr) "."; color: var(--muted); font-size: 0.74rem; font-variant-numeric: tabular-nums; }
+.docref li em { font-style: normal; color: var(--muted); font-size: 0.72rem; display: block; }
+.docref li.na { opacity: 0.45; }
+.docref .ds { font-size: 0.7rem; font-weight: 700; border-radius: 5px; padding: 1px 6px; white-space: nowrap; }
+.docref .ds.ok { color: var(--ok); background: var(--ok-soft); }
+.docref .ds.bad { color: var(--bad); background: var(--bad-soft); }
+.docref .ds.man { color: var(--muted); background: var(--accent-soft); }
+.docref .dr-foot { margin: 8px 0 0; padding-top: 6px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.72rem; }
+@media (max-width: 900px) {
+  .toprow { grid-template-columns: minmax(0, 1fr); }
+  .toprow > .docref { order: -1; position: static; }
+}
 .step-h.out { margin: 4px 2px 8px; }
 .step-h h2 { font-size: 1rem; line-height: 1.5; }
 .step-h .sub { margin: 0; }
@@ -471,6 +481,7 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
     </div>
   </header>
 
+  <div class="toprow">
   <section class="panel" id="step1">
     <div class="step-h"><span class="num">1</span><div><h2>Maklumat pegawai</h2></div><button type="button" class="ghost refresh-sec" id="refStaff" title="Kosongkan maklumat pegawai sahaja. Tarikh tuntutan kekal."><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Refresh</button></div>
     <div class="fields">
@@ -482,6 +493,8 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
       <details class="officer-more span2"><summary>Pilihan tambahan <span class="muted">· jika berkaitan sahaja</span></summary><label class="ck" id="tkField" hidden><input type="checkbox" id="tanggung"> Terima Elaun Penanggungan Kerja (EPK)</label><p class="hint">Tandakan jika menerima EPK melalui arahan rasmi. Potongan OT hari bekerja biasa dikira jika berkenaan.</p></details>
     </div>
   </section>
+  <details class="docref" id="docRef" open hidden></details>
+  </div>
 
   <div class="quick-summary" id="quickSummary" role="status"><b>Ringkasan bulan ini</b><span id="quickClaim">0 tarikh</span><span id="quickDone">0 lengkap</span><span id="quickIssue">0 perlu tindakan</span></div>
   <section id="step2"><div class="step-h out"><span class="num">2</span><div><h2>Isi tarikh tuntutan</h2><p class="sub">Tandakan tarikh, isi masa dan tekan <b>Semak</b> untuk dokumen serta pilihan tambahan.</p></div><button type="button" class="ghost refresh-sec" id="refClaim" title="Kosongkan semua isian tuntutan bulan ini. Maklumat pegawai kekal."><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Refresh</button></div><nav class="tabs" id="tabs" role="tablist" aria-label="Jenis tuntutan"></nav><div id="module"></div></section>
@@ -1106,7 +1119,7 @@ function resultHtml(key) {
     '<ul class="why" id="v-why"></ul><div class="notes" id="v-notes"></div>' +
     '<div class="top-grid"><div class="fields one">' + dit + '</div><dl class="facts">' + facts + "</dl></div>" +
     (checks ? '<div class="docbox"><div class="sec-h">Dokumen tuntutan</div><div class="clist">' + checks + "</div></div>" : "") + "</div>" +
-    '<div id="overview"></div><div id="otDocs"></div>' + ruleHtml(key);
+    '<div id="overview"></div>' + ruleHtml(key);
 }
 
 function calHtml(key) {
@@ -1531,33 +1544,36 @@ function updateSummary(key, ev) {
 // Asas: Perintah Am Bab G; MyPPSM Ceraian SR.4.3.1 dan Garis Panduan Lampiran SR.4.3.1(A) (18 Dis 2025);
 // senarai semak Unit Kewangan fasiliti KKM. Format borang dan tarikh akhir ikut Unit Kewangan PKD.
 function otDocList() {
-  const otk = mods().filter(k => isOt(k) && evalModule(k).days.length);
-  if (!otk.length) return null;
-  const days = [].concat(...otk.map(k => evalModule(k).days));
+  const otk = mods().filter(k => isOt(k) && evalModule(k).days.length), has = otk.length > 0;
+  const days = has ? [].concat(...otk.map(k => evalModule(k).days)) : [];
   const n = days.length, cnt = f => days.filter(x => f(x.r, x.c)).length;
-  const MS = md("elm"), S = evalModule(otk[0]).sum, adaEh = otk.indexOf("elmeh") >= 0;
-  const st = (have, need) => need ? (have >= need ? ["ok", "Lengkap"] : ["bad", have + "/" + need + " tarikh"]) : ["ok", "Lengkap"];
-  const out = [];
-  out.push({ t: "Borang / penyata tuntutan Elaun Lebih Masa", d: "Lengkap, ditandatangan dan dicop oleh pegawai, penyemak dan Ketua Jabatan. Ikut format Unit Kewangan PKD.", s: ["man", "Sediakan"] });
-  out.push({ t: "Salinan rekod kehadiran (thumbprint / laporan kehadiran elektronik)", d: "Disahkan, menunjukkan masa masuk dan keluar bagi setiap tarikh OT.", s: st(cnt(r => r.thumb), n) });
-  out.push({ t: "Surat arahan kerja lebih masa", d: "Dikeluarkan sebelum OT dibuat. Ada nama, tarikh, masa, tugas, tandatangan dan cop Ketua Jabatan.", s: st(cnt(r => r.surat), n) });
-  out.push({ t: "Jadual tugas (roster) yang disahkan" + (adaEh ? ", termasuk jadual extended hours" : ""), d: "Nama pegawai ada pada tarikh tuntutan. Hari rehat dan cuti umum ditanda jelas.", s: st(cnt(r => r.ganti ? r.jadualGanti : r.jadual), n) });
-  const g = cnt(r => r.ganti);
-  if (g) out.push({ t: "Borang penggantian tugas", d: "Bagi tarikh menggantikan anggota lain, dengan nama anggota yang diganti.", s: st(cnt(r => r.ganti && r.borang), g) });
-  const lapan = cnt((r, c) => c && c.gross > 480);
-  if (lapan) out.push({ t: "Surat pengesahan OT melebihi 8 jam", d: "Bagi tarikh yang OT melebihi 8 jam berturut-turut.", s: st(cnt((r, c) => c && c.gross > 480 && r.surat8), lapan) });
-  if (S.lebih) out.push({ t: "Surat kelulusan tuntutan melebihi 1/3 gaji pokok", d: "Oleh Ketua Jabatan / pegawai P&P Gred 12 ke atas" + (S.gabung ? " (OT biasa + OT extended hours dikira bersama)." : "."), s: MS.lulus13 ? ["ok", "Ada"] : ["bad", "Belum ada"] });
-  out.push({ t: "Salinan penyata gaji bagi bulan tuntutan", d: "Gaji pokok dalam penyata ini digunakan untuk kiraan.", s: MS.penyata ? ["ok", "Ada"] : ["bad", "Belum ada"] });
-  out.push({ t: "Salinan penyata akaun bank", d: "Tuntutan kali pertama sahaja (jika diminta Unit Kewangan).", s: ["man", "Jika berkenaan"] });
-  return out;
+  const MS = md("elm"), S = has ? evalModule(otk[0]).sum : {}, adaEh = otk.indexOf("elmeh") >= 0, bolehEh = mods().indexOf("elmeh") >= 0 || !state.jawatan;
+  const st = (have, need) => have >= need ? ["ok", "Lengkap", "\u2713"] : ["bad", have + "/" + need + " tarikh", have + "/" + need];
+  const g = cnt(r => r.ganti), lapan = cnt((r, c) => c && c.gross > 480);
+  return [
+    { t: "Borang / penyata tuntutan Elaun Lebih Masa", sh: "Borang tuntutan ELM", d: "Lengkap, ditandatangan dan dicop oleh pegawai, penyemak dan Ketua Jabatan. Ikut format Unit Kewangan PKD.", s: has ? ["man", "Sediakan", "\u2022"] : null },
+    { t: "Salinan rekod kehadiran (thumbprint / laporan kehadiran elektronik)", sh: "Rekod kehadiran / thumbprint", d: "Disahkan, menunjukkan masa masuk dan keluar bagi setiap tarikh OT.", s: has ? st(cnt(r => r.thumb), n) : null },
+    { t: "Surat arahan kerja lebih masa", sh: "Surat arahan OT", c: "dikeluarkan sebelum OT", d: "Dikeluarkan sebelum OT dibuat. Ada nama, tarikh, masa, tugas, tandatangan dan cop Ketua Jabatan.", s: has ? st(cnt(r => r.surat), n) : null },
+    { t: "Jadual tugas (roster) yang disahkan" + (adaEh ? ", termasuk jadual extended hours" : ""), sh: "Jadual tugas" + (adaEh ? " + jadual EH" : ""), c: !adaEh && bolehEh ? "+ jadual EH bagi OT extended hours" : "", d: "Nama pegawai ada pada tarikh tuntutan. Hari rehat dan cuti umum ditanda jelas.", s: has ? st(cnt(r => r.ganti ? r.jadualGanti : r.jadual), n) : null },
+    { t: "Borang penggantian tugas", sh: "Borang penggantian", c: "jika ganti anggota lain", d: "Bagi tarikh menggantikan anggota lain, dengan nama anggota yang diganti.", app: has ? g > 0 : null, s: has && g ? st(cnt(r => r.ganti && r.borang), g) : null },
+    { t: "Surat pengesahan OT melebihi 8 jam", sh: "Surat OT melebihi 8 jam", c: "jika berkenaan", d: "Bagi tarikh yang OT melebihi 8 jam berturut-turut.", app: has ? lapan > 0 : null, s: has && lapan ? st(cnt((r, c) => c && c.gross > 480 && r.surat8), lapan) : null },
+    { t: "Surat kelulusan tuntutan melebihi 1/3 gaji pokok", sh: "Kelulusan melebihi 1/3 gaji", c: "jika melebihi had", d: "Oleh Ketua Jabatan / pegawai P&P Gred 12 ke atas" + (S.gabung ? " (OT biasa + OT extended hours dikira bersama)." : "."), app: has ? !!S.lebih : null, s: has && S.lebih ? (MS.lulus13 ? ["ok", "Ada", "\u2713"] : ["bad", "Belum ada", "Belum"]) : null },
+    { t: "Salinan penyata gaji bagi bulan tuntutan", sh: "Penyata gaji bulan tuntutan", d: "Gaji pokok dalam penyata ini digunakan untuk kiraan.", s: has ? (MS.penyata ? ["ok", "Ada", "\u2713"] : ["bad", "Belum ada", "Belum"]) : null },
+    { t: "Salinan penyata akaun bank", sh: "Penyata akaun bank", c: "tuntutan kali pertama", d: "Tuntutan kali pertama sahaja (jika diminta Unit Kewangan).", s: has ? ["man", "Jika berkenaan", "\u2022"] : null }
+  ];
 }
-function renderOtDocs() {
-  const box = $("otDocs"); if (!box) return;
-  const L = otDocList();
-  if (!L) { box.innerHTML = ""; return; }
-  box.innerHTML = '<div class="wajib"><h3>Dokumen wajib dilampirkan bersama tuntutan OT</h3><p class="sub muted">Susun ikut turutan ini. Semua salinan perlu disahkan (salinan diakui sah).</p><ol>' +
-    L.map(i => "<li><div><b>" + esc(i.t) + "</b><small>" + esc(i.d) + '</small></div><span class="wst ' + i.s[0] + '">' + esc(i.s[1]) + "</span></li>").join("") +
-    '</ol><div class="wfoot">Hantar ke Unit Kewangan sebelum tarikh akhir yang ditetapkan PKD (lazimnya awal bulan berikutnya). Rujukan: Perintah Am Bab G; MyPPSM Ceraian SR.4.3.1 dan Garis Panduan Lampiran SR.4.3.1(A).</div></div>';
+let docRefInit = false;
+function renderDocRef() {
+  const box = $("docRef"); if (!box) return;
+  const ms = mods(), show = !state.jawatan || ms.some(isOt);
+  box.hidden = !show; if (!show) return;
+  if (!docRefInit) { docRefInit = true; if (window.matchMedia && window.matchMedia("(max-width: 900px)").matches) box.open = false; }
+  const L = otDocList(), has = L.some(i => i.s);
+  box.innerHTML = "<summary>Dokumen wajib tuntutan OT</summary>" +
+    '<p class="dr-sub">' + (has ? "Status ikut isian bulan ini. Lampirkan ikut turutan." : "Lampirkan bersama borang tuntutan, ikut turutan.") + "</p><ol>" +
+    L.map(i => '<li class="' + (i.app === false ? "na" : "") + '" title="' + esc(i.d) + '"><span>' + esc(i.sh) + (i.c ? "<em>" + esc(i.app === false ? "tidak perlu bulan ini" : i.c) + "</em>" : "") + "</span>" +
+      (i.s ? '<span class="ds ' + i.s[0] + '">' + esc(i.s[2]) + "</span>" : "<span></span>") + "</li>").join("") +
+    '</ol><p class="dr-foot">Semua salinan perlu disahkan. Hantar ikut tarikh akhir Unit Kewangan PKD.</p>';
 }
 function renderOverview() {
   const ms = mods(), box = $("overview");
@@ -1606,6 +1622,7 @@ function updateBar(key, ev) {
 }
 
 function refresh() {
+  renderDocRef();
   const ms = mods();
   ms.forEach(k => {
     const ev = evalModule(k);
@@ -1614,7 +1631,7 @@ function refresh() {
   });
   const key = activeTab();
   if (!key) { updateQuickSummary(); updateBar(null); return; }
-  renderOverview(); renderOtDocs();
+  renderOverview();
   const ev = evalModule(key);
   const byDay = {};
   ev.days.forEach(x => { byDay[x.d] = x; });
@@ -1951,7 +1968,7 @@ function pdfModule(doc, key, y) {
 }
 
 function pdfOtDocs(doc, y) {
-  const L = otDocList(); if (!L) return y;
+  const L = otDocList().filter(i => i.s && i.app !== false); if (!L.length) return y;
   const H = doc.internal.pageSize.getHeight();
   y += 7;
   if (y + 18 + L.length * 7 > H - 25) { doc.addPage(); y = pdfMiniHeader(doc); }
