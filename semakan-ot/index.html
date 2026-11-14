@@ -497,6 +497,28 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
   .sheet-mobile-docs .g2 { grid-template-columns:1fr; }
 }
 
+/* Jadual: semua tajuk dan isi lajur di tengah supaya susunan sekata */
+.ot-sheet th, .ot-sheet td { text-align: center; }
+.ot-sheet th { vertical-align: middle; }
+.ot-sheet .datecell { align-items: center; }
+.ot-sheet .time-pair { justify-content: center; }
+.ot-sheet .sh-issue { margin-left: auto; margin-right: auto; }
+.ot-sheet tr.sheet-extra td { text-align: left; }
+@media (max-width: 760px) {
+  /* Telefon: jadual muat dalam skrin (tiada tatal ke tepi yang memotong butiran tambahan) */
+  .ot-sheet .datecell { white-space: normal; }
+  .ot-sheet .datecell .cuti { max-width: 66px; white-space: normal; overflow: visible; line-height: 1.15; }
+  .ot-sheet th, .ot-sheet td { padding-left: 3px; padding-right: 3px; }
+  .ot-sheet .sh-more { padding: 5px 8px; }
+}
+@media (max-width: 380px) {
+  .ot-sheet .time-pair input { min-width: 64px; font-size: 13px; padding-left: 3px; padding-right: 3px; }
+  .ot-sheet .datecell .cuti { max-width: 58px; }
+  .ot-sheet th { font-size: 0.64rem; }
+  .ot-sheet .sticky-on { width: auto; }
+  .ot-sheet .sh-status { padding: 3px 4px; font-size: 0.66rem; }
+  .ot-sheet .sh-more { padding: 4px 6px; font-size: 0.74rem; }
+}
 </style>
 </head>
 <body>
