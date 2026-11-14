@@ -538,8 +538,14 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
   /* Masa: cukup lebar untuk "05:00 PM" penuh */
   .ot-sheet .time-cell { min-width: 0; }
   .ot-sheet .time-pair { gap: 2px; }
-  .ot-sheet .time-pair input { width: 98px; min-width: 98px; max-width: 98px; padding-left: 5px; padding-right: 3px; }
+  .ot-sheet .time-pair input { width: 95px; min-width: 95px; max-width: 95px; padding-left: 4px; padding-right: 2px; }
   .ot-sheet .time-pair input::-webkit-calendar-picker-indicator { margin-left: 1px; padding: 0; }
+}
+.ot-sheet select.masa-pilih { min-width: 0; width: 100%; max-width: 205px; }
+.ot-sheet .masa-lain { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+@media (max-width: 760px) {
+  .ot-sheet select.masa-pilih { max-width: 104px; font-size: 13px; padding-left: 4px; padding-right: 1px; }
+  .ot-sheet .masa-lain .time-pair input { min-width: 0; width: 100%; max-width: 104px; font-size: 13px; padding-left: 3px; padding-right: 1px; }
 }
 </style>
 </head>
@@ -1351,9 +1357,23 @@ function sheetCheck(r,k,label,enabled) {
 function sheetPair(r,a,b,day,labels) {
   return '<div class="time-pair"><input type="time" data-k="' + a + '" aria-label="' + esc(labels[0] + " " + day) + '" value="' + esc(r[a] || "") + '"><em>–</em><input type="time" data-k="' + b + '" aria-label="' + esc(labels[1] + " " + day) + '" value="' + esc(r[b] || "") + '"></div>';
 }
+// Masa extended hours: lalai ikut waktu operasi; pilih "Masa lain" untuk isi sendiri.
+function jam12(m) { m = ((m % 1440) + 1440) % 1440; const h = Math.floor(m / 60); return [(h % 12 || 12) + ":" + pad2(m % 60), h < 12 ? "AM" : "PM"]; }
+function julatJam(a, b) { const x = jam12(a), y = jam12(b); return x[1] === y[1] ? x[0] + "–" + y[0] + " " + y[1] : x.join(" ") + "–" + y.join(" "); }
+// Label pendek untuk telefon: "5–9PM", "9AM–1PM"
+function julatPendek(a, b) { const f = m => { const t = jam12(m); return [t[0].replace(":00", ""), t[1]]; }, x = f(a), y = f(b); return x[1] === y[1] ? x[0] + "–" + y[0] + y[1] : x.join("") + "–" + y.join(""); }
+const skrinKecil = () => !!(window.matchMedia && window.matchMedia("(max-width: 760px)").matches);
 function sheetCell(key,col,r,d,x) {
   const day = d + " " + BULAN[monthInfo().m - 1];
-  if (col === "masa") return sheetPair(r,"mula","tamat",day,["Masa mula","Masa tamat"]);
+  if (col === "masa") {
+    const raw = isEh(key) ? md(key).rows[d] || {} : null, w = raw && raw.lokasi ? ehWinFor(key, raw, d) : null;
+    if (!w) return sheetPair(r,"mula","tamat",day,["Masa mula","Masa tamat"]);
+    const auto = !!raw.autoMasa;
+    const sel = '<select data-k="masaPilih" class="masa-pilih" aria-label="Pilih masa ' + esc(day) + '" title="Lalai ikut waktu operasi ' + esc(EH_L[raw.lokasi] || "") + '. Pilih Masa lain jika masa sebenar berbeza.">' +
+      '<option value="auto"' + (auto ? " selected" : "") + ">" + esc(skrinKecil() ? julatPendek(w[0], w[1]) : julatJam(w[0], w[1]) + " (EH)") + "</option>" +
+      '<option value="lain"' + (auto ? "" : " selected") + ">" + (skrinKecil() ? "Lain…" : "Masa lain…") + "</option></select>";
+    return auto ? sel : '<div class="masa-lain">' + sel + sheetPair(r,"mula","tamat",day,["Masa mula","Masa tamat"]) + "</div>";
+  }
   if (col === "calltime") return r.dipanggil ? sheetPair(r,"masuk","keluar",day,["Masa masuk","Masa keluar"]) : '<span class="sheet-dash">Tidak dipanggil</span>';
   if (col === "jam") return '<span class="hours" data-show="jam">' + sheetHours(key,x) + "</span>";
   if (col === "nilai") return '<span class="amount" data-show="nilai">' + sheetAmount(key,x) + "</span>";
@@ -1889,6 +1909,14 @@ function onModuleInput(e) {
   if (t.dataset.k) {
     const line=t.closest("[data-d]"), d=line && +line.dataset.d; if (!d) return;
     const r=md(key).rows[d]; if (!r || !r.on) return;
+    if (t.dataset.k==="masaPilih") {
+      if (e.type!=="change") return;
+      if (t.value==="auto") { r.autoMasa=true; r.mula=""; r.tamat=""; autoFillEh(r,d,key); }
+      else r.autoMasa=false;
+      save(); redrawSheet();
+      if (t.value!=="auto") { const f=document.querySelector('tr.sheet-row[data-d="' + d + '"] [data-k="mula"]'); if (f) f.focus(); }
+      return;
+    }
     r[t.dataset.k]=t.type==="checkbox" ? t.checked : t.value;
     if (isEh(key) && ["mula","tamat"].includes(t.dataset.k)) r.autoMasa=false;
     if (isEh(key) && (key==="lokum" ? ["lokasi","am"] : ["lokasi","jenis"]).includes(t.dataset.k) && e.type==="change") autoFillEh(r,d,key);
