@@ -49,7 +49,7 @@ body {
   padding-right: max(12px, env(safe-area-inset-right, 0px));
   padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
 }
-.wrap { max-width: 1480px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.wrap { max-width: 1760px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
 h1 { font-size: 1.25rem; margin: 0; letter-spacing: -0.01em; }
 h2 { font-size: 0.95rem; margin: 0; }
 .sub { color: var(--muted); font-size: 0.82rem; margin: 2px 0 0; }
@@ -234,15 +234,39 @@ input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-v
 /* Steps */
 .step-h { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
 .step-h .refresh-sec { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; font-size: 0.8rem; }
-.toprow { display: grid; grid-template-columns: minmax(0, 1fr) 272px; gap: 10px; align-items: start; }
-.toprow > #step1 { min-width: 0; }
-.docref { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 10px 12px; font-size: 0.82rem; position: sticky; top: 8px; }
+/* Susun atur: satu lajur bawah 1600px (panel dokumen terus di bawah Langkah 1); dua lajur di skrin lebar supaya jadual tidak perlu ditatal ke tepi. */
+.layout { display: flex; flex-direction: column; gap: 10px; }
+.maincol { display: contents; }
+.maincol > #step1 { order: 0; }
+.layout > .docref { order: 1; }
+.maincol > :not(#step1) { order: 2; }
+@media (min-width: 1600px) {
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; align-items: start; }
+  .maincol { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .layout > .docref { position: sticky; top: 10px; max-height: calc(100vh - 104px); overflow-y: auto; overscroll-behavior: contain; }
+  .layout > .docref > summary { pointer-events: none; }
+  .layout > .docref > summary::after { display: none; }
+}
+.docref { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 12px 14px; font-size: 0.84rem; }
+.docref .dr-tabs { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0 2px; }
+.docref .dr-tabs button { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; font-size: 0.76rem; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; }
+.docref .dr-tabs button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.docref .dr-n { min-width: 16px; padding: 0 4px; border-radius: 999px; background: var(--bad); color: #fff; font-size: 0.68rem; line-height: 16px; text-align: center; }
+.docref > summary .dr-badge { font-size: 0.7rem; font-weight: 700; border-radius: 999px; padding: 1px 8px; }
+.docref > summary .dr-badge.bad { color: var(--bad); background: var(--bad-soft); }
+.docref > summary .dr-badge.ok { color: var(--ok); background: var(--ok-soft); }
+@media (min-width: 640px) and (max-width: 1599px) {
+  .layout > .docref ol { display: block; columns: 2; column-gap: 32px; }
+  .layout > .docref li { break-inside: avoid; margin-bottom: 7px; }
+}
+@media (min-width: 1100px) and (max-width: 1599px) { .layout > .docref ol { columns: 3; } }
+.docref .dr-src { color: var(--muted); font-size: 0.72rem; margin: 1px 0 0; }
 .docref > summary { cursor: pointer; font-weight: 700; font-size: 0.86rem; list-style: none; display: flex; align-items: center; gap: 6px; }
 .docref > summary::-webkit-details-marker { display: none; }
 .docref > summary::after { content: "▾"; margin-left: auto; color: var(--muted); font-size: 0.8rem; }
 .docref:not([open]) > summary::after { content: "▸"; }
-.docref .dr-sub { margin: 4px 0 6px; color: var(--muted); font-size: 0.74rem; }
-.docref ol { margin: 0; padding: 0; list-style: none; counter-reset: dr; display: flex; flex-direction: column; gap: 5px; }
+.docref .dr-sub { margin: 4px 0 8px; color: var(--muted); font-size: 0.74rem; }
+.docref ol { margin: 0; padding: 0; list-style: none; counter-reset: dr; display: flex; flex-direction: column; gap: 7px; }
 .docref li { counter-increment: dr; display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 6px; align-items: baseline; line-height: 1.3; }
 .docref li::before { content: counter(dr) "."; color: var(--muted); font-size: 0.74rem; font-variant-numeric: tabular-nums; }
 .docref li em { font-style: normal; color: var(--muted); font-size: 0.72rem; display: block; }
@@ -251,13 +275,8 @@ input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-v
 .docref .ds.ok { color: var(--ok); background: var(--ok-soft); }
 .docref .ds.bad { color: var(--bad); background: var(--bad-soft); }
 .docref .ds.man { color: var(--muted); background: var(--accent-soft); }
-.docref .dr-g + .dr-g { margin-top: 9px; padding-top: 7px; border-top: 1px dashed var(--line); }
-.docref .dr-gh { font-weight: 700; font-size: 0.76rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 4px; }
+.docref .dr-gh { font-weight: 700; font-size: 0.8rem; color: var(--accent); margin-top: 10px; }
 .docref .dr-foot { margin: 8px 0 0; padding-top: 6px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.72rem; }
-@media (max-width: 900px) {
-  .toprow { grid-template-columns: minmax(0, 1fr); }
-  .toprow > .docref { order: -1; position: static; }
-}
 .step-h.out { margin: 4px 2px 8px; }
 .step-h h2 { font-size: 1rem; line-height: 1.5; }
 .step-h .sub { margin: 0; }
@@ -325,7 +344,7 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
   position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); z-index: 5;
   padding: 8px max(12px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
 }
-.bar .in { max-width: 1480px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; justify-content: space-between; }
+.bar .in { max-width: 1760px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; justify-content: space-between; }
 .bar .msg { font-size: 0.82rem; color: var(--muted); min-width: 0; flex: 1 1 100%; }
 .bar .msg:empty { display: none; }
 .btns, .confirm { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -336,6 +355,8 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
 /* Jadual semakan: semua tarikh dalam satu paparan, tanpa kad berulang. */
 #step1 .fields { grid-template-columns: repeat(4, minmax(0,1fr)); }
 #step1 .fields .span2 { grid-column: span 2; }
+#step1 .fields .officer-more { grid-column: 1 / -1; }
+@media (min-width: 761px) { #step1.nogaji .fields > .field:not(.span2) { grid-column: span 2; } }
 #step3 { scroll-margin-top: 10px; }
 #step2 .step-h.out { margin-top: 3px; }
 .sheet-shell { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
@@ -350,7 +371,8 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
 .sheet-filters button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 .sheet-scroll { max-height: min(65vh, 740px); overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
 .ot-sheet { border-collapse: separate; border-spacing: 0; min-width: 1030px; width: 100%; table-layout: auto; font-size: 0.82rem; line-height: 1.25; }
-.ot-sheet th { position: sticky; top: 0; z-index: 3; padding: 9px 7px; background: #275f54; color: #fff; text-align: left; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.ot-sheet th { position: sticky; top: 0; z-index: 3; padding: 8px 7px; background: #275f54; color: #fff; text-align: left; font-size: 0.75rem; font-weight: 600; white-space: nowrap; vertical-align: bottom; line-height: 1.2; }
+@media (min-width: 761px) { .ot-sheet th { white-space: normal; min-width: 58px; } .ot-sheet th.sticky-date { min-width: 100px; } }
 .ot-sheet td { padding: 5px 6px; border-bottom: 1px solid var(--line); vertical-align: middle; min-width: 0; }
 .ot-sheet tbody tr.sheet-row:nth-child(4n+1), .ot-sheet tbody tr.sheet-row:nth-child(4n+2) { background: var(--bg); }
 .ot-sheet tbody tr.sheet-row[data-status="bad"] { box-shadow: inset 3px 0 var(--bad); }
@@ -483,7 +505,8 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
     </div>
   </header>
 
-  <div class="toprow">
+  <div class="layout">
+  <div class="maincol">
   <section class="panel" id="step1">
     <div class="step-h"><span class="num">1</span><div><h2>Maklumat pegawai</h2></div><button type="button" class="ghost refresh-sec" id="refStaff" title="Kosongkan maklumat pegawai sahaja. Tarikh tuntutan kekal."><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Refresh</button></div>
     <div class="fields">
@@ -495,8 +518,6 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
       <details class="officer-more span2"><summary>Pilihan tambahan <span class="muted">· jika berkaitan sahaja</span></summary><label class="ck" id="tkField" hidden><input type="checkbox" id="tanggung"> Terima Elaun Penanggungan Kerja (EPK)</label><p class="hint">Tandakan jika menerima EPK melalui arahan rasmi. Potongan OT hari bekerja biasa dikira jika berkenaan.</p></details>
     </div>
   </section>
-  <details class="docref" id="docRef" open hidden></details>
-  </div>
 
   <div class="quick-summary" id="quickSummary" role="status"><b>Ringkasan bulan ini</b><span id="quickClaim">0 tarikh</span><span id="quickDone">0 lengkap</span><span id="quickIssue">0 perlu tindakan</span></div>
   <section id="step2"><div class="step-h out"><span class="num">2</span><div><h2>Isi tarikh tuntutan</h2><p class="sub">Tandakan tarikh, isi masa dan tekan <b>Semak</b> untuk dokumen serta pilihan tambahan.</p></div><button type="button" class="ghost refresh-sec" id="refClaim" title="Kosongkan semua isian tuntutan bulan ini. Maklumat pegawai kekal."><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Refresh</button></div><nav class="tabs" id="tabs" role="tablist" aria-label="Jenis tuntutan"></nav><div id="module"></div></section>
@@ -524,6 +545,9 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
     <p class="hint">Senarai cuti umum Selangor 2026 dan 2027 sudah dimasukkan. Tambah di sini cuti peristiwa atau cuti ganti baharu yang diumumkan kemudian.</p>
     <p class="hint">Tetapan disimpan dalam pelayar ini dan tidak terpadam bila borang dikosongkan.</p>
   </details>
+  </div>
+  <details class="docref" id="docRef" open hidden aria-label="Dokumen wajib dilampirkan"></details>
+  </div>
 </div>
 
 <div class="bar" id="bar">
@@ -1052,6 +1076,7 @@ function renderTabs() {
   const adaOt = ms.some(isOt);
   $("gajiField").hidden = !ms.length || (isSimple() && !adaOt);
   $("tkField").hidden = !adaOt;
+  $("step1").classList.toggle("nogaji", $("gajiField").hidden);
   $("gajiHint").textContent = adaOt ? (isSimple() ? "Lihat penyata gaji. Perlu untuk kira bayaran OT." : "Untuk kira bayaran OT dan semak had 1/3 gaji pokok.")
     : "Untuk perbandingan sahaja. On-call dan extended hours dibayar ikut kadar tetap, bukan gaji.";
   $("tabs").innerHTML = ms.length < 2 ? "" : ms.map(k =>
@@ -1610,24 +1635,38 @@ function bapDocList() {
 }
 function docGroups() {
   const ms = mods(), G = [];
-  if (ms.some(isOt)) G.push({ nm: "Kerja lebih masa (OT)", L: otDocList() });
-  if (ms.indexOf("etap") >= 0) G.push({ nm: "On-call (ETAP)", L: etapDocList() });
-  if (ms.indexOf("lokum") >= 0) G.push({ nm: "Extended hours (Elaun Lokum)", L: lokumDocList() });
-  if (ms.indexOf("bap") >= 0) G.push({ nm: "Bersedia atas panggilan", L: bapDocList() });
+  if (ms.some(isOt)) G.push({ k: "ot", tab: ms.find(isOt), short: "OT", nm: "Kerja lebih masa (OT)", src: "Perintah Am Bab G; MyPPSM SR.4.3.1", L: otDocList() });
+  if (ms.indexOf("etap") >= 0) G.push({ k: "etap", tab: "etap", short: "On-call", nm: "On-call (ETAP)", src: "Penyata Tuntutan ETAP, Bahagian E", L: etapDocList() });
+  if (ms.indexOf("lokum") >= 0) G.push({ k: "lokum", tab: "lokum", short: "Extended hours", nm: "Extended hours (Elaun Lokum)", src: "Format KKM LOKUM UD/UF/U_2025, Bahagian E", L: lokumDocList() });
+  if (ms.indexOf("bap") >= 0) G.push({ k: "bap", tab: "bap", short: "Atas panggilan", nm: "Bersedia atas panggilan", src: "Format Unit Kewangan PKD", L: bapDocList() });
   return G;
 }
 let docRefInit = false;
 function renderDocRef() {
   const box = $("docRef"); if (!box) return;
   box.hidden = false;
-  if (!docRefInit) { docRefInit = true; if (window.matchMedia && window.matchMedia("(max-width: 900px)").matches) box.open = false; }
-  const G = docGroups(), has = G.some(g => g.L.some(i => i.s));
+  if (!docRefInit) {
+    docRefInit = true;
+    if (window.matchMedia) {
+      if (window.matchMedia("(max-width: 900px)").matches) box.open = false;
+      const wide = window.matchMedia("(min-width: 1600px)"), keepOpen = () => { if (wide.matches) box.open = true; };
+      if (wide.addEventListener) wide.addEventListener("change", keepOpen);
+    }
+  }
+  const G = docGroups(), cur = activeTab(), gk = isOt(cur) ? "ot" : cur;
+  const g = G.filter(x => x.k === gk)[0] || G[0];
+  const bad = x => x.L.filter(i => i.s && i.s[0] === "bad").length;
   const li = i => '<li class="' + (i.app === false ? "na" : "") + '" title="' + esc(i.d) + '"><span>' + esc(i.sh) + (i.c ? "<em>" + esc(i.app === false ? "tidak perlu bulan ini" : i.c) + "</em>" : "") + "</span>" +
     (i.s ? '<span class="ds ' + i.s[0] + '">' + esc(i.s[2]) + "</span>" : "<span></span>") + "</li>";
-  box.innerHTML = "<summary>Dokumen wajib dilampirkan</summary>" +
-    (G.length ? '<p class="dr-sub">' + (has ? "Status ikut isian bulan ini. Lampirkan ikut turutan." : "Lampirkan bersama borang tuntutan, ikut turutan.") + "</p>" +
-      G.map(g => '<div class="dr-g"><div class="dr-gh">' + esc(g.nm) + "</div><ol>" + g.L.map(li).join("") + "</ol></div>").join("")
-      : '<p class="dr-sub">Pilih jawatan dalam Langkah 1 untuk lihat senarai dokumen bagi setiap jenis tuntutan (OT, on-call, extended hours).</p>') +
+  let badge = "";
+  if (G.some(x => x.L.some(i => i.s))) { const n = G.reduce((t, x) => t + bad(x), 0); badge = n ? '<span class="dr-badge bad">' + n + " belum</span>" : '<span class="dr-badge ok">Lengkap</span>'; }
+  box.innerHTML = "<summary>Dokumen wajib dilampirkan" + badge + "</summary>" +
+    (g ? (G.length > 1 ? '<div class="dr-tabs" role="group" aria-label="Jenis tuntutan">' + G.map(x => { const n = bad(x);
+          return '<button type="button" data-tab="' + (x.k === gk ? cur : x.tab) + '" aria-pressed="' + (x === g) + '">' + esc(x.short) + (n ? '<span class="dr-n">' + n + "</span>" : "") + "</button>"; }).join("") + "</div>" : "") +
+        '<div class="dr-gh">' + esc(g.nm) + '</div><p class="dr-src">' + esc(g.src) + "</p>" +
+        '<p class="dr-sub">' + (g.L.some(i => i.s) ? "Status ikut isian bulan ini. Lampirkan ikut turutan." : "Lampirkan bersama borang tuntutan, ikut turutan.") + "</p>" +
+        "<ol>" + g.L.map(li).join("") + "</ol>"
+      : '<p class="dr-sub">Pilih jawatan dalam Langkah 1 untuk lihat dokumen yang perlu dilampirkan.</p>') +
     '<p class="dr-foot">Semua salinan perlu disahkan Ketua Jabatan. Hantar ikut tarikh akhir Unit Kewangan PKD.</p>';
 }
 function renderOverview() {
@@ -1742,6 +1781,10 @@ $("result").addEventListener("click", e => {
 });
 $("tabs").addEventListener("click", e => {
   const b = e.target.closest("[data-tab]"); if (!b) return;
+  switchTab(b.dataset.tab);
+});
+$("docRef").addEventListener("click", e => {
+  const b = e.target.closest(".dr-tabs [data-tab]"); if (!b) return;
   switchTab(b.dataset.tab);
 });
 $("bstat").addEventListener("click", () => { $("step3").scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" }); });
