@@ -378,7 +378,9 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
 .sheet-filters { display: inline-flex; flex-wrap: wrap; gap: 4px; }
 .sheet-filters button { padding: 5px 11px; font-size: 0.78rem; border: 1px solid var(--line); color: var(--muted); background: var(--surface); border-radius: 7px; }
 .sheet-filters button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
-.sheet-scroll { max-height: min(65vh, 740px); overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.sheet-scroll { max-height: min(65vh, 740px); overflow: auto; }
+.sheet-wrap { position: relative; }
+.sheet-wrap.more::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 26px; pointer-events: none; background: linear-gradient(to left, rgba(20, 50, 50, 0.18), transparent); }
 .ot-sheet { border-collapse: separate; border-spacing: 0; min-width: 1030px; width: 100%; table-layout: auto; font-size: 0.82rem; line-height: 1.25; }
 .ot-sheet th { position: sticky; top: 0; z-index: 3; padding: 8px 7px; background: #275f54; color: #fff; text-align: left; font-size: 0.75rem; font-weight: 600; white-space: nowrap; vertical-align: bottom; line-height: 1.2; }
 @media (min-width: 761px) { .ot-sheet th { white-space: normal; min-width: 58px; } .ot-sheet th.sticky-date { min-width: 100px; } .ot-sheet th.col-jadual { min-width: 118px; } }
@@ -518,6 +520,23 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
   .ot-sheet .sticky-on { width: auto; }
   .ot-sheet .sh-status { padding: 3px 4px; font-size: 0.66rem; }
   .ot-sheet .sh-more { padding: 4px 6px; font-size: 0.74rem; }
+}
+@media (min-width: 761px) {
+  /* Jadual lebih padat supaya muat pada skrin laptop dengan zoom 125-150% */
+  .ot-sheet td { padding-left: 5px; padding-right: 5px; }
+  .ot-sheet th.col-jadual { min-width: 100px; }
+  .ot-sheet .issue-cell { min-width: 120px; }
+  .ot-sheet .status-cell { white-space: normal; }
+  .ot-sheet .sh-status { white-space: normal; max-width: 88px; line-height: 1.15; }
+  .ot-sheet select { min-width: 88px; }
+  .ot-sheet th { min-width: 52px; }
+  .ot-sheet .issue-cell { min-width: 110px; }
+  .ot-sheet .sh-status { max-width: 80px; }
+  /* Masa: cukup lebar untuk "05:00 PM" penuh */
+  .ot-sheet .time-cell { min-width: 0; }
+  .ot-sheet .time-pair { gap: 2px; }
+  .ot-sheet .time-pair input { width: 98px; min-width: 98px; max-width: 98px; padding-left: 5px; padding-right: 3px; }
+  .ot-sheet .time-pair input::-webkit-calendar-picker-indicator { margin-left: 1px; padding: 0; }
 }
 </style>
 </head>
@@ -1338,7 +1357,7 @@ function sheetCell(key,col,r,d,x) {
   if (col === "jam") return '<span class="hours" data-show="jam">' + sheetHours(key,x) + "</span>";
   if (col === "nilai") return '<span class="amount" data-show="nilai">' + sheetAmount(key,x) + "</span>";
   if (col === "sebab") return '<input type="text" data-k="sebab" placeholder="Sebab OT" aria-label="Sebab OT ' + esc(day) + '" value="' + esc(r.sebab || "") + '">';
-  if (col === "lokasi") return '<select data-k="lokasi" aria-label="Lokasi EH ' + esc(day) + '"><option value="">Pilih KK</option><option value="ampang"' + (r.lokasi === "ampang" ? " selected" : "") + '>KK Ampang</option><option value="kajang"' + (r.lokasi === "kajang" ? " selected" : "") + '>KK Kajang</option></select>';
+  if (col === "lokasi") return '<select data-k="lokasi" aria-label="Lokasi EH ' + esc(day) + '"><option value="">Pilih KK</option><option value="ampang"' + (r.lokasi === "ampang" ? " selected" : "") + '>Ampang</option><option value="kajang"' + (r.lokasi === "kajang" ? " selected" : "") + '>Kajang</option></select>';
   if (col === "ganti") return sheetCheck(r,"ganti","Menggantikan anggota lain pada " + day);
   if (col === "borang") return sheetCheck(r,"borang","Borang penggantian " + day,!!r.ganti);
   if (col === "jadual") return sheetCheck(r,r.ganti ? "jadualGanti" : "jadual",(r.ganti ? "Jadual ada nama anggota diganti " : "Nama dalam jadual ") + day);
@@ -1391,9 +1410,9 @@ function sheetTableHtml(key) {
   const warn = mo.y > 2027 || mo.y < 2026 ? "Senarai cuti umum untuk tahun ini belum dimasukkan. Sahkan jenis hari secara manual." : mo.y === 2027 ? "Cuti ganti / cuti peristiwa 2027 mungkin berubah mengikut warta rasmi." : "";
   return '<div class="sheet-shell"><div class="sheet-toolbar"><div><strong>Jadual ' + BULAN[mo.m - 1] + " " + mo.y + '</strong><div class="sheet-stats" id="sheetStats"></div></div><div class="sheet-filters">' + filters + '</div></div>' +
     '<div class="sheet-bulk" id="sheetBulk"></div>' +
-    '<div class="sheet-scroll" id="sheetScroll" role="region" tabindex="0" aria-label="Jadual semakan tuntutan"><table class="ot-sheet"><thead><tr>' + head + '</tr></thead><tbody>' +
+    '<div class="sheet-wrap"><div class="sheet-scroll" id="sheetScroll" role="region" tabindex="0" aria-label="Jadual semakan tuntutan"><table class="ot-sheet"><thead><tr>' + head + '</tr></thead><tbody>' +
     (out.length ? out.join("") : '<tr><td colspan="' + (cols.length + 5) + '" class="sheet-empty">' + (rowFilter === "issues" ? "Tiada tarikh yang perlu tindakan. Semua tarikh dituntut sudah lengkap." : rowFilter === "claimed" ? "Belum ada tarikh dituntut. Pilih <b>Semua tarikh</b> dan tandakan hari bertugas." : "Tiada tarikh untuk paparan ini.") + '</td></tr>') +
-    '</tbody></table></div><div class="sheet-help"><b>Tip:</b> Klik kotak di lajur kedua untuk aktifkan tarikh. Tandakan dokumen hanya selepas melihat bukti sebenar.' +
+    '</tbody></table></div></div><div class="sheet-help"><b>Tip:</b> Klik kotak di lajur kedua untuk aktifkan tarikh. Tandakan dokumen hanya selepas melihat bukti sebenar.' +
     (warn ? '<div style="margin-top:4px;color:var(--warn)">' + esc(warn) + '</div>' : "") +
     ' <span class="muted">Jadual boleh ditatal ke kanan jika skrin kecil.</span></div></div>';
 }
@@ -1416,7 +1435,11 @@ function bulkHtml(key) {
       (all ? "\u2713 " : "") + esc(BULK[i.k]) + " <small>" + i.y + "/" + i.n + "</small></button>";
   }).join("") + '</span><span class="bulk-h">Tekan hanya jika dokumen itu memang ada untuk semua tarikh.</span>';
 }
+// Bayang di tepi kanan jadual bila ada lajur tersembunyi (skrin kecil / zoom besar).
+function updScrollCue() { const s = $("sheetScroll"); if (s && s.parentNode) s.parentNode.classList.toggle("more", s.scrollLeft + s.clientWidth < s.scrollWidth - 2); }
+window.addEventListener("resize", updScrollCue);
 function updateSheet(key,ev) {
+  updScrollCue();
   const bk = $("sheetBulk"); if (bk) bk.innerHTML = bulkHtml(key);
   const stats = $("sheetStats");
   if (stats) {
@@ -1453,6 +1476,7 @@ function renderModule() {
   if (isEh(key)) { for (let d=1; d<=mo.n;d++) if (rows[d] && rows[d].on && !rows[d].mula && !rows[d].tamat) autoFillEh(rows[d],d,key); save(); }
   const extra = key==="etap" ? '<label class="ck q"><input type="checkbox" data-mk="jarak"' + (M.jarak ? " checked" : "") + '> Rumah pegawai dalam 33 km / 30 minit dari tempat bertugas</label>' : "";
   box.innerHTML = '<div class="modwrap" data-key="' + key + '"><div class="panel modnote"><div>' + (isSimple()?MOD_NOTE_S:MOD_NOTE)[key] + '</div>' + extra + '</div>' + sheetTableHtml(key) + '</div>';
+  const sc = $("sheetScroll"); if (sc) sc.addEventListener("scroll", updScrollCue, { passive: true });
   res.innerHTML = '<div data-key="' + key + '">' + resultHtml(key) + "</div>";
 }
 
