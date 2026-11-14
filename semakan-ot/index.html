@@ -77,6 +77,11 @@ input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-v
 .money { position: relative; }
 .money span { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.82rem; pointer-events: none; }
 .money input { padding-left: 34px; font-family: var(--font-num); }
+.gaji-pick { display: grid; grid-template-columns: auto minmax(0, 0.8fr) minmax(0, 1.6fr); gap: 6px; align-items: center; margin-top: 6px; }
+.gaji-pick .gp-l { font-size: 0.78rem; color: var(--muted); }
+.gaji-pick select { font-size: 0.86rem; padding-top: 6px; padding-bottom: 6px; min-width: 0; }
+.gaji-warn { display: block; margin-top: 4px; font-size: 0.78rem; font-weight: 600; color: var(--warn); }
+@media (max-width: 400px) { .gaji-pick { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); } .gaji-pick .gp-l { grid-column: 1 / -1; } }
 .row-f { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 10px; }
 .f.wide { grid-column: 1 / -1; }
 
@@ -523,7 +528,9 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
       <div class="field span2"><label for="jawatan">Jawatan</label><select id="jawatan"></select></div>
       <div class="field"><label for="fasiliti">Klinik bertugas</label><select id="fasiliti"></select></div>
       <div class="field"><label for="bulan">Bulan tuntutan</label><input id="bulan" type="month"></div>
-      <div class="field span2" id="gajiField" hidden><label for="gaji">Gaji pokok</label><div class="money"><span>RM</span><input id="gaji" type="number" inputmode="decimal" step="0.01" min="0" placeholder="Rujuk penyata gaji"></div><small class="hint" id="gajiHint"></small></div>
+      <div class="field span2" id="gajiField" hidden><label for="gaji">Gaji pokok</label><div class="money"><span>RM</span><input id="gaji" type="number" inputmode="decimal" step="0.01" min="0" placeholder="Taip ikut penyata gaji"></div>
+        <div class="gaji-pick"><span class="gp-l">atau pilih</span><select id="gred" aria-label="Gred jawatan"></select><select id="gajiStep" aria-label="Anggaran gaji ikut KGT"></select></div>
+        <small class="gaji-warn" id="gajiWarn" hidden></small><small class="hint" id="gajiHint"></small></div>
       <details class="officer-more span2"><summary>Pilihan tambahan <span class="muted">· jika berkaitan sahaja</span></summary><label class="ck" id="tkField" hidden><input type="checkbox" id="tanggung"> Terima Elaun Penanggungan Kerja (EPK)</label><p class="hint">Tandakan jika menerima EPK melalui arahan rasmi. Potongan OT hari bekerja biasa dikira jika berkenaan.</p></details>
     </div>
   </section>
@@ -828,7 +835,17 @@ const JAWATAN = [
   ] }
 ];
 const JW = {};
-JAWATAN.forEach(g => g.items.forEach(it => { const x = it[3] || {}; JW[it[0]] = { v: it[0], l: it[1], m: it[2], etap: x.etap, lokum: x.lokum }; }));
+JAWATAN.forEach((g, gi) => g.items.forEach(it => { const x = it[3] || {}; JW[it[0]] = { v: it[0], l: it[1], m: it[2], etap: x.etap, lokum: x.lokum, pp: gi === 1 }; }));
+// Jadual Gaji Minimum-Maksimum (JGMM) SSPA: [gaji minimum, gaji maksimum, KGT] (RM sebulan).
+// Sumber: Lampiran A, Anggaran Perbelanjaan Persekutuan 2026 (MOF), Kumpulan Pelaksana Gred 1-8 dan P&P Gred 9-15.
+// Gaji sebenar pegawai boleh berbeza daripada "minimum + n x KGT" kerana pelarasan SSPA (Fasa 1 dan 2) dan sejarah gaji individu.
+const JGMM = { 1: [1500, 4680, 100], 2: [2220, 5770, 115], 3: [2790, 6090, 125], 4: [2930, 6410, 130], 5: [1650, 6620, 145], 6: [3080, 8560, 155], 7: [3810, 9290, 180], 8: [5390, 10590, 225],
+  9: [2250, 11110, 225], 10: [3840, 12150, 250], 11: [3320, 12760, 255], 12: [5530, 13540, 270], 13: [6210, 14370, 290], 14: [6560, 15360, 320], 15: [7030, 16350, 400] };
+const GRED_PFX = { ppp: "U", jururawat: "U", ppf: "U", jtmp: "U", jxrp: "U", ppk: "U", pka: "U", ppkp: "U", admin: "N", pemandu: "H", mo: "UD", pakar: "UD", pg: "UG", pgpakar: "UG", pf: "UF", jxrpp: "U" };
+const gredL = g => (GRED_PFX[state.jawatan] || "Gred ") + g;
+const rmK = n => "RM" + n.toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function gredList() { const j = jw(); if (!j) return []; const a = j.pp ? 9 : 1, b = j.pp ? 15 : 8, out = []; for (let g = a; g <= b; g++) out.push(String(g)); return out; }
+function gajiSteps(g) { const t = JGMM[g]; if (!t) return []; const out = []; for (let v = t[0], n = 0; v < t[1]; v += t[2], n++) out.push([v, n]); out.push([t[1], -1]); return out; }
 
 const MODS = {
   elm:   { tab: "OT (ELM)", title: "Kerja lebih masa (ELM)", unit: "Hari OT", warn: "PERLU KELULUSAN" },
@@ -911,7 +928,7 @@ const KEY = "semakan-ot-v2", KEYSET = "semakan-ot-tetapan-v1";
 const SET_DEFAULT = { tolak215: false, hadHarian: false, hadBiasa: "3", hadRehat: "5", lokumHad: "4", kadarMO: "80", kadarPF: "25", kadarJXR: "25", bapKadar: "", cutiTambahan: "", mod: "ringkas" };
 
 function thisMonth() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); }
-function blankForm(bulan) { return { nama: "", jawatan: "", fasiliti: "", bulan: bulan || thisMonth(), gaji: "", tab: "", data: {} }; }
+function blankForm(bulan) { return { nama: "", jawatan: "", fasiliti: "", bulan: bulan || thisMonth(), gaji: "", gred: "", tab: "", data: {} }; }
 function load(k) { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
 function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
@@ -1088,13 +1105,35 @@ function fillTop() {
   });
 }
 
+function renderGaji() {
+  const L = gredList();
+  if (state.gred && L.indexOf(String(state.gred)) < 0) state.gred = "";
+  const g = state.gred, t = JGMM[g], cur = num(state.gaji);
+  $("gred").innerHTML = '<option value="">Gred</option>' + L.map(x => '<option value="' + x + '"' + (x === String(g) ? " selected" : "") + ">" + esc(gredL(x)) + "</option>").join("");
+  const st = $("gajiStep");
+  if (!t) { st.innerHTML = "<option>Pilih gred dahulu</option>"; st.disabled = true; }
+  else {
+    const steps = gajiSteps(g), hit = steps.some(x => Math.abs(x[0] - cur) < 0.005);
+    st.disabled = false;
+    st.innerHTML = '<option value=""' + (hit ? "" : " selected") + ">" + (cur > 0 && !hit ? "Gaji ditaip: " + rmK(cur) : "Pilih anggaran gaji") + "</option>" +
+      steps.map(x => '<option value="' + x[0].toFixed(2) + '"' + (Math.abs(x[0] - cur) < 0.005 ? " selected" : "") + ">" + rmK(x[0]) + (x[1] === 0 ? " · minimum" : x[1] < 0 ? " · maksimum" : " · +" + x[1] + " KGT") + "</option>").join("");
+  }
+  const w = $("gajiWarn");
+  if (t && cur > 0 && (cur < t[0] || cur > t[1])) { w.hidden = false; w.textContent = rmK(cur) + " di luar julat " + gredL(g) + " (" + rmK(t[0]) + " – " + rmK(t[1]) + "). Semak semula penyata gaji atau gred."; }
+  else if (t && cur > 0 && !String(state.gaji).match(/^\d+(\.\d{1,2})?$/)) { w.hidden = false; w.textContent = "Semak semula angka gaji."; }
+  else { w.hidden = true; w.textContent = ""; }
+  return t;
+}
 function renderTabs() {
   const ms = mods(), cur = activeTab();
   const adaOt = ms.some(isOt);
   $("gajiField").hidden = !ms.length || (isSimple() && !adaOt);
   $("tkField").hidden = !adaOt;
   $("step1").classList.toggle("nogaji", $("gajiField").hidden);
-  $("gajiHint").textContent = adaOt ? (isSimple() ? "Lihat penyata gaji. Perlu untuk kira bayaran OT." : "Untuk kira bayaran OT dan semak had 1/3 gaji pokok.")
+  const tG = renderGaji();
+  $("gajiHint").textContent = tG
+    ? "Julat " + gredL(state.gred) + ": " + rmK(tG[0]) + " – " + rmK(tG[1]) + " · KGT " + rmK(tG[2]) + ". Pilihan ikut KGT hanya anggaran (pelarasan SSPA berbeza ikut individu); paling tepat taip dari penyata gaji."
+    : adaOt ? (isSimple() ? "Taip dari penyata gaji, atau pilih gred untuk anggaran. Perlu untuk kira bayaran OT." : "Untuk kira bayaran OT dan semak had 1/3 gaji pokok. Taip dari penyata gaji, atau pilih gred untuk anggaran.")
     : "Untuk perbandingan sahaja. On-call dan extended hours dibayar ikut kadar tetap, bukan gaji.";
   $("tabs").innerHTML = ms.length < 2 ? "" : ms.map(k =>
     '<button type="button" role="tab" data-tab="' + k + '" aria-selected="' + (k === cur) + '"><span class="dot"></span>' + esc(tabL(k)) + "</button>").join("");
@@ -1805,7 +1844,13 @@ $("editNamaBtn").addEventListener("click", () => {
   if (!window.confirm("Ini hanya untuk membetulkan ejaan nama pegawai yang sama. Untuk pegawai lain gunakan Refresh semua. Teruskan?")) return;
   nameEditUnlocked=true; refreshNameLock(); $("nama").focus();
 });
-$("gaji").addEventListener("input", e => { state.gaji = e.target.value; save(); refresh(); });
+$("gaji").addEventListener("input", e => { state.gaji = e.target.value; save(); renderTabs(); refresh(); });
+$("gred").addEventListener("change", e => { state.gred = e.target.value; save(); renderTabs(); });
+$("gajiStep").addEventListener("change", e => {
+  if (!e.target.value) return;
+  state.gaji = e.target.value; $("gaji").value = e.target.value; save(); renderTabs(); refresh();
+  $("msg").textContent = "Gaji anggaran " + rmK(+e.target.value) + " dimasukkan. Sahkan dengan penyata gaji.";
+});
 $("tanggung").addEventListener("change", e => { state.tanggungKerja = e.target.checked; save(); refresh(); });
 $("jawatan").addEventListener("change", e => { state.jawatan = e.target.value; state.tab = ""; openDay = null; save(); renderTabs(); renderModule(); refresh(); });
 $("fasiliti").addEventListener("change", e => { state.fasiliti = e.target.value; save(); refresh(); });
@@ -1905,7 +1950,7 @@ $("tetapan").addEventListener("change", onSet);
 
 $("refStaff").addEventListener("click", () => {
   if (!window.confirm("Kosongkan maklumat pegawai (nama, jawatan, klinik, gaji dan EPK)? Tarikh tuntutan tidak dipadam.\n\nUntuk staf lain, guna Refresh semua di bawah.")) return;
-  Object.assign(state, { nama: "", jawatan: "", fasiliti: "", gaji: "", tanggungKerja: false, tab: "" });
+  Object.assign(state, { nama: "", jawatan: "", fasiliti: "", gaji: "", gred: "", tanggungKerja: false, tab: "" });
   nameEditUnlocked = false; save(); renderAll();
   $("msg").textContent = "Maklumat pegawai dikosongkan. Tarikh tuntutan kekal.";
 });
