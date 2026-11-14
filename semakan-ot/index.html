@@ -316,6 +316,9 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
 .sheet-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 7px 14px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 .sheet-toolbar strong { font-size: 0.94rem; }
 .sheet-stats { font-size: 0.79rem; color: var(--muted); margin-top: 2px; }
+.sheet-stats .tindakan { font: inherit; font-weight: 600; color: var(--warn); background: var(--warn-soft); border: 1px solid transparent; border-radius: 6px; padding: 1px 7px; cursor: pointer; }
+.sheet-stats .tindakan:hover { border-color: var(--warn); }
+.sheet-stats .tindakan[aria-pressed="true"] { color: var(--surface); background: var(--warn); }
 .sheet-filters { display: inline-flex; flex-wrap: wrap; gap: 4px; }
 .sheet-filters button { padding: 5px 11px; font-size: 0.78rem; border: 1px solid var(--line); color: var(--muted); background: var(--surface); border-radius: 7px; }
 .sheet-filters button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
@@ -466,7 +469,7 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
     </div>
   </section>
 
-  <div class="quick-summary" id="quickSummary" role="status"><b>Ringkasan bulan ini</b><span id="quickClaim">0 tarikh</span><span id="quickDone">0 lengkap</span><span id="quickIssue">0 perlu semak</span></div>
+  <div class="quick-summary" id="quickSummary" role="status"><b>Ringkasan bulan ini</b><span id="quickClaim">0 tarikh</span><span id="quickDone">0 lengkap</span><span id="quickIssue">0 perlu tindakan</span></div>
   <section id="step2"><div class="step-h out"><span class="num">2</span><div><h2>Isi tarikh tuntutan</h2><p class="sub">Tandakan tarikh, isi masa dan tekan <b>Semak</b> untuk dokumen serta pilihan tambahan.</p></div></div><nav class="tabs" id="tabs" role="tablist" aria-label="Jenis tuntutan"></nav><div id="module"></div></section>
   <section class="panel" id="step3"><div class="step-h"><span class="num">3</span><div><h2>Keputusan akhir</h2></div></div><div id="result"></div><p class="top-note">Semakan automatik bukan kelulusan rasmi. Dokumen dan kelayakan perlu disahkan oleh penyelia / Unit Kewangan.</p></section>
 
@@ -1291,11 +1294,11 @@ function sheetTableHtml(key) {
     if (active && extraDay === d) out.push(sheetExtraHtml(key,d,r,x,cols.length+5));
   }
   const head = '<th class="sticky-date">Tarikh</th><th class="sticky-on">' + (isOt(key) ? "Buat OT" : "Bertugas") + '</th>' + cols.map(([c,label]) => '<th class="col-' + c + '">' + label + "</th>").join("") + "<th>Status</th><th class=\"col-issue\">Kekurangan</th><th>Semak</th>";
-  const filters = [["all","Semua tarikh"],["claimed","Dituntut"],["issues","Isu tarikh"]].map(f => '<button type="button" data-filter="' + f[0] + '" aria-pressed="' + (rowFilter === f[0]) + '">' + f[1] + "</button>").join("");
+  const filters = [["all","Semua tarikh"],["claimed","Tarikh dituntut"]].map(f => '<button type="button" data-filter="' + f[0] + '" aria-pressed="' + (rowFilter === f[0]) + '">' + f[1] + "</button>").join("");
   const warn = mo.y > 2027 || mo.y < 2026 ? "Senarai cuti umum untuk tahun ini belum dimasukkan. Sahkan jenis hari secara manual." : mo.y === 2027 ? "Cuti ganti / cuti peristiwa 2027 mungkin berubah mengikut warta rasmi." : "";
   return '<div class="sheet-shell"><div class="sheet-toolbar"><div><strong>Jadual ' + BULAN[mo.m - 1] + " " + mo.y + '</strong><div class="sheet-stats" id="sheetStats"></div></div><div class="sheet-filters">' + filters + '</div></div>' +
     '<div class="sheet-scroll" id="sheetScroll" role="region" tabindex="0" aria-label="Jadual semakan tuntutan"><table class="ot-sheet"><thead><tr>' + head + '</tr></thead><tbody>' +
-    (out.length ? out.join("") : '<tr><td colspan="' + (cols.length + 5) + '" class="sheet-empty">Tiada tarikh untuk paparan ini. Pilih <b>Semua tarikh</b> atau tandakan hari bertugas.</td></tr>') +
+    (out.length ? out.join("") : '<tr><td colspan="' + (cols.length + 5) + '" class="sheet-empty">' + (rowFilter === "issues" ? "Tiada tarikh yang perlu tindakan. Semua tarikh dituntut sudah lengkap." : rowFilter === "claimed" ? "Belum ada tarikh dituntut. Pilih <b>Semua tarikh</b> dan tandakan hari bertugas." : "Tiada tarikh untuk paparan ini.") + '</td></tr>') +
     '</tbody></table></div><div class="sheet-help"><b>Tip:</b> Klik kotak di lajur kedua untuk aktifkan tarikh. Tandakan dokumen hanya selepas melihat bukti sebenar.' +
     (warn ? '<div style="margin-top:4px;color:var(--warn)">' + esc(warn) + '</div>' : "") +
     ' <span class="muted">Jadual boleh ditatal ke kanan jika skrin kecil.</span></div></div>';
@@ -1304,7 +1307,9 @@ function updateSheet(key,ev) {
   const stats = $("sheetStats");
   if (stats) {
     const done = ev.days.filter(x => !x.k.length && !x.a.length).length;
-    stats.textContent = ev.days.length + " tarikh ditandakan · " + done + " lengkap · " + (ev.days.length-done) + " perlu tindakan";
+    const perlu = ev.days.length - done;
+    stats.innerHTML = ev.days.length + " tarikh ditandakan · " + done + " lengkap · " +
+      (perlu || rowFilter === "issues" ? '<button type="button" class="tindakan" data-filter="issues" aria-pressed="' + (rowFilter === "issues") + '" title="' + (rowFilter === "issues" ? "Tekan untuk tunjuk semula semua tarikh dituntut" : "Tekan untuk tunjuk tarikh yang perlu tindakan sahaja") + '">' + perlu + " perlu tindakan</button>" : "0 perlu tindakan");
   }
   const byDay={}; ev.days.forEach(x => { byDay[x.d]=x; });
   document.querySelectorAll(".sheet-row[data-d]").forEach(row => {
@@ -1539,7 +1544,7 @@ function updateQuickSummary() {
   const done=evs.reduce((n,e)=>n+e.days.filter(x=>!x.k.length&&!x.a.length).length,0);
   $("quickClaim").textContent=total+" tarikh";
   $("quickDone").textContent=done+" lengkap";
-  $("quickIssue").textContent=(total-done)+" perlu semak";
+  $("quickIssue").textContent=(total-done)+" perlu tindakan";
   $("quickSummary").classList.toggle("needs-attention",total>done);
 }
 function updateBar(key, ev) {
@@ -1675,7 +1680,7 @@ const sideBySide = () => window.matchMedia && window.matchMedia("(min-width: 760
 
 $("module").addEventListener("click", e => {
   const filter=e.target.closest("[data-filter]");
-  if (filter) { rowFilter=filter.dataset.filter; extraDay=null; redrawSheet(); return; }
+  if (filter) { rowFilter = filter.dataset.filter === "issues" && rowFilter === "issues" ? "claimed" : filter.dataset.filter; extraDay=null; redrawSheet(); return; }
   const detail=e.target.closest('[data-act="detail"]');
   if (detail) { const d=+detail.dataset.d; extraDay=extraDay===d ? null : d; redrawSheet(); return; }
 });
