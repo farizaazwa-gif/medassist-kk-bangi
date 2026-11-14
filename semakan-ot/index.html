@@ -366,6 +366,15 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
 .sheet-stats .tindakan { font: inherit; font-weight: 600; color: var(--warn); background: var(--warn-soft); border: 1px solid transparent; border-radius: 6px; padding: 1px 7px; cursor: pointer; }
 .sheet-stats .tindakan:hover { border-color: var(--warn); }
 .sheet-stats .tindakan[aria-pressed="true"] { color: var(--surface); background: var(--warn); }
+.sheet-bulk { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--bg); font-size: 0.78rem; }
+.sheet-bulk:empty { display: none; }
+.sheet-bulk .bulk-l { font-weight: 600; }
+.sheet-bulk .bulk-b { display: inline-flex; flex-wrap: wrap; gap: 5px; }
+.sheet-bulk button { padding: 4px 10px; font-size: 0.78rem; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px; }
+.sheet-bulk button small { color: var(--muted); font-weight: 600; margin-left: 2px; }
+.sheet-bulk button[aria-pressed="true"] { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+.sheet-bulk button[aria-pressed="true"] small { color: var(--ok); }
+.sheet-bulk .bulk-h { color: var(--muted); }
 .sheet-filters { display: inline-flex; flex-wrap: wrap; gap: 4px; }
 .sheet-filters button { padding: 5px 11px; font-size: 0.78rem; border: 1px solid var(--line); color: var(--muted); background: var(--surface); border-radius: 7px; }
 .sheet-filters button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
@@ -495,7 +504,7 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
   <header>
     <div class="ht">
       <h1>Semakan Tuntutan OT &amp; Elaun</h1>
-      <p class="sub">Senarai satu baris bagi setiap tarikh · kiraan automatik · semakan dokumen · PDF. Isian disimpan dalam pelayar peranti ini sahaja.</p>
+      <p class="sub">Senarai satu baris bagi setiap tarikh · kiraan automatik · semakan dokumen · PDF. Isian disimpan dalam pelayar peranti ini sahaja dan dipadam sendiri selepas 30 hari tanpa kemas kini.</p>
     </div>
     <div class="modesw">
       <div class="seg" role="group" aria-label="Paparan">
@@ -557,6 +566,11 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
     <div class="btns" id="btns">
       <button class="primary" id="pdfBtn" type="button">Muat turun PDF</button>
       <button class="ghost risky refresh-all" id="resetBtn" type="button" title="Padam semua isian (maklumat pegawai dan tuntutan) dan mula semula. Tetapan kekal."><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Refresh semua</button>
+    </div>
+    <div class="confirm" id="afterPdf" hidden>
+      <span><b>PDF dah dimuat turun.</b> Jika komputer ini dikongsi, padam isian pegawai ini supaya staf lain tak nampak nama dan gaji.</span>
+      <button class="danger" id="padamBtn" type="button">Padam isian</button>
+      <button class="ghost" id="simpanBtn" type="button">Simpan dulu</button>
     </div>
     <div class="confirm" id="confirm" hidden>
       <span>Padam semua isian (maklumat pegawai dan semua tuntutan) dan mula semula? Tindakan ini tidak boleh diundur.</span>
@@ -901,13 +915,16 @@ function blankForm(bulan) { return { nama: "", jawatan: "", fasiliti: "", bulan:
 function load(k) { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
 function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
-let state = load(KEY);
+let state = load(KEY), expiredOld = false;
 if (!state || typeof state !== "object" || !state.data) state = blankForm();
+// Privasi komputer kongsi: isian yang tidak dikemas kini lebih 30 hari dipadam sendiri. Tetapan kadar & cuti kekal.
+const SIMPAN_HARI = 30;
+if (state.savedAt && Date.now() - state.savedAt > SIMPAN_HARI * 864e5) { state = blankForm(); expiredOld = true; store(KEY, state); }
 const set = Object.assign({}, SET_DEFAULT, load(KEYSET) || {});
 ["kadarMO", "kadarPF", "kadarJXR"].forEach(k => { if (set[k] === "" || set[k] == null) set[k] = SET_DEFAULT[k]; });
 // Ikut garis panduan ELM JPA terkini: potongan 2j 15m hanya untuk pegawai menanggung kerja (pilihan pegawai, langkah 1); tiada had jam sehari.
 set.tolak215 = false; set.hadHarian = false;
-function save() { store(KEY, state); }
+function save() { state.savedAt = Date.now(); store(KEY, state); }
 function saveSet() { store(KEYSET, set); }
 
 const $ = id => document.getElementById(id);
@@ -1351,13 +1368,34 @@ function sheetTableHtml(key) {
   const filters = [["all","Semua tarikh"],["claimed","Tarikh dituntut"]].map(f => '<button type="button" data-filter="' + f[0] + '" aria-pressed="' + (rowFilter === f[0]) + '">' + f[1] + "</button>").join("");
   const warn = mo.y > 2027 || mo.y < 2026 ? "Senarai cuti umum untuk tahun ini belum dimasukkan. Sahkan jenis hari secara manual." : mo.y === 2027 ? "Cuti ganti / cuti peristiwa 2027 mungkin berubah mengikut warta rasmi." : "";
   return '<div class="sheet-shell"><div class="sheet-toolbar"><div><strong>Jadual ' + BULAN[mo.m - 1] + " " + mo.y + '</strong><div class="sheet-stats" id="sheetStats"></div></div><div class="sheet-filters">' + filters + '</div></div>' +
+    '<div class="sheet-bulk" id="sheetBulk"></div>' +
     '<div class="sheet-scroll" id="sheetScroll" role="region" tabindex="0" aria-label="Jadual semakan tuntutan"><table class="ot-sheet"><thead><tr>' + head + '</tr></thead><tbody>' +
     (out.length ? out.join("") : '<tr><td colspan="' + (cols.length + 5) + '" class="sheet-empty">' + (rowFilter === "issues" ? "Tiada tarikh yang perlu tindakan. Semua tarikh dituntut sudah lengkap." : rowFilter === "claimed" ? "Belum ada tarikh dituntut. Pilih <b>Semua tarikh</b> dan tandakan hari bertugas." : "Tiada tarikh untuk paparan ini.") + '</td></tr>') +
     '</tbody></table></div><div class="sheet-help"><b>Tip:</b> Klik kotak di lajur kedua untuk aktifkan tarikh. Tandakan dokumen hanya selepas melihat bukti sebenar.' +
     (warn ? '<div style="margin-top:4px;color:var(--warn)">' + esc(warn) + '</div>' : "") +
     ' <span class="muted">Jadual boleh ditatal ke kanan jika skrin kecil.</span></div></div>';
 }
+// Tandakan dokumen yang sama untuk semua tarikh dituntut sekali gus (cth satu jadual tugas untuk sebulan).
+const BULK = { surat: "Surat arahan", jadual: "Jadual kerja", tiadacuti: "Tiada cuti / MC", thumb: "Thumbprint", ketik: "Ketik masuk/keluar" };
+const bulkField = (k, r) => k === "jadual" ? (r.ganti ? "jadualGanti" : "jadual") : k;
+function bulkTargets(key, k) {
+  const rows = md(key).rows, n = monthInfo().n, out = [];
+  for (let d = 1; d <= n; d++) { const r = rows[d]; if (r && r.on && (k !== "ketik" || r.dipanggil)) out.push(r); }
+  return out;
+}
+function bulkHtml(key) {
+  const items = (SHEET_COLS[key] || []).map(c => c[0]).filter(k => BULK[k]).map(k => {
+    const T = bulkTargets(key, k); return { k, n: T.length, y: T.filter(r => r[bulkField(k, r)]).length };
+  }).filter(i => i.n >= 2);
+  if (!items.length) return "";
+  return '<span class="bulk-l">Tandakan untuk semua tarikh dituntut:</span><span class="bulk-b">' + items.map(i => {
+    const all = i.y === i.n;
+    return '<button type="button" data-bulk="' + i.k + '" aria-pressed="' + all + '" title="' + (all ? "Tekan untuk buang tanda " + BULK[i.k] + " pada semua tarikh" : "Tekan untuk tandakan " + BULK[i.k] + " pada semua " + i.n + " tarikh") + '">' +
+      (all ? "\u2713 " : "") + esc(BULK[i.k]) + " <small>" + i.y + "/" + i.n + "</small></button>";
+  }).join("") + '</span><span class="bulk-h">Tekan hanya jika dokumen itu memang ada untuk semua tarikh.</span>';
+}
 function updateSheet(key,ev) {
+  const bk = $("sheetBulk"); if (bk) bk.innerHTML = bulkHtml(key);
   const stats = $("sheetStats");
   if (stats) {
     const done = ev.days.filter(x => !x.k.length && !x.a.length).length;
@@ -1840,6 +1878,14 @@ function showItem(d, block) {
 const sideBySide = () => window.matchMedia && window.matchMedia("(min-width: 760px)").matches;
 
 $("module").addEventListener("click", e => {
+  const bulk=e.target.closest("[data-bulk]");
+  if (bulk) {
+    const key=activeTab(), k=bulk.dataset.bulk, T=bulkTargets(key,k), all=T.every(r => r[bulkField(k,r)]);
+    T.forEach(r => { r[bulkField(k,r)] = !all; });
+    save(); redrawSheet();
+    $("msg").textContent = BULK[k] + (all ? " dibuang tanda bagi " : " ditandakan bagi ") + T.length + " tarikh.";
+    return;
+  }
   const filter=e.target.closest("[data-filter]");
   if (filter) { rowFilter = filter.dataset.filter === "issues" && rowFilter === "issues" ? "claimed" : filter.dataset.filter; extraDay=null; redrawSheet(); return; }
   const detail=e.target.closest('[data-act="detail"]');
@@ -1872,13 +1918,17 @@ $("refClaim").addEventListener("click", () => {
 });
 $("resetBtn").addEventListener("click", () => { $("btns").hidden = true; $("confirm").hidden = false; $("yesBtn").focus(); });
 $("noBtn").addEventListener("click", () => { $("confirm").hidden = true; $("btns").hidden = false; });
-$("yesBtn").addEventListener("click", () => {
+function resetAll(msg) {
   state = blankForm(state.bulan); save(); renderAll();
-  $("confirm").hidden = true; $("btns").hidden = false;
-  $("msg").textContent = "Semua isian dikosongkan. Sedia untuk pegawai seterusnya.";
+  $("confirm").hidden = true; $("afterPdf").hidden = true; $("btns").hidden = false;
+  $("msg").textContent = msg;
   $("nama").focus();
   rowFilter="all"; extraDay=null; nameEditUnlocked=false; refreshNameLock();
-});
+}
+$("yesBtn").addEventListener("click", () => resetAll("Semua isian dikosongkan. Sedia untuk pegawai seterusnya."));
+$("padamBtn").addEventListener("click", () => resetAll("Isian dipadam dari komputer ini. PDF yang dimuat turun tidak terjejas."));
+$("simpanBtn").addEventListener("click", () => { $("afterPdf").hidden = true; $("btns").hidden = false; });
+function afterPdf() { $("confirm").hidden = true; $("btns").hidden = true; $("afterPdf").hidden = false; }
 
 /* ---------- PDF ---------- */
 // Dalam Claude: guna keupayaan "downloads". Di laman web biasa (cth GitHub Pages): muat turun terus dari pelayar.
@@ -2155,16 +2205,17 @@ $("pdfBtn").addEventListener("click", () => {
   const filename = "Semakan Tuntutan - " + nm + " - " + BULAN[mo.m - 1] + " " + mo.y + ".pdf";
   downloadsP.then(dl => {
     if (!dl) {
-      if (!inClaude) { try { doc.save(filename); $("msg").textContent = "PDF dimuat turun. Buka fail tu dan cetak."; } catch (e) { $("msg").textContent = "Muat turun gagal. Cuba lagi."; } return; }
+      if (!inClaude) { try { doc.save(filename); $("msg").textContent = "PDF dimuat turun. Buka fail tu dan cetak."; afterPdf(); } catch (e) { $("msg").textContent = "Muat turun gagal. Cuba lagi."; } return; }
       $("msg").textContent = "Muat turun tidak tersedia di paparan ini."; return;
     }
-    return dl.save({ filename, data: blob }).then(() => { $("msg").textContent = "PDF disimpan. Buka fail tu dan cetak."; },
+    return dl.save({ filename, data: blob }).then(() => { $("msg").textContent = "PDF disimpan. Buka fail tu dan cetak."; afterPdf(); },
       err => { const c = err && err.code; $("msg").textContent = c === "declined" ? "Muat turun dibatalkan." : c === "rate_limited" ? "Tunggu sebentar, kemudian cuba lagi." : "Muat turun tidak dapat dibuat di paparan ini."; });
   });
 });
 
 (() => { const m = $("msg"); let t; new MutationObserver(() => { clearTimeout(t); $("bar").classList.toggle("hasmsg", !!m.textContent); if (m.textContent) t = setTimeout(() => { m.textContent = ""; }, 5000); }).observe(m, { childList: true, characterData: true, subtree: true }); })();
 renderAll();
+if (expiredOld) $("msg").textContent = "Isian lama (tiada kemas kini lebih 30 hari) telah dipadam untuk privasi.";
 })();
 </script>
 </body>
