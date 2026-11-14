@@ -233,6 +233,19 @@ input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-v
 
 /* Steps */
 .step-h { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.step-h .refresh-sec { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; font-size: 0.8rem; }
+.wajib { margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--surface); }
+.wajib h3 { font-size: 0.92rem; margin: 0 0 2px; }
+.wajib .sub { margin: 0 0 8px; font-size: 0.8rem; }
+.wajib ol { margin: 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; counter-reset: wj; }
+.wajib li { counter-increment: wj; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 8px; align-items: start; font-size: 0.86rem; }
+.wajib li::before { content: counter(wj) "."; color: var(--muted); font-variant-numeric: tabular-nums; }
+.wajib li small { display: block; color: var(--muted); font-size: 0.76rem; }
+.wajib .wst { font-size: 0.72rem; font-weight: 700; border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
+.wajib .wst.ok { color: var(--ok, #1b7f4b); background: var(--ok-soft, #e6f4ec); }
+.wajib .wst.bad { color: var(--bad); background: var(--bad-soft); }
+.wajib .wst.man { color: var(--muted); background: var(--accent-soft); }
+.wajib .wfoot { margin-top: 8px; font-size: 0.76rem; color: var(--muted); }
 .step-h.out { margin: 4px 2px 8px; }
 .step-h h2 { font-size: 1rem; line-height: 1.5; }
 .step-h .sub { margin: 0; }
@@ -304,6 +317,7 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
 .bar .msg { font-size: 0.82rem; color: var(--muted); min-width: 0; flex: 1 1 100%; }
 .bar .msg:empty { display: none; }
 .btns, .confirm { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.refresh-all { display: inline-flex; align-items: center; gap: 6px; }
 .confirm { font-size: 0.9rem; }
 @media (prefers-reduced-motion: no-preference) { button { transition: filter .15s, background .15s; } .chev { transition: transform .2s; } }
 
@@ -458,9 +472,9 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
   </header>
 
   <section class="panel" id="step1">
-    <div class="step-h"><span class="num">1</span><div><h2>Maklumat pegawai</h2></div></div>
+    <div class="step-h"><span class="num">1</span><div><h2>Maklumat pegawai</h2></div><button type="button" class="ghost refresh-sec" id="refStaff" title="Kosongkan maklumat pegawai sahaja. Tarikh tuntutan kekal."><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Refresh</button></div>
     <div class="fields">
-      <div class="field span2"><label for="nama">Nama pegawai</label><input id="nama" type="text" autocomplete="off" placeholder="Contoh: Nur Aisyah binti Ahmad"><small class="name-note" id="identityHint">Untuk pegawai lain, klik <b>Pegawai baharu</b> supaya rekod tidak bercampur.</small><button type="button" id="editNamaBtn" class="ghost small" hidden>Betulkan ejaan nama</button></div>
+      <div class="field span2"><label for="nama">Nama pegawai</label><input id="nama" type="text" autocomplete="off" placeholder="Contoh: Nur Aisyah binti Ahmad"><small class="name-note" id="identityHint">Untuk pegawai lain, klik <b>Refresh semua</b> supaya rekod tidak bercampur.</small><button type="button" id="editNamaBtn" class="ghost small" hidden>Betulkan ejaan nama</button></div>
       <div class="field span2"><label for="jawatan">Jawatan</label><select id="jawatan"></select></div>
       <div class="field"><label for="fasiliti">Klinik bertugas</label><select id="fasiliti"></select></div>
       <div class="field"><label for="bulan">Bulan tuntutan</label><input id="bulan" type="month"></div>
@@ -470,7 +484,7 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
   </section>
 
   <div class="quick-summary" id="quickSummary" role="status"><b>Ringkasan bulan ini</b><span id="quickClaim">0 tarikh</span><span id="quickDone">0 lengkap</span><span id="quickIssue">0 perlu tindakan</span></div>
-  <section id="step2"><div class="step-h out"><span class="num">2</span><div><h2>Isi tarikh tuntutan</h2><p class="sub">Tandakan tarikh, isi masa dan tekan <b>Semak</b> untuk dokumen serta pilihan tambahan.</p></div></div><nav class="tabs" id="tabs" role="tablist" aria-label="Jenis tuntutan"></nav><div id="module"></div></section>
+  <section id="step2"><div class="step-h out"><span class="num">2</span><div><h2>Isi tarikh tuntutan</h2><p class="sub">Tandakan tarikh, isi masa dan tekan <b>Semak</b> untuk dokumen serta pilihan tambahan.</p></div><button type="button" class="ghost refresh-sec" id="refClaim" title="Kosongkan semua isian tuntutan bulan ini. Maklumat pegawai kekal."><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Refresh</button></div><nav class="tabs" id="tabs" role="tablist" aria-label="Jenis tuntutan"></nav><div id="module"></div></section>
   <section class="panel" id="step3"><div class="step-h"><span class="num">3</span><div><h2>Keputusan akhir</h2></div></div><div id="result"></div><p class="top-note">Semakan automatik bukan kelulusan rasmi. Dokumen dan kelayakan perlu disahkan oleh penyelia / Unit Kewangan.</p></section>
 
   <details class="panel tetapan adv" id="tetapan">
@@ -503,11 +517,11 @@ button { font: inherit; font-weight: 600; font-size: 0.92rem; border-radius: 8px
     <span class="msg" id="msg" role="status"></span>
     <div class="btns" id="btns">
       <button class="primary" id="pdfBtn" type="button">Muat turun PDF</button>
-      <button class="ghost risky" id="resetBtn" type="button" title="Padam semua isian dan mula borang baru untuk pegawai lain. Tetapan kekal.">Pegawai baharu</button>
+      <button class="ghost risky refresh-all" id="resetBtn" type="button" title="Padam semua isian (maklumat pegawai dan tuntutan) dan mula semula. Tetapan kekal."><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Refresh semua</button>
     </div>
     <div class="confirm" id="confirm" hidden>
-      <span>Kosongkan data tuntutan pegawai ini untuk mulakan pegawai baharu? Tindakan ini tidak boleh diundur.</span>
-      <button class="danger" id="yesBtn" type="button">Ya, kosongkan</button>
+      <span>Padam semua isian (maklumat pegawai dan semua tuntutan) dan mula semula? Tindakan ini tidak boleh diundur.</span>
+      <button class="danger" id="yesBtn" type="button">Ya, refresh semua</button>
       <button class="ghost" id="noBtn" type="button">Batal</button>
     </div>
   </div>
@@ -866,7 +880,7 @@ function refreshNameLock() {
   const locked=hasActiveClaims() && !!String(state.nama || "").trim() && !nameEditUnlocked;
   $("nama").readOnly=locked;
   $("editNamaBtn").hidden=!hasActiveClaims();
-  $("identityHint").textContent=locked ? "Nama dikunci kerana tuntutan telah diisi. Klik Pegawai baharu untuk staf lain." : hasActiveClaims() && !String(state.nama || "").trim() ? "Isi nama pegawai sebelum semakan. Untuk staf lain, klik Pegawai baharu." : "Gunakan Pegawai baharu untuk staf lain supaya tuntutan tidak bercampur.";
+  $("identityHint").textContent=locked ? "Nama dikunci kerana tuntutan telah diisi. Klik Refresh semua untuk staf lain." : hasActiveClaims() && !String(state.nama || "").trim() ? "Isi nama pegawai sebelum semakan. Untuk staf lain, klik Refresh semua." : "Gunakan Refresh semua untuk staf lain supaya tuntutan tidak bercampur.";
 }
 function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch])); }
 
@@ -1092,7 +1106,7 @@ function resultHtml(key) {
     '<ul class="why" id="v-why"></ul><div class="notes" id="v-notes"></div>' +
     '<div class="top-grid"><div class="fields one">' + dit + '</div><dl class="facts">' + facts + "</dl></div>" +
     (checks ? '<div class="docbox"><div class="sec-h">Dokumen tuntutan</div><div class="clist">' + checks + "</div></div>" : "") + "</div>" +
-    '<div id="overview"></div>' + ruleHtml(key);
+    '<div id="overview"></div><div id="otDocs"></div>' + ruleHtml(key);
 }
 
 function calHtml(key) {
@@ -1513,6 +1527,38 @@ function updateSummary(key, ev) {
   }
 }
 
+// Dokumen yang wajib dilampirkan bersama tuntutan ELM (OT biasa + OT extended hours).
+// Asas: Perintah Am Bab G; MyPPSM Ceraian SR.4.3.1 dan Garis Panduan Lampiran SR.4.3.1(A) (18 Dis 2025);
+// senarai semak Unit Kewangan fasiliti KKM. Format borang dan tarikh akhir ikut Unit Kewangan PKD.
+function otDocList() {
+  const otk = mods().filter(k => isOt(k) && evalModule(k).days.length);
+  if (!otk.length) return null;
+  const days = [].concat(...otk.map(k => evalModule(k).days));
+  const n = days.length, cnt = f => days.filter(x => f(x.r, x.c)).length;
+  const MS = md("elm"), S = evalModule(otk[0]).sum, adaEh = otk.indexOf("elmeh") >= 0;
+  const st = (have, need) => need ? (have >= need ? ["ok", "Lengkap"] : ["bad", have + "/" + need + " tarikh"]) : ["ok", "Lengkap"];
+  const out = [];
+  out.push({ t: "Borang / penyata tuntutan Elaun Lebih Masa", d: "Lengkap, ditandatangan dan dicop oleh pegawai, penyemak dan Ketua Jabatan. Ikut format Unit Kewangan PKD.", s: ["man", "Sediakan"] });
+  out.push({ t: "Salinan rekod kehadiran (thumbprint / laporan kehadiran elektronik)", d: "Disahkan, menunjukkan masa masuk dan keluar bagi setiap tarikh OT.", s: st(cnt(r => r.thumb), n) });
+  out.push({ t: "Surat arahan kerja lebih masa", d: "Dikeluarkan sebelum OT dibuat. Ada nama, tarikh, masa, tugas, tandatangan dan cop Ketua Jabatan.", s: st(cnt(r => r.surat), n) });
+  out.push({ t: "Jadual tugas (roster) yang disahkan" + (adaEh ? ", termasuk jadual extended hours" : ""), d: "Nama pegawai ada pada tarikh tuntutan. Hari rehat dan cuti umum ditanda jelas.", s: st(cnt(r => r.ganti ? r.jadualGanti : r.jadual), n) });
+  const g = cnt(r => r.ganti);
+  if (g) out.push({ t: "Borang penggantian tugas", d: "Bagi tarikh menggantikan anggota lain, dengan nama anggota yang diganti.", s: st(cnt(r => r.ganti && r.borang), g) });
+  const lapan = cnt((r, c) => c && c.gross > 480);
+  if (lapan) out.push({ t: "Surat pengesahan OT melebihi 8 jam", d: "Bagi tarikh yang OT melebihi 8 jam berturut-turut.", s: st(cnt((r, c) => c && c.gross > 480 && r.surat8), lapan) });
+  if (S.lebih) out.push({ t: "Surat kelulusan tuntutan melebihi 1/3 gaji pokok", d: "Oleh Ketua Jabatan / pegawai P&P Gred 12 ke atas" + (S.gabung ? " (OT biasa + OT extended hours dikira bersama)." : "."), s: MS.lulus13 ? ["ok", "Ada"] : ["bad", "Belum ada"] });
+  out.push({ t: "Salinan penyata gaji bagi bulan tuntutan", d: "Gaji pokok dalam penyata ini digunakan untuk kiraan.", s: MS.penyata ? ["ok", "Ada"] : ["bad", "Belum ada"] });
+  out.push({ t: "Salinan penyata akaun bank", d: "Tuntutan kali pertama sahaja (jika diminta Unit Kewangan).", s: ["man", "Jika berkenaan"] });
+  return out;
+}
+function renderOtDocs() {
+  const box = $("otDocs"); if (!box) return;
+  const L = otDocList();
+  if (!L) { box.innerHTML = ""; return; }
+  box.innerHTML = '<div class="wajib"><h3>Dokumen wajib dilampirkan bersama tuntutan OT</h3><p class="sub muted">Susun ikut turutan ini. Semua salinan perlu disahkan (salinan diakui sah).</p><ol>' +
+    L.map(i => "<li><div><b>" + esc(i.t) + "</b><small>" + esc(i.d) + '</small></div><span class="wst ' + i.s[0] + '">' + esc(i.s[1]) + "</span></li>").join("") +
+    '</ol><div class="wfoot">Hantar ke Unit Kewangan sebelum tarikh akhir yang ditetapkan PKD (lazimnya awal bulan berikutnya). Rujukan: Perintah Am Bab G; MyPPSM Ceraian SR.4.3.1 dan Garis Panduan Lampiran SR.4.3.1(A).</div></div>';
+}
 function renderOverview() {
   const ms = mods(), box = $("overview");
   if (!box) return;
@@ -1568,7 +1614,7 @@ function refresh() {
   });
   const key = activeTab();
   if (!key) { updateQuickSummary(); updateBar(null); return; }
-  renderOverview();
+  renderOverview(); renderOtDocs();
   const ev = evalModule(key);
   const byDay = {};
   ev.days.forEach(x => { byDay[x.d] = x; });
@@ -1607,7 +1653,7 @@ document.querySelector(".modesw").addEventListener("click", e => {
 $("nama").addEventListener("input", e => { if ($("nama").readOnly) return; state.nama = e.target.value; save(); });
 $("nama").addEventListener("blur", () => { nameEditUnlocked=false; refreshNameLock(); refresh(); });
 $("editNamaBtn").addEventListener("click", () => {
-  if (!window.confirm("Ini hanya untuk membetulkan ejaan nama pegawai yang sama. Untuk pegawai lain gunakan Pegawai baharu. Teruskan?")) return;
+  if (!window.confirm("Ini hanya untuk membetulkan ejaan nama pegawai yang sama. Untuk pegawai lain gunakan Refresh semua. Teruskan?")) return;
   nameEditUnlocked=true; refreshNameLock(); $("nama").focus();
 });
 $("gaji").addEventListener("input", e => { state.gaji = e.target.value; save(); refresh(); });
@@ -1696,12 +1742,25 @@ function onSet(e) {
 $("tetapan").addEventListener("input", onSet);
 $("tetapan").addEventListener("change", onSet);
 
+$("refStaff").addEventListener("click", () => {
+  if (!window.confirm("Kosongkan maklumat pegawai (nama, jawatan, klinik, gaji dan EPK)? Tarikh tuntutan tidak dipadam.\n\nUntuk staf lain, guna Refresh semua di bawah.")) return;
+  Object.assign(state, { nama: "", jawatan: "", fasiliti: "", gaji: "", tanggungKerja: false, tab: "" });
+  nameEditUnlocked = false; save(); renderAll();
+  $("msg").textContent = "Maklumat pegawai dikosongkan. Tarikh tuntutan kekal.";
+});
+$("refClaim").addEventListener("click", () => {
+  const mo = monthInfo();
+  if (!window.confirm("Padam semua isian tuntutan bagi " + BULAN[mo.m - 1] + " " + mo.y + " (semua jenis tuntutan, dokumen dan jumlah dituntut)? Maklumat pegawai kekal.")) return;
+  if (state.data) delete state.data[state.bulan];
+  rowFilter = "all"; extraDay = null; nameEditUnlocked = false; save(); renderAll();
+  $("msg").textContent = "Isian tuntutan " + BULAN[mo.m - 1] + " " + mo.y + " dikosongkan.";
+});
 $("resetBtn").addEventListener("click", () => { $("btns").hidden = true; $("confirm").hidden = false; $("yesBtn").focus(); });
 $("noBtn").addEventListener("click", () => { $("confirm").hidden = true; $("btns").hidden = false; });
 $("yesBtn").addEventListener("click", () => {
   state = blankForm(state.bulan); save(); renderAll();
   $("confirm").hidden = true; $("btns").hidden = false;
-  $("msg").textContent = "Borang dikosongkan. Sedia untuk pegawai seterusnya.";
+  $("msg").textContent = "Semua isian dikosongkan. Sedia untuk pegawai seterusnya.";
   $("nama").focus();
   rowFilter="all"; extraDay=null; nameEditUnlocked=false; refreshNameLock();
 });
@@ -1891,6 +1950,23 @@ function pdfModule(doc, key, y) {
   return doc.lastAutoTable.finalY;
 }
 
+function pdfOtDocs(doc, y) {
+  const L = otDocList(); if (!L) return y;
+  const H = doc.internal.pageSize.getHeight();
+  y += 7;
+  if (y + 18 + L.length * 7 > H - 25) { doc.addPage(); y = pdfMiniHeader(doc); }
+  doc.setFont("helvetica", "bold"); doc.setFontSize(11.5); doc.setTextColor(15, 92, 110);
+  doc.text("SENARAI SEMAK DOKUMEN DILAMPIRKAN (TUNTUTAN OT)", 14, y); doc.setTextColor(30, 30, 30);
+  doc.autoTable({ startY: y + 3, theme: "grid", head: [["Bil", "Dokumen", "Keterangan", "Semakan sistem", "Disemak"]],
+    body: L.map((i, n) => [String(n + 1), P(i.t), P(i.d), P(i.s[1]), ""]),
+    styles: { fontSize: 8.5, cellPadding: 1.4, lineColor: [200, 208, 214], lineWidth: 0.15, valign: "middle" },
+    headStyles: { fillColor: [15, 92, 110], textColor: 255, fontStyle: "bold" },
+    columnStyles: { 0: { cellWidth: 10, halign: "center" }, 1: { cellWidth: 80, fontStyle: "bold" }, 3: { cellWidth: 32 }, 4: { cellWidth: 20 } },
+    margin: { left: 14, right: 14 },
+    didParseCell: h => { if (h.section === "body" && h.column.index === 3) { const k = L[h.row.index].s[0]; h.cell.styles.textColor = k === "ok" ? [27, 127, 75] : k === "bad" ? [180, 35, 24] : [90, 90, 90]; h.cell.styles.fontStyle = "bold"; } },
+    didDrawCell: h => { if (h.section === "body" && h.column.index === 4) { const s = 3.6, cx = h.cell.x + h.cell.width / 2 - s / 2, cy = h.cell.y + h.cell.height / 2 - s / 2; h.doc.setDrawColor(90, 90, 90); h.doc.setLineWidth(0.25); h.doc.rect(cx, cy, s, s); } } });
+  return doc.lastAutoTable.finalY;
+}
 function pdfSign(doc, y) {
   const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
   let fy = y + 14;
@@ -1940,6 +2016,7 @@ function buildPdf() {
     if (y > 40 && y + need > H) { doc.addPage(); y = pdfMiniHeader(doc); }
     y = pdfModule(doc, k, y);
   });
+  y = pdfOtDocs(doc, y);
   pdfSign(doc, y);
   return doc;
 }
